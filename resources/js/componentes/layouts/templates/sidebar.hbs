@@ -1,0 +1,252 @@
+<!-- Sidebar -->
+<div id="sidebarContainer">
+    <div class="sidebar-header">
+        <div class="user-info">
+            <div class="user-avatar">
+                <img src="https://ui-avatars.com/api/?name=<%= user.name %>&background=4F46E5&color=fff&size=40"
+                    alt="<%= user.name %>" />
+            </div>
+            <div class="user-details">
+                <div class="user-name">
+                    <%= user.name %>
+                </div>
+                <div class="user-email">
+                    <%= user.email %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <ul class="menu-list">
+            <% if (menu && menu.length> 0) { %>
+                <% _.each(menu, function(item) { %>
+                    <li class="menu-item <%= item.sidebar.sidebar_id ? 'submenu-item' : '' %> <%= item.sidebar.estado !== 'activo' ? 'disabled' : '' %>"
+                        data-menu-id="<%= item.id %>">
+                        <a href="<%= item.sidebar.resource_router ? '/' + item.sidebar.resource_router : '#' %>"
+                            class="menu-link <%= item.hasChildren ? 'has-children' : '' %>" <%=item.sidebar.estado
+                            !=='activo' ? 'onclick="return false;"' : '' %>>
+                            <i class="<%= item.sidebar.icon %> menu-icon"></i>
+                            <span class="menu-text">
+                                <%= item.sidebar.label %>
+                            </span>
+                            <% if (item.hasChildren) { %>
+                                <i class="nc-icon nc-minimal-down menu-arrow"></i>
+                                <% } %>
+                        </a>
+                        <% if (item.hasChildren && item.children && item.children.length> 0) { %>
+                            <ul class="submenu">
+                                <% _.each(item.children, function(child) { %>
+                                    <li class="menu-item submenu-item <%= child.sidebar.estado !== 'activo' ? 'disabled' : '' %>"
+                                        data-menu-id="<%= child.id %>">
+                                        <a href="<%= child.sidebar.resource_router ? '/' + child.sidebar.resource_router : '#' %>"
+                                            class="menu-link" <%=child.sidebar.estado !=='activo'
+                                            ? 'onclick="return false;"' : '' %>>
+                                            <i class="<%= child.sidebar.icon %> menu-icon"></i>
+                                            <span class="menu-text">
+                                                <%= child.sidebar.label %>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <% }); %>
+                            </ul>
+                            <% } %>
+                    </li>
+                    <% }); %>
+                        <% } else { %>
+                            <li class="menu-empty">No hay menús disponibles</li>
+                            <% } %>
+        </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+        <button class="logout-btn" id="bt_logout">
+            <i class="nc-icon nc-button-power"></i>
+            <span>Cerrar Sesión</span>
+        </button>
+    </div>
+</div>
+
+<style>
+    #sidebarContainer {
+        min-width: 260px;
+        height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .user-avatar img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .user-details {
+        flex: 1;
+    }
+
+    .user-name {
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 2px;
+    }
+
+    .user-email {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    .sidebar-nav {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px 0;
+    }
+
+    .menu-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .menu-item {
+        margin-bottom: 2px;
+    }
+
+    .menu-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .menu-link:hover {
+        background: rgba(255, 255, 255, 0.1);
+        padding-left: 25px;
+    }
+
+    .menu-link.active {
+        background: rgba(255, 255, 255, 0.2);
+        border-left: 3px solid white;
+    }
+
+    .menu-icon {
+        width: 20px;
+        margin-right: 12px;
+        font-size: 16px;
+    }
+
+    .menu-text {
+        flex: 1;
+        font-size: 14px;
+    }
+
+    .menu-arrow {
+        font-size: 12px;
+        transition: transform 0.3s ease;
+    }
+
+    .menu-item.expanded .menu-arrow {
+        transform: rotate(180deg);
+    }
+
+    .submenu {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        background: rgba(0, 0, 0, 0.1);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .menu-item.expanded .submenu {
+        max-height: 500px;
+    }
+
+    .submenu-item .menu-link {
+        padding: 10px 20px 10px 52px;
+        font-size: 13px;
+    }
+
+    .submenu-item .menu-link:hover {
+        padding-left: 57px;
+    }
+
+    .menu-item.disabled .menu-link {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .menu-item.disabled .menu-link:hover {
+        background: transparent;
+        padding-left: 20px;
+    }
+
+    .sidebar-footer {
+        padding: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logout-btn {
+        width: 100%;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .menu-empty {
+        padding: 20px;
+        text-align: center;
+        opacity: 0.7;
+        font-size: 14px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        #sidebarContainer {
+            width: 100%;
+            height: auto;
+            position: relative;
+        }
+
+        .sidebar-nav {
+            max-height: 300px;
+        }
+    }
+</style>

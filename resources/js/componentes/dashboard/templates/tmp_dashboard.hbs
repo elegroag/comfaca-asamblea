@@ -1,0 +1,105 @@
+<div id="app" class="dashboard-container">
+    <header class="dashboard-header">
+        <div class="header-content">
+            <h1>
+                <%= props.title %>
+            </h1>
+            <div class="user-info">
+                <span>Bienvenido, <%= props.user.name %></span>
+                <button id="logout-btn" class="btn-logout">Cerrar sesión</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <section class="welcome-section">
+            <h2>Panel de Control</h2>
+            <p>Este es tu dashboard personalizado.</p>
+        </section>
+
+        <% if (props.stats) { %>
+            <section class="stats-section">
+                <h3>Estadísticas</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Total de Tareas</h4>
+                        <span class="stat-number">
+                            <%= props.stats.totalTasks %>
+                        </span>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Completadas</h4>
+                        <span class="stat-number completed">
+                            <%= props.stats.completedTasks %>
+                        </span>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Pendientes</h4>
+                        <span class="stat-number pending">
+                            <%= props.stats.pendingTasks %>
+                        </span>
+                    </div>
+                </div>
+            </section>
+            <% } %>
+
+                <section class="actions-section">
+                    <h3>Acciones Rápidas</h3>
+                    <div class="actions-grid">
+                        <button id="refresh-btn" class="btn-action">Actualizar Datos</button>
+                        <a href="/tasks" class="btn-action btn-primary">Ver Tareas</a>
+                        <button class="btn-action">Configuración</button>
+                    </div>
+                </section>
+    </main>
+</div>
+
+<style>
+    .dashboard-layout {
+        display: flex;
+        min-height: 100vh;
+        background: #f8f9fa;
+    }
+
+    .sidebar-wrapper {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        z-index: 1000;
+    }
+
+    .main-content {
+        flex: 1;
+        margin-left: 280px;
+        min-height: 100vh;
+        transition: margin-left 0.3s ease;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .dashboard-layout {
+            flex-direction: column;
+        }
+
+        .sidebar-wrapper {
+            position: relative;
+            width: 100%;
+            height: auto;
+        }
+
+        .main-content {
+            margin-left: 0;
+        }
+    }
+
+    /* Sidebar collapsed state */
+    .sidebar-collapsed .main-content {
+        margin-left: 0;
+    }
+
+    .sidebar-collapsed .sidebar-wrapper {
+        width: 0;
+        overflow: hidden;
+    }
+</style>

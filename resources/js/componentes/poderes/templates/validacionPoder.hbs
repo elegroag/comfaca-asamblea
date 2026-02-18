@@ -1,0 +1,13 @@
+<div class='row justify-content-center'>
+    <% _.each(errors, function(err){ %>
+    <div class="icon icon-primary">
+        <i class="fa fa-quote-right"></i>
+    </div>
+    <span><%=err.texto%> <a href='<%=err.router%>'><%=err.tbutton%></a></span>
+    <% });%>
+</div>
+<div class='form-group'>
+    <p class='text-center'>
+        <button type='button' class='btn btn-ms btn-round btn-success' data-toggle='modal-close'> Salir</button>
+    </p>
+</div>
