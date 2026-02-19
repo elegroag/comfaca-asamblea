@@ -15,7 +15,6 @@ use App\Services\UploadFileService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class AdminApiController extends Controller
@@ -25,7 +24,7 @@ class AdminApiController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('api.auth');
         $this->idAsamblea = AsambleaService::getAsambleaActiva();
     }
 
@@ -34,7 +33,7 @@ class AdminApiController extends Controller
      */
     protected function verificarPermisos($controller = '')
     {
-        $user = Auth::user();
+        $user = auth()->user();
         if (!$user || !AsambleaService::isAdmin($user->role, $controller)) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
@@ -597,7 +596,7 @@ class AdminApiController extends Controller
      */
     public function actualiza_empresas(Request $request): JsonResponse
     {
-        $user = Auth::user();
+        $user = auth()->user();
         if (!$user || $user->role !== 'SuperAdmin') {
             return response()->json([
                 'success' => false,

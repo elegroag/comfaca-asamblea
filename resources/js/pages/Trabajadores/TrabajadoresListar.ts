@@ -1,13 +1,30 @@
-'use strict';
+import LayoutView from "@/componentes/trabajadores/views/LayoutView";
+import TrabajadoresNav from "@/componentes/trabajadores/views/TrabajadoresNav";
+import TrabajadoresListarView from "@/componentes/trabajadores/views/TrabajadoresListarView";
+import TrabajadorService from "@/componentes/trabajadores/services/TrabajadorService";
 
-class TrabajadoresListar {
-	constructor(options = {}) {
+declare global {
+	var _: any;
+	var Backbone: any;
+	var $App: any;
+}
+
+interface TrabajadoresListarOptions {
+	[key: string]: any;
+}
+
+export default class TrabajadoresListar {
+	layout: LayoutView;
+	region: any;
+	trabajadorService: TrabajadorService;
+
+	constructor(options: TrabajadoresListarOptions = {}) {
 		_.extend(this, Backbone.Events);
 		_.extend(this, options);
 		this.trabajadorService = new TrabajadorService();
 	}
 
-	listarTrabajadores() {
+	listarTrabajadores(): void {
 		this.layout = new LayoutView();
 		this.region.show(this.layout);
 		this.layout.getRegion('subheader').show(
@@ -31,7 +48,7 @@ class TrabajadoresListar {
 		this.layout.getRegion('body').show(view);
 	}
 
-	destroy() {
+	destroy(): void {
 		this.region.remove();
 		this.stopListening();
 	}

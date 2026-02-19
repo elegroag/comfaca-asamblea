@@ -1,38 +1,52 @@
-'use strict';
+import LayoutView from "@/componentes/trabajadores/views/LayoutView";
+import TrabajadoresNav from "@/componentes/trabajadores/views/TrabajadoresNav";
+import TrabajadorMostrarView from "@/componentes/trabajadores/views/TrabajadorMostrarView";
+import TrabajadorService from "./TrabajadorService";
 
-class TrabajadorMostrar {
-	constructor(options = {}) {
-		_.extend(this, Backbone.Events);
-		_.extend(this, options);
-		this.trabajadorService = new TrabajadorService();
-	}
 
-	mostrarTrabajador(model) {
-		this.layout = new LayoutView();
-		this.region.show(this.layout);
+interface TrabajadorMostrarOptions {
+    [key: string]: any;
+}
 
-		this.layout.getRegion('subheader').show(
-			new TrabajadoresNav({
-				model: {
-					titulo: 'Mostrar trabajador',
-					listar: false,
-					exportar: false,
-					crear: false,
-					editar: false,
-					masivo: false,
-				},
-			})
-		);
-		const view = new TrabajadorMostrarView({
-			model: model,
-		});
+export default class TrabajadorMostrar {
+    layout?: LayoutView;
+    region: any;
+    trabajadorService: TrabajadorService;
+    stopListening?: () => void;
 
-		this.layout.getRegion('body').show(view);
-		TrabajadoresNav.parentView = view;
-	}
+    constructor(options: TrabajadorMostrarOptions = {}) {
+        _.extend(this, Backbone.Events);
+        _.extend(this, options);
+        this.trabajadorService = new TrabajadorService();
+    }
 
-	destroy() {
-		this.region.remove();
-		this.stopListening();
-	}
+    mostrarTrabajador(model: any): void {
+        this.layout = new LayoutView();
+        this.region.show(this.layout);
+
+        this.layout.getRegion('subheader').show(
+            new TrabajadoresNav({
+                model: {
+                    titulo: 'Mostrar trabajador',
+                    listar: false,
+                    exportar: false,
+                    crear: false,
+                    editar: false,
+                    masivo: false,
+                },
+                dataToggle: null,
+            })
+        );
+        const view = new TrabajadorMostrarView({
+            model: model,
+        });
+
+        this.layout.getRegion('body').show(view);
+        (TrabajadoresNav as any).parentView = view;
+    }
+
+    destroy(): void {
+        this.region.remove();
+        if (this.stopListening) this.stopListening();
+    }
 }

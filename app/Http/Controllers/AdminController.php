@@ -3,20 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\AsaMesas;
-use App\Models\AsaConsenso;
-use App\Models\AsaUsuarios;
 use App\Models\AsaAsamblea;
-use App\Models\UsuarioSisu;
-use App\Models\Empresas;
 use App\Services\Asamblea\AsambleaService;
-use App\Services\MesaService;
-use App\Services\UploadFileService;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class AdminController extends Controller
 {
@@ -49,7 +39,7 @@ class AdminController extends Controller
         $permisoCheck = $this->verificarPermisos();
         if ($permisoCheck) return $permisoCheck;
 
-        return view('admin.index', [
+        return Inertia::render('Asamblea', [
             'titulo' => 'Administración',
             'itemMenuSidebar' => $this->itemMenuSidebar
         ]);
@@ -67,7 +57,7 @@ class AdminController extends Controller
 
         $asamblea = AsaAsamblea::where('estado', 'A')->first();
 
-        return view('admin.usuarios', [
+        return Inertia::render('Usuarios', [
             'asamblea' => $asamblea,
             'titulo' => 'Usuarios',
             'itemMenuSidebar' => $this->itemMenuSidebar
@@ -83,7 +73,7 @@ class AdminController extends Controller
         $permisoCheck = $this->verificarPermisos();
         if ($permisoCheck) return $permisoCheck;
 
-        return view('admin.config', [
+        return Inertia::render('Config', [
             'titulo' => 'Configuración',
             'itemMenuSidebar' => $this->itemMenuSidebar
         ]);
@@ -98,7 +88,7 @@ class AdminController extends Controller
         $permisoCheck = $this->verificarPermisos();
         if ($permisoCheck) return $permisoCheck;
 
-        return view('admin.mesas', [
+        return Inertia::render('Mesas', [
             'titulo' => 'Mesas',
             'itemMenuSidebar' => $this->itemMenuSidebar
         ]);
@@ -112,7 +102,7 @@ class AdminController extends Controller
         $permisoCheck = $this->verificarPermisos();
         if ($permisoCheck) return $permisoCheck;
 
-        return view('admin.consenso', [
+        return Inertia::render('Consenso', [
             'titulo' => 'Consenso',
             'itemMenuSidebar' => $this->itemMenuSidebar
         ]);
