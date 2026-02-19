@@ -1,0 +1,92 @@
+<div class="col ml-auto mr-auto">
+    <div class="card-body">
+        <form method="post" action="#" class='form-horizontal'>
+            <div class="row ">
+                <div class="col-6">
+                    <div class='row'>
+                        <label class='control-label pt-1'>Empresa Nit</label>
+                        <div class='col-md-6'>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id='nit' name='nit' placeholder="nit" value="" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class='row'>
+                        <label class='control-label pt-1'>Razón Social</label>
+                        <div class='col-md-6'>
+                            <div class='form-group'>
+                                <input type='text' class="form-control" name='razsoc' id='razsoc' placeholder='razsoc' />
+                                <span toggle-error='razsoc' class="error"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class='row'>
+                        <label class='control-label pt-1'>Cedula Representante</label>
+                        <div class='col-md-5'>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name='cedrep' placeholder="cedula" />
+                                <span toggle-error='cedrep' class="error"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class='row'>
+                        <label class='control-label pt-1'>Nombre Representante</label>
+                        <div class='col-md-5'>
+                            <div class='form-group'>
+                                <input type='text' class="form-control" name='repleg' id='repleg' placeholder='nombres representante' />
+                                <span toggle-error='repleg' class="error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class='row'>
+                        <label class='control-label'>Email Empresa</label>
+                        <div class='col-md-6'>
+                            <div class='form-group'>
+                                <input type='text' class="form-control" name='email' id='email' placeholder='email' />
+                                <span toggle-error='email' class="error"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <label class='control-label'>Teléfono Empresa</label>
+                        <div class='col-md-6'>
+                            <div class='form-group'>
+                                <input type='text' class="form-control" name='telefono' id='telefono' placeholder='telefono' />
+                                <span toggle-error='telefono' class="error"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <label class='control-label pt-4'>Opciones disponibles: </label>
+                        <div class='col-md-8 checkbox-radios'>
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" name='cruzar_cartera' checked type="checkbox" value="">Cruzar con cartera, para rechazar
+                                    <span class="form-check-sign"></span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" name='crear_pre_registro' checked type="checkbox" value="">Crear pre-registro de ingreso
+                                    <span class="form-check-sign"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class='col-12'>
+                    <div class='text-center'>
+                        <button type='button' disabled class='btn btn-outline-success btn-round' id='bt_guardar'><i class="fa fa-search"></i> Continuar</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

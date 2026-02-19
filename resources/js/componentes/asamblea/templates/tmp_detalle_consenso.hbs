@@ -1,0 +1,55 @@
+<!-- Contenedor principal -->
+<div class='flex justify-center'>
+	<div class='w-full max-w-md'>
+		<!-- Título del consenso -->
+		<h6 class='text-xl font-bold text-center text-gray-800 mb-2'>
+			<span class="font-bold">
+				<%=consenso.detalle%>
+			</span>
+		</h6>
+
+		<!-- Fecha -->
+		<p class='text-center text-gray-600 mb-6'>
+			Fecha <%=moment(consenso.create_at).format('DD-MM-YYYY') %>
+		</p>
+
+		<!-- Contenedor de imagen y switch -->
+		<div class="flex flex-col items-center space-y-6 mb-6">
+			<!-- Imagen del consenso -->
+			<div class="relative">
+				<div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 shadow-lg">
+					<?= Tag::image("asamblea-logo.png", "width: 100px", "class: w-full h-full object-cover") ?>
+				</div>
+			</div>
+
+			<!-- Switch de estado -->
+			<div class='flex items-center justify-center w-full'>
+				<div class='flex items-center space-x-3 bg-gray-50 px-4 py-3 rounded-lg border border-gray-200'>
+					<!-- Bootstrap Switch -->
+					<% has_checked=(consenso.estado=='A' )? 'checked' :'' %>
+						<input class="bootstrap-switch" id='estado_consenso' data-handle-width="120" type="checkbox"
+							data-toggle="switch" data-on-text="SI" data-on-color="success" data-off-color="danger"
+							data-off-text="NO" <%=has_checked%> />
+
+						<!-- Label del switch -->
+						<span class="text-gray-700 font-medium">está activo.</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- Botones de acción -->
+		<div class='flex justify-center space-x-4'>
+			<button type='button' id='bt_edit_consenso'
+				class='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow flex items-center gap-2'>
+				<i class='fa fa-edit'></i>
+				Editar
+			</button>
+
+			<button type='button' id='bt_borrar_consenso'
+				class='bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow flex items-center gap-2'>
+				<i class='fa fa-trash'></i>
+				Borrar
+			</button>
+		</div>
+	</div>
+</div>

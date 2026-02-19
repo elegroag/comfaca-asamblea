@@ -1,0 +1,100 @@
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden relative">
+        <!-- Botón de salir flotante -->
+        <div class="absolute top-4 right-4 z-50">
+            <a href='#'
+                class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-300 rounded-lg hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                id='bt_back'>
+                <i class="fas fa-arrow-left mr-2"></i> Salir
+            </a>
+        </div>
+
+        <div class="p-6">
+            <h4 class="text-xl font-semibold text-gray-800 text-center mb-6">Detalle de mesa</h4>
+
+            <div class="flex justify-center">
+                <div class="w-full max-w-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="md:col-span-2">
+                            <!-- Espacio para contenido adicional si es necesario -->
+                        </div>
+                    </div>
+
+                    <hr class="border-gray-200 mb-6" />
+
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h6 class="text-lg font-semibold text-gray-800 mb-4">Mesa de trabajo</h6>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-3">
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Código:</span>
+                                    <span class="text-gray-900">
+                                        <%=mesa.codigo %>
+                                    </span>
+                                </div>
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Cedtra Responsable:</span>
+                                    <span class="text-gray-900">
+                                        <%=mesa.cedtra_responsable %>
+                                    </span>
+                                </div>
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Estado:</span>
+                                    <span class="text-gray-900">
+                                        <%=mesa.estado %>
+                                    </span>
+                                </div>
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Consenso_id:</span>
+                                    <span class="text-gray-900">
+                                        <%=mesa.consenso_id %>
+                                    </span>
+                                </div>
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Hora Apertura:</span>
+                                    <span class="text-gray-900">
+                                        <%=mesa.hora_apertura %>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Hora Cierre Mesa:</span>
+                                    <span class="text-gray-900">
+                                        <%=mesa.hora_cierre_mesa %>
+                                    </span>
+                                </div>
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Cantidad Votantes:</span>
+                                    <span class="text-gray-900">
+                                        <%=mesa.cantidad_votantes %>
+                                    </span>
+                                </div>
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Cantidad Votos:</span>
+                                    <span class="text-gray-900">
+                                        <%=mesa.cantidad_votos %>
+                                    </span>
+                                </div>
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Create_at:</span>
+                                    <span class="text-gray-900">
+                                        <%=mesa.create_at %>
+                                    </span>
+                                </div>
+                                <div class="flex">
+                                    <span class="font-medium text-gray-600 w-32">Update_at:</span>
+                                    <span class="text-gray-900">
+                                        <%=mesa.update_at %>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

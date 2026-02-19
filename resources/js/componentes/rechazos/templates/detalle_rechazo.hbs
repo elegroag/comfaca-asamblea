@@ -1,0 +1,87 @@
+<div class="max-w-2xl mx-auto p-6">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="p-6">
+            <div class="flex justify-center">
+                <div class="w-full max-w-lg">
+                    <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                        <h6 class="text-lg font-semibold text-gray-800 mb-4">Detalles del Rechazo</h6>
+                    </div>
+                    <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                        <table class="w-full text-sm">
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Nit</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900 font-mono">
+                                        <%=nit%>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Razón social</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900">
+                                        <%=capitalize(razsoc)%>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Criterio</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900">
+                                        <%=capitalize(criterio)%>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Tipo Criterio</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900">
+                                        <%=capitalize(tipo_criterio)%>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Estado</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <% if(estado=='R' ){ %>
+                                            <span
+                                                class="inline-flex px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Rechazado</span>
+                                            <% } else { %>
+                                                <span
+                                                    class="inline-flex px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Aceptado</span>
+                                                <% } %>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Fecha</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900">
+                                        <%=dia%>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Reg. Ingreso</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900 font-mono">
+                                        <%=regingre_id%>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Hora</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900">
+                                        <%=hora%>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Cedula Representante
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-900 font-mono">
+                                        <%=cedula_representa%>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Nombre Representante
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-900">
+                                        <%=capitalize(nombre_representa)%>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

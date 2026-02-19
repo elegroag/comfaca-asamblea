@@ -1,0 +1,196 @@
+<div class='bg-white rounded-lg shadow-lg overflow-hidden'>
+    <div class='p-6'>
+        <div class="border-b border-gray-200 pb-4 mb-6">
+            <h4 class="text-xl font-bold text-blue-600 m-2">Resultado De Validación Previa</h4>
+        </div>
+        <div class="space-y-6">
+            <div class='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+                <div>
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <p class="text-sm text-gray-600">Aquí podrás encontrar toda la información relacionada con el
+                            representante legal y las empresas que representa.</p>
+                    </div>
+
+                    <div class="mt-6">
+                        <p class='text-lg font-semibold text-gray-800 mb-4'>Datos</p>
+                        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                            <table class='w-full'>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Identificación:
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-900 font-mono">
+                                            <%=representante.cedrep %>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Representante:
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-900">
+                                            <%=capitalize(representante.nombre) %>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Dirección email:
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-900">
+                                            <%=(!representante.email)? 'No disponible' :
+                                                capitalize(representante.email)%>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Teléfono:</td>
+                                        <td class="px-4 py-3 text-sm text-gray-900">
+                                            <%=(!representante.telefono)? 'No disponible' : representante.telefono%>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <% if(tiene_incripcion==true){ %>
+                        <div class='flex justify-center mt-5'>
+                            <button type='button' id='bt_ficha_ingreso'
+                                class="group bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 border-2 border-transparent hover:border-blue-300">
+                                <div class="text-center">
+                                    <span class='text-lg font-bold text-red-600 block mb-4'>Registrar Ingreso Asamblea
+                                        Aquí</span>
+                                    <?= Tag::image('asamblea-logo.jpg', 'class: w-32 h-32 mx-auto object-contain') ?>
+                                </div>
+                            </button>
+                        </div>
+                        <% } %>
+                </div>
+            </div>
+
+            <div class='bg-gray-50 rounded-lg p-6'>
+                <h5 class='text-lg font-semibold text-gray-800 mb-4'>Empresas</h5>
+                <div class="overflow-x-auto">
+                    <table class='w-full text-sm'>
+                        <thead>
+                            <tr class="bg-gray-100 border-b border-gray-200">
+                                <th class="px-4 py-3 text-left font-semibold text-gray-800 text-base">Empresa</th>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-800 text-base">Nit</th>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-800 text-base">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200" id='renderEmpresasMostrar'>
+                            <% _.each(empresas, function(empresa){ %>
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 text-base">
+                                        <%=capitalize(empresa.razsoc)%>
+                                    </td>
+                                    <td class="px-4 py-3 text-base font-mono">
+                                        <%=empresa.nit %>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <% if (empresa.inscripcion_estado !='Rechazada' ){ %>
+                                            <span
+                                                class="inline-flex px-3 py-1 text-sm font-semibold text-blue-800 bg-blue-100 rounded-full">
+                                                <%= empresa.inscripcion_estado %>
+                                            </span>
+                                            <% } else { %>
+                                                <div class="flex items-center space-x-3">
+                                                    <span class="text-sm text-red-600 font-medium">NO APLICA PARA
+                                                        INGRESO</span>
+                                                    <button type='button' data-toggle='bt_rechazo'
+                                                        data-cid="<%=empresa.nit%>"
+                                                        data-cedrep="<%=representante.cedrep%>"
+                                                        class="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-colors"
+                                                        title="Ver detalles del rechazo">
+                                                        <i class="fas fa-search text-xs"></i>
+                                                    </button>
+                                                </div>
+                                                <% } %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <% v_poder=(poderes==false && poder==false)? 'hidden' :'' %>
+                <div class='bg-gray-50 rounded-lg p-6 <%=v_poder%>'>
+                    <h5 class='text-lg font-semibold text-gray-800 mb-3'>Poderes</h5>
+                    <p class="text-sm text-gray-600 mb-4">Según Artículo 33 - 5.5.6, el representante solo puede
+                        disponer de un poder. Este poder debe estar registrado y aprobado por parte de las personas de
+                        recepción de poderes.</p>
+                    <div class="overflow-x-auto">
+                        <table class='w-full text-sm'>
+                            <thead>
+                                <tr class="bg-gray-100 border-b border-gray-200">
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-800">Poderdante</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-800">Nit</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-800">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200" id='renderPoderMostrar'>
+                                <% if(poder !=false){ %>
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-4 py-3">
+                                            <%=capitalize(poder.razsoc)%>
+                                        </td>
+                                        <td class="px-4 py-3 font-mono">
+                                            <%=poder.nit %>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <% if (poder.inscripcion_estado !='Rechazada' ){ %>
+                                                <span
+                                                    class="inline-flex px-3 py-1 text-sm font-semibold text-blue-800 bg-blue-100 rounded-full">
+                                                    <%= poder.inscripcion_estado %>
+                                                </span>
+                                                <% } else { %>
+                                                    <div class="flex items-center space-x-3">
+                                                        <span class="text-sm text-red-600 font-medium">NO APLICA PARA
+                                                            INGRESO</span>
+                                                        <button type='button' data-toggle='bt_rechazo'
+                                                            data-cid="<%=poder.nit%>"
+                                                            class="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-colors"
+                                                            title="Ver detalles del rechazo">
+                                                            <i class="fas fa-search text-xs"></i>
+                                                        </button>
+                                                    </div>
+                                                    <% } %>
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                                        <% if(poderes !=false){ _.each(poderes, function(_poder){ if(poder.nit
+                                            !=_poder.nit) { %>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-4 py-3">
+                                                    <%=capitalize(_poder.razsoc)%>
+                                                </td>
+                                                <td class="px-4 py-3 font-mono">
+                                                    <%=_poder.nit %>
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <% if (_poder.estado !='R' ){ %>
+                                                        <span
+                                                            class="inline-flex px-3 py-1 text-sm font-semibold text-blue-800 bg-blue-100 rounded-full">
+                                                            <%= _poder.inscripcion_estado %>
+                                                        </span>
+                                                        <% } else { %>
+                                                            <div class="flex items-center space-x-3">
+                                                                <span class="text-sm text-red-600 font-medium">NO APLICA
+                                                                    PARA INGRESO</span>
+                                                                <button type='button' data-toggle='bt_rechazo'
+                                                                    data-cid="<%=_poder.nit%>"
+                                                                    class="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-colors"
+                                                                    title="Ver detalles del rechazo">
+                                                                    <i class="fas fa-search text-xs"></i>
+                                                                </button>
+                                                            </div>
+                                                            <% } %>
+                                                </td>
+                                            </tr>
+                                            <% } })}%>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>

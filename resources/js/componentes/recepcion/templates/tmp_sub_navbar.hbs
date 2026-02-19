@@ -1,0 +1,55 @@
+<?php if (Session::getData("RD") != "Apoyo") { ?>
+<li>
+    <a href="#" data-href='buscar'
+        class="flex flex-col items-center p-3 rounded-lg hover:bg-gray-100 transition-colors group">
+        <i class="fas fa-search text-gray-600 group-hover:text-blue-600 transition-colors"></i>
+        <span class="text-xs text-gray-600 group-hover:text-blue-600 transition-colors mt-1">Buscar</span>
+    </a>
+</li>
+<?php } ?>
+<li>
+    <a href="#" data-href='listar'
+        class="flex flex-col items-center p-3 rounded-lg hover:bg-gray-100 transition-colors group">
+        <i class="fas fa-list text-gray-600 group-hover:text-blue-600 transition-colors"></i>
+        <span class="text-xs text-gray-600 group-hover:text-blue-600 transition-colors mt-1">Listar</span>
+    </a>
+</li>
+<li>
+    <a href="#" data-href='rechazados'
+        class="flex flex-col items-center p-3 rounded-lg hover:bg-gray-100 transition-colors group">
+        <i class="fas fa-times-circle text-gray-600 group-hover:text-red-600 transition-colors"></i>
+        <span class="text-xs text-gray-600 group-hover:text-red-600 transition-colors mt-1">Rechazados</span>
+    </a>
+</li>
+<?php if (Session::getData("SuperAdmin") || Session::getData("RD") == "Apoyo") { ?>
+<?php if (Session::getData("SuperAdmin")) { ?>
+<li>
+    <a href="#" data-href='crear'
+        class="flex flex-col items-center p-3 rounded-lg hover:bg-gray-100 transition-colors group">
+        <i class="fas fa-plus text-gray-600 group-hover:text-green-600 transition-colors"></i>
+        <span class="text-xs text-gray-600 group-hover:text-green-600 transition-colors mt-1">Crear</span>
+    </a>
+</li>
+<?php } ?>
+<li>
+    <a href="#" data-href='listar_inscritos'
+        class="flex flex-col items-center p-3 rounded-lg hover:bg-gray-100 transition-colors group">
+        <i class="fas fa-users text-gray-600 group-hover:text-blue-600 transition-colors"></i>
+        <span class="text-xs text-gray-600 group-hover:text-blue-600 transition-colors mt-1">Inscritos</span>
+    </a>
+</li>
+<li>
+    <a href="#" data-href='registros_pendientes'
+        class="flex flex-col items-center p-3 rounded-lg hover:bg-gray-100 transition-colors group">
+        <i class="fas fa-clock text-gray-600 group-hover:text-yellow-600 transition-colors"></i>
+        <span class="text-xs text-gray-600 group-hover:text-yellow-600 transition-colors mt-1">R. Pendientes</span>
+    </a>
+</li>
+<li>
+    <a href="#" data-href='preregistro_presencial'
+        class="flex flex-col items-center p-3 rounded-lg hover:bg-gray-100 transition-colors group">
+        <i class="fas fa-calendar text-gray-600 group-hover:text-purple-600 transition-colors"></i>
+        <span class="text-xs text-gray-600 group-hover:text-purple-600 transition-colors mt-1">H. Pre-Registro</span>
+    </a>
+</li>
+<?php } ?>

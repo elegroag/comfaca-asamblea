@@ -1,0 +1,102 @@
+<div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="p-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+            <div class="mb-4 md:mb-0">
+                <h3 class="text-xl font-bold text-blue-600" id='titulo_lista_recepcion'>Ingresos Presenciales</h3>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button
+                    class="flex items-center space-x-2 px-3 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition-all duration-200 transform hover:scale-105"
+                    id='bt_reporte_data' href="#">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Reporte Quorum</span>
+                </button>
+                <button
+                    class="flex items-center space-x-2 px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition-all duration-200 transform hover:scale-105"
+                    id='bt_export_data' href="#">
+                    <i class="fas fa-file-excel"></i>
+                    <span>Exportar</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm" id='tb_data_asistencias'>
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-200">
+                            <th class="px-4 py-3 text-left font-semibold text-gray-800">Empresa</th>
+                            <th class="px-4 py-3 text-left font-semibold text-gray-800">Nit</th>
+                            <th class="px-4 py-3 text-left font-semibold text-gray-800">Cedula Representante</th>
+                            <th class="px-4 py-3 text-left font-semibold text-gray-800">Hora</th>
+                            <th class="px-4 py-3 text-left font-semibold text-gray-800">Fecha</th>
+                            <th class="px-4 py-3 text-left font-semibold text-gray-800">Estado</th>
+                            <th class="px-4 py-3 text-left font-semibold text-gray-800">Votos</th>
+                            <th class="px-4 py-3 text-center font-semibold text-gray-800">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <% _.each(asistencias, function(asistente, ai){ %>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3">
+                                    <%=capitalize(asistente.razsoc)%>
+                                </td>
+                                <td class="px-4 py-3 font-mono">
+                                    <%=asistente.nit %>
+                                </td>
+                                <td class="px-4 py-3 font-mono">
+                                    <%=asistente.cedrep %>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <%=asistente.hora %>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <%=asistente.fecha %>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <% if(asistente.detalle_estado=='Activo' ){ %>
+                                        <span
+                                            class="inline-flex px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">
+                                            <%=asistente.detalle_estado %>
+                                        </span>
+                                        <% } else if(asistente.detalle_estado=='Pendiente' ){ %>
+                                            <span
+                                                class="inline-flex px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">
+                                                <%=asistente.detalle_estado %>
+                                            </span>
+                                            <% } else { %>
+                                                <span
+                                                    class="inline-flex px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 rounded-full">
+                                                    <%=asistente.detalle_estado %>
+                                                </span>
+                                                <% } %>
+                                </td>
+                                <td class="px-4 py-3 text-center font-semibold">
+                                    <%=asistente.votos %>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <button type='button'
+                                            class="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-colors"
+                                            data-toggle='bt_registro_ingreso' data-code='<%=asistente.documento%>'
+                                            title="Registrar Ingreso">
+                                            <i class="fas fa-hand-pointer text-xs"></i>
+                                        </button>
+                                        <? if (Session::getData("SuperAdmin") == 1) { ?>
+                                        <button type='button'
+                                            class="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition-colors"
+                                            data-toggle='bt_borrar_ingreso' data-code='<%=asistente.documento%>'
+                                            title="Borrar Ingreso">
+                                            <i class="fas fa-trash text-xs"></i>
+                                        </button>
+                                        <? } ?>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

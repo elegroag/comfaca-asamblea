@@ -4,7 +4,7 @@ import { BackboneCollection } from "@/common/Bone";
 import Asistencia from "@/models/Asistencia";
 
 class AsistenciasCollection extends BackboneCollection {
-    constructor(options: any) {
+    constructor(options?: any) {
         super({ ...options, url: '/web/recepcion/all' });
     }
 

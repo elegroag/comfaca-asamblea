@@ -1,0 +1,41 @@
+<td class="px-4 py-3 text-sm text-gray-900 font-mono">
+    <%=nit%>
+</td>
+<td class="px-4 py-3 text-sm text-gray-900">
+    <%=capitalize(razsoc)%>
+</td>
+<td class="px-4 py-3 text-sm text-gray-900 font-mono">
+    <%=cedula_representa%>
+</td>
+<td class="px-4 py-3 text-sm text-gray-900">
+    <%=capitalize(nombre_representa)%>
+</td>
+<td class="px-4 py-3 text-sm text-gray-900">
+    <%=criterio%>
+</td>
+<td class="px-4 py-3 text-sm text-gray-900">
+    <%=tipo_criterio%>
+</td>
+<td class="px-4 py-3 text-sm">
+    <div class="flex items-center justify-center space-x-2">
+        <button type="button" data-cid='<%=id%>' data-toggle='row-like'
+            class="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-colors"
+            title="Ver detalles">
+            <i class="fas fa-user text-xs"></i>
+        </button>
+        <?php if (Session::getData("SuperAdmin") == 1) { ?>
+        <button type="button" data-cid='<%=id%>' data-toggle='row-edit'
+            class="p-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 focus:ring-2 focus:ring-yellow-500 transition-colors"
+            title="Editar">
+            <i class="fas fa-edit text-xs"></i>
+        </button>
+        <?php } ?>
+        <?php if (Session::getData("SuperAdmin") == 1) { ?>
+        <button type="button" data-cid='<%=id%>' data-toggle='row-remove'
+            class="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition-colors"
+            title="Eliminar">
+            <i class="fas fa-times text-xs"></i>
+        </button>
+        <?php } ?>
+    </div>
+</td>

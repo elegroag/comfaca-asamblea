@@ -1,0 +1,31 @@
+<div class='card'>
+    <div class='card-header'>
+        <h6><%=titulo%></h6>
+    </div>
+    <div class='card-body'>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered dataTable dtr-inline" id='tb_data_inscritos'>
+                <thead>
+                    <tr>
+                        <th>Empleador</th>
+                        <th>Cedula R.P.</th>
+                        <th>Clave</th>
+                        <th>Asamblea</th>
+                        <th>Fecha registro</th>
+                    </tr>
+                </thead>
+                <tbody class="">
+                    <% _.each(asistencias, function(repre){ %>
+                    <tr>
+                        <td><%=capitalize(repre.empleador)%></td>
+                        <td><%=repre.cedrep %></td>
+                        <td><%=repre.clave_ingreso %></td>
+                        <td><%=repre.asamblea_id %></td>
+                        <td><%=repre.fecha %></td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

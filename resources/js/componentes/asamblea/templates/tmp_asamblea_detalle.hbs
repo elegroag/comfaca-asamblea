@@ -1,0 +1,41 @@
+<!-- Botón de salir flotante -->
+<div class="fixed top-4 right-4 z-50">
+    <button href='#'
+        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow-lg flex items-center gap-2"
+        id='bt_back'>
+        <i class="fa fa-heart"></i>
+        Salir
+    </button>
+</div>
+
+<!-- Título principal -->
+<h5 class='text-2xl font-bold text-center text-gray-800 mt-4 mb-6'>Asamblea Detalle</h5>
+
+<!-- Contenido principal -->
+<div class='flex justify-center'>
+    <div class='w-full max-w-md'>
+        <!-- Detalle de la asamblea -->
+        <h6 class='text-lg font-semibold text-center text-gray-700 mb-4'>
+            <span class="font-bold">
+                <%=asamblea.detalle%>
+            </span>
+        </h6>
+
+        <!-- Contenedor de imagen y fecha -->
+        <div class="flex flex-col items-center space-y-4">
+            <!-- Imagen de la asamblea -->
+            <div class="relative">
+                <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 shadow-lg">
+                    <?= Tag::image("asamblea-logo.png", "width: 100px", "class: w-full h-full object-cover") ?>
+                </div>
+            </div>
+
+            <!-- Fecha programada -->
+            <div class="text-center">
+                <p class="text-gray-600 font-medium">
+                    <%=moment(asamblea.fecha_programada).format('DD-MM-YYYY') %>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,84 @@
+<!-- Contenedor principal -->
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <!-- Título -->
+        <h4 class="text-xl font-bold text-gray-800 mb-6">Cargue De Interventores</h4>
+
+        <!-- Formulario de carga -->
+        <div class="space-y-6">
+            <!-- Campo de archivo -->
+            <div class="w-full">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class='text-red-500'>*</i> Archivo
+                </label>
+
+                <!-- Mensaje de error -->
+                <div toggle-error='archivo' class="error text-red-500 text-sm mb-2" for="required"></div>
+
+                <!-- Input group moderno -->
+                <div
+                    class="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent">
+                    <!-- Icono de archivo -->
+                    <div class="flex items-center justify-center px-3 py-2 bg-gray-50 border-r border-gray-300">
+                        <i class="nc-icon nc-badge text-gray-500"></i>
+                    </div>
+
+                    <!-- Input oculto -->
+                    <input style='display:none' data-event='upload' type='file' name='archivo_interventores'
+                        id='archivo_interventores' onchange='handleFiles()' />
+
+                    <!-- Display del nombre de archivo -->
+                    <div class="flex-1 px-3 py-2 bg-white cursor-pointer hover:bg-gray-50 transition-colors duration-200"
+                        data-toggle-file='searchfile' id='name_archivo' name="name_archivo">
+                        <span class="text-gray-500">nombre archivo</span>
+                    </div>
+
+                    <!-- Botón de búsqueda -->
+                    <button type='button' data-toggle-file='searchfile'
+                        class="px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors duration-200">
+                        <i class="nc-icon nc-zoom-split"></i>
+                    </button>
+
+                    <!-- Botón de remover -->
+                    <button type='button' disabled id='remover_archivo'
+                        class="px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
+                        <i class="nc-icon nc-simple-remove"></i>
+                    </button>
+                </div>
+
+                <!-- Instrucciones -->
+                <p class="text-sm text-gray-600 mt-2">
+                    Se requiere de un archivo CSV con las siguientes columnas:<br />
+                    Cedula Interventor, Nombre completo
+                </p>
+            </div>
+
+            <!-- Checkbox de opciones -->
+            <div class="flex justify-center">
+                <div class="flex items-center space-x-3 bg-gray-50 px-4 py-3 rounded-lg border border-gray-200">
+                    <input
+                        class="form-check-input h-4 w-4 text-blue-600 focus:ring-blue-500 focus:border-transparent rounded"
+                        name='cruzar_poderes' id='cruzar_poderes' type="checkbox" value="">
+                    <label class="form-check-label ml-2 text-gray-700 font-medium cursor-pointer" for="cruzar_poderes">
+                        Cruzar con Base de Poderes
+                    </label>
+                </div>
+            </div>
+
+            <!-- Botón de acción principal -->
+            <div class="flex justify-center">
+                <button type='button' disabled
+                    class='bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow flex items-center gap-2'
+                    id='bt_hacer_cargue'>
+                    <i class="fa fa-search"></i>
+                    Continuar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer (mantenido para compatibilidad) -->
+    <div class="mt-4 text-center text-sm text-gray-500">
+        <!-- Footer content si es necesario -->
+    </div>
+</div>

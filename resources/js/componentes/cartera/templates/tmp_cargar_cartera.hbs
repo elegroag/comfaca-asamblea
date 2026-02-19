@@ -1,0 +1,70 @@
+<div class="flex flex-col md:flex-row justify-between items-start mb-6">
+    <div class="mb-4 md:mb-0">
+        <h5 class="text-xl font-semibold text-blue-600">Cargue De Cartera</h5>
+    </div>
+    <div class="w-full md:w-auto">
+        <div id='showSubnav'></div>
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="space-y-6">
+            <div class="w-full">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <span class="text-red-500">*</span> Archivo
+                    </label>
+                    <div toggle-error='archivo' class="error text-red-500 text-sm mt-1" for="required"></div>
+                    <div class="flex items-center">
+                        <div class="relative flex-1">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-file text-gray-400"></i>
+                            </div>
+                            <input style='display:none' data-event='upload' type='file' name='archivo_cartera'
+                                id='archivo_cartera' onchange='handleFiles()' class="hidden" />
+                            <div data-toggle-file='searchfile' id='name_archivo' name="name_archivo"
+                                class="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg bg-white cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                nombre archivo
+                            </div>
+                        </div>
+                        <div class="flex ml-2">
+                            <button type='button' data-toggle-file='searchfile'
+                                class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                                title="Buscar archivo">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button type='button' disabled id='remover_archivo'
+                                class="ml-2 px-3 py-2 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:opacity-50"
+                                title="Remover archivo">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">
+                            <strong>Se requiere de un archivo CSV con las siguientes columnas:</strong><br />
+                            <span class="block mt-1">Columna 1: Nit</span>
+                            <span class="block">Columna 2: Razon social</span>
+                            <span class="block">Columna 3: Cedula representante legal</span>
+                            <span class="block">Columna 4: Nombre representante legal</span>
+                            <span class="block">Columna 5: Tipo (APORTES (A), SERVICIOS (S), LIBRANZA(L))</span>
+                            <span class="block">Columna 6: Descripción</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full">
+                <div class="text-center">
+                    <button type='button' disabled
+                        class='px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:opacity-50'
+                        id='bt_hacer_cargue'>
+                        <i class="fas fa-upload mr-2"></i>
+                        Continuar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

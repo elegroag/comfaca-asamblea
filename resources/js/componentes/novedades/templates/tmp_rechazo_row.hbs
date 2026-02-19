@@ -1,0 +1,68 @@
+<!-- Columna de ID -->
+<td class="px-4 py-3 text-sm text-gray-900 font-medium">
+    <%=id%>
+</td>
+
+<!-- Columna de Línea -->
+<td class="px-4 py-3 text-sm text-gray-600">
+    <%=linea%>
+</td>
+
+<!-- Columna de NIT -->
+<td class="px-4 py-3 text-sm text-gray-900">
+    <%=nit%>
+</td>
+
+<!-- Columna de Cédula Representante -->
+<td class="px-4 py-3 text-sm text-gray-600">
+    <%=cedula_representante%>
+</td>
+
+<!-- Columna de Syncro -->
+<td class="px-4 py-3 text-sm">
+    <% if(syncro==='S' || syncro==='SI' ) { %>
+        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+            Sí
+        </span>
+        <% } else { %>
+            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                No
+            </span>
+            <% } %>
+</td>
+
+<!-- Columna de Estado -->
+<td class="px-4 py-3 text-sm">
+    <% if(estado==='A' || estado==='ACTIVO' ) { %>
+        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+            Activo
+        </span>
+        <% } else if(estado==='R' || estado==='RECHAZADO' ) { %>
+            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                Rechazado
+            </span>
+            <% } else { %>
+                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                    <%=estado%>
+                </span>
+                <% } %>
+</td>
+
+<!-- Columna de Acciones -->
+<td class="px-4 py-3 text-sm">
+    <div class="flex items-center gap-2">
+        <!-- Botón de Ver -->
+        <button type="button" data-code='<%=id%>' data-toggle='row-show'
+            class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
+            title="Ver detalles">
+            <i class="nc-icon nc-tap-01 text-sm"></i>
+        </button>
+
+        <!-- Botón de Eliminar -->
+        <button type="button" data-code='<%=id%>' data-toggle='row-remove'
+            class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
+            title="Eliminar">
+            <i class="fa fa-times text-sm"></i>
+        </button>
+    </div>
+</td>

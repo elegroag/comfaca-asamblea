@@ -1,0 +1,129 @@
+<div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="p-6">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-blue-600" id='titulo_lista_recepcion'>Crear Asistencia Empresa</h3>
+            </div>
+        </div>
+
+        <div class="flex justify-center">
+            <div class="w-full max-w-2xl">
+                <form method="post" action="#" class='space-y-6'>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+                        <label class='text-sm font-medium text-gray-700 pt-2'>Nit:</label>
+                        <div class="md:col-span-3">
+                            <input type="text"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
+                                name='nit' placeholder="nit" value="" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+                        <label class='text-sm font-medium text-gray-700 pt-2'>Crear:</label>
+                        <div class="md:col-span-3">
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" name='crear_empresa' id='crear_empresa' value="1"
+                                    class="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded border-gray-300">
+                                <span class="text-sm text-gray-700">Crear empresa para simulacros</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="sh-crear_empresa hidden space-y-4" id="crear_empresa_fields">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+                            <label class='text-sm font-medium text-gray-700 pt-2'>Cedula:</label>
+                            <div class="md:col-span-3">
+                                <input type="text"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
+                                    name='cedrep' placeholder="cedula" />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+                            <label class='text-sm font-medium text-gray-700 pt-2'>Nombres:</label>
+                            <div class="md:col-span-3">
+                                <input type='text'
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
+                                    name='nombres' id='nombres' placeholder='nombres representante' />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+                            <label class='text-sm font-medium text-gray-700 pt-2'>Apellidos:</label>
+                            <div class="md:col-span-3">
+                                <input type='text'
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
+                                    name='apellidos' id='apellidos' placeholder='apellidos representante' />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+                            <label class='text-sm font-medium text-gray-700 pt-2'>Razón Social:</label>
+                            <div class="md:col-span-3">
+                                <input type='text'
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
+                                    name='razsoc' id='razsoc' placeholder='razsoc' />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+                            <label class='text-sm font-medium text-gray-700 pt-2'>Email:</label>
+                            <div class="md:col-span-3">
+                                <input type='text'
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
+                                    name='email' id='email' placeholder='email' />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+                            <label class='text-sm font-medium text-gray-700 pt-2'>Telefono:</label>
+                            <div class="md:col-span-3">
+                                <input type='text'
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
+                                    name='telefono' id='telefono' placeholder='telefono' />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+                        <label class='text-sm font-medium text-gray-700 pt-2'>Opciones disponibles:</label>
+                        <div class="md:col-span-3 space-y-3">
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" name='omit_estado' value=""
+                                    class="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded border-gray-300">
+                                <span class="text-sm text-gray-700">Omitir estado</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" name='is_habil' checked value=""
+                                    class="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded border-gray-300">
+                                <span class="text-sm text-gray-700">Crear habil</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+                        <div class="md:col-span-2"></div>
+                        <div class="md:col-span-2">
+                            <button type="button" id='bt_registrar_inscripcion'
+                                class="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 transform hover:scale-105">
+                                Continuar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle visibility of additional fields when checkbox is changed
+    document.getElementById('crear_empresa').addEventListener('change', function () {
+        const fields = document.getElementById('crear_empresa_fields');
+        if (this.checked) {
+            fields.classList.remove('hidden');
+        } else {
+            fields.classList.add('hidden');
+        }
+    });
+</script>

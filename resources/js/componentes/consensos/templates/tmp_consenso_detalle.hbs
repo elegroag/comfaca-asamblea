@@ -1,0 +1,119 @@
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6">
+            <% if(loading){ %>
+                <div class="flex justify-center items-center py-12">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                    <span class="ml-3 text-gray-600">Cargando datos del consenso...</span>
+                </div>
+                <% } else { %>
+                    <% if(consenso){ %>
+                        <div class="mb-6">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-xl font-semibold text-gray-800">Detalle del Consenso</h4>
+                                <div class="flex space-x-2">
+                                    <button type='button' id='btn_editar'
+                                        class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors">
+                                        <i class="fas fa-edit mr-2"></i> Editar
+                                    </button>
+                                    <button type='button' id='btn_eliminar'
+                                        class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
+                                        <i class="fas fa-trash mr-2"></i> Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 mb-1">ID</label>
+                                    <div class="text-gray-900 font-medium">
+                                        <%=consenso.id%>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 mb-1">Título</label>
+                                    <div class="text-gray-900">
+                                        <%=consenso.titulo%>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 mb-1">Estado</label>
+                                    <div>
+                                        <% if(consenso.estado=='A' ){ %>
+                                            <span
+                                                class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Activo
+                                            </span>
+                                            <% } else { %>
+                                                <span
+                                                    class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                    Inactivo
+                                                </span>
+                                                <% } %>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 mb-1">Fecha de inicio</label>
+                                    <div class="text-gray-900">
+                                        <%=formattedFechaInicio%>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 mb-1">Fecha de fin</label>
+                                    <div class="text-gray-900">
+                                        <%=formattedFechaFin%>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 mb-1">Fecha de
+                                        creación</label>
+                                    <div class="text-gray-900">
+                                        <% if(consenso.created_at){ %>
+                                            <%=moment(consenso.created_at).format('DD-MM-YYYY HH:mm')%>
+                                                <% } else { %>
+                                                    No disponible
+                                                    <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6">
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Descripción</label>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <p class="text-gray-900 whitespace-pre-wrap">
+                                    <% if(consenso.descripcion){ %>
+                                        <%=consenso.descripcion%>
+                                            <% } else { %>
+                                                Sin descripción disponible
+                                                <% } %>
+                                </p>
+                            </div>
+                        </div>
+                        <% } else { %>
+                            <div class="text-center py-12">
+                                <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
+                                <p class="text-gray-600">No se encontraron datos del consenso</p>
+                            </div>
+                            <% } %>
+                                <% } %>
+        </div>
+
+        <div class="bg-gray-50 px-6 py-3 border-t border-gray-200">
+            <button type='button' id='btn_back_list'
+                class="px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Volver al listado
+            </button>
+        </div>
+    </div>
+</div>

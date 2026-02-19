@@ -1,10 +1,8 @@
-'use strict';
-
 import { BackboneModel } from "@/common/Bone";
 import { Testeo } from "@/core/Testeo";
 
 class Cartera extends BackboneModel {
-    constructor(options: any) {
+    constructor(options?: { [key: string]: any } | null) {
         super(options);
     }
 

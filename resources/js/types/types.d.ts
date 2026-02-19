@@ -219,5 +219,14 @@ export interface BackendAuthProps {
     };
 }
 
+export interface ControllerOptions {
+    region: Region;
+    api?: ApiService | null;
+    props?: { [key: string]: any };
+    logger: any;
+    router: { [key: string]: any };
+}
+
+
 export { };
 

@@ -1,20 +1,7 @@
 import ApiService from "@/services/ApiService";
+import { AppInstance, ControllerOptions } from "@/types/types";
+import { Region } from "./Region";
 
-interface AppInstance {
-    // Definir tipos según la estructura de tu App
-}
-
-interface Region {
-    // Definir tipos según la estructura de Region
-}
-
-interface ControllerOptions {
-    region: Region;
-    api?: ApiService | null;
-    props?: { [key: string]: any };
-    logger: any;
-    router: { [key: string]: any };
-}
 
 export class Controller {
     App: AppInstance | null = null;

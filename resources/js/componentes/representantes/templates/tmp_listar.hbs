@@ -1,0 +1,31 @@
+<div class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+            <div class="mb-4 md:mb-0">
+                <h4 class="text-xl font-bold text-blue-600">Representantes</h4>
+            </div>
+            <div class="flex justify-end">
+                <div id='showSubnav'></div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm" id='tb_data_representantes' width='100%'>
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-200">
+                            <th class="px-4 py-3 text-left font-semibold text-gray-800">Cedula</th>
+                            <th class="px-4 py-3 text-left font-semibold text-gray-800">Nombre</th>
+                            <th class="px-4 py-3 text-left font-semibold text-gray-800">Clave ingreso</th>
+                            <th class="px-4 py-3 text-left font-semibold text-gray-800">Fecha registro</th>
+                            <th class="px-4 py-3 text-center font-semibold text-gray-800">OPT</th>
+                        </tr>
+                    </thead>
+                    <tbody id="show_data_rows" class="divide-y divide-gray-200">
+                        <!-- Los datos se cargarán dinámicamente aquí -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

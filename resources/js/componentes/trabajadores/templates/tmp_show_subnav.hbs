@@ -1,0 +1,27 @@
+<div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+    <div class="mb-4 md:mb-0">
+        <h4 class="text-xl font-bold text-blue-600 mt-2">
+            <%=titulo%>
+        </h4>
+    </div>
+    <div class="flex items-center space-x-3">
+        <button
+            class="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            id='bt_listar' type="button" <%=(!listar)? 'disabled' : '' %>>
+            <i class="fas fa-list mr-2"></i>
+            Listar
+        </button>
+        <button
+            class="px-4 py-2 bg-yellow-600 text-white font-medium rounded-lg hover:bg-yellow-700 focus:ring-4 focus:ring-yellow-300 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            id='bt_masivo_registro' type="button" <%=(!masivo)? 'disabled' : '' %>>
+            <i class="fas fa-upload mr-2"></i>
+            Cargar Masivo
+        </button>
+        <button
+            class="px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            id='bt_export_data' type="button" <%=(!exportar)? 'disabled' : '' %>>
+            <i class="fas fa-download mr-2"></i>
+            Exportar
+        </button>
+    </div>
+</div>

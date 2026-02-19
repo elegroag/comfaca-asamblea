@@ -1,0 +1,73 @@
+<div class="max-w-4xl mx-auto p-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+            <div class='space-y-4'>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class='text-red-500'>*</i> Archivo
+                    </label>
+                    <div toggle-error='archivo' class="error text-red-500 text-sm mb-2" for="required"></div>
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <div
+                                class="flex items-center justify-center w-10 h-10 bg-gray-200 border border-r-0 rounded-l-md">
+                                <i class="fas fa-file-upload text-gray-600"></i>
+                            </div>
+                        </div>
+                        <input style='display:none' type='file' data-event='upload' name='archivo_cargue'
+                            id='archivo_cargue' onchange='handleFiles()' />
+                        <div class="flex-1">
+                            <div class="form-control has-danger px-3 py-2 border border-gray-300 bg-gray-50 rounded-r-md"
+                                data-toggle-file='searchfile' id='name_archivo' name="name_archivo"
+                                style='line-height:2'>nombre archivo</div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <button type='button' data-toggle-file='searchfile'
+                                class="p-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 transition-colors"
+                                title="Buscar archivo">
+                                <i class="fas fa-search text-sm"></i>
+                            </button>
+                        </div>
+                        <div class="flex-shrink-0 ml-1">
+                            <button type='button' disabled id='remover_archivo'
+                                class="p-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                title="Remover archivo">
+                                <i class="fas fa-times text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <p class="text-sm text-gray-700 font-medium mb-2">Requiere de un archivo csv separado por (;) con:
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                        <div><span class="font-medium">Columna 1:</span> Cedula</div>
+                        <div><span class="font-medium">Columna 2:</span> Nombre</div>
+                        <div><span class="font-medium">Columna 3:</span> Nit empresa</div>
+                        <div><span class="font-medium">Columna 4:</span> Razon social</div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input type="checkbox" class="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded border-gray-300"
+                            name='cruzar_data' id='cruzar_data' value="">
+                        <span class="text-sm text-gray-700">Cruzar con base de empresas y pre-registros</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class='mt-8'>
+        <div class='text-center'>
+            <button type='button' disabled
+                class='px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'
+                id='bt_hacer_cargue'>
+                <i class="fas fa-play mr-2"></i>
+                Continuar
+            </button>
+        </div>
+    </div>
+</div>

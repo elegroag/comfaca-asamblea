@@ -1,0 +1,24 @@
+<div class="pull-right" style='z-index:3000; position:absolute; right:10px;'>
+	<a href='#' class="btn btn-sm btn-outline-primary btn-round" id='bt_back'><i class="fa fa-heart"></i> Salir</a>
+</div>
+<h5>Lista de Asambleas</h5>
+<table class="table table-striped table-bordered" id='tb_data_usuarios'>
+	<thead>
+		<tr>
+			<th>Detalle</th>
+			<th>Fecha programada</th>
+			<th>Estado</th>
+			<th><i class='fa fa-cog'></i></th>
+		</tr>
+	</thead>
+	<tbody class="">
+		<% _.each(asambleas, function(asamblea){ %>
+		<tr>
+			<td><%=asamblea.detalle%></td>
+			<td><%=moment(asamblea.fecha_programada).format('DD-MM-YYYY')%></td>
+			<td><%=(asamblea.estado == 'A')? 'Activa' : 'Inactiva'%></td>
+			<td><button type='button' data-toggle='mostrar_asamblea' data-code='<%=asamblea.id%>' class='btn btn-xs btn-primary'><i class='nc-icon nc-tap-01'></i></button></td>
+		</tr>
+		<% }) %>
+	</tbody>
+</table>

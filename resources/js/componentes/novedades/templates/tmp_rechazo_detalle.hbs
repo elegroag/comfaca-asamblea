@@ -1,0 +1,78 @@
+<!-- Header con navegación -->
+<div class="flex flex-col lg:flex-row justify-between items-center mb-6">
+    <div class="lg:w-1/3">
+        <h3 class="text-xl font-bold text-blue-600">Detalle Rechazo</h3>
+    </div>
+    <div class="lg:w-2/3 lg:flex justify-end">
+        <div class="flex justify-end">
+            <button href='#'
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow flex items-center gap-2"
+                id='btn_back_list'>
+                <i class="fa fa-heart"></i>
+                Salir
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Contenedor principal -->
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <!-- Formulario de detalles -->
+        <div class="flex justify-center">
+            <div class="w-full max-w-md space-y-4">
+                <!-- Número Radicado -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Número Radicado:</label>
+                    <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                        <div class="flex items-center justify-center px-3 py-2 bg-gray-50 border-r border-gray-300">
+                            <i class="nc-icon nc-alert-circle-i text-gray-500"></i>
+                        </div>
+                        <div class="flex-1 px-3 py-2 bg-white text-gray-900 font-medium">
+                            <%=novedad.id%>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Novedad Estructura -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Novedad Estructura:</label>
+                    <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                        <div class="flex items-center justify-center px-3 py-2 bg-gray-50 border-r border-gray-300">
+                            <i class="nc-icon nc-badge text-gray-500"></i>
+                        </div>
+                        <div class="flex-1 px-3 py-2 bg-white text-gray-900 font-medium">
+                            <%=novedad.estructura%>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Novedad Linea -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Novedad Linea:</label>
+                    <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                        <div class="flex items-center justify-center px-3 py-2 bg-gray-50 border-r border-gray-300">
+                            <i class="nc-icon nc-badge text-gray-500"></i>
+                        </div>
+                        <div class="flex-1 px-3 py-2 bg-white text-gray-900 font-medium">
+                            <%=novedad.linea%>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Estado:</label>
+                    <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                        <div class="flex items-center justify-center px-3 py-2 bg-gray-50 border-r border-gray-300">
+                            <i class="nc-icon nc-single-02 text-gray-500"></i>
+                        </div>
+                        <div class="flex-1 px-3 py-2 bg-white text-gray-900 font-medium">
+                            <%=novedad.estado%>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

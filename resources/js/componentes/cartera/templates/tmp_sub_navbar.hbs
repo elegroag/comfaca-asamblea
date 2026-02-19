@@ -1,0 +1,39 @@
+<button
+	class="px-4 py-2 text-sm font-medium rounded-lg transition-colors <%=(!listar) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2' %>"
+	id='bt_listar' type="button" <%=(!listar)? 'disabled' : '' %>
+	title="Listar carteras"
+	>
+	<i class="fas fa-list mr-2"></i>Listar
+</button>
+
+<button
+	class="ml-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors <%=(!crear) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-green-500 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2' %>"
+	id='bt_nuevo_registro' type="button" <%=(!crear)? 'disabled' : '' %>
+	title="Crear nueva cartera"
+	>
+	<i class="fas fa-plus mr-2"></i>Nuevo
+</button>
+
+<button
+	class="ml-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors <%=(!editar) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-gray-500 text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2' %>"
+	id='bt_edita_nav_registro' type="button" <%=(!editar)? 'disabled' : '' %>
+	title="Editar cartera"
+	>
+	<i class="fas fa-edit mr-2"></i>Editar
+</button>
+
+<button
+	class="ml-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors <%=(!masivo) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-amber-500 text-white hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2' %>"
+	id='bt_masivo_registro' type="button" <%=(!masivo)? 'disabled' : '' %>
+	title="Carga masiva"
+	>
+	<i class="fas fa-upload mr-2"></i>Cargar Masivo
+</button>
+
+<button
+	class="ml-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors <%=(!exportar) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-emerald-500 text-white hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2' %>"
+	id='bt_export_data' type="button" <%=(!exportar)? 'disabled' : '' %>
+	title="Exportar datos"
+	>
+	<i class="fas fa-download mr-2"></i>Exportar
+</button>

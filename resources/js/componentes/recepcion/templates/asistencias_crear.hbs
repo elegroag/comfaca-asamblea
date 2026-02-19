@@ -1,0 +1,241 @@
+<div class='bg-white rounded-lg shadow-lg overflow-hidden'>
+    <div class='p-6'>
+        <div class='flex items-center justify-between mb-6'>
+            <div>
+                <h5 class='text-xl font-bold text-gray-800'>Registrar Ingreso</h5>
+            </div>
+        </div>
+
+        <div class='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
+            <div class="space-y-4">
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm font-medium text-gray-600 w-24">Representante:</span>
+                    <div class="flex-1 px-3 py-2 bg-gray-100 rounded-md">
+                        <%=representante.repleg%>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm font-medium text-gray-600 w-24">Fecha:</span>
+                    <div class="flex-1 px-3 py-2 bg-gray-100 rounded-md">
+                        <%=fecha%>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm font-medium text-gray-600 w-24">Identificación:</span>
+                    <div class="flex-1 px-3 py-2 bg-gray-100 rounded-md">
+                        <%=representante.cedrep%>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm font-medium text-gray-600 w-24">Hora:</span>
+                    <div class="flex-1 px-3 py-2 bg-gray-100 rounded-md">
+                        <%=hora %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class='mb-6'>
+            <div class='bg-gray-50 rounded-lg p-4'>
+                <h6 class='text-lg font-semibold text-gray-800 mb-4'>Empresas Habiles</h6>
+                <div class='space-y-3'>
+                    <% _.each(empresas, function(empresa){ %>
+                        <div
+                            class='grid grid-cols-12 gap-2 items-center p-3 bg-white rounded-lg border border-gray-200'>
+                            <div class="col-span-2">
+                                <div class="px-3 py-2 bg-gray-100 rounded text-sm font-mono">
+                                    <%=empresa.nit %>
+                                </div>
+                            </div>
+                            <div class="col-span-5">
+                                <div class="px-3 py-2 bg-gray-100 rounded">
+                                    <div class="text-sm">
+                                        <%=empresa.razsoc %>
+                                    </div>
+                                    <div class="text-xs text-gray-500">Razón social</div>
+                                </div>
+                            </div>
+                            <div class="col-span-2 text-center">
+                                <% if(empresa.estado=="A" ){ %>
+                                    <span
+                                        class="inline-flex px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Activa</span>
+                                    <% } %>
+                                        <% if(empresa.estado=="D" ){ %>
+                                            <span
+                                                class="inline-flex px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">Desactualizada</span>
+                                            <% } %>
+                                                <% if(empresa.estado=="I" ){ %>
+                                                    <span
+                                                        class="inline-flex px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">No
+                                                        Activa</span>
+                                                    <% } %>
+                            </div>
+                            <div class="col-span-1 text-center">
+                                <% if(empresa.habil==-1){ %>
+                                    <span
+                                        class="inline-flex px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">No
+                                        habil</span>
+                                    <% }else{ %>
+                                        <span
+                                            class="inline-flex px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Habil</span>
+                                        <% } %>
+                            </div>
+                            <div class="col-span-2">
+                                <% if(empresa.habil===1 && poderes===false && (empresa.estado=="A" ||
+                                    empresa.estado=="D" )){ %>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="radio" name="check_apoderado" id="check_apoderado"
+                                            value="<%=empresa.nit %>" class="w-4 h-4 text-blue-600 focus:ring-blue-500">
+                                        <span class="text-sm text-gray-700">Apoderado</span>
+                                    </label>
+                                    <% } %>
+                            </div>
+                        </div>
+                        <% }) %>
+                </div>
+            </div>
+        </div>
+
+        <% if(poderes===false){ %>
+            <div class="mb-6">
+                <div class="flex items-center space-x-3">
+                    <input type="checkbox" name='check_dispone_poder'
+                        class="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded">
+                    <label class="text-sm text-gray-700">Dispone de Algun Poder</label>
+                </div>
+            </div>
+            <% } %>
+
+                <div id='content_buscar_empresa' class='hidden mb-6'>
+                    <div class='bg-blue-50 rounded-lg p-4'>
+                        <h6 class='text-lg font-semibold text-gray-800 mb-4'>Buscar la empresa</h6>
+                        <div class="flex flex-col sm:flex-row gap-3 items-center">
+                            <div class="flex-1 max-w-xs">
+                                <div class="flex">
+                                    <div class="flex items-center px-3 bg-gray-200 border border-r-0 rounded-l-md">
+                                        <span class="text-sm font-medium">NIT</span>
+                                    </div>
+                                    <input type="text" id="nit_poder" name='nit_poder' placeholder="Buscar aquí..."
+                                        class="flex-1 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="button" id='bt_buscar_poder'
+                                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                                    <i class='fas fa-search'></i>
+                                </button>
+                                <button type="button" id='bt_cancelar_poder'
+                                    class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
+                                    <i class='fas fa-times'></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class='mb-6'>
+                    <div class='bg-gray-50 rounded-lg p-4'>
+                        <h6 class='text-lg font-semibold text-gray-800 mb-4'>Poder</h6>
+                        <% if(poderes !==false){ cantidad_poderes=_.size(poderes) _.each(poderes, function(poder){ %>
+                            <div class='bg-white rounded-lg p-4 mb-3 border border-gray-200'>
+                                <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                                    <div>
+                                        <div class="px-3 py-2 bg-gray-100 rounded">
+                                            <div class="text-xs text-gray-500 mb-1">Poderdante:</div>
+                                            <div class="text-sm">
+                                                <%=poder.razsoc2 %>
+                                            </div>
+                                            <div class="text-xs text-gray-500">NIT: <%=poder.nit2 %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="px-3 py-2 bg-gray-100 rounded">
+                                            <div class="text-xs text-gray-500 mb-1">Apoderado:</div>
+                                            <div class="text-sm">
+                                                <%=poder.razsoc1 %>
+                                            </div>
+                                            <div class="text-xs text-gray-500">NIT: <%=poder.nit1 %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% if(cantidad_poderes> 1){ %>
+                                        <div class="flex justify-end">
+                                            <button type='button' data-code='<%=poder.nit2 %>'
+                                                class='px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors'
+                                                id='borrar_poder_server'>
+                                                <i class='fas fa-trash'></i>
+                                            </button>
+                                        </div>
+                                        <% } %>
+                                </div>
+                            </div>
+                            <% }) }else{ %>
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+                                    <div class="text-yellow-600 mb-2">
+                                        <i class="fas fa-quote-right text-2xl"></i>
+                                    </div>
+                                    <p class="text-yellow-800 font-medium"><i>No disponde de un poder.</i></p>
+                                </div>
+                                <% } %>
+                                    <div id='card_poder' class='hidden'>
+                                        <div id='data_content_poder'></div>
+                                    </div>
+                    </div>
+                </div>
+    </div>
+
+    <div class='mb-6'>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex items-center space-x-4">
+                <span class="text-sm font-bold text-gray-700">Votos admitidos:</span>
+                <div class="px-3 py-2 bg-gray-100 rounded-md font-mono" id='num_votos_admitidos'>
+                    <%=votos %>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm font-bold text-gray-700">Radicado<span class="text-red-500">*</span>:</span>
+                <input type='text' name='radicado' id='radicado'
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+        </div>
+    </div>
+</div>
+
+<% if(votos !==0){ if(poderes !==false){ if (_.size(poderes)==1){ %>
+    <div class='bg-gray-50 px-6 py-4'>
+        <div class="text-center">
+            <button type="button" id='bt_registrar_ingreso'
+                class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 transform hover:scale-105">
+                Registrar
+            </button>
+        </div>
+    </div>
+    <% }else{ %>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+            <div class="text-yellow-600 mb-2">
+                <i class="fas fa-quote-right text-2xl"></i>
+            </div>
+            <p class="text-yellow-800 font-medium"><i>No puede disponer de más de un poder.</i></p>
+        </div>
+        <% } }else{ %>
+            <div class='bg-gray-50 px-6 py-4'>
+                <div class="text-center">
+                    <button type="button" id='bt_registrar_ingreso'
+                        class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 transform hover:scale-105">
+                        Registrar
+                    </button>
+                </div>
+            </div>
+            <% } }else{ %>
+                <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+                    <div class="text-red-600 mb-2">
+                        <i class="fas fa-quote-right text-2xl"></i>
+                    </div>
+                    <p class="text-red-800 font-medium"><i>No disponde de empresas habiles para ingresar.</i></p>
+                </div>
+                <% } %>
+                    </div>

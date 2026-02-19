@@ -24,7 +24,6 @@ export default class PoderesController extends Controller {
 
     constructor(options: any) {
         super(options);
-        this.region = options.region;
         this.Collections = {
             poderes: new PoderesCollection(),
             empresas: new EmpresasCollection(),
@@ -35,9 +34,8 @@ export default class PoderesController extends Controller {
     // Listar poderes
     async listar(): Promise<void> {
         try {
-            if (this.api === undefined) {
-                return;
-            }
+            if (!this.api) return;
+
             const response = await this.api.get('/poderes/listar');
 
             if (response.success && (response as any).poderes) {
@@ -87,9 +85,8 @@ export default class PoderesController extends Controller {
         console.log('PoderesController.mostrar() called', documento);
 
         try {
-            if (this.api === undefined) {
-                return;
-            }
+            if (!this.api) return;
+
             const response = await this.api.get(`/poderes/detalle/${documento}`) as unknown as PoderDetalleResponse;
 
             if (response && response.success === true && response.poder) {
@@ -122,9 +119,8 @@ export default class PoderesController extends Controller {
         this.trigger('hide:modal', null);
 
         try {
-            if (this.api === undefined) {
-                return;
-            }
+            if (!this.api) return;
+
             const response = await this.api.get(`/poderes/buscar_apoderado/${nit}`) as unknown as BuscarPersonaResponse;
 
             if (response && response.success === true) {
@@ -154,9 +150,8 @@ export default class PoderesController extends Controller {
         this.trigger('hide:modal', null);
 
         try {
-            if (this.api === undefined) {
-                return;
-            }
+            if (!this.api) return;
+
             const response = await this.api.get(`/poderes/buscar_poderdante/${nit}`) as unknown as BuscarPersonaResponse;
 
             if (response && response.success === true) {
@@ -185,9 +180,8 @@ export default class PoderesController extends Controller {
 
         if (!this.Collections.criteriosRechazos || this.Collections.criteriosRechazos.length === 0) {
             try {
-                if (this.api === undefined) {
-                    return;
-                }
+                if (!this.api) return;
+
                 const response = await this.api.get('/poderes/criterios-rechazo') as unknown as CriteriosRechazoResponse;
 
                 if (response && response.success === true) {
@@ -232,11 +226,7 @@ export default class PoderesController extends Controller {
         const { nit, callback } = transfer;
 
         try {
-            if (this.api === undefined) {
-                this.trigger('alert:error', 'API no disponible');
-                callback(false);
-                return;
-            }
+            if (!this.api) return;
 
             const response = await this.api.get(`/poderes/buscar-empresa/${nit}`) as unknown as EmpresaResponse;
 
