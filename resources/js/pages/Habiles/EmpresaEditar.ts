@@ -2,99 +2,86 @@ import LayoutView from "@/componentes/habiles/views/LayoutView";
 import EmpresaNav from "@/componentes/habiles/views/EmpresaNav";
 import EmpresaEditarView from "@/componentes/habiles/views/EmpresaEditarView";
 import EmpresaService from "./EmpresaService";
+import { Controller } from "@/common/Controller";
 
-declare global {
-	var $: any;
-	var _: any;
-	var $App: any;
-	var EmpresaNav: any;
-}
+export default class EmpresaEditar extends Controller {
+    public empresaService: EmpresaService;
 
-interface EmpresaEditarOptions {
-	region?: any;
-	[key: string]: any;
-}
+    constructor(options: any) {
+        super(options)
+        this.region = options.region;
+        _.extend(this, options);
 
-export default class EmpresaEditar {
-	public region: any;
-	public layout: any;
-	public empresaService: EmpresaService;
+        this.empresaService = new EmpresaService({
+            router: this.router,
+            api: this.api,
+            App: this.App
+        });
 
-	constructor(options: EmpresaEditarOptions = {}) {
-		this.layout = null;
-		_.extend(this, Backbone.Events);
-		_.extend(this, options);
+        this.listenTo(this, 'set:empresas', this.empresaService.__setEmpresas);
+        this.listenTo(this, 'add:empresa', this.empresaService.__addEmpresas);
+    }
 
-		if ($App && $App.Collections) {
-			$App.Collections.empresas = null;
-		}
+    /**
+     * Mostrar vista de edición de empresa
+     */
+    editaEmpresa(model: any): void {
+        console.log('EmpresaEditar.editaEmpresa() called', model);
 
-		this.empresaService = new EmpresaService();
+        const layout: LayoutView = new LayoutView();
+        this.region.show(layout);
 
-		if (typeof this.listenTo === 'function') {
-			this.listenTo(this, 'set:empresas', this.empresaService.__setEmpresas);
-			this.listenTo(this, 'add:empresa', this.empresaService.__addEmpresas);
-		}
-	}
+        // Inicializar colección de empresas
+        this.empresaService.initEmpresas();
 
-	/**
-	 * Mostrar vista de edición de empresa
-	 */
-	editaEmpresa(model: any): void {
-		console.log('EmpresaEditar.editaEmpresa() called', model);
+        console.log('Habiles', model.toJSON());
 
-		this.layout = new LayoutView();
-		this.region.show(this.layout);
+        // Configurar vista principal
+        const editarView = new EmpresaEditarView({
+            model: model,
+            router: this.router,
+            api: this.api,
+            App: this.App
+        });
 
-		// Inicializar colección de empresas
-		EmpresaService.initEmpresas();
 
-		console.log('Habiles', model.toJSON());
+        this.listenTo(editarView, 'form:edit', this.empresaService.__saveEmpresa);
+        this.listenTo(editarView, 'add:empresas', this.empresaService.__addEmpresas);
+        this.listenTo(editarView, 'set:empresas', this.empresaService.__setEmpresas);
+        this.listenTo(editarView, 'notify', this.empresaService.__notifyPlataforma);
 
-		// Configurar vista principal
-		const editarView = new EmpresaEditarView({ model: model });
 
-		if (typeof this.listenTo === 'function') {
-			this.listenTo(editarView, 'form:edit', this.empresaService.__saveEmpresa);
-			this.listenTo(editarView, 'add:empresas', this.empresaService.__addEmpresas);
-			this.listenTo(editarView, 'set:empresas', this.empresaService.__setEmpresas);
-			this.listenTo(editarView, 'notify', this.empresaService.__notifyPlataforma);
-		}
+        layout.getRegion('body').show(editarView);
 
-		this.layout.getRegion('body').show(editarView);
+        // Establecer parent view para navegación
+        if (EmpresaNav) {
+            EmpresaNav.parentView = editarView;
+        }
 
-		// Establecer parent view para navegación
-		if (EmpresaNav) {
-			EmpresaNav.parentView = editarView;
-		}
+        // Configurar navegación
+        const navView = new EmpresaNav({
+            model: {
+                titulo: 'Editar empresa',
+                listar: true,
+                exportar: false,
+                crear: true,
+                editar: false,
+                masivo: true,
+            },
+            api: this.api,
+            App: this.App,
+            router: this.router
+        });
 
-		// Configurar navegación
-		const navView = new EmpresaNav({
-			model: {
-				titulo: 'Editar empresa',
-				listar: true,
-				exportar: false,
-				crear: true,
-				editar: false,
-				masivo: true,
-			},
-		});
+        layout.getRegion('subheader').show(navView);
+    }
 
-		this.layout.getRegion('subheader').show(navView);
-	}
-
-	/**
-	 * Destruir la vista
-	 */
-	destroy(): void {
-		console.log('EmpresaEditar.destroy() called');
-
-		if (this.region && typeof this.region.remove === 'function') {
-			this.region.remove();
-		}
-
-		if (typeof this.stopListening === 'function') {
-			this.stopListening();
-		}
-	}
+    /**
+     * Destruir la vista
+     */
+    destroy(): void {
+        console.log('EmpresaEditar.destroy() called');
+        this.region.remove();
+        this.stopListening();
+    }
 }

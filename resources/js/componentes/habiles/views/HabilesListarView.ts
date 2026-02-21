@@ -1,18 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import HabilesRowView from "./HabilesRowView";
 
-declare global {
-    var $: any;
-    var _: any;
-    var $App: any;
-    var langDataTable: any;
-    var CollectionView: any;
-}
-
-interface HabilesListarViewOptions {
-    collection?: any;
-    model?: any;
-}
 
 export default class HabilesListarView extends BackboneView {
     tableModule: any;
@@ -20,7 +8,7 @@ export default class HabilesListarView extends BackboneView {
     modelView: typeof HabilesRowView;
     template: any;
 
-    constructor(options: HabilesListarViewOptions = {}) {
+    constructor(options: any) {
         super({
             ...options,
             events: {

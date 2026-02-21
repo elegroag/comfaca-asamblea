@@ -3,9 +3,9 @@ import PoderesController from "./PoderesController";
 import $App from "@/core/App";
 
 class RouterPoderes extends BackboneRouter {
-    controller: PoderesController;
+    controller: PoderesController | null = null;
 
-    constructor(options = {}) {
+    constructor(options: any) {
         super({
             routes: {
                 '': 'listar',
@@ -22,53 +22,65 @@ class RouterPoderes extends BackboneRouter {
             ...options,
         });
 
-        this.controller = $App.startSubApplication(PoderesController, this);
         this._bindRoutes();
     }
 
+    init() {
+        this.controller = $App.startSubApplication(PoderesController);
+    }
+
     error() {
+        this.init();
         console.log('RouterPoderes.error() called');
-        this.controller.error();
+        this.controller?.error();
     }
 
     listar() {
+        this.init();
         console.log('RouterPoderes.listar() called');
-        this.controller.listar();
+        this.controller?.listar();
     }
 
     buscar() {
+        this.init();
         console.log('RouterPoderes.buscar() called');
-        this.controller.buscar();
+        this.controller?.buscar();
     }
 
     crear() {
+        this.init();
         console.log('RouterPoderes.crear() called');
-        this.controller.crear();
+        this.controller?.crear();
     }
 
     mostrar(documento: string) {
+        this.init();
         console.log('RouterPoderes.mostrar() called', documento);
-        this.controller.mostrar(documento);
+        this.controller?.mostrar(documento);
     }
 
     buscarApoderado(nit: string) {
+        this.init();
         console.log('RouterPoderes.buscarApoderado() called', nit);
-        this.controller.buscarApoderado(nit);
+        this.controller?.buscarApoderado(nit);
     }
 
     buscarPoderdante(nit: string) {
+        this.init();
         console.log('RouterPoderes.buscarPoderdante() called', nit);
-        this.controller.buscarPoderdante(nit);
+        this.controller?.buscarPoderdante(nit);
     }
 
     rechazar() {
+        this.init();
         console.log('RouterPoderes.rechazar() called');
-        this.controller.rechazar();
+        this.controller?.rechazar();
     }
 
     masivo() {
+        this.init();
         console.log('RouterPoderes.masivo() called');
-        this.controller.masivo();
+        this.controller?.masivo();
     }
 }
 

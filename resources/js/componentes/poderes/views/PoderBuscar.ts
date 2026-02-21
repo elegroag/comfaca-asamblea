@@ -3,15 +3,12 @@
 import { BackboneView } from "@/common/Bone";
 import { Testeo } from "@/core/Testeo";
 import { Utils } from "@/core/Utils";
-import type { AppInstance } from "@/types/types";
 import buscarPoder from "@/componentes/poderes/templates/buscarPoder.hbs?raw";
 
 export default class PoderBuscar extends BackboneView {
 
-    App: AppInstance;
     constructor(options: any) {
         super(options);
-        this.App = options.App || null;
     }
 
 
@@ -47,7 +44,7 @@ export default class PoderBuscar extends BackboneView {
             if (_erro) _errors.push(_erro);
         }
         if (items == 0) {
-            this.App.trigger('alert:error', 'El sistema requiere de uno de los criterio de busqueda.');
+            this.App?.trigger('alert:error', 'El sistema requiere de uno de los criterio de busqueda.');
             return false;
         }
 
@@ -63,17 +60,17 @@ export default class PoderBuscar extends BackboneView {
             poderdante_nit: poderdante_nit,
             poderdante_id: poderdante_identificacion,
         };
-        this.App.trigger('syncro', {
+        this.App?.trigger('syncro', {
             url: Utils.getURL('poderes/buscar'),
             data: token,
             callback: (response: any) => {
                 if (response) {
                     if (!response.poder) {
-                        this.App.trigger('warning', response.msj);
+                        this.App?.trigger('warning', response.msj);
                     } else {
                         var _id = response.poder.documento;
                         this.remove();
-                        this.App.router.navigate('mostrar/' + _id, { trigger: true, replace: true });
+                        this.router.navigate('mostrar/' + _id, { trigger: true, replace: true });
                     }
                 }
             },

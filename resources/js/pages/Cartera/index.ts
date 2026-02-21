@@ -30,7 +30,11 @@ const Cartera: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-        $App.startApp(CarteraRouter, { defaultRoute: "listar", el: "#content" }, props);
+        $App.startApp(CarteraRouter, {
+            defaultRoute: "listar",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
     }
 };
 

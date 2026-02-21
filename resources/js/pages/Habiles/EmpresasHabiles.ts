@@ -1,85 +1,74 @@
 import LayoutView from "@/componentes/habiles/views/LayoutView";
 import EmpresaNav from "@/componentes/habiles/views/EmpresaNav";
 import HabilesListarView from "@/componentes/habiles/views/HabilesListarView";
+import EmpresaService from "./EmpresaService";
+import { Controller } from "@/common/Controller";
 
-declare global {
-	var $: any;
-	var _: any;
-	var $App: any;
-	var EmpresaService: any;
-	var EmpresaNav: any;
-}
 
-interface EmpresasHabilesOptions {
-	region?: any;
-	[key: string]: any;
-}
+export default class EmpresasHabiles extends Controller {
 
-export default class EmpresasHabiles {
-	public region: any;
-	public layout: any;
-	public empresaService: any;
+    public empresaService: any;
 
-	constructor(options: EmpresasHabilesOptions = {}) {
-		this.layout = null;
-		_.extend(this, Backbone.Events);
-		_.extend(this, options);
+    constructor(options: any) {
+        super(options)
+        _.extend(this, options);
 
-		this.empresaService = new EmpresaService();
+        this.empresaService = new EmpresaService({
+            router: this.router,
+            api: this.api,
+            App: this.App
+        });
 
-		if (typeof this.listenTo === 'function') {
-			this.listenTo(this, 'set:habiles', this.empresaService.__setHabiles);
-			this.listenTo(this, 'add:habiles', this.empresaService.__addHabiles);
-		}
-	}
+        this.listenTo(this, 'set:habiles', this.empresaService.__setHabiles);
+        this.listenTo(this, 'add:habiles', this.empresaService.__addHabiles);
 
-	/**
-	 * Mostrar lista de habiles
-	 */
-	listarHabiles(): void {
-		console.log('EmpresasHabiles.listarHabiles() called');
+    }
 
-		this.layout = new LayoutView();
-		this.region.show(this.layout);
+    /**
+     * Mostrar lista de habiles
+     */
+    listarHabiles(): void {
+        console.log('EmpresasHabiles.listarHabiles() called');
 
-		// Configurar navegación
-		const navView = new EmpresaNav({
-			model: {
-				titulo: 'Empresas habiles',
-				listar: false,
-				exportar: false,
-				crear: false,
-				editar: false,
-				masivo: false,
-			},
-		});
+        const layout: LayoutView = new LayoutView();
+        this.region.show(layout);
 
-		this.layout.getRegion('subheader').show(navView);
+        // Configurar navegación
+        const navView = new EmpresaNav({
+            model: {
+                titulo: 'Empresas habiles',
+                listar: false,
+                exportar: false,
+                crear: false,
+                editar: false,
+                masivo: false,
+            },
+            router: this.router,
+            api: this.api,
+            App: this.App
+        });
 
-		// Configurar vista principal
-		const listView = new HabilesListarView({
-			collection: $App.Collections.habiles,
-		});
+        layout.getRegion('subheader').show(navView);
 
-		if (typeof this.listenTo === 'function') {
-			this.listenTo(listView, 'remove:habiles', this.empresaService.__removeHabil);
-		}
+        // Configurar vista principal
+        const listView = new HabilesListarView({
+            collection: this.empresaService.Collections.habiles,
+            router: this.router,
+            api: this.api,
+            App: this.App
+        });
 
-		this.layout.getRegion('body').show(listView);
-	}
+        this.listenTo(listView, 'remove:habiles', this.empresaService.__removeHabil);
 
-	/**
-	 * Destruir la vista
-	 */
-	destroy(): void {
-		console.log('EmpresasHabiles.destroy() called');
+        layout.getRegion('body').show(listView);
+    }
 
-		if (this.region && typeof this.region.remove === 'function') {
-			this.region.remove();
-		}
-
-		if (typeof this.stopListening === 'function') {
-			this.stopListening();
-		}
-	}
+    /**
+     * Destruir la vista
+     */
+    destroy(): void {
+        console.log('EmpresasHabiles.destroy() called');
+        this.region.remove();
+        this.stopListening();
+    }
 }

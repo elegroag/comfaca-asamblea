@@ -87,6 +87,7 @@ export interface SubApplicationOptions {
     props?: any;
     logger?: Logger;
     router?: BackboneRouter;
+    App: AppInstance;
 }
 
 export interface SyncroRequest {
@@ -153,7 +154,7 @@ export interface AppInstance {
     el: string | null;
     mainRegion: any;
     props: any;
-    startApp: (RouterModule: any, options: { defaultRoute: string, el: string }, props?: any) => void;
+    startApp: (RouterModule: any, options: { defaultRoute: string, mainRegion: Region, props: { [key: string]: any } }) => void;
     startSubApplication: (app: any, collections?: any) => any;
     notify: (type: string, message: string) => void;
     alert: (type: string, transfer: AlertTransfer) => void;

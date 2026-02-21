@@ -1,10 +1,9 @@
-'use strict';
 
 import { BackboneCollection } from "@/common/Bone";
 import Usuario from "@/models/Usuario";
 
 class UsuariosCollection extends BackboneCollection {
-    constructor(options: any) {
+    constructor(options?: any) {
         super({ ...options, url: '/web/admin/all_usuarios' });
     }
 

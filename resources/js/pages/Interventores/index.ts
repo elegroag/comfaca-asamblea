@@ -30,7 +30,11 @@ const Interventores: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-        $App.startApp(RouterInterventor, { defaultRoute: "listar", el: "#content" }, props);
+        $App.startApp(RouterInterventor, {
+            defaultRoute: "listar",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
     }
 };
 

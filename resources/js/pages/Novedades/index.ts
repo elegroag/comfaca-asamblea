@@ -30,7 +30,11 @@ const Novedades: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-        $App.startApp(RouterNovedades, { defaultRoute: "listar", el: "#content" }, props);
+        $App.startApp(RouterNovedades, {
+            defaultRoute: "listar",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
     }
 };
 

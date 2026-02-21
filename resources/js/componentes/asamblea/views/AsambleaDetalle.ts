@@ -1,30 +1,22 @@
 import { BackboneView } from "@/common/Bone";
 import type { AppInstance } from '@/types/types';
-import asambleaDetalle from "@/componentes/asamblea/templates/asambleaDetalle.hbs?raw";
+import tmp_asamblea_detalle from "@/componentes/asamblea/templates/asambleaDetalle.hbs?raw";
 
-declare global {
-    var $: any;
-    var _: any;
-    var $App: any;
-}
 
 interface AsambleaDetalleOptions {
     model?: any;
-    App?: AppInstance;
+    App: AppInstance | null;
     [key: string]: any;
 }
 
 export default class AsambleaDetalle extends BackboneView {
-    App: AppInstance;
-    template: string;
 
-    constructor(options: AsambleaDetalleOptions = {}) {
+    constructor(options: AsambleaDetalleOptions) {
         super(options);
-        this.App = options.App || options.AppInstance;
     }
 
     initialize(): void {
-        this.template = $('#tmp_asamblea_detalle').html();
+        this.template = tmp_asamblea_detalle;
     }
 
     render(): this {
@@ -44,9 +36,8 @@ export default class AsambleaDetalle extends BackboneView {
      */
     back(): void {
         this.remove();
-
-        if ($App.router) {
-            $App.router.navigate('listar_asambleas', { trigger: true, replace: true });
+        if (this.App && this.App.router) {
+            this.App.router.navigate('listar_asambleas', { trigger: true, replace: true });
         }
     }
 }

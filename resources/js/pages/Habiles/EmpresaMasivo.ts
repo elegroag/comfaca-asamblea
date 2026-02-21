@@ -2,97 +2,84 @@ import LayoutView from "@/componentes/habiles/views/LayoutView";
 import EmpresaNav from "@/componentes/habiles/views/EmpresaNav";
 import EmpresaMasivoView from "@/componentes/habiles/views/EmpresaMasivoView";
 import EmpresaService from "./EmpresaService";
+import { Controller } from "@/common/Controller";
 
-declare global {
-	var $: any;
-	var _: any;
-	var $App: any;
-	var EmpresaNav: any;
-}
 
-interface EmpresaMasivoOptions {
-	region?: any;
-	[key: string]: any;
-}
+export default class EmpresaMasivo extends Controller {
 
-export default class EmpresaMasivo {
-	public region: any;
-	public layout: any;
-	public empresaService: EmpresaService;
+    public empresaService: EmpresaService;
 
-	constructor(options: EmpresaMasivoOptions = {}) {
-		this.layout = null;
-		_.extend(this, Backbone.Events);
-		_.extend(this, options);
+    constructor(options: any) {
+        super(options)
+        _.extend(this, options);
 
-		this.empresaService = new EmpresaService();
+        this.empresaService = new EmpresaService({
+            router: this.router,
+            api: this.api,
+            App: this.App
+        });
 
-		if (typeof this.listenTo === 'function') {
-			this.listenTo(this, 'set:empresas', this.empresaService.__setEmpresas);
-			this.listenTo(this, 'add:empresa', this.empresaService.__addEmpresas);
-		}
-	}
+        this.listenTo(this, 'set:empresas', this.empresaService.__setEmpresas);
+        this.listenTo(this, 'add:empresa', this.empresaService.__addEmpresas);
 
-	/**
-	 * Mostrar vista de cargue masivo
-	 */
-	cargueMasivo(): void {
-		console.log('EmpresaMasivo.cargueMasivo() called');
+    }
 
-		this.layout = new LayoutView();
-		this.region.show(this.layout);
+    /**
+     * Mostrar vista de cargue masivo
+     */
+    cargueMasivo(): void {
+        console.log('EmpresaMasivo.cargueMasivo() called');
 
-		// Inicializar colección de empresas
-		EmpresaService.initEmpresas();
+        const layout = new LayoutView();
+        this.region.show(layout);
 
-		// Cargar datos si la colección está vacía
-		if (!$App.Collections.empresas || !_.size($App.Collections.empresas) || _.size($App.Collections.empresas) === 0) {
-			this.empresaService.__findAll();
-		}
+        // Inicializar colección de empresas
+        this.empresaService.initEmpresas();
 
-		// Configurar vista principal
-		const masivoView = new EmpresaMasivoView({
-			collection: $App.Collections.empresas,
-		});
+        // Cargar datos si la colección está vacía
+        this.empresaService.__findAll();
 
-		if (typeof this.listenTo === 'function') {
-			this.listenTo(masivoView, 'form:save', this.empresaService.__saveEmpresa);
-		}
+        // Configurar vista principal
+        const masivoView = new EmpresaMasivoView({
+            collection: this.empresaService.Collections.empresas,
+            router: this.router,
+            api: this.api,
+            App: this.App
+        });
 
-		this.layout.getRegion('body').show(masivoView);
+        this.listenTo(masivoView, 'form:save', this.empresaService.__saveEmpresa);
 
-		// Establecer parent view para navegación
-		if (EmpresaNav) {
-			EmpresaNav.parentView = masivoView;
-		}
+        layout.getRegion('body').show(masivoView);
 
-		// Configurar navegación
-		const navView = new EmpresaNav({
-			model: {
-				titulo: 'Cargue masivo empresa',
-				listar: true,
-				exportar: false,
-				crear: true,
-				editar: false,
-				masivo: false,
-			},
-		});
+        // Establecer parent view para navegación
+        if (EmpresaNav) {
+            EmpresaNav.parentView = masivoView;
+        }
 
-		this.layout.getRegion('subheader').show(navView);
-	}
+        // Configurar navegación
+        const navView = new EmpresaNav({
+            model: {
+                titulo: 'Cargue masivo empresa',
+                listar: true,
+                exportar: false,
+                crear: true,
+                editar: false,
+                masivo: false,
+            },
+            router: this.router,
+            api: this.api,
+            App: this.App
+        });
 
-	/**
-	 * Destruir la vista
-	 */
-	destroy(): void {
-		console.log('EmpresaMasivo.destroy() called');
+        layout.getRegion('subheader').show(navView);
+    }
 
-		if (this.region && typeof this.region.remove === 'function') {
-			this.region.remove();
-		}
-
-		if (typeof this.stopListening === 'function') {
-			this.stopListening();
-		}
-	}
+    /**
+     * Destruir la vista
+     */
+    destroy(): void {
+        console.log('EmpresaMasivo.destroy() called');
+        this.region.remove();
+        this.stopListening();
+    }
 }

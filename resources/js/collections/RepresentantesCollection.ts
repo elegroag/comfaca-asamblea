@@ -4,7 +4,7 @@ import { BackboneCollection } from "@/common/Bone";
 import Representante from "@/models/Representante";
 
 class RepresentantesCollection extends BackboneCollection {
-    constructor(options: any) {
+    constructor(options?: any) {
         super({ ...options, url: '/web/recepcion/all_representantes' });
     }
 

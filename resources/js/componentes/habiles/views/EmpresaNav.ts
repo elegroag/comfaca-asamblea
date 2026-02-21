@@ -1,18 +1,12 @@
 import { BackboneView } from "@/common/Bone";
 
-declare global {
-    var $: any;
-    var _: any;
-    var $App: any;
-    var create_url: (path: string) => string;
-    var download_file: (response: any) => void;
-    var Swal: any;
-}
-
 interface EmpresaNavOptions {
     dataToggle?: string;
     model?: any;
     collection?: any;
+    api?: any;
+    App?: any;
+    router?: any;
 }
 
 export default class EmpresaNav extends BackboneView {

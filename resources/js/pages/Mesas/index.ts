@@ -30,7 +30,12 @@ const Mesas: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-        $App.startApp(MesasRouter, { defaultRoute: "listar", el: "#content" }, props);
+
+        $App.startApp(MesasRouter, {
+            defaultRoute: "listar",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
     }
 };
 

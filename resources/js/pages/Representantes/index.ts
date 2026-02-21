@@ -2,7 +2,6 @@ import useLayout from "@/componentes/useLayout";
 import $App from "@/core/App";
 import type { BackendAuthProps } from "@/types/types";
 import RepresentanteRouter from "./RepresentanteRouter";
-import Poderes from "../Poderes";
 
 interface DashboardComponent {
     props: string[];
@@ -13,7 +12,7 @@ interface DashboardComponent {
 }
 
 // Componente Dashboard con TypeScript
-const Representant: DashboardComponent = {
+const Representantes: DashboardComponent = {
     props: ["title", "user", "stats"],
     template: null,
     isLoading: false,
@@ -31,8 +30,12 @@ const Representant: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-        $App.startApp(RepresentanteRouter, { defaultRoute: "listar", el: "#content" }, props);
+        $App.startApp(RepresentanteRouter, {
+            defaultRoute: "listar",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
     }
 };
 
-export default Representant;
+export default Representantes;

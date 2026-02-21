@@ -1,11 +1,6 @@
 import { BackboneRouter } from "@/common/Bone";
 import EmpresasController from "./EmpresasController";
 
-declare global {
-    var $: any;
-    var _: any;
-    var $App: any;
-}
 
 interface RouterHabilesOptions {
     routes?: Record<string, string>;
@@ -13,9 +8,9 @@ interface RouterHabilesOptions {
 }
 
 export default class RouterHabiles extends BackboneRouter {
-    public controller: EmpresasController;
+    public controller: EmpresasController | null;
 
-    constructor(options: RouterHabilesOptions = {}) {
+    constructor(options: RouterHabilesOptions) {
         super({
             ...options,
             routes: {
@@ -28,8 +23,12 @@ export default class RouterHabiles extends BackboneRouter {
             },
         });
 
-        this.controller = $App.startSubApplication(EmpresasController, this);
+        this.controller = null;
         this._bindRoutes();
+    }
+
+    init() {
+        this.controller = $App.startSubApplication(EmpresasController);
     }
 
     /**
@@ -43,59 +42,57 @@ export default class RouterHabiles extends BackboneRouter {
      * Manejar ruta para cargue masivo de empresas
      */
     masivoEmpresas(): void {
-        console.log('RouterHabiles.masivoEmpresas() called');
-        this.controller.cargueMasivo();
+        this.init();
+        this.controller?.cargueMasivo();
     }
 
     /**
      * Manejar ruta para listar empresas
      */
     listaEmpresas(): void {
-        console.log('RouterHabiles.listaEmpresas() called');
-        this.controller.listaEmpresas();
+        this.init();
+        this.controller?.listaEmpresas();
     }
 
     /**
      * Manejar ruta para ver detalles de empresa
      */
     detalleEmpresa(nit: string): void {
-        console.log('RouterHabiles.detalleEmpresa() called', nit);
-
+        this.init();
         if (!nit || nit.trim() === '') {
             this.navigate('listar', { trigger: true });
             return;
         }
 
-        this.controller.detalleEmpresa(nit);
+        this.controller?.detalleEmpresa(nit);
     }
 
     /**
      * Manejar ruta para crear nueva empresa
      */
     crearEmpresa(): void {
-        console.log('RouterHabiles.crearEmpresa() called');
-        this.controller.crearEmpresa();
+        this.init();
+        this.controller?.crearEmpresa();
     }
 
     /**
      * Manejar ruta para editar empresa
      */
     editaEmpresa(nit: string): void {
-        console.log('RouterHabiles.editaEmpresa() called', nit);
-
+        this.init();
         if (!nit || nit.trim() === '') {
             this.navigate('listar', { trigger: true });
             return;
         }
 
-        this.controller.editaEmpresa(nit);
+        this.controller?.editaEmpresa(nit);
     }
 
     /**
      * Manejar ruta para listar habiles
      */
     listarHabiles(): void {
-        console.log('RouterHabiles.listarHabiles() called');
-        this.controller.listarHabiles();
+        this.init();
+        this.controller?.listarHabiles();
     }
 }

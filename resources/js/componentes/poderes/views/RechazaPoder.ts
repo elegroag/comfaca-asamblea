@@ -3,15 +3,12 @@
 import { BackboneView } from "@/common/Bone";
 import { Utils } from "@/core/Utils";
 import Poder from "@/models/Poder";
-import type { AppInstance } from "@/types/types";
 import crearRechazoPoder from '@/componentes/poderes/templates/crearRechazoPoder.hbs?raw';
 
 export default class RechazaPoder extends BackboneView {
-    App: AppInstance;
 
     constructor(options: any) {
         super(options);
-        this.App = options.App || null;
     }
 
     initialize() {
@@ -79,18 +76,18 @@ export default class RechazaPoder extends BackboneView {
         const poderdante_nit = this.getInput('poderdante_nit');
 
         if (apoderado_nit == poderdante_nit) {
-            this.App.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
+            this.App?.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
             return false;
         }
 
         if (apoderado_nit !== '') {
-            this.App.trigger('syncro', {
+            this.App?.trigger('syncro', {
                 url: Utils.getURL('poderes/buscar_empresa/' + apoderado_nit),
                 data: {},
                 callback: (response: any) => {
                     if (response) {
                         if (!response.success) {
-                            this.App.trigger('alert:error', response.msj);
+                            this.App?.trigger('alert:error', response.msj);
                         } else {
                             const empresa = response.empresa;
                             this.setInput('apoderado_cedula', empresa.cedrep);
@@ -98,7 +95,7 @@ export default class RechazaPoder extends BackboneView {
                             this.setInput('repleg_apoderado', empresa.repleg);
                         }
                     } else {
-                        this.App.trigger(
+                        this.App?.trigger(
                             'alert:error',
                             'Se ha generado un error interno. Se requiere de reportar al área de TICS'
                         );
@@ -123,13 +120,13 @@ export default class RechazaPoder extends BackboneView {
         }
 
         if (poderdante_nit !== '') {
-            this.App.trigger('syncro', {
+            this.App?.trigger('syncro', {
                 url: Utils.getURL('poderes/buscar_empresa/' + poderdante_nit),
                 data: {},
                 callback: (response: any) => {
                     if (response) {
                         if (!response.success) {
-                            this.App.trigger('alert:error', response.msj);
+                            this.App?.trigger('alert:error', response.msj);
                         } else {
                             const empresa = response.empresa;
                             this.setInput('poderdante_cedula', empresa.cedrep);
@@ -137,7 +134,7 @@ export default class RechazaPoder extends BackboneView {
                             this.setInput('repleg_poderdante', empresa.repleg);
                         }
                     } else {
-                        this.App.trigger(
+                        this.App?.trigger(
                             'alert:error',
                             'Se ha generado un error interno. Se requiere de reportar al área de TICS'
                         );
@@ -153,7 +150,7 @@ export default class RechazaPoder extends BackboneView {
 
     registraRechazo(e: Event) {
         e.preventDefault();
-        var target = $(e.currentTarget);
+        var target = this.$el.find(e.currentTarget);
         target.attr('disabled', true);
 
         const apoderado_nit = this.getInput('apoderado_nit');
@@ -176,7 +173,7 @@ export default class RechazaPoder extends BackboneView {
         });
 
         if (apoderado_nit == '' && poderdante_nit == '') {
-            this.App.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
+            this.App?.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
             target.removeAttr('disabled');
             return false;
         }
@@ -184,14 +181,14 @@ export default class RechazaPoder extends BackboneView {
         model.setForRechazo(true);
 
         if (!model.isValid()) {
-            this.App.trigger('alert:error', model.validationError);
+            this.App?.trigger('alert:error', model.validationError);
             setTimeout(() => $('.error').html(''), 3000);
             target.removeAttr('disabled');
             this.setInput('fecha', moment().format('DD-MM-YYYY'));
             return false;
         }
 
-        this.App.trigger('syncro', {
+        this.App?.trigger('syncro', {
             url: Utils.getURL('poderes/registraRechazoPoder'),
             data: model.toJSON(),
             callback: (response: any) => {
@@ -205,7 +202,7 @@ export default class RechazaPoder extends BackboneView {
                             button: 'Continuar!',
                         });
                     } else {
-                        this.App.trigger('success', response.msj);
+                        this.App?.trigger('success', response.msj);
 
                         _.each(response.poder, (value, key) => model.set(key, value));
                         this.trigger('add:poder', model);
@@ -217,7 +214,7 @@ export default class RechazaPoder extends BackboneView {
                         this.setText('repleg_poderdante', 'Representante legal');
                         this.setInput('fecha', moment().format('DD-MM-YYYY'));
 
-                        this.App.router.navigate('mostrar/' + model.get('documento'), { trigger: true, replace: true });
+                        this.router.navigate('mostrar/' + model.get('documento'), { trigger: true, replace: true });
                     }
                 } else {
                     this.setText('razsoc_apoderado', 'Razón social');
@@ -235,7 +232,7 @@ export default class RechazaPoder extends BackboneView {
     backList(e: Event) {
         e.preventDefault();
         this.remove();
-        this.App.router.navigate('listar', { trigger: true, replace: true });
+        this.router.navigate('listar', { trigger: true, replace: true });
         return false;
     }
 

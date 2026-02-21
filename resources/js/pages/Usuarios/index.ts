@@ -30,7 +30,12 @@ const Usuarios: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-        $App.startApp(RouterUsuarios, { defaultRoute: "listar", el: "#content" }, props);
+        $App.startApp(RouterUsuarios, {
+            defaultRoute: "listar",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
+
     }
 };
 

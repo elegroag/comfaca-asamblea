@@ -1,10 +1,18 @@
 // Importar Backbone para evitar errores de UMD global
 // @ts-nocheck
 import '@/core/Core';
+import ApiService from '@/services/ApiService';
+
+import type { AppInstance } from '@/types/types';
 
 class BackboneView extends (Backbone.View as any) {
+    App: AppInstance | null;
+    api: ApiService | null;
+
     constructor(options: any) {
         super(options);
+        this.App = options.App || null;
+        this.api = options.api || null;
     }
 }
 
@@ -23,7 +31,7 @@ class BackboneCollection extends (Backbone.Collection as any) {
 
 
 class BackboneRouter extends (Backbone.Router as any) {
-    constructor(options: any) {
+    constructor(options?: any) {
         super(options);
     }
 }

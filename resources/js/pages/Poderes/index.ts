@@ -30,7 +30,11 @@ const Poderes: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-        $App.startApp(RouterPoderes, { defaultRoute: "listar", el: "#content" }, props);
+        $App.startApp(RouterPoderes, {
+            defaultRoute: "listar",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
     }
 };
 

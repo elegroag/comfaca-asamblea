@@ -3,16 +3,16 @@ import { BackboneView } from "@/common/Bone";
 import Cartera from "@/models/Cartera";
 import tmp_detalle_cartera from "../templates/tmp_detalle_cartera.hbs?raw";
 
-declare global {
-    var $App: any;
-}
-
 interface CarteraDetalleOptions {
     model: Cartera;
+    App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
 }
 
 class CarteraDetalle extends BackboneView {
-    template: string;
 
     constructor(options: CarteraDetalleOptions) {
         super(options);

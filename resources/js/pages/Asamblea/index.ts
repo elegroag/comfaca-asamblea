@@ -30,7 +30,11 @@ const Asamblea: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-        $App.startApp(RouterAsamblea, { defaultRoute: "listar", el: "#content" }, props);
+        $App.startApp(RouterAsamblea, {
+            defaultRoute: "listar",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
     }
 };
 

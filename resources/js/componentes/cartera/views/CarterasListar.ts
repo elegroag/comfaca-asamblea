@@ -5,16 +5,15 @@ import Cartera from "@/models/Cartera";
 
 import tmp_listar_cartera from "../templates/tmp_listar_cartera.hbs?raw";
 
-declare global {
-    var $App: any;
-    var create_url: (path: string) => string;
-    var download_file: (response: any) => void;
-    var langDataTable: any;
-}
 
 interface CarterasListarOptions {
     collection?: any;
     model?: any;
+    App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
 }
 
 class CarterasListar extends BackboneView {

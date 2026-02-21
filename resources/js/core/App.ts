@@ -26,13 +26,31 @@ const $App: AppInstance = {
     mainRegion: null,
     props: null,
 
-    startApp(RouterModule: new () => any, options: { defaultRoute: string; el: string; }, props?: any): void {
-        this.props = props;
-        this.el = options.el;
+    startApp(RouterModule: new () => any, options: { defaultRoute: string; mainRegion: Region; props: any }): void {
+        this.props = options.props;
+        this.mainRegion = options.mainRegion;
 
-        const _router = new RouterModule();
+        _.extend(this, (Backbone as any).Events);
+
+        this.listenTo(this, 'confirma', this.confirmaApp);
+        this.listenTo(this, 'syncro', this.syncroRequest);
+        this.listenTo(this, 'ajax', this.ajaxKumbia);
+        this.listenTo(this, 'show:modal', this.renderModal);
+        this.listenTo(this, 'hide:modal', this.closeModal);
+        this.listenTo(this, 'down', this.downLoadFile);
+        this.listenTo(this, 'upload', this.uploadFile);
+        this.listenTo(this, 'notify', this.notify);
+
+        const alertTypes = ['error', 'warning', 'success', 'info'];
+
+        alertTypes.forEach((type) => {
+            this.listenTo(this, `noty:${type}`, (message: string) => this.notify(type, message));
+            this.listenTo(this, `alert:${type}`, (transfer: AlertTransfer) => this.alert(type, transfer));
+        });
+
+        this.router = new RouterModule();
         if (!Backbone.history.start()) {
-            _router.navigate(options.defaultRoute, { trigger: true });
+            this.router.navigate(options.defaultRoute, { trigger: true });
         }
     },
 
@@ -67,36 +85,19 @@ const $App: AppInstance = {
     },
 
     startSubApplication(
-        SubApplication: new (options: SubApplicationOptions) => any,
-        router
+        SubApplication: new (options: SubApplicationOptions) => any
     ): any {
 
-        this.mainRegion = new Region({ el: this.el } as RegionOptions);
         this.currentSubapp = new SubApplication({
             region: this.mainRegion,
             api: new ApiService(this.props),
             props: this.props,
             logger: new Logger(),
-            router: router
+            router: this.router,
+            App: this
         });
 
         _.extend(this.currentSubapp, (Backbone as any).Events);
-
-        const alertTypes = ['error', 'warning', 'success', 'info'];
-
-        alertTypes.forEach((type) => {
-            this.listenTo(this.currentSubapp, `noty:${type}`, (message: string) => this.notify(type, message));
-            this.listenTo(this.currentSubapp, `alert:${type}`, (transfer: AlertTransfer) => this.alert(type, transfer));
-        });
-
-        this.listenTo(this.currentSubapp, 'confirma', this.confirmaApp);
-        this.listenTo(this.currentSubapp, 'syncro', this.syncroRequest);
-        this.listenTo(this.currentSubapp, 'ajax', this.ajaxKumbia);
-        this.listenTo(this.currentSubapp, 'show:modal', this.renderModal);
-        this.listenTo(this.currentSubapp, 'hide:modal', this.closeModal);
-        this.listenTo(this.currentSubapp, 'down', this.downLoadFile);
-        this.listenTo(this.currentSubapp, 'upload', this.uploadFile);
-        this.listenTo(this.currentSubapp, 'notify', this.notify);
         return this.currentSubapp;
     },
 

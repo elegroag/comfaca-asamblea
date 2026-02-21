@@ -1,12 +1,5 @@
 import { BackboneView } from "@/common/Bone";
 
-declare global {
-    var $: any;
-    var _: any;
-    var $App: any;
-    var Layout: any;
-}
-
 interface LayoutViewOptions {
     template?: any;
     regions?: Record<string, string>;

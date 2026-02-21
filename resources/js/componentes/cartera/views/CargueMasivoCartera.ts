@@ -2,17 +2,13 @@ import { BackboneView } from "@/common/Bone";
 import SubNavCartera from "./SubNavCartera";
 import tmp_cargar_cartera from "../templates/tmp_cargar_cartera.hbs?raw";
 
-declare global {
-    var $App: any;
-    var create_url: (path: string) => string;
-    var loading: {
-        show: () => void;
-        hide: () => void;
-    };
-}
-
 interface CargueMasivoCarteraOptions {
     model?: any;
+    App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
 }
 
 interface CargueResponse {
@@ -62,7 +58,7 @@ class CargueMasivoCartera extends BackboneView {
         const target = $(e.currentTarget as HTMLElement);
         target.attr('disabled', 'true');
 
-        $App.trigger('confirma', {
+        this.App?.trigger('confirma', {
             message: 'Confirma que desea hacer el cargue masivo de cartera',
             callback: (status: boolean) => {
                 if (status) {
@@ -71,7 +67,7 @@ class CargueMasivoCartera extends BackboneView {
 
                     if (!archivo_cartera || archivo_cartera.length === 0) {
                         this.setText('name_archivo', 'Seleccionar aquí...');
-                        $App.trigger(
+                        this.App?.trigger(
                             'alert:warning',
                             'Se requiere de seleccionar un archivo valido para hacer el cargue'
                         );
@@ -99,7 +95,7 @@ class CargueMasivoCartera extends BackboneView {
                             target.removeAttr('disabled');
                             if (salida) {
                                 if (salida.success) {
-                                    $App.trigger(
+                                    this.App?.trigger(
                                         'success',
                                         `Ya se completo el cargue de cartera.\n
 									Registrados: ${salida.creados}\n
@@ -108,7 +104,7 @@ class CargueMasivoCartera extends BackboneView {
 									Inactivas: ${salida.inactivas}`
                                     );
                                 } else {
-                                    $App.trigger('error', salida.msj);
+                                    this.App?.trigger('error', salida.msj);
                                 }
                                 this.setInput('archivo_cartera', '');
                                 this.setText('name_archivo', 'Seleccionar aquí...');
@@ -118,7 +114,7 @@ class CargueMasivoCartera extends BackboneView {
                         .fail((err: any) => {
                             loading.hide();
                             target.removeAttr('disabled');
-                            $App.trigger('alert:error', err);
+                            this.App?.trigger('alert:error', err);
                             this.setInput('archivo_cartera', '');
                             this.setText('name_archivo', 'Seleccionar aquí...');
                             this.$el.find('#remover_archivo').attr('disabled', 'true');

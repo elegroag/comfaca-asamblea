@@ -1,15 +1,17 @@
 import ApiService from "@/services/ApiService";
 import { AppInstance, ControllerOptions } from "@/types/types";
 import { Region } from "./Region";
+import { Layout } from "noty";
+import Logger from "./Logger";
 
 
 export class Controller {
     App: AppInstance | null = null;
     currentController: any = null;
     region: Region | any;
-    layout: string | null = null;
+    layout: Layout | null = null;
     router: { [key: string]: any } = {};
-    logger: any;
+    logger: Logger | any;
     api?: ApiService | null = null;
     trigger: any;
     props: any;
@@ -28,7 +30,7 @@ export class Controller {
         window.Backbone.Events.stopListening.call(this, object, event, callback);
     }
 
-    startController(ControllerClass: new (options: ControllerOptions) => any): any {
+    startController(ControllerClass: new (options: any) => any): any {
         if (this.currentController && this.currentController instanceof ControllerClass) {
             return this.currentController;
         }

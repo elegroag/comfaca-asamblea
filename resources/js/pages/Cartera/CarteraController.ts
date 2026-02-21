@@ -3,46 +3,70 @@ import CargueMasivoCartera from "@/componentes/cartera/views/CargueMasivoCartera
 import CarteraCrear from "@/componentes/cartera/views/CarteraCrear";
 import CarteraDetalle from "@/componentes/cartera/views/CarteraDetalle";
 import CarterasListar from "@/componentes/cartera/views/CarterasListar";
-import $App from "@/core/App";
 import Cartera from "@/models/Cartera";
 import type { CarteraTransfer } from "./types";
-
-// Declaraciones para las colecciones globales
-declare global {
-    var EmpresasCollection: any;
-    var RepresentantesCollection: any;
-    var CarterasCollection: any;
-    var create_url: (path: string) => string;
-    var scroltop: () => void;
-}
+import RepresentantesCollection from "@/collections/RepresentantesCollection";
+import CarterasCollection from "@/collections/CarterasCollection";
+import { BoxCollectionStorage } from "@/componentes/useStorage";
 
 export default class CarteraController extends Controller {
+    Collections: any = {};
+    private storage: BoxCollectionStorage;
+
     constructor(options: any) {
         super(options);
+        this.storage = BoxCollectionStorage.getInstance();
         this.__initializeCollections();
     }
 
     /**
-     * Inicializar las colecciones necesarias
+     * Inicializar las colecciones necesarias usando BoxCollectionStorage
      */
     private __initializeCollections(): void {
-        $App.Collections.empresas = null;
-        $App.Collections.carteras = null;
-        $App.Collections.representantes = null;
-        $App.Collections.poderes = null;
+        // Inicializar colecciones persistentes en localStorage
+        this.Collections.empresas = this.storage.getCollection('empresas')?.value || null;
+        this.Collections.carteras = this.storage.getCollection('carteras')?.value || null;
+        this.Collections.representantes = this.storage.getCollection('representantes')?.value || null;
+        this.Collections.poderes = this.storage.getCollection('poderes')?.value || null;
+
+        // Crear colecciones Backbone si no existen
+        if (!this.Collections.empresas) {
+            this.Collections.empresas = new (this.App as any).Collection();
+            this.storage.addCollection('empresas', this.Collections.empresas);
+        }
+        if (!this.Collections.carteras) {
+            this.Collections.carteras = new CarterasCollection();
+            this.storage.addCollection('carteras', this.Collections.carteras);
+        }
+        if (!this.Collections.representantes) {
+            this.Collections.representantes = new RepresentantesCollection();
+            this.storage.addCollection('representantes', this.Collections.representantes);
+        }
+        if (!this.Collections.poderes) {
+            this.Collections.poderes = new (this.App as any).Collection();
+            this.storage.addCollection('poderes', this.Collections.poderes);
+        }
     }
 
     /**
      * Mostrar vista de creación de cartera
      */
     crearCartera(): void {
-        this.__createContent();
+
         this.__initRepresentantes();
         this.__initPoderes();
         this.__initEmpresas();
 
-        const view = new CarteraCrear({ model: new Cartera(), isNew: true });
-        $(this.region.el).html(view.render().el);
+        const view = new CarteraCrear({
+            model: new Cartera(),
+            isNew: true,
+            App: this.App,
+            api: this.api,
+            logger: this.logger,
+            storage: this.storage,
+            region: this.region,
+        });
+        this.region.show(view);
         this.listenTo(view, 'search:empresa', this.__searchEmpresaValidation);
         this.listenTo(view, 'add:cartera', this.__addCartera);
     }
@@ -50,42 +74,61 @@ export default class CarteraController extends Controller {
     /**
      * Editar una cartera existente
      */
-    editaCartera(id: string): void {
-        this.__createContent();
+    async editaCartera(id: string): Promise<void> {
         this.__initRepresentantes();
         this.__initPoderes();
         this.__initEmpresas();
 
-        if (!$App.Collections.carteras || _.size($App.Collections.carteras) === 0) {
-            $App.trigger('syncro', {
-                url: create_url('cartera/listar'),
-                data: {},
-                callback: (response: any) => {
-                    if (response?.success) {
-                        this.__setCarteras(response.carteras);
-                        const model = $App.Collections.carteras.get(id);
-                        if (model) {
-                            const view = new CarteraCrear({ model: model, isNew: false });
-                            $(this.region.el).html(view.render().el);
-                            this.listenTo(view, 'search:empresa', this.__searchEmpresaValidation);
-                            this.listenTo(view, 'add:cartera', this.__addCartera);
-                        } else {
-                            $App.trigger('alert:error', 'Cartera no encontrada');
-                        }
+        if (!this.Collections.carteras || _.size(this.Collections.carteras) === 0) {
+            try {
+                if (!this.api) {
+                    this.App?.trigger('alert:error', 'API no disponible');
+                    return;
+                }
+
+                const response = await this.api.get('/cartera/listar');
+
+                if (response?.success) {
+                    this.__setCarteras((response as any).carteras);
+                    const model = this.Collections.carteras.get(id);
+                    if (model) {
+                        const view = new CarteraCrear({
+                            model: model, isNew: false,
+                            App: this.App,
+                            api: this.api,
+                            logger: this.logger,
+                            storage: this.storage,
+                            region: this.region,
+                        });
+                        this.region.show(view);
+                        this.listenTo(view, 'search:empresa', this.__searchEmpresaValidation);
+                        this.listenTo(view, 'add:cartera', this.__addCartera);
                     } else {
-                        $App.trigger('alert:error', response?.msj || 'Error al cargar carteras');
+                        this.App?.trigger('alert:error', 'Cartera no encontrada');
                     }
-                },
-            });
+                } else {
+                    this.App?.trigger('alert:error', (response as any).msj || response.message || 'Error al cargar carteras');
+                }
+            } catch (error: any) {
+                this.logger?.error('Error al cargar carteras:', error);
+                this.App?.trigger('alert:error', error.message || 'Error de conexión al cargar carteras');
+            }
         } else {
-            const model = $App.Collections.carteras.get(id);
+            const model = this.Collections.carteras.get(id);
             if (model) {
-                const view = new CarteraCrear({ model: model, isNew: false });
-                $(this.region.el).html(view.render().el);
+                const view = new CarteraCrear({
+                    model: model, isNew: false,
+                    App: this.App,
+                    api: this.api,
+                    logger: this.logger,
+                    storage: this.storage,
+                    region: this.region,
+                });
+                this.region.show(view);
                 this.listenTo(view, 'search:empresa', this.__searchEmpresaValidation);
                 this.listenTo(view, 'add:cartera', this.__addCartera);
             } else {
-                $App.trigger('alert:error', 'Cartera no encontrada');
+                this.App?.trigger('alert:error', 'Cartera no encontrada');
             }
         }
     }
@@ -93,53 +136,70 @@ export default class CarteraController extends Controller {
     /**
      * Listar todas las carteras
      */
-    listaCartera(): void {
-        this.__createContent();
-        $App.trigger('syncro', {
-            url: create_url('cartera/listar'),
-            data: {},
-            callback: (response: any) => {
-                if (response?.success) {
-                    this.__setCarteras(response.carteras);
-                    const view = new CarterasListar({ collection: $App.Collections.carteras });
-                    $(this.region.el).html(view.render().el);
-                    this.listenTo(view, 'remove:cartera', this.__removeCartera);
-                } else {
-                    $App.trigger('alert:error', response?.msj || 'Error al listar carteras');
-                }
-            },
-        });
+    async listaCartera(): Promise<void> {
+        try {
+            if (!this.api) {
+                this.App?.trigger('alert:error', 'API no disponible');
+                return;
+            }
+
+            const response = await this.api.get('/cartera/listar');
+
+            if (response?.success) {
+                this.__setCarteras((response as any).carteras);
+                const view = new CarterasListar({ collection: this.Collections.carteras });
+                this.region.show(view);
+                this.listenTo(view, 'remove:cartera', this.__removeCartera);
+            } else {
+                this.App?.trigger('alert:error', (response as any).msj || response.message || 'Error al listar carteras');
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al listar carteras:', error);
+            this.App?.trigger('alert:error', error.message || 'Error de conexión al listar carteras');
+        }
     }
 
     /**
      * Mostrar detalle de una cartera
      */
-    mostrarDetalle(id: string): void {
-        this.__createContent();
+    async mostrarDetalle(id: string): Promise<void> {
         this.__initEmpresas();
         this.__initCarteras();
 
-        if (!$App.Collections.carteras || _.size($App.Collections.carteras) === 0) {
-            $App.trigger('syncro', {
-                url: create_url('cartera/detalle/' + id),
-                data: {},
-                callback: (response: any) => {
-                    if (response?.success) {
-                        const cartera = new Cartera(response.cartera);
-                        const view = new CarteraDetalle({ model: cartera });
-                        $(this.region.el).html(view.render().el);
-                    } else {
-                        $App.trigger('alert:error', response?.msj || 'Error al cargar detalle');
-                    }
-                },
-            });
+        if (!this.Collections.carteras || _.size(this.Collections.carteras) === 0) {
+            try {
+                if (!this.api) {
+                    this.App?.trigger('alert:error', 'API no disponible');
+                    return;
+                }
+
+                const response = await this.api.get(`/cartera/detalle/${id}`);
+
+                if (response?.success) {
+                    const cartera = new Cartera((response as any).cartera);
+                    const view = new CarteraDetalle({
+                        model: cartera,
+                        App: this.App,
+                        api: this.api,
+                        logger: this.logger,
+                        storage: this.storage,
+                        region: this.region,
+                    });
+                    this.region.show(view);
+                } else {
+                    this.App?.trigger('alert:error', (response as any).msj || response.message || 'Error al cargar detalle');
+                }
+            } catch (error: any) {
+                this.logger?.error('Error al cargar detalle de cartera:', error);
+                this.App?.trigger('alert:error', error.message || 'Error de conexión al cargar detalle');
+            }
         } else {
-            const cartera = $App.Collections.carteras.get(id);
+            const cartera = this.Collections.carteras.get(id);
             if (cartera) {
                 const view = new CarteraDetalle({ model: cartera });
                 $(this.region.el).html(view.render().el);
             } else {
-                $App.trigger('alert:error', 'Cartera no encontrada');
+                this.App?.trigger('alert:error', 'Cartera no encontrada');
             }
         }
     }
@@ -148,7 +208,7 @@ export default class CarteraController extends Controller {
      * Mostrar vista de cargue masivo
      */
     cargueMasivoCartera(): void {
-        this.__createContent();
+
         this.__initCarteras();
         const view = new CargueMasivoCartera();
         $(this.region.el).html(view.render().el);
@@ -158,7 +218,7 @@ export default class CarteraController extends Controller {
      * Manejar errores
      */
     error(): void {
-        $App.trigger('alert:error', 'Se ha producido un error en la aplicación');
+        this.App?.trigger('alert:error', 'Se ha producido un error en la aplicación');
         if (this.router) {
             this.router.navigate('listar', { trigger: true });
         }
@@ -167,116 +227,116 @@ export default class CarteraController extends Controller {
     /**
      * Validar empresa por NIT
      */
-    private __searchEmpresaValidation(transfer: CarteraTransfer): void {
+    private async __searchEmpresaValidation(transfer: CarteraTransfer): Promise<void> {
         const { nit, callback } = transfer;
 
         if (!nit || !callback) {
-            $App.trigger('alert:error', 'Datos inválidos para búsqueda de empresa');
+            this.App?.trigger('alert:error', 'Datos inválidos para búsqueda de empresa');
             return;
         }
 
-        $App.trigger('syncro', {
-            url: create_url('cartera/buscar_empresa/' + nit),
-            data: {},
-            callback: (response: any) => {
-                if (response?.success === false) {
-                    $App.trigger('alert:error', response.msj || 'Empresa no encontrada');
-                    callback(false);
-                } else {
-                    callback(response);
-                }
-            },
-        });
+        try {
+            if (!this.api) {
+                this.App?.trigger('alert:error', 'API no disponible');
+                callback(false);
+                return;
+            }
+
+            const response = await this.api.get(`/cartera/buscar_empresa/${nit}`);
+
+            if (response.success === false) {
+                this.App?.trigger('alert:error', (response as any).msj || response.message || 'Empresa no encontrada');
+                callback(false);
+            } else {
+                callback(response);
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al buscar empresa:', error);
+            this.App?.trigger('alert:error', error.message || 'Error de conexión al buscar empresa');
+            callback(false);
+        }
     }
 
     /**
      * Eliminar una cartera
      */
-    private __removeCartera(transfer: CarteraTransfer): void {
+    private async __removeCartera(transfer: CarteraTransfer): Promise<void> {
         const { model, callback } = transfer;
 
-        if (!model || !callback) {
-            $App.trigger('alert:error', 'Datos inválidos para eliminar cartera');
-            callback?.(false);
+        if (!model) {
+            this.App?.trigger('alert:error', 'Modelo inválido para eliminar cartera');
             return;
         }
 
-        $App.trigger('syncro', {
-            url: create_url('cartera/removeCartera/' + model.get('id')),
-            data: {
+        if (!callback) {
+            this.App?.trigger('alert:error', 'Callback inválido para eliminar cartera');
+            return;
+        }
+
+        try {
+            if (!this.api) {
+                this.App?.trigger('alert:error', 'API no disponible');
+                callback(false);
+                return;
+            }
+
+            const response = await this.api.post(`/cartera/removeCartera/${model.get('id')}`, {
                 nit: model.get('nit'),
                 cedrep: model.get('cedrep'),
                 id: model.get('id'),
-            },
-            callback: (response: any) => {
-                if (response?.success) {
-                    this.__notifyPlataforma(model.get('nit'));
-                    callback(response);
-                } else {
-                    $App.trigger('alert:error', response?.msj || 'Error al eliminar cartera');
-                    callback(false);
-                }
-            },
-        });
+            });
+
+            if (response?.success) {
+                this.__notifyPlataforma(model.get('nit'));
+                callback(response);
+            } else {
+                this.App?.trigger('alert:error', (response as any).msj || response.message || 'Error al eliminar cartera');
+                callback(false);
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al eliminar cartera:', error);
+            this.App?.trigger('alert:error', error.message || 'Error de conexión al eliminar cartera');
+            callback(false);
+        }
     }
 
     /**
-     * Inicializar colección de empresas
+     * Inicializar colección de empresas usando BoxCollectionStorage
      */
     private __initEmpresas(): void {
-        if (!$App.Collections.empresas) {
-            if (typeof EmpresasCollection !== 'undefined') {
-                $App.Collections.empresas = new EmpresasCollection();
-            } else {
-                // Fallback si EmpresasCollection no está disponible
-                $App.Collections.empresas = new ($App as any).Collection();
-            }
-            $App.Collections.empresas.reset();
+        if (!this.Collections.empresas) {
+            this.Collections.empresas = this.storage.getCollection('empresas')?.value || new (this.App as any).Collection();
+            this.storage.addCollection('empresas', this.Collections.empresas);
         }
     }
 
     /**
-     * Inicializar colección de representantes
-     */
-    private __initRepresentantes(): void {
-        if (!$App.Collections.representantes) {
-            if (typeof RepresentantesCollection !== 'undefined') {
-                $App.Collections.representantes = new RepresentantesCollection();
-            } else {
-                // Fallback si RepresentantesCollection no está disponible
-                $App.Collections.representantes = new ($App as any).Collection();
-            }
-            $App.Collections.representantes.reset();
-        }
-    }
-
-    /**
-     * Inicializar colección de poderes
-     */
-    private __initPoderes(): void {
-        if (!$App.Collections.poderes) {
-            if (typeof RepresentantesCollection !== 'undefined') {
-                $App.Collections.poderes = new RepresentantesCollection();
-            } else {
-                // Fallback si RepresentantesCollection no está disponible
-                $App.Collections.poderes = new ($App as any).Collection();
-            }
-            $App.Collections.poderes.reset();
-        }
-    }
-
-    /**
-     * Inicializar colección de carteras
+     * Inicializar colección de carteras usando BoxCollectionStorage
      */
     private __initCarteras(): void {
-        if (!$App.Collections.carteras) {
-            if (typeof CarterasCollection !== 'undefined') {
-                $App.Collections.carteras = new CarterasCollection();
-            } else {
-                // Fallback si CarterasCollection no está disponible
-                $App.Collections.carteras = new ($App as any).Collection();
-            }
-            $App.Collections.carteras.reset();
+        if (!this.Collections.carteras) {
+            this.Collections.carteras = this.storage.getCollection('carteras')?.value || new CarterasCollection();
+            this.storage.addCollection('carteras', this.Collections.carteras);
+        }
+    }
+
+    /**
+     * Inicializar colección de representantes usando BoxCollectionStorage
+     */
+    private __initRepresentantes(): void {
+        if (!this.Collections.representantes) {
+            this.Collections.representantes = this.storage.getCollection('representantes')?.value || new RepresentantesCollection();
+            this.storage.addCollection('representantes', this.Collections.representantes);
+        }
+    }
+
+    /**
+     * Inicializar colección de poderes usando BoxCollectionStorage
+     */
+    private __initPoderes(): void {
+        if (!this.Collections.poderes) {
+            this.Collections.poderes = this.storage.getCollection('poderes')?.value || new (this.App as any).Collection();
+            this.storage.addCollection('poderes', this.Collections.poderes);
         }
     }
 
@@ -300,57 +360,69 @@ export default class CarteraController extends Controller {
     }
 
     /**
-     * Establecer empresas en la colección
+     * Establecer empresas en la colección usando BoxCollectionStorage
      */
     private __setEmpresas(empresas: any[]): void {
         this.__initEmpresas();
-        if ($App.Collections.empresas && empresas) {
-            $App.Collections.empresas.add(empresas, { merge: true });
+        if (this.Collections.empresas && empresas) {
+            this.Collections.empresas.add(empresas, { merge: true });
+            // Persistir en localStorage
+            this.storage.addCollection('empresas', this.Collections.empresas);
         }
     }
 
     /**
-     * Establecer carteras en la colección
+     * Establecer carteras en la colección usando BoxCollectionStorage
      */
     private __setCarteras(carteras: any[]): void {
         this.__initCarteras();
-        if ($App.Collections.carteras && carteras) {
-            $App.Collections.carteras.add(carteras, { merge: true });
+        if (this.Collections.carteras && carteras) {
+            this.Collections.carteras.add(carteras, { merge: true });
+            // Persistir en localStorage
+            this.storage.addCollection('carteras', this.Collections.carteras);
         }
     }
 
     /**
-     * Agregar una cartera a la colección
+     * Agregar una cartera a la colección usando BoxCollectionStorage
      */
     private __addCartera(cartera: any): Cartera {
         this.__initCarteras();
-        if (!$App.Collections.carteras) {
+        if (!this.Collections.carteras) {
             return cartera instanceof Cartera ? cartera : new Cartera(cartera);
         }
         const carteraModel = cartera instanceof Cartera ? cartera : new Cartera(cartera);
-        $App.Collections.carteras.add(carteraModel, { merge: true });
+        this.Collections.carteras.add(carteraModel, { merge: true });
+        // Persistir en localStorage
+        this.storage.addCollection('carteras', this.Collections.carteras);
         return carteraModel;
     }
 
     /**
      * Notificar a la plataforma sobre eliminación de cartera
      */
-    private __notifyPlataforma(nit: string): void {
+    private async __notifyPlataforma(nit: string): Promise<void> {
         if (!nit) {
-            $App.trigger('alert:error', 'NIT requerido para notificación');
+            this.App?.trigger('alert:error', 'NIT requerido para notificación');
             return;
         }
 
-        $App.trigger('syncro', {
-            url: create_url('novedades/notyRemoveCartera'),
-            data: { nit },
-            callback: (response: any) => {
-                if (response?.success) {
-                    $App.trigger('alert:success', response.msj);
-                } else {
-                    $App.trigger('alert:error', response?.msj || 'Error en notificación');
-                }
-            },
-        });
+        try {
+            if (!this.api) {
+                this.App?.trigger('alert:error', 'API no disponible');
+                return;
+            }
+
+            const response = await this.api.post('/novedades/notyRemoveCartera', { nit });
+
+            if (response?.success) {
+                this.App?.trigger('alert:success', (response as any).msj || response.message || 'Notificación enviada exitosamente');
+            } else {
+                this.App?.trigger('alert:error', (response as any).msj || response.message || 'Error en notificación');
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al notificar plataforma:', error);
+            this.App?.trigger('alert:error', error.message || 'Error de conexión al notificar plataforma');
+        }
     }
 }

@@ -30,7 +30,11 @@ const Trabajadores: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-        $App.startApp(RouterTrabajador, { defaultRoute: "listar", el: "#content" }, props);
+        $App.startApp(RouterTrabajador, {
+            defaultRoute: "listar",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
     }
 };
 

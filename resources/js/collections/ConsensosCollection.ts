@@ -4,7 +4,7 @@ import { BackboneCollection } from "@/common/Bone";
 import Consenso from "@/models/Consenso";
 
 class ConsensosCollection extends BackboneCollection {
-    constructor(options: any) {
+    constructor(options?: any) {
         super({ ...options, url: '/web/admin/consensos_all' });
     }
 

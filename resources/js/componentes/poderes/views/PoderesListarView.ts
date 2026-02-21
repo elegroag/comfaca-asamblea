@@ -3,10 +3,9 @@ import PoderRowView from "./PoderRowView";
 import listarPoderes from "@/componentes/poderes/templates/listarPoderes.hbs?raw";
 import { capitalize } from "@/core/Utils";
 import DataTable from 'datatables.net-bs5';
-import PoderesController from "@/pages/Poderes/PoderesController";
 
 export default class PoderesListarView extends BackboneView {
-    App: PoderesController;
+
     tableModule: any | null;
     subNavView: any;
     children: any[];
@@ -46,9 +45,7 @@ export default class PoderesListarView extends BackboneView {
 
     render() {
         const _template = _.template(listarPoderes);
-        this.$el.html(_template({
-            datatable: 'tb_data_poderes'
-        }));
+        this.$el.html(_template({ datatable: 'tb_data_poderes' }));
 
         const filas = this.collection.map((model: any) => {
             model.set('capitalize', (str: string) => capitalize(str));
@@ -64,25 +61,25 @@ export default class PoderesListarView extends BackboneView {
 
     async actaPoderes(e: Event) {
         e.preventDefault();
-        this.App.trigger('confirma', {
+        this.App?.trigger('confirma', {
             message: 'Se requiere de confirmar si desea generar el Acta.',
             callback: async (status: boolean) => {
                 if (status) {
                     try {
-                        if (!this.App.api) {
-                            this.App.trigger('error', 'API no disponible');
+                        if (!this.api) {
+                            this.App?.trigger('error', 'API no disponible');
                             return;
                         }
 
-                        const response = await this.App.api.get('/poderes/actaRevisionVerificacionPoderes') as any;
+                        const response = await this.api.get('/poderes/actaRevisionVerificacionPoderes') as any;
 
                         if (response && response.success) {
-                            this.App.trigger('download_file', response);
+                            this.App?.trigger('download_file', response);
                         } else {
-                            this.App.trigger('error', response?.msj || 'Error al generar el acta');
+                            this.App?.trigger('error', response?.msj || 'Error al generar el acta');
                         }
                     } catch (error: any) {
-                        this.App.trigger('alert:error',
+                        this.App?.trigger('alert:error',
                             'Se detecta un error al exportar los datos. Comunicar a soporte técnico'
                         );
                     }
@@ -93,25 +90,25 @@ export default class PoderesListarView extends BackboneView {
 
     async informeData(e: Event) {
         e.preventDefault();
-        this.App.trigger('confirma', {
+        this.App?.trigger('confirma', {
             message: 'Se requiere de confirmar si desea generar el informe.',
             callback: async (status: boolean) => {
                 if (status) {
                     try {
-                        if (!this.App.api) {
-                            this.App.trigger('error', 'API no disponible');
+                        if (!this.api) {
+                            this.App?.trigger('error', 'API no disponible');
                             return;
                         }
 
-                        const response = await this.App.api.get('/poderes/exportar_pdf') as any;
+                        const response = await this.api.get('/poderes/exportar_pdf') as any;
 
                         if (response && response.success) {
-                            this.App.trigger('download_file', response);
+                            this.App?.trigger('download_file', response);
                         } else {
-                            this.App.trigger('error', response?.msj || 'Error al generar el informe');
+                            this.App?.trigger('error', response?.msj || 'Error al generar el informe');
                         }
                     } catch (error: any) {
-                        this.App.trigger('alert:warning',
+                        this.App?.trigger('alert:warning',
                             'Se detecta un error al exportar los datos. Comunicar a soporte técnico'
                         );
                     }
@@ -122,25 +119,25 @@ export default class PoderesListarView extends BackboneView {
 
     async exportData(e: Event) {
         e.preventDefault();
-        this.App.trigger('confirma', {
+        this.App?.trigger('confirma', {
             message: 'Se requiere de confirmar si desea exportar la lista.',
             callback: async (status: boolean) => {
                 if (status) {
                     try {
-                        if (!this.App.api) {
-                            this.App.trigger('error', 'API no disponible');
+                        if (!this.api) {
+                            this.App?.trigger('error', 'API no disponible');
                             return;
                         }
 
-                        const response = await this.App.api.get('/poderes/exportar_lista') as any;
+                        const response = await this.api.get('/poderes/exportar_lista') as any;
 
                         if (response && response.success) {
-                            this.App.trigger('download_file', response);
+                            this.App?.trigger('download_file', response);
                         } else {
-                            this.App.trigger('error', response?.msj || 'Error al exportar la lista');
+                            this.App?.trigger('error', response?.msj || 'Error al exportar la lista');
                         }
                     } catch (error: any) {
-                        this.App.trigger('warning',
+                        this.App?.trigger('warning',
                             'Se detecta un error al exportar los datos. Comunicar a soporte técnico'
                         );
                     }
@@ -152,7 +149,7 @@ export default class PoderesListarView extends BackboneView {
     detallePoder(e: Event) {
         e.preventDefault();
         let documento = this.$el.find(e.currentTarget).attr('data-code');
-        this.App.router.navigate('mostrar/' + documento, { trigger: true, replace: true });
+        this.router.navigate('mostrar/' + documento, { trigger: true, replace: true });
     }
 
     initTable(): void {
@@ -257,30 +254,30 @@ export default class PoderesListarView extends BackboneView {
         let documento = target.attr('data-code');
         let model = this.collection.get(parseInt(documento));
 
-        this.App.trigger('confirma', {
+        this.App?.trigger('confirma', {
             message: 'Confirma que desea borrar el registro de poder',
             callback: async (status: boolean) => {
                 if (status) {
                     try {
-                        if (!this.App.api) {
-                            this.App.trigger('error', 'API no disponible');
+                        if (!this.api) {
+                            this.App?.trigger('error', 'API no disponible');
                             return;
                         }
 
-                        const response = await this.App.api.delete(`/poderes/remover_poder/${documento}`) as any;
+                        const response = await this.api.delete(`/poderes/remover_poder/${documento}`) as any;
 
                         if (response && response.success) {
-                            this.App.trigger('success', response.msj);
+                            this.App?.trigger('success', response.msj);
                             this.collection.remove(model);
                             if (this.tableModule) {
                                 this.tableModule.rows(target.parents('tr')).remove();
                                 this.tableModule.draw();
                             }
                         } else {
-                            this.App.trigger('error', response?.msj || 'Error al eliminar el poder');
+                            this.App?.trigger('error', response?.msj || 'Error al eliminar el poder');
                         }
                     } catch (error: any) {
-                        this.App.trigger('error',
+                        this.App?.trigger('error',
                             'Se detecta un error al eliminar el poder. Comunicar a soporte técnico'
                         );
                     }

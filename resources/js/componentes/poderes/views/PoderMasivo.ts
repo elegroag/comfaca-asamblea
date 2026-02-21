@@ -39,7 +39,7 @@ export default class PoderMasivo extends BackboneView {
 
         const formData = new FormData();
         formData.append('file', archivo_poderes[0]);
-        $.ajax({
+        ($ as any).ajax({
             url: Utils.getURL('poderes/cargue_masivo'),
             method: 'POST',
             dataType: 'JSON',

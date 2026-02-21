@@ -30,7 +30,11 @@ const Consensos: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-        $App.startApp(RouterConsenso, { defaultRoute: "listar", el: "#content" }, props);
+        $App.startApp(RouterConsenso, {
+            defaultRoute: "listar",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
     }
 };
 

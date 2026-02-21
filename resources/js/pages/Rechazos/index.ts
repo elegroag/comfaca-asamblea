@@ -1,7 +1,8 @@
 import useLayout from "@/componentes/useLayout";
 import $App from "@/core/App";
 import type { BackendAuthProps } from "@/types/types";
-import RouterPoderes from "./RouterPoderes";
+import RouterRechazos from "./RouterRechazos";
+
 
 interface DashboardComponent {
     props: string[];
@@ -12,7 +13,7 @@ interface DashboardComponent {
 }
 
 // Componente Dashboard con TypeScript
-const Poderes: DashboardComponent = {
+const Rechazos: DashboardComponent = {
     props: ["title", "user", "stats"],
     template: null,
     isLoading: false,
@@ -30,8 +31,12 @@ const Poderes: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-        $App.startApp(RouterPoderes, { defaultRoute: "listar", el: "#content" }, props);
+        $App.startApp(RouterRechazos, {
+            defaultRoute: "listar",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
     }
 };
 
-export default Poderes;
+export default Rechazos;

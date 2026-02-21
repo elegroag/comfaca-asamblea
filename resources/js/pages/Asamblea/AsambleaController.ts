@@ -1,41 +1,22 @@
-import { Region } from '@/common/Region';
 import { Controller } from '@/common/Controller';
 import AsambleaDetalle from '@/componentes/asamblea/views/AsambleaDetalle';
-import ListarAsambleas from '@/componentes/asamblea/views/ListarAsambleas';
+import AsambleaListar from '@/componentes/asamblea/views/AsambleaListar';
 import AsambleaActiva from '@/componentes/asamblea/views/AsambleaActiva';
 
-import {
-    AsambleaResponse,
-    ConsensoResponse,
-    UsuarioResponse,
-    AsaUsuarioResponse,
-    MesaResponse
-} from './types';
 import AsambleasCollection from '@/collections/AsambleasCollection';
 import ConsensosCollection from '@/collections/ConsensosCollection';
 import UsuariosCollection from '@/collections/UsuariosCollection';
 import AsaUsuariosCollection from '@/collections/AsaUsuariosCollection';
 import MesasCollection from '@/collections/MesasCollection';
+import { ControllerOptions } from '@/types/types';
 
-declare global {
-    var $: any;
-    var _: any;
-    var $App: any;
-    var create_url: (path: string) => string;
-    var scroltop: () => void;
-}
-
-interface AsambleaControllerOptions {
-    region?: Region;
-    [key: string]: any;
-}
 
 export default class AsambleaController extends Controller {
     currentView: any;
     Collections: any;
     asamblea: any;
 
-    constructor(options: AsambleaControllerOptions = {}) {
+    constructor(options: ControllerOptions) {
         super(options);
         this.Collections = {
             asambleas: new AsambleasCollection(),
@@ -62,7 +43,10 @@ export default class AsambleaController extends Controller {
                 if (asambleaDetalle) {
                     const view = new AsambleaDetalle({
                         model: asambleaDetalle,
-                        App: this
+                        App: this.App,
+                        api: this.api,
+                        router: this.router,
+                        logger: this.logger
                     });
                     this.region.show(view);
                     this.currentView = view;
@@ -80,7 +64,10 @@ export default class AsambleaController extends Controller {
                 if (asambleaDetalle) {
                     const view = new AsambleaDetalle({
                         model: asambleaDetalle,
-                        App: this
+                        App: this.App,
+                        api: this.api,
+                        router: this.router,
+                        logger: this.logger
                     });
                     this.region.show(view);
                     this.currentView = view;
@@ -110,9 +97,12 @@ export default class AsambleaController extends Controller {
 
             // Si ya tenemos datos, mostrar vista directamente
             if (this.Collections.asambleas && this.Collections.asambleas.length > 0) {
-                const view = new ListarAsambleas({
+                const view = new AsambleaListar({
                     collection: this.Collections.asambleas,
-                    App: this
+                    App: this.App,
+                    api: this.api,
+                    router: this.router,
+                    logger: this.logger
                 });
                 this.region.show(view);
                 this.currentView = view;
@@ -125,9 +115,12 @@ export default class AsambleaController extends Controller {
             if (response.success && (response as any).asambleas) {
                 this.Collections.asambleas.add((response as any).asambleas, { merge: true });
 
-                const view = new ListarAsambleas({
+                const view = new AsambleaListar({
                     collection: this.Collections.asambleas,
-                    App: this
+                    App: this.App,
+                    api: this.api,
+                    router: this.router,
+                    logger: this.logger
                 });
                 this.region.show(view);
                 this.currentView = view;
@@ -156,7 +149,10 @@ export default class AsambleaController extends Controller {
                 const view = new AsambleaActiva({
                     model: this.asamblea,
                     collection: this.Collections.consensos,
-                    App: this
+                    App: this.App,
+                    api: this.api,
+                    router: this.router,
+                    logger: this.logger
                 });
                 this.region.show(view);
                 this.currentView = view;
@@ -186,7 +182,10 @@ export default class AsambleaController extends Controller {
                 const view = new AsambleaActiva({
                     model: this.asamblea,
                     collection: this.Collections.consensos,
-                    App: this
+                    App: this.App,
+                    api: this.api,
+                    router: this.router,
+                    logger: this.logger
                 });
                 this.region.show(view);
                 this.currentView = view;
@@ -204,7 +203,7 @@ export default class AsambleaController extends Controller {
     /**
      * Establecer usuarios
      */
-    private __setUsuarios(usuarios: UsuarioResponse[]): void {
+    private __setUsuarios(usuarios: any[]): void {
         if (!this.Collections.usuarios) {
             this.Collections.usuarios = new UsuariosCollection();
             this.Collections.usuarios.reset();
@@ -215,7 +214,7 @@ export default class AsambleaController extends Controller {
     /**
      * Establecer usuarios de asamblea
      */
-    private __setUsuariosAsa(asa_usuarios: AsaUsuarioResponse[]): void {
+    private __setUsuariosAsa(asa_usuarios: any[]): void {
         if (!this.Collections.asa_usuarios) {
             this.Collections.asa_usuarios = new AsaUsuariosCollection();
             this.Collections.asa_usuarios.reset();
@@ -226,7 +225,7 @@ export default class AsambleaController extends Controller {
     /**
      * Establecer consensos
      */
-    private __setConsensos(consensos: ConsensoResponse[]): void {
+    private __setConsensos(consensos: any[]): void {
         if (!this.Collections.consensos) {
             this.Collections.consensos = new ConsensosCollection();
             this.Collections.consensos.reset();
@@ -237,7 +236,7 @@ export default class AsambleaController extends Controller {
     /**
      * Establecer asambleas
      */
-    private __setAsambleas(asambleas: AsambleaResponse[]): void {
+    private __setAsambleas(asambleas: any[]): void {
         if (!this.Collections.asambleas) {
             this.Collections.asambleas = new AsambleasCollection();
             this.Collections.asambleas.reset();
@@ -248,7 +247,7 @@ export default class AsambleaController extends Controller {
     /**
      * Establecer mesas
      */
-    private __setMesas(mesas: MesaResponse[]): void {
+    private __setMesas(mesas: any[]): void {
         if (!this.Collections.mesas) {
             this.Collections.mesas = new MesasCollection();
             this.Collections.mesas.reset();

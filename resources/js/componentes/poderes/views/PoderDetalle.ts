@@ -1,16 +1,12 @@
-'use strict';
-
 import { BackboneView } from "@/common/Bone";
-import type { AppInstance } from '@/types/types';
 import RechazarDetallePoder from "./RechazarDetallePoder";
 import { Utils } from "@/core/Utils";
 import detallePoder from "@/componentes/poderes/templates/detallePoder.hbs?raw";
 
 export default class PoderDetalle extends BackboneView {
-    App: AppInstance;
+
     constructor(options: any) {
         super(options);
-        this.App = options.App;
     }
 
     initialize() {
@@ -29,20 +25,20 @@ export default class PoderDetalle extends BackboneView {
     backList(e: Event) {
         e.preventDefault();
         this.remove();
-        this.App.router.navigate('listar', { trigger: true, replace: true });
+        this.router.navigate('listar', { trigger: true, replace: true });
         return false;
     }
 
     changeValidaEstado(e: Event) {
-        let $input = $(e.currentTarget);
+        let $input = this.$el.find(e.currentTarget);
         if ($input.is(':checked')) {
             if (this.model.get('estado') == 'A') return false;
 
-            this.App.trigger('confirma', {
+            this.App?.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea activar el poder.',
                 callback: (continuar: boolean) => {
                     if (continuar) {
-                        this.App.trigger('syncro', {
+                        this.App?.trigger('syncro', {
                             url: Utils.getURL('poderes/empresa_activar/' + this.model.get('documento')),
                             data: {},
                             callback: (salida: any) => {
@@ -52,9 +48,9 @@ export default class PoderDetalle extends BackboneView {
                                         this.$el.find('#show_criterio_rechazo').text('No Aplicado');
                                         this.$el.find('#show_estado_text').text('ACTIVO');
 
-                                        this.App.trigger('alert:success', salida.msj);
+                                        this.App?.trigger('alert:success', salida.msj);
                                     } else {
-                                        this.App.trigger('alert:error', salida.err);
+                                        this.App?.trigger('alert:error', salida.err);
                                     }
                                 }
                             },
@@ -67,7 +63,7 @@ export default class PoderDetalle extends BackboneView {
         } else {
             if (this.model.get('estado') == 'A') {
                 let view = new RechazarDetallePoder({ model: this.model, collection: this.criterios_rechazos });
-                this.App.trigger('show:modal', 'Rechazar Poder Detalle', view, { bootstrapSize: 'modal-lg' });
+                this.App?.trigger('show:modal', 'Rechazar Poder Detalle', view, { bootstrapSize: 'modal-lg' });
                 this.listenTo(view, 'change:criterio', this.__changeCriterio);
             }
         }

@@ -1,21 +1,8 @@
 import { BackboneView } from "@/common/Bone";
 import Cartera from "@/models/Cartera";
 import tmp_sub_navbar from "../templates/tmp_sub_navbar.hbs?raw";
+import { AppInstance } from "@/types/types";
 
-declare global {
-    var $App: any;
-}
-
-interface SubNavCarteraOptions {
-    model?: Cartera;
-    dataToggle: {
-        listar: boolean;
-        crear: boolean;
-        editar: boolean;
-        masivo: boolean;
-        exportar: boolean;
-    };
-}
 
 interface DataToggle {
     listar: boolean;
@@ -30,7 +17,7 @@ class SubNavCartera extends BackboneView {
     dataToggle: DataToggle;
     static parentView: BackboneView | undefined;
 
-    constructor(options: SubNavCarteraOptions) {
+    constructor(options: any) {
         super(options);
         this.template = tmp_sub_navbar;
         this.dataToggle = options.dataToggle;
@@ -62,26 +49,26 @@ class SubNavCartera extends BackboneView {
     nuevoRegistro(e: Event): void {
         e.preventDefault();
         if (SubNavCartera.parentView) SubNavCartera.parentView.remove();
-        $App.router.navigate('crear', { trigger: true });
+        this.router.navigate('crear', { trigger: true });
     }
 
     listarData(e: Event): void {
         e.preventDefault();
         if (SubNavCartera.parentView) SubNavCartera.parentView.remove();
-        $App.router.navigate('listar', { trigger: true, replace: true });
+        this.router.navigate('listar', { trigger: true, replace: true });
     }
 
     editaRegistro(e: Event): void {
         e.preventDefault();
         const nit = this.model.get('nit');
         if (SubNavCartera.parentView) SubNavCartera.parentView.remove();
-        $App.router.navigate('editar/' + nit, { trigger: true });
+        this.router.navigate('editar/' + nit, { trigger: true });
     }
 
     masivoRegistro(e: Event): void {
         e.preventDefault();
         if (SubNavCartera.parentView) SubNavCartera.parentView.remove();
-        $App.router.navigate('cargue', { trigger: true });
+        this.router.navigate('cargue', { trigger: true });
     }
 }
 

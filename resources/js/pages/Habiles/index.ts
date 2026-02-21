@@ -30,7 +30,11 @@ const Habiles: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-        $App.startApp(RouterHabiles, { defaultRoute: "listar", el: "#content" }, props);
+        $App.startApp(RouterHabiles, {
+            defaultRoute: "listar",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
     }
 };
 

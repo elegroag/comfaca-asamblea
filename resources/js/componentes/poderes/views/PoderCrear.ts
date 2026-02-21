@@ -5,15 +5,13 @@ import { Utils } from "@/core/Utils";
 import Poder from "@/models/Poder";
 import Loading from "@/common/Loading";
 import registroPoder from "@/componentes/poderes/templates/registroPoder.hbs?raw";
-import PoderesController from "@/pages/Poderes/PoderesController";
 
 
 export default class PoderCrear extends BackboneView {
-    App: PoderesController;
+
     constructor(options: any) {
         super(options);
         this.modal = void 0;
-        this.App = options.App || null;
     }
 
     render() {
@@ -63,7 +61,7 @@ export default class PoderCrear extends BackboneView {
         }
 
         if (apoderado_nit == poderdante_nit) {
-            this.App.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
+            this.App?.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
             return false;
         }
 
@@ -130,7 +128,7 @@ export default class PoderCrear extends BackboneView {
 
                     if (_.size(_errors) > 0) {
                         let view = new ValidacionPoder({ collection: _errors });
-                        this.App.trigger('show:modal', 'Validación Poderes', view, { bootstrapSize: 'modal-md' });
+                        this.App?.trigger('show:modal', 'Validación Poderes', view, { bootstrapSize: 'modal-md' });
                     } else {
                         this.setInput('apoderado_cedula', response.empresa.cedrep);
                         this.setText('razsoc_apoderado', response.empresa.razsoc);
@@ -152,7 +150,7 @@ export default class PoderCrear extends BackboneView {
         }
 
         if (poderdante_nit == apoderado_nit) {
-            this.App.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
+            this.App?.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
             return false;
         }
 
@@ -214,10 +212,10 @@ export default class PoderCrear extends BackboneView {
 
                     if (_.size(_errors) > 0) {
                         let view = new ValidacionPoder({ collection: _errors });
-                        this.App.trigger('show:modal', 'Validación Poderes', view, { bootstrapSize: 'modal-md' });
+                        this.App?.trigger('show:modal', 'Validación Poderes', view, { bootstrapSize: 'modal-md' });
                     } else {
                         if (es_inscrito > 0) {
-                            this.App.trigger(
+                            this.App?.trigger(
                                 'alert:warning',
                                 `La empresa poderdante con nit: ${response.empresa.nit} ha realizado el proceso de inscripción a la Asamblea. Para efecto de registro de poder,
 								está empresa perdera el derecho de asistencia y la inscripción y pasara a un estado de rechazo.\n
@@ -235,8 +233,8 @@ export default class PoderCrear extends BackboneView {
 
     validaGuardaPoder(e: Event) {
         e.preventDefault();
-        var target = $(e.currentTarget);
-        target.attr('disabled', true);
+        var target = this.$el.find(e.currentTarget);
+        target?.attr('disabled', true);
         const apoderado_nit = this.getInput('apoderado_nit');
         const apoderado_cedula = this.getInput('apoderado_cedula');
         const poderdante_nit = this.getInput('poderdante_nit');
@@ -257,26 +255,26 @@ export default class PoderCrear extends BackboneView {
         model.setForRechazo(false);
 
         if (apoderado_nit == '') {
-            this.App.trigger('alert:warning', 'Requiere del nit de la empresa apoderada');
+            this.App?.trigger('alert:warning', 'Requiere del nit de la empresa apoderada');
             target.removeAttr('disabled');
             return false;
         }
 
         if (poderdante_nit == '') {
-            this.App.trigger('alert:warning', 'Requiere del nit de la empresa poderdante');
+            this.App?.trigger('alert:warning', 'Requiere del nit de la empresa poderdante');
             target.removeAttr('disabled');
             return false;
         }
 
         if (apoderado_nit == poderdante_nit) {
             target.removeAttr('disabled');
-            this.App.trigger('alert:warning', 'La empresa poderdante no puede ser la misma empresa apoderada.');
+            this.App?.trigger('alert:warning', 'La empresa poderdante no puede ser la misma empresa apoderada.');
             return false;
         }
 
         if (!model.isValid()) {
             let errors = model.validationError;
-            this.App.trigger('alert:error', errors.toString());
+            this.App?.trigger('alert:error', errors.toString());
 
             setTimeout(() => {
                 $('.error').html('');
@@ -288,7 +286,7 @@ export default class PoderCrear extends BackboneView {
         }
 
         const url = Utils.getURL('poderes/validacion_previa');
-        this.App.trigger('syncro', {
+        this.App?.trigger('syncro', {
             url: url,
             data: {
                 nit1: apoderado_nit,
@@ -303,13 +301,13 @@ export default class PoderCrear extends BackboneView {
                 if (salida) {
                     if (salida.success === true) {
                         if (salida.poder === false) {
-                            this.App.trigger('alert:error', salida.msj);
+                            this.App?.trigger('alert:error', salida.msj);
                         } else {
-                            this.App.trigger('success', salida.msj);
-                            this.App.trigger('add:poder', new Poder(salida.poder));
+                            this.App?.trigger('success', salida.msj);
+                            this.App?.trigger('add:poder', new Poder(salida.poder));
                         }
                     } else {
-                        this.App.trigger('alert:error', salida.msj);
+                        this.App?.trigger('alert:error', salida.msj);
                     }
                     this.$el.find('input').val('');
                     this.setText('razsoc_apoderado', 'Razón social');
@@ -319,7 +317,7 @@ export default class PoderCrear extends BackboneView {
 
                     this.setInput('fecha', moment().format('DD-MM-YYYY'));
                 } else {
-                    this.App.trigger('alert:error', 'Error generado en la solicitud de cambio');
+                    this.App?.trigger('alert:error', 'Error generado en la solicitud de cambio');
                 }
             },
         });
@@ -342,7 +340,7 @@ export default class PoderCrear extends BackboneView {
     cancelar(e: Event) {
         e.preventDefault();
         this.remove();
-        this.App.router.navigate('listar', { trigger: true, replace: true });
+        this.router.navigate('listar', { trigger: true, replace: true });
         return false;
     }
 }

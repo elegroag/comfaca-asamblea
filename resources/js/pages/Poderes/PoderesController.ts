@@ -1,4 +1,3 @@
-import { Region } from '@/common/Region';
 import { Controller } from '@/common/Controller';
 import PoderesListarView from '@/componentes/poderes/views/PoderesListarView';
 import PoderCrear from '@/componentes/poderes/views/PoderCrear';
@@ -13,6 +12,7 @@ import {
     CriteriosRechazoResponse,
     EmpresaResponse
 } from './types';
+
 import PoderesCollection from '@/collections/Poderes';
 import EmpresasCollection from '@/collections/EmpresasCollection';
 import CriteriosRechazos from '@/collections/CriteriosRechazos';
@@ -44,17 +44,21 @@ export default class PoderesController extends Controller {
 
                 const view = new PoderesListarView({
                     collection: this.Collections.poderes,
-                    App: this
+                    App: this.App,
+                    router: this.router,
+                    logger: this.logger,
+                    api: this.api,
+                    props: this.props
                 });
                 this.region.show(view);
                 this.currentView = view;
             } else {
-                this.trigger('alert:error', { message: response.message || 'Error al cargar los poderes' });
+                this.App?.trigger('alert:error', { message: response.message || 'Error al cargar los poderes' });
                 this.router.navigate('error', { trigger: true });
             }
         } catch (error: any) {
             this.logger.error(error);
-            this.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.App?.trigger('alert:error', { message: error.message || 'Error de conexión' });
             this.router.navigate('error', { trigger: true });
         }
     }
@@ -64,8 +68,13 @@ export default class PoderesController extends Controller {
         console.log('PoderesController.crear() called');
         const view = new PoderCrear({
             collection: this.Collections.empresas,
-            App: this
+            App: this,
+            api: this.api,
+            router: this.router,
+            logger: this.logger,
+            props: this.props
         });
+
         this.currentView = view;
         this.region.show(view);
         this.listenTo(view, 'search:empresa', this.__searchEmpresaValidation);
@@ -75,7 +84,13 @@ export default class PoderesController extends Controller {
     buscar(): void {
         console.log('PoderesController.buscar() called');
 
-        const view = new PoderBuscar({});
+        const view = new PoderBuscar({
+            App: this.App,
+            router: this.router,
+            logger: this.logger,
+            api: this.api,
+            props: this.props
+        });
         this.currentView = view;
         this.region.show(view);
     }
@@ -92,14 +107,18 @@ export default class PoderesController extends Controller {
             if (response && response.success === true && response.poder) {
 
                 if (response.poder === false) {
-                    this.trigger('errors', response.msj);
+                    this.App?.trigger('errors', response.msj);
                 } else {
                     const view = new PoderDetalle({
                         model: response.poder,
                         apoderado: response.habil_apoderado,
                         poderdante: response.habil_poderdante,
                         criteriosRechazos: response.criterio_rechazos,
-                        App: this
+                        App: this,
+                        router: this.router,
+                        logger: this.logger,
+                        api: this.api,
+                        props: this.props
                     });
                     this.currentView = view;
                     this.region.show(view);
@@ -107,7 +126,7 @@ export default class PoderesController extends Controller {
 
             }
         } catch (error: any) {
-            this.trigger('error', error.message || 'Error de conexión');
+            this.App?.trigger('error', error.message || 'Error de conexión');
             this.router.navigate('listar', { trigger: true });
         }
     }
@@ -116,7 +135,7 @@ export default class PoderesController extends Controller {
     async buscarApoderado(nit: string): Promise<void> {
         console.log('PoderesController.buscarApoderado() called', nit);
 
-        this.trigger('hide:modal', null);
+        this.App?.trigger('hide:modal', null);
 
         try {
             if (!this.api) return;
@@ -129,16 +148,20 @@ export default class PoderesController extends Controller {
                     apoderado: response.apoderado,
                     poderdante: response.poderdante,
                     criteriosRechazos: response.criterio_rechazos,
-                    App: this
+                    App: this,
+                    router: this.router,
+                    logger: this.logger,
+                    api: this.api,
+                    props: this.props
                 });
                 this.currentView = view;
                 this.region.show(view);
             } else {
-                this.trigger('error', response.msj);
+                this.App?.trigger('error', response.msj);
                 this.router.navigate('listar', { trigger: true });
             }
         } catch (error: any) {
-            this.trigger('error', error.message || 'Error de conexión');
+            this.App?.trigger('error', error.message || 'Error de conexión');
             this.router.navigate('listar', { trigger: true });
         }
     }
@@ -147,7 +170,7 @@ export default class PoderesController extends Controller {
     async buscarPoderdante(nit: string): Promise<void> {
         console.log('PoderesController.buscarPoderdante() called', nit);
 
-        this.trigger('hide:modal', null);
+        this.App?.trigger('hide:modal', null);
 
         try {
             if (!this.api) return;
@@ -160,16 +183,21 @@ export default class PoderesController extends Controller {
                     apoderado: response.apoderado,
                     poderdante: response.poderdante,
                     criteriosRechazos: response.criterio_rechazos,
-                    App: this
+                    App: this,
+                    router: this.router,
+                    logger: this.logger,
+                    api: this.api,
+                    props: this.props
+
                 });
                 this.currentView = view;
                 this.region.show(view);
             } else {
-                this.trigger('warning', response.msj);
+                this.App?.trigger('warning', response.msj);
                 this.router.navigate('listar', { trigger: true });
             }
         } catch (error: any) {
-            this.trigger('error', error.message || 'Error de conexión');
+            this.App?.trigger('error', error.message || 'Error de conexión');
             this.router.navigate('listar', { trigger: true });
         }
     }
@@ -188,7 +216,11 @@ export default class PoderesController extends Controller {
                     this.Collections.criteriosRechazos = response.criterios || [];
                     const view = new RechazaPoder({
                         collection: this.Collections.criteriosRechazos,
-                        App: this
+                        App: this,
+                        router: this.router,
+                        logger: this.logger,
+                        api: this.api,
+                        props: this.props
                     });
                     this.currentView = view;
                     this.region.show(view);
@@ -196,16 +228,20 @@ export default class PoderesController extends Controller {
                         console.log('Adiciona poder por implementar');
                     });
                 } else {
-                    this.trigger('alert:error', { message: response.msj });
+                    this.App?.trigger('alert:error', { message: response.msj });
                 }
             } catch (error: any) {
                 console.error(error);
-                this.trigger('alert:error', { message: error.message || 'Error de conexión' });
+                this.App?.trigger('alert:error', { message: error.message || 'Error de conexión' });
             }
         } else {
             const view = new RechazaPoder({
                 collection: this.Collections.criteriosRechazos,
-                App: this
+                App: this,
+                router: this.router,
+                logger: this.logger,
+                api: this.api,
+                props: this.props
             });
             this.currentView = view;
             this.region.show(view);
@@ -232,27 +268,27 @@ export default class PoderesController extends Controller {
 
             if (response) {
                 if (response.success === false) {
-                    this.trigger('alert:error', response.msj);
+                    this.App?.trigger('alert:error', response.msj);
                     callback(false);
                 } else {
                     callback(response);
                 }
             } else {
-                this.trigger(
+                this.App?.trigger(
                     'alert:error',
                     'Se ha generado un error interno. Se requiere de reportar al área de TICS'
                 );
                 callback(false);
             }
         } catch (error: any) {
-            this.trigger('alert:error', error.message || 'Error de conexión');
+            this.App?.trigger('alert:error', error.message || 'Error de conexión');
             callback(false);
         }
     }
 
     error() {
         console.log('PoderesController.error() called');
-        this.trigger('error', 'Error al cargar los poderes');
+        this.App?.trigger('error', 'Error al cargar los poderes');
     }
 
     // Destruir controlador

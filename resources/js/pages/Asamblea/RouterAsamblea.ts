@@ -11,7 +11,7 @@ interface RouterAsambleaOptions {
 }
 
 export default class RouterAsamblea extends BackboneRouter {
-    controller: AsambleaController;
+    controller: AsambleaController | null = null;
 
     constructor(options: RouterAsambleaOptions = {}) {
         super({
@@ -24,14 +24,18 @@ export default class RouterAsamblea extends BackboneRouter {
             ...options,
         });
 
-        this.controller = $App.startSubApplication(AsambleaController, this);
         this._bindRoutes();
+    }
+
+    init() {
+        this.controller = $App.startSubApplication(AsambleaController);
     }
 
     /**
      * Mostrar detalle de asamblea
      */
     asambleaDetalle(id: string): void {
+        this.init();
         console.log('RouterAsamblea.asambleaDetalle() called', id);
 
         if (id === '' || id === undefined || id === void 0) {
@@ -51,6 +55,7 @@ export default class RouterAsamblea extends BackboneRouter {
      * Listar asambleas
      */
     listarAsambleas(): void {
+        this.init();
         console.log('RouterAsamblea.listarAsambleas() called');
 
         if (this.controller && typeof this.controller.listarAsambleas === 'function') {
@@ -62,6 +67,7 @@ export default class RouterAsamblea extends BackboneRouter {
      * Mostrar asamblea activa
      */
     asambleaActiva(): void {
+        this.init();
         console.log('RouterAsamblea.asambleaActiva() called');
 
         if (this.controller && typeof this.controller.asambleaActiva === 'function') {

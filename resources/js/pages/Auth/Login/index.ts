@@ -2,6 +2,8 @@ import layoutAuth from '@/componentes/layouts/templates/layout-auth.hbs?raw';
 import * as _ from 'underscore';
 import $App from "@/core/App";
 import RouterLogin from "./RouterLogin";
+import { Region } from '@/common/Region';
+import LayoutAuth from '@/componentes/layouts/views/LayoutAuth';
 
 // Componente TypeScript para Inertia - Auth Login
 interface LoginProps {
@@ -22,7 +24,16 @@ const Login: LoginComponent = {
     },
 
     mount(el: HTMLElement, props: LoginProps): void {
-        $App.startApp(RouterLogin, { defaultRoute: "login", el: "#auth-content" }, props);
+
+        const region = new Region({ el: '#contentView' });
+        const layout = new LayoutAuth();
+        region.show(layout);
+
+        $App.startApp(RouterLogin, {
+            defaultRoute: "login",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
     },
 };
 

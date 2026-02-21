@@ -30,7 +30,11 @@ const Recepcion: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-        $App.startApp(RouterRecepcion, { defaultRoute: "listar", el: "#content" }, props);
+        $App.startApp(RouterRecepcion, {
+            defaultRoute: "listar",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
     }
 };
 

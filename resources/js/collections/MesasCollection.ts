@@ -4,7 +4,7 @@ import { BackboneCollection } from "@/common/Bone";
 import Mesa from "@/models/Mesa";
 
 class MesasCollection extends BackboneCollection {
-    constructor(options: any) {
+    constructor(options?: any) {
         super({ ...options, url: '/web/admin/all_mesas' });
     }
 

@@ -2,100 +2,87 @@ import LayoutView from "@/componentes/habiles/views/LayoutView";
 import EmpresaNav from "@/componentes/habiles/views/EmpresaNav";
 import EmpresaCrearView from "@/componentes/habiles/views/EmpresaCrearView";
 import EmpresaService from "./EmpresaService";
+import { Controller } from "@/common/Controller";
 
-declare global {
-	var $: any;
-	var _: any;
-	var $App: any;
-	var EmpresaNav: any;
-}
+export default class EmpresaCrear extends Controller {
 
-interface EmpresaCrearOptions {
-	region?: any;
-	[key: string]: any;
-}
+    public empresaService: EmpresaService;
 
-export default class EmpresaCrear {
-	public region: any;
-	public layout: any;
-	public empresaService: EmpresaService;
+    constructor(options: any) {
+        super(options)
+        _.extend(this, options);
 
-	constructor(options: EmpresaCrearOptions = {}) {
-		this.layout = null;
-		_.extend(this, Backbone.Events);
-		_.extend(this, options);
+        this.empresaService = new EmpresaService({
+            router: this.router,
+            api: this.api,
+            App: this.App
+        });
 
-		this.empresaService = new EmpresaService();
+        this.listenTo(this, 'set:empresas', this.empresaService.__setEmpresas);
+        this.listenTo(this, 'add:empresa', this.empresaService.__addEmpresas);
+    }
 
-		if (typeof this.listenTo === 'function') {
-			this.listenTo(this, 'set:empresas', this.empresaService.__setEmpresas);
-			this.listenTo(this, 'add:empresa', this.empresaService.__addEmpresas);
-		}
-	}
+    /**
+     * Mostrar vista de creación de empresa
+     */
+    crearEmpresa(): void {
+        console.log('EmpresaCrear.crearEmpresa() called');
 
-	/**
-	 * Mostrar vista de creación de empresa
-	 */
-	crearEmpresa(): void {
-		console.log('EmpresaCrear.crearEmpresa() called');
+        const layout = new LayoutView();
+        this.region.show(layout);
 
-		this.layout = new LayoutView();
-		this.region.show(this.layout);
+        // Inicializar colección de empresas
+        this.empresaService.initEmpresas();
 
-		// Inicializar colección de empresas
-		EmpresaService.initEmpresas();
+        // Cargar datos si la colección está vacía
+        this.empresaService.__findAll();
 
-		// Cargar datos si la colección está vacía
-		if (!$App.Collections.empresas || !_.size($App.Collections.empresas) || _.size($App.Collections.empresas) === 0) {
-			this.empresaService.__findAll();
-		}
+        // Configurar vista principal
+        const crearView = new EmpresaCrearView({
+            collection: this.empresaService.Collections.empresas,
+            api: this.api,
+            App: this.App,
+            router: this.router
+        });
 
-		// Configurar vista principal
-		const crearView = new EmpresaCrearView({
-			collection: $App.Collections.empresas,
-		});
 
-		if (typeof this.listenTo === 'function') {
-			this.listenTo(crearView, 'form:save', this.empresaService.__saveEmpresa);
-			this.listenTo(crearView, 'add:empresas', this.empresaService.__addEmpresas);
-			this.listenTo(crearView, 'set:empresas', this.empresaService.__setEmpresas);
-			this.listenTo(crearView, 'notify', this.empresaService.__notifyPlataforma);
-		}
+        this.listenTo(crearView, 'form:save', this.empresaService.__saveEmpresa);
+        this.listenTo(crearView, 'add:empresas', this.empresaService.__addEmpresas);
+        this.listenTo(crearView, 'set:empresas', this.empresaService.__setEmpresas);
+        this.listenTo(crearView, 'notify', this.empresaService.__notifyPlataforma);
 
-		this.layout.getRegion('body').show(crearView);
 
-		// Establecer parent view para navegación
-		if (EmpresaNav) {
-			EmpresaNav.parentView = crearView;
-		}
+        layout.getRegion('body').show(crearView);
 
-		// Configurar navegación
-		const navView = new EmpresaNav({
-			model: {
-				titulo: 'Crear empresa',
-				listar: true,
-				exportar: false,
-				crear: false,
-				editar: false,
-				masivo: true,
-			},
-		});
+        // Establecer parent view para navegación
+        if (EmpresaNav) {
+            EmpresaNav.parentView = crearView;
+        }
 
-		this.layout.getRegion('subheader').show(navView);
-	}
+        // Configurar navegación
+        const navView = new EmpresaNav({
+            model: {
+                titulo: 'Crear empresa',
+                listar: true,
+                exportar: false,
+                crear: false,
+                editar: false,
+                masivo: true,
+            },
+            api: this.api,
+            App: this.App,
+            router: this.router
+        });
 
-	/**
-	 * Destruir la vista
-	 */
-	destroy(): void {
-		console.log('EmpresaCrear.destroy() called');
+        layout.getRegion('subheader').show(navView);
+    }
 
-		if (this.region && typeof this.region.remove === 'function') {
-			this.region.remove();
-		}
-
-		if (typeof this.stopListening === 'function') {
-			this.stopListening();
-		}
-	}
+    /**
+     * Destruir la vista
+     */
+    destroy(): void {
+        console.log('EmpresaCrear.destroy() called');
+        this.region.remove();
+        this.stopListening();
+    }
 }

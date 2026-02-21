@@ -3,7 +3,7 @@ import Asamblea from "@/models/Asamblea";
 import { route } from "ziggy-js";
 
 class AsambleasCollection extends BackboneCollection {
-    constructor(options: any) {
+    constructor(options?: any) {
         super({ ...options, url: route('admin.all') });
     }
 

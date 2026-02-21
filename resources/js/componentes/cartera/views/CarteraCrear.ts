@@ -4,14 +4,16 @@ import { Testeo } from "@/core/Testeo";
 import Cartera from "@/models/Cartera";
 import SubNavCartera from "./SubNavCartera";
 import tmp_crear_cartera from "../templates/tmp_crear_cartera.hbs?raw";
-
-declare global {
-    var create_url: (path: string) => string;
-}
+import { AppInstance } from "@/types/types";
 
 interface CarteraCrearOptions {
     model: Cartera;
     isNew: boolean;
+    App: AppInstance | null;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
 }
 
 interface EmpresaResponse {
