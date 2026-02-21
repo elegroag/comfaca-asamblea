@@ -3,6 +3,7 @@ import EmpresaNav from "@/componentes/habiles/views/EmpresaNav";
 import EmpresaListarView from "@/componentes/habiles/views/EmpresaListarView";
 import { Controller } from "@/common/Controller";
 import EmpresaService from "./EmpresaService";
+import Empresa from "@/models/Empresa";
 
 export default class EmpresasListar extends Controller {
     public empresaService: any;
@@ -12,9 +13,10 @@ export default class EmpresasListar extends Controller {
         _.extend(this, options);
 
         this.empresaService = new EmpresaService({
-            router: this.router,
             api: this.api,
-            App: this.App
+            App: this.App,
+            logger: this.logger,
+            EmpresaModel: Empresa
         });
 
         this.listenTo(this, 'set:empresas', this.empresaService.__setEmpresas);
@@ -45,12 +47,18 @@ export default class EmpresasListar extends Controller {
             router: this.router
         });
 
-        layout.getRegion('subheader').show(navView);
+        const subheaderRegion = layout.getRegion('subheader');
+        if (subheaderRegion) {
+            subheaderRegion.show(navView);
+        }
+        // Delegar exportaciones al service
+        this.listenTo(navView, 'export:lista', this.empresaService.__exportLista);
+        this.listenTo(navView, 'export:informe', this.empresaService.__exportInforme);
 
         // Configurar vista principal
         const listView = new EmpresaListarView({
             collection: this.empresaService.Collections.empresas || [],
-            router: this.router,
+            router: this.router as any,
             api: this.api,
             App: this.App
         });
@@ -59,7 +67,10 @@ export default class EmpresasListar extends Controller {
             this.listenTo(listView, 'remove:empresa', this.empresaService.__removeEmpresa);
         }
 
-        layout.getRegion('body').show(listView);
+        const bodyRegion = layout.getRegion('body');
+        if (bodyRegion) {
+            bodyRegion.show(listView);
+        }
 
         // Establecer parent view para navegación
         if (EmpresaNav) {

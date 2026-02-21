@@ -2,22 +2,14 @@ import useLayout from "@/componentes/useLayout";
 import $App from "@/core/App";
 import type { BackendAuthProps } from "@/types/types";
 import RouterHabiles from "./RouterHabiles";
+import { DashboardComponent } from "./types";
 
-interface DashboardComponent {
-    props: string[];
-    template: string | null;
-    isLoading: boolean;
-    mount(el: HTMLElement, props: BackendAuthProps): void;
-    render(props: BackendAuthProps): string;
-}
-
-// Componente Dashboard con TypeScript
 const Habiles: DashboardComponent = {
     props: ["title", "user", "stats"],
     template: null,
     isLoading: false,
 
-    render(props: BackendAuthProps): string {
+    render(): string {
         return "<div class='w-full h-full bg-gray-50 font-sans' id='contentView'></div>";
     },
 

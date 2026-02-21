@@ -1,14 +1,12 @@
 import { BackboneRouter } from "@/common/Bone";
 import EmpresasController from "./EmpresasController";
+import type { AppInstance } from "@/types/types";
+import { RouterHabilesOptions } from "./types";
 
-
-interface RouterHabilesOptions {
-    routes?: Record<string, string>;
-    [key: string]: any;
-}
 
 export default class RouterHabiles extends BackboneRouter {
     public controller: EmpresasController | null;
+    private app: AppInstance;
 
     constructor(options: RouterHabilesOptions) {
         super({
@@ -23,12 +21,13 @@ export default class RouterHabiles extends BackboneRouter {
             },
         });
 
+        this.app = options.app;
         this.controller = null;
         this._bindRoutes();
     }
 
     init() {
-        this.controller = $App.startSubApplication(EmpresasController);
+        this.controller = this.app.startSubApplication(EmpresasController);
     }
 
     /**

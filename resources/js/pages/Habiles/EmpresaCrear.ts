@@ -3,6 +3,7 @@ import EmpresaNav from "@/componentes/habiles/views/EmpresaNav";
 import EmpresaCrearView from "@/componentes/habiles/views/EmpresaCrearView";
 import EmpresaService from "./EmpresaService";
 import { Controller } from "@/common/Controller";
+import Empresa from "@/models/Empresa";
 
 export default class EmpresaCrear extends Controller {
 
@@ -13,9 +14,10 @@ export default class EmpresaCrear extends Controller {
         _.extend(this, options);
 
         this.empresaService = new EmpresaService({
-            router: this.router,
             api: this.api,
-            App: this.App
+            App: this.App,
+            logger: this.logger,
+            EmpresaModel: Empresa
         });
 
         this.listenTo(this, 'set:empresas', this.empresaService.__setEmpresas);
@@ -39,6 +41,7 @@ export default class EmpresaCrear extends Controller {
 
         // Configurar vista principal
         const crearView = new EmpresaCrearView({
+            EmpresaModel: Empresa,
             collection: this.empresaService.Collections.empresas,
             api: this.api,
             App: this.App,
@@ -52,7 +55,10 @@ export default class EmpresaCrear extends Controller {
         this.listenTo(crearView, 'notify', this.empresaService.__notifyPlataforma);
 
 
-        layout.getRegion('body').show(crearView);
+        const bodyRegion = layout.getRegion('body');
+        if (bodyRegion) {
+            bodyRegion.show(crearView);
+        }
 
         // Establecer parent view para navegación
         if (EmpresaNav) {
@@ -74,7 +80,10 @@ export default class EmpresaCrear extends Controller {
             router: this.router
         });
 
-        layout.getRegion('subheader').show(navView);
+        const subheaderRegion = layout.getRegion('subheader');
+        if (subheaderRegion) {
+            subheaderRegion.show(navView);
+        }
     }
 
     /**

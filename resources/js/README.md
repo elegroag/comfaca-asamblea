@@ -1,3 +1,112 @@
+# Patrón DI actualizado en Habiles (versión vigente)
+
+Esta es la documentación oficial y vigente del módulo Habiles, alineada con:
+- Inversión de dependencias (DI) explícita en Router/Controllers/Services/Views.
+- Eliminación de globales como `$App`, `$.ajax`, `Empresa` y navegación global.
+- Plantillas unificadas con imports `?raw` y compilación única con `_.template`.
+- Delegación de toda I/O de backend al `Service` usando `this.api`.
+
+## Dependencias inyectadas (contrato común)
+- `api`: cliente HTTP (this.api.get/post/delete...)
+- `App`: bus de eventos/UX (this.App.trigger, this.App.download)
+- `logger`: logging de errores/diagnóstico
+- `router`: navegación interna (router.navigate('ruta', { trigger: true }))
+- `EmpresaModel`: modelo tipado inyectado a vistas que crean/usan instancias
+
+## Estructura por capa
+- RouterHabiles: resuelve rutas y delega en Controllers
+- Controllers: crean Layout, muestran vistas en regiones y conectan eventos al Service
+- EmpresaService: lógica de dominio y acceso a API; métodos públicos `__*` y privados `*Api`
+- Vistas (BackboneView): UI, emiten eventos; NO hacen I/O
+- Layout/Region: infraestructura de renderizado; regiones con guards
+
+## Flujo estándar
+1) Controller crea `new LayoutView()` y lo muestra en su `region`.
+2) Crea `EmpresaNav` con `{ router, App, api, model: { flags } }` y lo muestra en `subheader`.
+3) Muestra la vista principal en `body` y conecta eventos → métodos `__*` del Service.
+4) El Service llama a `this.api` y notifica con `this.App.trigger('alert:*')` y/o `this.App.download`.
+
+## Vistas: opciones y ejemplos
+- Ejemplo `EmpresaEditarView`/`EmpresaCrearView`:
+```ts
+new EmpresaEditarView({ model, router, api, App, EmpresaModel })
+// Internamente: this.modelUse = options.EmpresaModel
+```
+- `EmpresaDetalleView` recibe `EmpresaModel` y usa plantilla `detalle_empresa.hbs?raw`.
+- `EmpresaMasivoView` emite `file:upload` con `FormData` y no hace llamadas HTTP.
+
+## EmpresaNav (navegación y acciones)
+- Usa `this.router.navigate(...)` en lugar de `$App.router`.
+- Confirmaciones vía `this.App.trigger('confirma', { message, callback })`.
+- Emite eventos `export:lista` y `export:informe` para que los Controllers deleguen al Service.
+
+## EmpresaService: interfaz pública y privados
+- Públicos (consumidos por Controllers/Vistas):
+  - `__findAll`, `__setEmpresas`, `__addEmpresas`, `__removeEmpresa`
+  - `__setHabiles`, `__addHabiles`, `__removeHabil`
+  - `__saveEmpresa`, `__notifyPlataforma`
+  - `__uploadMasivo({ formData, callback })`
+  - `__exportLista()` y `__exportInforme()`
+- Privados (solo Service):
+  - `findAllApi`, `saveEmpresaApi`, `removeHabilApi`, `notifyPlataformaApi`, etc.
+- Acceso HTTP: siempre `this.api` (sin `syncro` ni `$.ajax`).
+
+## Plantillas y render
+- Todas las vistas importan templates con `?raw` y los compilan una sola vez:
+```ts
+import tpl from '../templates/view.hbs?raw'
+this.template = _.template(tpl)
+```
+- `ModelView` usa `_.isFunction`/`_.isString` para renderizar/compilar.
+
+## Guards de regiones
+- Siempre verificar regiones antes de usar `show`:
+```ts
+const sub = layout.getRegion('subheader'); if (sub) sub.show(navView)
+const body = layout.getRegion('body'); if (body) body.show(view)
+```
+
+## Ejemplos clave
+- Cargue masivo (vista → controller → service):
+```ts
+// EmpresaMasivoView
+this.trigger('file:upload', { formData, callback })
+
+// EmpresaMasivo (controller)
+this.listenTo(masivoView, 'file:upload', this.empresaService.__uploadMasivo)
+
+// EmpresaService
+__uploadMasivo = async ({ formData, callback }) => {
+  const res = await this.api.post('/habiles/cargue_masivo', formData)
+  if (res?.success) { this.App.trigger('alert:success', { message: res.msj }); callback(true, res) }
+  else { this.App.trigger('alert:error', { message: res?.msj || 'Error' }); callback(false) }
+}
+```
+
+- Exportar lista / informe:
+```ts
+// EmpresaNav
+this.App.trigger('confirma', { message, callback: (ok) => ok && this.trigger('export:lista') })
+
+// Controller
+this.listenTo(navView, 'export:lista', this.empresaService.__exportLista)
+this.listenTo(navView, 'export:informe', this.empresaService.__exportInforme)
+
+// EmpresaService
+__exportLista = async () => {
+  const r = await this.api.get('/habiles/exportar_lista')
+  if (r?.success && r.url) { this.App.download({ url: r.url, filename: r.filename || 'empresas.csv' }) }
+}
+```
+
+## Convenciones
+- Métodos Service públicos: prefijo `__`.
+- Privados con sufijo `Api` para llamadas HTTP.
+- Tipos/Options por vista y controller; evitar `any` en código nuevo.
+- Vistas no conocen de API ni de almacenamiento; emiten eventos.
+
+---
+
 # Patrón Vanilla JS + Inertia en Habiles
 
 Este documento describe la arquitectura y los flujos aplicados en la página Habiles usando Vanilla JS, Backbone-like (Bone), y Inertia como capa de orquestación desde Laravel.

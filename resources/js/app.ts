@@ -3,6 +3,8 @@ import './bootstrap';
 import { route as ziggyRoute } from "ziggy-js";
 import { InertiaProgress } from "@inertiajs/progress";
 import "./styles/global.css";
+import Logger from './common/Logger';
+import ApiService from './services/ApiService';
 
 // Tipos para el sistema de páginas
 interface PageComponent {
@@ -68,8 +70,11 @@ async function renderPage(page: PageData): Promise<void> {
         return;
     }
 
+    const logger = new Logger();
+    const api = new ApiService(page.props);
+
     // Render HTML
-    const html = component.render ? component.render(page.props) : "";
+    const html = component.render ? component.render({ ...page.props, api, logger }) : "";
     el.innerHTML = html;
 
     // Hook de montaje

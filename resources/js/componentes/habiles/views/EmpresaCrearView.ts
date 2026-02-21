@@ -1,17 +1,26 @@
 import { BackboneView } from "@/common/Bone";
+import tmp_crear_habiles from "../templates/crear_habiles?raw";
+
+interface EmpresaCrearViewOptions {
+    EmpresaModel: new (attrs?: any, options?: any) => any;
+    App: { trigger: (event: string, payload: any) => void } | any;
+    [key: string]: any;
+}
 
 
 export default class EmpresaCrearView extends BackboneView {
     modelUse: any;
     template: any;
+    App: { trigger: (event: string, payload: any) => void } | any;
 
-    constructor(options: any) {
+    constructor(options: EmpresaCrearViewOptions) {
         super({
             ...options,
             className: 'box',
         });
-        this.modelUse = Empresa;
-        this.template = _.template(document.getElementById('tmp_crear_habiles')?.innerHTML || '');
+        this.modelUse = options.EmpresaModel;
+        this.App = options.App;
+        this.template = _.template(tmp_crear_habiles);
     }
 
     /**
@@ -31,7 +40,7 @@ export default class EmpresaCrearView extends BackboneView {
         target.attr('disabled', 'true');
 
         const nit = this.getInput('nit');
-        const model = new Empresa({
+        const model = new this.modelUse({
             nit: parseInt(nit || '0'),
             cedrep: parseInt(this.getInput('cedrep') || '0'),
             repleg: this.getInput('repleg'),
@@ -43,8 +52,8 @@ export default class EmpresaCrearView extends BackboneView {
         });
 
         if (!nit || nit.trim() === '') {
-            if ($App && typeof $App.trigger === 'function') {
-                $App.trigger('alert:error', 'El nit de la empresa es un valor requerido');
+            if (this.App && typeof this.App.trigger === 'function') {
+                this.App.trigger('alert:error', { message: 'El nit de la empresa es un valor requerido' });
             }
             target.removeAttr('disabled');
             return false;

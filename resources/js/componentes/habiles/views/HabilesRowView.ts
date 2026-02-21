@@ -1,10 +1,5 @@
 import { BackboneView } from "@/common/Bone";
-
-declare global {
-    var $: any;
-    var _: any;
-    var $App: any;
-}
+import tmp_row_habil from '../templates/row_habil.hbs?raw';
 
 interface HabilesRowViewOptions {
     model?: any;
@@ -12,11 +7,10 @@ interface HabilesRowViewOptions {
 }
 
 export default class HabilesRowView extends BackboneView {
-    template: string;
 
     constructor(options: HabilesRowViewOptions = {}) {
         super(options);
-        this.template = '#tmp_row_habil';
+        this.template = _.template(tmp_row_habil);
     }
 
     get tagName(): string {

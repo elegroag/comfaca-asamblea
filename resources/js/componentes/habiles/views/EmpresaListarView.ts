@@ -1,14 +1,20 @@
 import { BackboneView } from "@/common/Bone";
 import EmpresaRowView from "./EmpresaRowView";
 
+interface EmpresaListarViewOptions {
+    router?: { navigate: (fragment: string, options?: any) => void };
+    [key: string]: any;
+}
+
 
 export default class EmpresaListarView extends BackboneView {
     tableModule: any;
     children: any[];
     modelView: typeof EmpresaRowView;
     template: any;
+    private router?: { navigate: (fragment: string, options?: any) => void };
 
-    constructor(options: any) {
+    constructor(options: EmpresaListarViewOptions = {}) {
         super({
             ...options,
             className: 'box',
@@ -17,6 +23,7 @@ export default class EmpresaListarView extends BackboneView {
         this.children = new Array();
         this.tableModule = null;
         this.template = _.template(document.getElementById('tmp_listar_empresas')?.innerHTML || '');
+        this.router = options.router;
     }
 
     initialize(): void {
@@ -55,8 +62,8 @@ export default class EmpresaListarView extends BackboneView {
         e.preventDefault();
         const nit = $(e.currentTarget as HTMLElement).attr('data-cid') as string;
         this.remove();
-        if ($App.router) {
-            $App.router.navigate('detalle/' + nit, { trigger: true, replace: true });
+        if (this.router && typeof this.router.navigate === 'function') {
+            this.router.navigate('detalle/' + nit, { trigger: true, replace: true });
         }
     }
 
@@ -64,8 +71,8 @@ export default class EmpresaListarView extends BackboneView {
         e.preventDefault();
         const nit = $(e.currentTarget as HTMLElement).attr('data-cid') as string;
         this.remove();
-        if ($App.router) {
-            $App.router.navigate('edita/' + nit, { trigger: true });
+        if (this.router && typeof this.router.navigate === 'function') {
+            this.router.navigate('edita/' + nit, { trigger: true });
         }
     }
 

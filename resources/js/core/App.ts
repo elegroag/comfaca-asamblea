@@ -26,7 +26,7 @@ const $App: AppInstance = {
     mainRegion: null,
     props: null,
 
-    startApp(RouterModule: new () => any, options: { defaultRoute: string; mainRegion: Region; props: any }): void {
+    startApp(RouterModule: new (options?: any) => any, options: { defaultRoute: string; mainRegion: Region; props: any }): void {
         this.props = options.props;
         this.mainRegion = options.mainRegion;
 
@@ -48,7 +48,7 @@ const $App: AppInstance = {
             this.listenTo(this, `alert:${type}`, (transfer: AlertTransfer) => this.alert(type, transfer));
         });
 
-        this.router = new RouterModule();
+        this.router = new RouterModule({ app: this });
         if (!Backbone.history.start()) {
             this.router.navigate(options.defaultRoute, { trigger: true });
         }
@@ -88,11 +88,14 @@ const $App: AppInstance = {
         SubApplication: new (options: SubApplicationOptions) => any
     ): any {
 
+        const providedApi = (this.props && (this.props as any).api) ? (this.props as any).api : new ApiService(this.props);
+        const providedLogger = (this.props && (this.props as any).logger) ? (this.props as any).logger : new Logger();
+
         this.currentSubapp = new SubApplication({
             region: this.mainRegion,
-            api: new ApiService(this.props),
+            api: providedApi,
             props: this.props,
-            logger: new Logger(),
+            logger: providedLogger,
             router: this.router,
             App: this
         });

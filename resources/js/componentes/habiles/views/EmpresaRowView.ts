@@ -1,10 +1,5 @@
 import { BackboneView } from "@/common/Bone";
-
-declare global {
-    var $: any;
-    var _: any;
-    var $App: any;
-}
+import tmp_row_empresa from '../templates/row_empresa.hbs?raw';
 
 interface EmpresaRowViewOptions {
     model?: any;
@@ -12,11 +7,10 @@ interface EmpresaRowViewOptions {
 }
 
 export default class EmpresaRowView extends BackboneView {
-    template: string;
 
     constructor(options: EmpresaRowViewOptions = {}) {
         super(options);
-        this.template = '#tmp_row_empresa';
+        this.template = _.template(tmp_row_empresa);
     }
 
     get tagName(): string {

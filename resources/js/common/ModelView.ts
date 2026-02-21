@@ -1,5 +1,9 @@
 // Importar la clase base BackboneView
-import { BackboneView } from './Bone';
+import {
+    BackboneCollection,
+    BackboneModel,
+    BackboneView
+} from './Bone';
 
 // Definir interfaces localmente para evitar problemas de importación
 interface ModelViewOptions {
@@ -10,8 +14,8 @@ interface ModelViewOptions {
     id?: string;
     className?: string;
     attributes?: Record<string, any>;
-    model?: Backbone.Model | null;
-    collection?: Backbone.Collection | null;
+    model?: BackboneModel | null;
+    collection?: BackboneCollection | null;
     events?: Record<string, string>;
     [key: string]: any;
 }
@@ -41,9 +45,9 @@ export class ModelView extends BackboneView {
         const data = this.serializeData();
         let renderedHtml: string;
 
-        if (window._.isFunction(this.template)) {
+        if (_.isFunction(this.template)) {
             renderedHtml = (this.template as (data: any) => string)(data);
-        } else if (window._.isString(this.template)) {
+        } else if (_.isString(this.template)) {
             const compiledTemplate = this.compileTemplate();
             if (compiledTemplate) {
                 renderedHtml = compiledTemplate(data);
@@ -63,10 +67,10 @@ export class ModelView extends BackboneView {
     * Compila un template de selector a función de Underscore
     */
     compileTemplate(): ((data: any) => string) | false {
-        if (window._.isString(this.template) === true) {
+        if (_.isString(this.template) === true) {
             const _el = document.querySelector(this.template as string);
             if (_el) {
-                return window._.template(_el.innerHTML);
+                return _.template(_el.innerHTML);
             }
         }
         return false;

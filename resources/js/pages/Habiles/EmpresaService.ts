@@ -1,28 +1,22 @@
 import Logger from "@/common/Logger";
 import HabilesCollection from "@/componentes/habiles/collections/HabilesCollection";
-import EmpresasCollection from "@/componentes/habiles/collections/HabilesCollection";
+import EmpresasCollection from "@/collections/EmpresasCollection";
 import HabilModel from "@/componentes/habiles/models/HabilModel";
 import { BoxCollectionStorage } from "@/componentes/useStorage";
 import { AppInstance } from "@/types/types";
+import type {
+    NotifyTransfer,
+    RemoveTransfer,
+    SaveTransfer,
+    xCollection
+} from "./types";
 
-interface SaveTransfer {
-    model: any;
-    callback: (success: boolean, data?: any) => void;
-}
 
-interface RemoveTransfer {
-    model: any;
-    callback: (success: boolean | any) => void;
-}
-
-interface NotifyTransfer {
-    nit?: string;
-    documento?: string;
-}
-
-interface xCollection {
-    empresas: EmpresasCollection | null;
-    habiles: HabilesCollection | null;
+export interface EmpresaServiceOptions {
+    api: any;
+    App: AppInstance | any;
+    logger: Logger;
+    EmpresaModel?: any; // opcional, si se requiere construir explícitamente modelos de empresa
 }
 
 export default class EmpresaService {
@@ -31,17 +25,18 @@ export default class EmpresaService {
     api: any;
     App: AppInstance | any;
     logger: Logger;
+    private EmpresaModel?: any;
 
-    constructor(options: any) {
+    constructor(options: EmpresaServiceOptions) {
         this.Collections = {
             empresas: new EmpresasCollection(),
             habiles: new HabilesCollection(),
         };
-        this.api = null;
-        this.App = null;
+        this.api = options.api;
+        this.App = options.App;
         this.logger = options.logger;
+        this.EmpresaModel = options.EmpresaModel;
         this.storage = BoxCollectionStorage.getInstance();
-        _.extend(this, options);
     }
 
     /**
@@ -125,7 +120,7 @@ export default class EmpresaService {
     __removeEmpresa(transfer: RemoveTransfer): void {
         const { model, callback } = transfer;
 
-        if (model instanceof Empresa) {
+        if (model && typeof model.get === 'function') {
 
             this.App?.trigger('confirma', {
                 message: 'Se requiere de confirmar la acción a realizar para remover el registro',
@@ -163,7 +158,7 @@ export default class EmpresaService {
      * Buscar todas las empresas
      */
     __findAll(): void {
-        if (!this.Collections.empresas || !_.size(this.Collections.empresas) || _.size(this.Collections.empresas) === 0) {
+        if (!this.Collections.empresas || (this.Collections.empresas.length ?? 0) === 0) {
             this.findAllApi();
         }
     }
@@ -197,9 +192,9 @@ export default class EmpresaService {
      */
     __addEmpresas(empresa: any): void {
         this.initEmpresas();
-        const _empresa = empresa instanceof Empresa ? empresa : new Empresa(empresa);
+        const payload = this.EmpresaModel ? new this.EmpresaModel(empresa) : empresa;
         if (this.Collections && this.Collections.empresas) {
-            this.Collections.empresas.add(_empresa, { merge: true });
+            this.Collections.empresas.add(payload, { merge: true });
         }
     }
 
@@ -296,4 +291,57 @@ export default class EmpresaService {
             this.App?.trigger('alert:error', error.message || 'Error de conexión al notificar plataforma');
         }
     }
+
+    /**
+     * Cargue masivo de habiles (delegado desde la vista)
+     */
+    __uploadMasivo = async (transfer: { formData: FormData, callback: (success: boolean, data?: any) => void }): Promise<void> => {
+        const { formData, callback } = transfer;
+        try {
+            const response = await this.api.post('/habiles/cargue_masivo', formData);
+            if (response && response.success === true) {
+                this.App?.trigger('alert:success', { message: response.msj || 'Cargue masivo completado' });
+                return callback(true, response);
+            } else {
+                this.App?.trigger('alert:error', { message: (response && (response.msj || response.message)) || 'Error en cargue masivo' });
+                return callback(false);
+            }
+        } catch (error: any) {
+            this.logger?.error('Error en cargue masivo:', error);
+            this.App?.trigger('alert:error', error.message || 'Error de conexión en cargue masivo');
+            return callback(false);
+        }
+    };
+
+    /** Exportar lista en formato descargable */
+    __exportLista = async (): Promise<void> => {
+        try {
+            const response = await this.api.get('/habiles/exportar_lista');
+            if (response?.success && response.url) {
+                this.App?.download({ url: response.url, filename: response.filename || 'empresas.csv' });
+                this.App?.trigger('alert:success', { message: response.msj || 'Exportación iniciada' });
+            } else {
+                this.App?.trigger('alert:error', { message: response?.msj || response?.message || 'No fue posible exportar la lista' });
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al exportar lista:', error);
+            this.App?.trigger('alert:error', error.message || 'Error de conexión al exportar lista');
+        }
+    };
+
+    /** Exportar informe (PDF u otro) */
+    __exportInforme = async (): Promise<void> => {
+        try {
+            const response = await this.api.get('/habiles/exportar_pdf');
+            if (response?.success && response.url) {
+                this.App?.download({ url: response.url, filename: response.filename || 'informe.pdf' });
+                this.App?.trigger('alert:success', { message: response.msj || 'Generación de informe iniciada' });
+            } else {
+                this.App?.trigger('alert:error', { message: response?.msj || response?.message || 'No fue posible generar el informe' });
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al exportar informe:', error);
+            this.App?.trigger('alert:error', error.message || 'Error de conexión al exportar informe');
+        }
+    };
 }

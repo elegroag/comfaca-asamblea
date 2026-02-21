@@ -3,6 +3,7 @@ import EmpresaNav from "@/componentes/habiles/views/EmpresaNav";
 import EmpresaEditarView from "@/componentes/habiles/views/EmpresaEditarView";
 import EmpresaService from "./EmpresaService";
 import { Controller } from "@/common/Controller";
+import Empresa from "@/models/Empresa";
 
 export default class EmpresaEditar extends Controller {
     public empresaService: EmpresaService;
@@ -13,9 +14,10 @@ export default class EmpresaEditar extends Controller {
         _.extend(this, options);
 
         this.empresaService = new EmpresaService({
-            router: this.router,
             api: this.api,
-            App: this.App
+            App: this.App,
+            logger: this.logger,
+            EmpresaModel: Empresa
         });
 
         this.listenTo(this, 'set:empresas', this.empresaService.__setEmpresas);
@@ -41,7 +43,8 @@ export default class EmpresaEditar extends Controller {
             model: model,
             router: this.router,
             api: this.api,
-            App: this.App
+            App: this.App,
+            EmpresaModel: Empresa
         });
 
 
@@ -51,7 +54,10 @@ export default class EmpresaEditar extends Controller {
         this.listenTo(editarView, 'notify', this.empresaService.__notifyPlataforma);
 
 
-        layout.getRegion('body').show(editarView);
+        const bodyRegion = layout.getRegion('body');
+        if (bodyRegion) {
+            bodyRegion.show(editarView);
+        }
 
         // Establecer parent view para navegación
         if (EmpresaNav) {
@@ -73,7 +79,10 @@ export default class EmpresaEditar extends Controller {
             router: this.router
         });
 
-        layout.getRegion('subheader').show(navView);
+        const subheaderRegion = layout.getRegion('subheader');
+        if (subheaderRegion) {
+            subheaderRegion.show(navView);
+        }
     }
 
     /**

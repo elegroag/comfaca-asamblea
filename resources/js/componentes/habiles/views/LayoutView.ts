@@ -1,22 +1,17 @@
-import { BackboneView } from "@/common/Bone";
 
-interface LayoutViewOptions {
-    template?: any;
-    regions?: Record<string, string>;
-    [key: string]: any;
-}
+import { Layout, LayoutOptions } from '@/common/Layout';
+import tmp_layout from '../templates/layout.hbs?raw';
 
 export default class LayoutView extends Layout {
-    template: any;
-    regions: Record<string, string>;
 
-    constructor(options: LayoutViewOptions = {}) {
+    constructor(options?: LayoutOptions) {
         super(options);
-        this.template = _.template(document.getElementById('tmp_layout')?.innerHTML || '');
-        this.regions = {
+        this.template = _.template(tmp_layout);
+
+        this.configureRegions({
             subheader: '#subheader',
             body: '#body',
-        };
+        });
     }
 
     /**

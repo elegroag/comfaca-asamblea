@@ -1,4 +1,5 @@
 import { BackboneView } from "@/common/Bone";
+import tmp_edita_empresa from "../templates/edita_empresa?raw";
 
 interface EmpresaEditarViewOptions {
     model?: any;
@@ -6,19 +7,20 @@ interface EmpresaEditarViewOptions {
     router?: any;
     api?: any;
     App?: any;
+    EmpresaModel: new (attrs?: any, options?: any) => any;
 }
 
 export default class EmpresaEditarView extends BackboneView {
     modelUse: any;
     template: any;
 
-    constructor(options: EmpresaEditarViewOptions = {}) {
+    constructor(options: EmpresaEditarViewOptions) {
         super({
             ...options,
             className: 'box',
         });
-        this.modelUse = Empresa;
-        this.template = _.template(document.getElementById('tmp_edita_empresa')?.innerHTML || '');
+        this.modelUse = options.EmpresaModel;
+        this.template = _.template(tmp_edita_empresa);
     }
 
     /**
@@ -33,7 +35,7 @@ export default class EmpresaEditarView extends BackboneView {
         const target = $(e.currentTarget as HTMLElement);
         target.attr('disabled', 'true');
 
-        const model = new Empresa({
+        const model = new this.modelUse({
             nit: parseInt(this.getInput('nit') || '0'),
             cedrep: parseInt(this.getInput('cedrep') || '0'),
             repleg: this.getInput('repleg'),

@@ -44,46 +44,39 @@ export default class EmpresaMasivoView extends BackboneView {
         formData.append('file', archivoHabiles[0]);
         formData.append('cruzar_cartera', cruzarCartera.toString());
 
-        $.ajax({
-            url: create_url('habiles/cargue_masivo'),
-            method: 'POST',
-            dataType: 'JSON',
-            cache: false,
-            data: formData,
-            contentType: false,
-            processData: false,
-            beforeSend: function (xhr: any) {
-                if (loading) loading.show();
-            },
-        })
-            .done((salida: any) => {
-                if (loading) loading.hide();
-                if (salida) {
-                    if (Swal) {
-                        Swal.fire({
-                            title: 'Notificación!',
-                            text: `Ya se completo el cargue de los habiles.\nRegistrados: ${salida.creados}\nCantidad: ${salida.filas}\nFallos: ${salida.fallidos}`,
-                            button: 'Continuar!',
-                        });
+        if (typeof this.trigger === 'function') {
+            if (loading) loading.show();
+            this.trigger('file:upload', {
+                formData,
+                callback: (success: boolean, salida?: any) => {
+                    if (loading) loading.hide();
+                    target.removeAttr('disabled');
+                    if (success && salida) {
+                        if (Swal) {
+                            Swal.fire({
+                                title: 'Notificación!',
+                                text: `Ya se completo el cargue de los habiles.\nRegistrados: ${salida.creados}\nCantidad: ${salida.filas}\nFallos: ${salida.fallidos}`,
+                                button: 'Continuar!',
+                            });
+                        }
+                        this.$el.find('#archivo_habiles').val('');
+                        this.$el.find('#name_archivo').text('Seleccionar aquí...');
+                        this.$el.find('#remover_archivo').attr('disabled', 'true');
+                    } else {
+                        if (Swal) {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: (salida && (salida.msj || salida.message)) || 'Error desconocido',
+                                button: 'Continuar!',
+                            });
+                        }
+                        this.$el.find('#archivo_habiles').val('');
+                        this.$el.find('#name_archivo').text('Seleccionar aquí...');
+                        this.$el.find('#remover_archivo').attr('disabled', 'true');
                     }
-                    this.$el.find('#archivo_habiles').val('');
-                    this.$el.find('#name_archivo').text('Seleccionar aquí...');
-                    this.$el.find('#remover_archivo').attr('disabled', 'true');
-                }
-            })
-            .fail((err: any) => {
-                if (loading) loading.hide();
-                if (Swal) {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: err.responseText || err.resposeText || 'Error desconocido',
-                        button: 'Continuar!',
-                    });
-                }
-                this.$el.find('#archivo_habiles').val('');
-                this.$el.find('#name_archivo').text('Seleccionar aquí...');
-                this.$el.find('#remover_archivo').attr('disabled', 'true');
+                },
             });
+        }
     }
 
     removerArchivo(e: Event): void {

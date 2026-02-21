@@ -1,27 +1,21 @@
 import { BackboneView } from "@/common/Bone";
 
-declare global {
-	var $: any;
-	var _: any;
-	var $App: any;
-	var Empresa: any;
-}
+import tmp_detalle_empresa from "../templates/detalle_empresa.hbs?raw";
 
 interface EmpresaDetalleViewOptions {
-	model?: any;
-	collection?: any;
+    model?: any;
+    collection?: any;
+    EmpresaModel: new (attrs?: any, options?: any) => any;
 }
 
 export default class EmpresaDetalleView extends BackboneView {
-	modelUse: any;
-	template: any;
 
-	constructor(options: EmpresaDetalleViewOptions = {}) {
-		super({
-			...options,
-			className: 'box',
-		});
-		this.modelUse = Empresa;
-		this.template = _.template(document.getElementById('tmp_detalle_empresa')?.innerHTML || '');
-	}
+    constructor(options: EmpresaDetalleViewOptions) {
+        super({
+            ...options,
+            className: 'box',
+        });
+        this.modelUse = options.EmpresaModel;
+        this.template = _.template(tmp_detalle_empresa);
+    }
 }

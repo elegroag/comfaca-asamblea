@@ -1,5 +1,11 @@
 import { BackboneView } from "@/common/Bone";
 import HabilesRowView from "./HabilesRowView";
+import tmp_listar_habiles from "../templates/listar_habiles?raw";
+
+interface HabilesListarViewOptions {
+    router?: { navigate: (fragment: string, options?: any) => void };
+    [key: string]: any;
+}
 
 
 export default class HabilesListarView extends BackboneView {
@@ -7,8 +13,9 @@ export default class HabilesListarView extends BackboneView {
     children: any;
     modelView: typeof HabilesRowView;
     template: any;
+    private router?: { navigate: (fragment: string, options?: any) => void };
 
-    constructor(options: any) {
+    constructor(options: HabilesListarViewOptions = {}) {
         super({
             ...options,
             events: {
@@ -19,9 +26,10 @@ export default class HabilesListarView extends BackboneView {
             className: 'box',
         });
         this.modelView = HabilesRowView;
-        this.template = _.template(document.getElementById('tmp_listar_habiles')?.innerHTML || '');
+        this.template = _.template(tmp_listar_habiles);
         this.tableModule = null;
         this.children = {};
+        this.router = options.router;
     }
 
     initialize(): void {
@@ -48,8 +56,8 @@ export default class HabilesListarView extends BackboneView {
         e.preventDefault();
         const nit = $(e.currentTarget as HTMLElement).attr('data-cid') as string;
         this.remove();
-        if ($App.router) {
-            $App.router.navigate('detalle/' + nit, { trigger: true, replace: true });
+        if (this.router && typeof this.router.navigate === 'function') {
+            this.router.navigate('detalle/' + nit, { trigger: true, replace: true });
         }
     }
 
@@ -57,8 +65,8 @@ export default class HabilesListarView extends BackboneView {
         e.preventDefault();
         const nit = $(e.currentTarget as HTMLElement).attr('data-cid') as string;
         this.remove();
-        if ($App.router) {
-            $App.router.navigate('edita/' + nit, { trigger: true });
+        if (this.router && typeof this.router.navigate === 'function') {
+            this.router.navigate('edita/' + nit, { trigger: true });
         }
     }
 
@@ -108,7 +116,7 @@ export default class HabilesListarView extends BackboneView {
 
     addModel(model: any): void {
         const view = this.renderModel(model);
-        this.$el.find('#show_data_rechazos').append(view.$el);
+        this.$el.find('#show_data_habiles').append(view.$el);
     }
 
     renderModel(model: any): any {

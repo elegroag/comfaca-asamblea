@@ -8,6 +8,8 @@ import EmpresasHabiles from "./EmpresasListar";
 import EmpresaService from "./EmpresaService";
 import Loading from '@/common/Loading';
 import HabilesCollection from '@/componentes/habiles/collections/HabilesCollection';
+import EmpresasCollection from '@/collections/EmpresasCollection';
+import Empresa from '@/models/Empresa';
 
 export default class EmpresasController extends Controller {
     public Collections: {
@@ -23,6 +25,7 @@ export default class EmpresasController extends Controller {
             api: this.api,
             App: this.App,
             logger: this.logger,
+            EmpresaModel: Empresa,
         });
 
         this.Collections = {

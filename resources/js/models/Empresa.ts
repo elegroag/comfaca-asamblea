@@ -1,5 +1,3 @@
-'use strict';
-
 import { BackboneModel } from "@/common/Bone";
 import { Testeo } from "@/core/Testeo";
 

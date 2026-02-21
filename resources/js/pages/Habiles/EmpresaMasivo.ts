@@ -3,6 +3,7 @@ import EmpresaNav from "@/componentes/habiles/views/EmpresaNav";
 import EmpresaMasivoView from "@/componentes/habiles/views/EmpresaMasivoView";
 import EmpresaService from "./EmpresaService";
 import { Controller } from "@/common/Controller";
+import Empresa from "@/models/Empresa";
 
 
 export default class EmpresaMasivo extends Controller {
@@ -14,9 +15,10 @@ export default class EmpresaMasivo extends Controller {
         _.extend(this, options);
 
         this.empresaService = new EmpresaService({
-            router: this.router,
             api: this.api,
-            App: this.App
+            App: this.App,
+            logger: this.logger,
+            EmpresaModel: Empresa
         });
 
         this.listenTo(this, 'set:empresas', this.empresaService.__setEmpresas);
@@ -48,8 +50,12 @@ export default class EmpresaMasivo extends Controller {
         });
 
         this.listenTo(masivoView, 'form:save', this.empresaService.__saveEmpresa);
+        this.listenTo(masivoView, 'file:upload', this.empresaService.__uploadMasivo);
 
-        layout.getRegion('body').show(masivoView);
+        const bodyRegion = layout.getRegion('body');
+        if (bodyRegion) {
+            bodyRegion.show(masivoView);
+        }
 
         // Establecer parent view para navegación
         if (EmpresaNav) {
@@ -71,7 +77,14 @@ export default class EmpresaMasivo extends Controller {
             App: this.App
         });
 
-        layout.getRegion('subheader').show(navView);
+        const subheaderRegion = layout.getRegion('subheader');
+        if (subheaderRegion) {
+            subheaderRegion.show(navView);
+        }
+
+        // Delegar exportaciones al service (por consistencia, aunque el menú o flags puedan ocultarlo)
+        this.listenTo(navView, 'export:lista', this.empresaService.__exportLista);
+        this.listenTo(navView, 'export:informe', this.empresaService.__exportInforme);
     }
 
     /**

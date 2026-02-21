@@ -200,6 +200,8 @@ export interface responseBody {
 // Tipos para el componente Dashboard
 export interface BackendAuthProps {
     title: string;
+    api: ApiService;
+    logger: Logger;
     user: {
         name: string;
         email: string;

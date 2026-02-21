@@ -6,7 +6,6 @@ import type { RegionOptions, ViewType } from './Region';
 // Definir interfaces localmente para evitar problemas de importación
 export interface LayoutOptions extends RegionOptions {
     regions?: Record<string, string>;
-    [key: string]: any;
 }
 
 /**
@@ -15,11 +14,11 @@ export interface LayoutOptions extends RegionOptions {
 export class Layout extends ModelView {
     private regions: Record<string, Region> = {};
 
-    constructor(options: LayoutOptions = {}) {
+    constructor(options?: LayoutOptions) {
         super(options);
 
         // Configurar regiones si se proporcionan
-        if (options.regions) {
+        if (options?.regions) {
             this.configureRegions(options.regions);
         }
     }
@@ -28,7 +27,7 @@ export class Layout extends ModelView {
      * Configura las regiones del layout
      */
     configureRegions(regions: Record<string, string>): void {
-        window._.each(regions, (selector: string, name: string) => {
+        _.each(regions, (selector: string, name: string) => {
             this.addRegion(name, selector);
         });
     }
@@ -74,7 +73,7 @@ export class Layout extends ModelView {
      */
     close(): void {
         // Cerrar todas las regiones
-        window._.each(this.regions, (region: Region) => {
+        _.each(this.regions, (region: Region) => {
             region.close();
         });
         this.regions = {};
