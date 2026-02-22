@@ -30,7 +30,7 @@ export default class InterventorController extends Controller {
 
             const view = new InterventoresListar({
                 collection: (this.service as any).collections.interventores,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -63,7 +63,7 @@ export default class InterventorController extends Controller {
                 estado: 'activo'
             },
             isNew: true,
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -93,7 +93,7 @@ export default class InterventorController extends Controller {
 
             const view = new InterventorMostrar({
                 model: model,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -126,7 +126,7 @@ export default class InterventorController extends Controller {
             const view = new InterventorCrear({
                 model: model,
                 isNew: false,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,

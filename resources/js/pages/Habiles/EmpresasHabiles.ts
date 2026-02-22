@@ -16,7 +16,7 @@ export default class EmpresasHabiles extends Controller {
 
         this.empresaService = new EmpresaService({
             api: this.api,
-            App: this.App,
+            app: this.app,
             logger: this.logger,
             EmpresaModel: Empresa
         });

@@ -52,8 +52,8 @@ export default class TrabajadoresListarView extends BackboneView {
         e.preventDefault();
         const target = this.$el.find(e.currentTarget);
         const usuario = target.attr('data-code');
-        if (this.App && this.App.router) {
-            this.App.router.navigate('mostrar/' + usuario, { trigger: true, replace: true });
+        if (this.App && this.app.router) {
+            this.app.router.navigate('mostrar/' + usuario, { trigger: true, replace: true });
         }
     }
 
@@ -99,7 +99,7 @@ export default class TrabajadoresListarView extends BackboneView {
     renderModel(model: any) {
         const view = new this.modelView({
             model: model,
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             storage: this.storage,

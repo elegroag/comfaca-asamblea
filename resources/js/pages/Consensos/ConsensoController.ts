@@ -30,7 +30,7 @@ export default class ConsensoController extends Controller {
 
             const view = new ConsensosListar({
                 collection: (this.service as any).collections.consensos,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -64,7 +64,7 @@ export default class ConsensoController extends Controller {
                 estado: 'inactivo'
             },
             isNew: true,
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -95,7 +95,7 @@ export default class ConsensoController extends Controller {
             const view = new ConsensoCrear({
                 model: model,
                 isNew: false,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -130,7 +130,7 @@ export default class ConsensoController extends Controller {
 
             const view = new ConsensoDetalle({
                 model: model,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,

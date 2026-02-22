@@ -7,7 +7,7 @@ import type { AppInstance } from "@/types/types";
 import cargueMasivo from "@/componentes/poderes/templates/cargueMasivo.hbs?raw";
 
 export default class PoderMasivo extends BackboneView {
-    App: AppInstance;
+    app: AppInstance;
 
     constructor(options: any) {
         super(options);
@@ -56,7 +56,7 @@ export default class PoderMasivo extends BackboneView {
                 target.removeAttr('disabled');
                 if (salida) {
                     if (salida.success) {
-                        this.App.trigger(
+                        this.app.trigger(
                             'success',
                             `Ya se completo el cargue de los habiles.\n
 							 Registrados: ${salida.creados}\n
@@ -65,7 +65,7 @@ export default class PoderMasivo extends BackboneView {
 							`
                         );
                     } else {
-                        this.App.trigger('error', salida.msj);
+                        this.app.trigger('error', salida.msj);
                     }
                     this.$el.find('#archivo_poderes').val('');
                     this.$el.find('#name_archivo').text('Seleccionar aquí...');
@@ -75,7 +75,7 @@ export default class PoderMasivo extends BackboneView {
             .fail((err: any) => {
                 target.removeAttr('disabled');
                 Loading.hide();
-                this.App.trigger('error', err.resposeText);
+                this.app.trigger('error', err.resposeText);
                 this.$el.find('#archivo_poderes').val('');
                 this.$el.find('#name_archivo').text('Seleccionar aquí...');
                 this.$el.find('#remover_archivo').attr('disabled', true);

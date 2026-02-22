@@ -51,11 +51,11 @@ export default class NovedadesService {
       if (response?.success) {
         this.__setNovedades((response as any).novedades || []);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al cargar novedades' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar novedades' });
       }
     } catch (error: any) {
       this.logger.error('Error al listar novedades:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
     }
   }
 
@@ -82,23 +82,23 @@ export default class NovedadesService {
     try {
       if (!novedad.isValid()) {
         const errors = novedad.validationError;
-        this.App.trigger('alert:error', errors.toString());
+        this.app.trigger('alert:error', errors.toString());
         return { success: false, message: errors.toString() };
       }
 
       const response = await this.saveNovedadApi(novedad.toJSON());
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Novedad guardada exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Novedad guardada exitosamente' });
         this.__addNovedades((response as any).novedad);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al guardar novedad' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar novedad' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al guardar novedad:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }
@@ -111,16 +111,16 @@ export default class NovedadesService {
       const response = await this.removeNovedadApi(novedad.toJSON());
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Novedad eliminada exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Novedad eliminada exitosamente' });
         this.collections.novedades.remove(novedad);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al eliminar novedad' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar novedad' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al eliminar novedad:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }
@@ -133,19 +133,19 @@ export default class NovedadesService {
       const response = await this.marcarLeidaApi(novedad.toJSON());
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Novedad marcada como leída' });
+        this.app.trigger('alert:success', { message: response.msj || 'Novedad marcada como leída' });
         // Actualizar el modelo en la colección
         if (novedad.set) {
           novedad.set('leida', true);
         }
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al marcar novedad como leída' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al marcar novedad como leída' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al marcar novedad como leída:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }

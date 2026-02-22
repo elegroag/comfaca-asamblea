@@ -77,8 +77,8 @@ export default class UsuariosListarAsa extends BackboneView {
 			return;
 		}
 
-		if (this.App && typeof this.App.trigger === 'function') {
-			this.App.trigger('confirma', {
+		if (this.App && typeof this.app.trigger === 'function') {
+			this.app.trigger('confirma', {
 				message: 'Se requiere de confirmar para borrar el registro seleccionado.',
 				callback: async (status: boolean) => {
 					if (status) {
@@ -87,14 +87,14 @@ export default class UsuariosListarAsa extends BackboneView {
 							target.removeAttr('disabled');
 
 							if (!response || !response.success) {
-								this.App.trigger('alert:error', {
+								this.app.trigger('alert:error', {
 									title: 'Notificación!',
 									text: response?.msj || 'Error al eliminar usuario',
 									icon: 'error',
 									button: 'Continuar!'
 								});
 							} else {
-								this.App.trigger('alert:success', {
+								this.app.trigger('alert:success', {
 									title: 'Notificación!',
 									text: 'La operación se completó con éxito',
 									icon: 'success',
@@ -108,7 +108,7 @@ export default class UsuariosListarAsa extends BackboneView {
 						} catch (error: any) {
 							target.removeAttr('disabled');
 							this.logger?.error('Error al eliminar usuario:', error);
-							this.App.trigger('alert:error', {
+							this.app.trigger('alert:error', {
 								title: 'Error!',
 								text: error.message || 'Error de conexión',
 								button: 'Continuar!'
@@ -135,8 +135,8 @@ export default class UsuariosListarAsa extends BackboneView {
 			return;
 		}
 
-		if (this.App && this.App.router) {
-			this.App.router.navigate('mostrar/' + documento, { trigger: true, replace: true });
+		if (this.App && this.app.router) {
+			this.app.router.navigate('mostrar/' + documento, { trigger: true, replace: true });
 		}
 	}
 }

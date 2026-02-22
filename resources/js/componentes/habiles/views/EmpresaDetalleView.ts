@@ -37,7 +37,7 @@ export default class EmpresaDetalleView extends ModelView {
         // Inicializar el servicio con las dependencias
         this.empresaService = new EmpresaService({
             api: this.api,
-            App: this.app,
+            app: this.app,
             logger: this.logger
         });
     }

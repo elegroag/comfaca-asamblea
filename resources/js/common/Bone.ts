@@ -2,12 +2,12 @@ import ApiService from '@/services/ApiService';
 import type { AppInstance } from '@/types/types';
 
 class BackboneView extends (Backbone.View as any) {
-    App: AppInstance | null;
+    app: AppInstance | null;
     api: ApiService | null;
 
     constructor(options: any) {
         super(options);
-        this.App = options.App || null;
+        this.app = options.app || null;
         this.api = options.api || null;
     }
 }

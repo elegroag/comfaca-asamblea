@@ -1,47 +1,69 @@
+import { Controller } from "@/common/Controller";
 import LayoutView from "@/componentes/layouts/views/LayoutView";
 import RechazoMasivoView from "@/componentes/rechazos/views/RechazoMasivoView";
 import RechazosNav from "@/componentes/rechazos/views/RechazosNav";
 import RechazoService from "@/pages/Rechazos/RechazoService";
+import ApiService from "@/services/ApiService";
+import { AppInstance } from "@/types/types";
 
 interface RechazosMasivoOptions {
-	[key: string]: any;
+    [key: string]: any;
+    region: any;
+    logger: any;
+    router: any;
+    api: ApiService;
+    app: AppInstance;
 }
 
-export default class RechazosMasivo {
-	region: any;
-	layout: LayoutView;
-	rechazoService: RechazoService;
+export default class RechazosMasivo extends Controller {
+    rechazoService: RechazoService;
 
-	constructor(options: RechazosMasivoOptions = {}) {
-		_.extend(this, Backbone.Events);
-		_.extend(this, options);
-		$App.Collections.rechazos = null;
-		this.rechazoService = new RechazoService();
-		this.listenTo(this, 'set:rechazos', this.rechazoService.setRechazos);
-		this.listenTo(this, 'add:rechazos', this.rechazoService.addRechazos);
-	}
+    constructor(options: RechazosMasivoOptions) {
+        super(options);
 
-	cargueMasivo(): void {
-		if (!$App.Collections.rechazos) this.rechazoService.findAll();
-		this.layout = new LayoutView();
-		this.region.show(this.layout);
-		this.layout.getRegion('body').show(new RechazoMasivoView());
-		this.layout.getRegion('subheader').show(
-			new RechazosNav({
-				model: {
-					titulo: 'Cargue de rechazos Asamblea',
-					listar: true,
-					exportar: true,
-					crear: true,
-					editar: false,
-					masivo: false,
-				},
-			})
-		);
-	}
+        _.extend(this, options);
+        $App.Collections.rechazos = null;
+        this.rechazoService = new RechazoService({
+            api: options.api,
+            logger: options.logger,
+            app: options.app
+        });
+        this.listenTo(this, 'set:rechazos', this.rechazoService.setRechazos);
+        this.listenTo(this, 'add:rechazos', this.rechazoService.addRechazos);
+    }
 
-	destroy(): void {
-		this.region.remove();
-		this.stopListening();
-	}
+    cargueMasivo(): void {
+        if (!this.App?.Collections.rechazos) this.rechazoService.__findAll();
+        const layout = new LayoutView();
+        this.region.show(layout);
+        const bodyRegion = layout.getRegion('body');
+
+
+        bodyRegion?.show(new RechazoMasivoView({
+            collection: this.App?.Collections.rechazos,
+            app: this.app,
+            api: this.api,
+            logger: this.logger,
+            region: this.region,
+        }));
+
+        const subheaderRegion = layout.getRegion('subheader');
+        subheaderRegion?.show(
+            new RechazosNav({
+                model: {
+                    titulo: 'Cargue de rechazos Asamblea',
+                    listar: true,
+                    exportar: true,
+                    crear: true,
+                    editar: false,
+                    masivo: false,
+                },
+            })
+        );
+    }
+
+    destroy(): void {
+        this.region.remove();
+        this.stopListening();
+    }
 }

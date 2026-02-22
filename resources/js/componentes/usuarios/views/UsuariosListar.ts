@@ -67,8 +67,8 @@ export default class UsuariosListar extends BackboneView {
 			return;
 		}
 
-		if (this.App && this.App.router) {
-			this.App.router.navigate('mostrar/' + usuario, { trigger: true, replace: true });
+		if (this.App && this.app.router) {
+			this.app.router.navigate('mostrar/' + usuario, { trigger: true, replace: true });
 		}
 	}
 
@@ -83,8 +83,8 @@ export default class UsuariosListar extends BackboneView {
 			return;
 		}
 
-		if (this.App && this.App.router) {
-			this.App.router.navigate('edita_usuarios/' + usuario, { trigger: true, replace: true });
+		if (this.App && this.app.router) {
+			this.app.router.navigate('edita_usuarios/' + usuario, { trigger: true, replace: true });
 		}
 	}
 

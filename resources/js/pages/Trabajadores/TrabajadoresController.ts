@@ -33,7 +33,7 @@ export default class TrabajadoresController extends Controller {
 
             const listView = new TrabajadoresListar({
                 collection: (this.service as any).collections.trabajadores,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -57,7 +57,7 @@ export default class TrabajadoresController extends Controller {
      */
     crearTrabajador(): void {
         const view = new TrabajadorCrear({
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -87,7 +87,7 @@ export default class TrabajadoresController extends Controller {
 
             const view = new TrabajadorMostrar({
                 model: model,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -120,7 +120,7 @@ export default class TrabajadoresController extends Controller {
             const view = new TrabajadorCrear({
                 model: model,
                 isNew: false,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -142,7 +142,7 @@ export default class TrabajadoresController extends Controller {
      */
     cargueMasivoTrabajador(): void {
         const view = new TrabajadorCargue({
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,

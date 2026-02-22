@@ -15,7 +15,7 @@ export default class EmpresaCrear extends Controller {
 
         this.empresaService = new EmpresaService({
             api: this.api,
-            App: this.App,
+            app: this.app,
             logger: this.logger,
             EmpresaModel: Empresa
         });
@@ -44,7 +44,7 @@ export default class EmpresaCrear extends Controller {
             EmpresaModel: Empresa,
             collection: this.empresaService.Collections.empresas,
             api: this.api,
-            App: this.App,
+            app: this.app,
             router: this.router
         });
 
@@ -76,7 +76,7 @@ export default class EmpresaCrear extends Controller {
                 masivo: true,
             },
             api: this.api,
-            App: this.App,
+            app: this.app,
             router: this.router
         });
 

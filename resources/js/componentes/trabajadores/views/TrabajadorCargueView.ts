@@ -76,19 +76,19 @@ export default class TrabajadorCargueView extends BackboneView {
 
 		try {
 			// Mostrar loading (simulado con trigger)
-			if (this.App && typeof this.App.trigger === 'function') {
-				this.App.trigger('loading:show');
+			if (this.App && typeof this.app.trigger === 'function') {
+				this.app.trigger('loading:show');
 			}
 
 			const response = await this.trabajadorService.__uploadMasivo(formData);
 
-			if (this.App && typeof this.App.trigger === 'function') {
-				this.App.trigger('loading:hide');
+			if (this.App && typeof this.app.trigger === 'function') {
+				this.app.trigger('loading:hide');
 			}
 
 			if (response && response.success) {
-				if (this.App && typeof this.App.trigger === 'function') {
-					this.App.trigger('alert:success', {
+				if (this.App && typeof this.app.trigger === 'function') {
+					this.app.trigger('alert:success', {
 						title: 'Notificación!',
 						text: `Ya se completo el cargue de los trabajadores.\nRegistrados: ${response.creados}\nCantidad: ${response.filas}\nFallos: ${response.fallidos}`,
 						button: 'Continuar!'
@@ -96,8 +96,8 @@ export default class TrabajadorCargueView extends BackboneView {
 				}
 				this.limpiarFormulario();
 			} else {
-				if (this.App && typeof this.App.trigger === 'function') {
-					this.App.trigger('alert:error', {
+				if (this.App && typeof this.app.trigger === 'function') {
+					this.app.trigger('alert:error', {
 						title: 'Error!',
 						text: response.msj || 'Error en el cargue masivo',
 						button: 'Continuar!'
@@ -106,9 +106,9 @@ export default class TrabajadorCargueView extends BackboneView {
 				this.limpiarFormulario();
 			}
 		} catch (error: any) {
-			if (this.App && typeof this.App.trigger === 'function') {
-				this.App.trigger('loading:hide');
-				this.App.trigger('alert:error', {
+			if (this.App && typeof this.app.trigger === 'function') {
+				this.app.trigger('loading:hide');
+				this.app.trigger('alert:error', {
 					title: 'Error!',
 					text: error.message || 'Error de conexión',
 					button: 'Continuar!'

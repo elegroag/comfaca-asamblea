@@ -11,7 +11,6 @@ interface RechazosListarOptions extends CommonDeps {
 
 export default class RechazosListar extends Controller {
     private rechazoService: RechazoService;
-    private layoutInstance!: LayoutView;
 
     constructor(options: RechazosListarOptions) {
         super(options);
@@ -33,21 +32,24 @@ export default class RechazosListar extends Controller {
     }
 
     private renderLista(): void {
-        this.layoutInstance = new LayoutView();
-        this.region.show(this.layoutInstance);
+        const layoutInstance = new LayoutView();
+        this.region.show(layoutInstance);
 
         const view = new RechazoListarView({
             collection: (this.rechazoService as any).collections.rechazos,
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
         });
 
         this.listenTo(view, 'remove:rechazos', this.rechazoService.__removeRechazo.bind(this.rechazoService));
-        if (this.layoutInstance) {
-            this.layoutInstance.getRegion('body').show(view);
-            this.layoutInstance.getRegion('subheader').show(
+        if (layoutInstance) {
+            const bodyRegion = layoutInstance.getRegion('body');
+            bodyRegion?.show(view);
+
+            const subheaderRegion = layoutInstance.getRegion('subheader');
+            subheaderRegion?.show(
                 new RechazosNav({
                     model: {
                         titulo: 'Listar rechazos empresas Asamblea',
@@ -58,7 +60,7 @@ export default class RechazosListar extends Controller {
                         masivo: true,
                         dataToggle: 'rechazos'
                     },
-                    App: this.App,
+                    app: this.app,
                     api: this.api,
                     logger: this.logger,
                     region: this.region,

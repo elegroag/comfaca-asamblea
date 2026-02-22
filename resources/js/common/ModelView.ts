@@ -25,10 +25,16 @@ interface ModelViewOptions {
  * Proporciona funcionalidades adicionales para manejo de modelos y formularios
  */
 export class ModelView extends BackboneView {
+
+    modelDOM: any;
+    onRender: ((el: JQuery) => void) | null;
+    model: BackboneModel | {} | null;
+    collection: BackboneCollection | [] | null;
+
     constructor(options: ModelViewOptions = { modelDOM: null, onRender: null }) {
         super(options);
         // Propiedades específicas de BackboneView
-        this.modelDOM = options.modelDOM || Backbone.Model;
+        this.modelDOM = options.modelDOM || null;
         this.template = options.template || undefined;
         this.onRender = options.onRender ? options.onRender : null;
         this.model = options.model || null;
@@ -41,7 +47,7 @@ export class ModelView extends BackboneView {
      * @override
      * Renderiza la vista usando el template y los datos del modelo
      */
-    render(): this {
+    render(): any {
         const data = this.serializeData();
         let renderedHtml: string;
 
@@ -84,8 +90,9 @@ export class ModelView extends BackboneView {
 
         // Only when model is available
         if (this.modelDOM !== null) {
+
             if (this.model instanceof this.modelDOM) {
-                data = this.model ? this.model.toJSON() : null;
+                data = this.model ? (this.model as any).toJSON() : null;
             } else {
                 if (typeof this.model === 'object' && this.model !== null) {
                     data = this.model;

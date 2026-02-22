@@ -56,11 +56,11 @@ export default class PoderService {
       if (response?.success) {
         this.__setPoderes((response as any).poderes || []);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al cargar poderes' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar poderes' });
       }
     } catch (error: any) {
       this.logger.error('Error al listar poderes:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
     }
   }
 
@@ -96,16 +96,16 @@ export default class PoderService {
         : await this.createPoderApi(poder);
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Poder guardado exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Poder guardado exitosamente' });
         this.__addPoder((response as any).poder);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al guardar poder' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar poder' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al guardar poder:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }
@@ -118,19 +118,19 @@ export default class PoderService {
       const response = await this.deletePoderApi(id);
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Poder eliminado exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Poder eliminado exitosamente' });
         const poder = this.collections.poderes.get(id);
         if (poder) {
           this.__removePoder(poder);
         }
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al eliminar poder' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar poder' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al eliminar poder:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }
@@ -143,20 +143,20 @@ export default class PoderService {
       const response = await this.activarPoderApi(id);
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Poder activado exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Poder activado exitosamente' });
         // Actualizar el poder en la colección
         const poder = this.collections.poderes.get(id);
         if (poder) {
           poder.set('estado', 'activo');
         }
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al activar poder' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al activar poder' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al activar poder:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }
@@ -169,20 +169,20 @@ export default class PoderService {
       const response = await this.inactivarPoderApi(id);
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Poder inactivado exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Poder inactivado exitosamente' });
         // Actualizar el poder en la colección
         const poder = this.collections.poderes.get(id);
         if (poder) {
           poder.set('estado', 'inactivo');
         }
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al inactivar poder' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al inactivar poder' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al inactivar poder:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }
@@ -195,16 +195,16 @@ export default class PoderService {
       const response = await this.uploadMasivoApi(formData);
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
+        this.app.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
         await this.__findAll(); // Recargar datos
         callback(true, response);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
         callback(false);
       }
     } catch (error: any) {
       this.logger.error('Error en cargue masivo:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       callback(false);
     }
   }
@@ -217,16 +217,16 @@ export default class PoderService {
       const response = await this.exportListaApi();
 
       if (response?.success && response.url) {
-        this.App.download({
+        this.app.download({
           url: response.url,
           filename: response.filename || 'poderes.csv'
         });
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al exportar lista' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al exportar lista' });
       }
     } catch (error: any) {
       this.logger.error('Error al exportar lista:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
     }
   }
 

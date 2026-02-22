@@ -47,11 +47,11 @@ export default class InterventorService {
       if (response?.success) {
         this.__setInterventores((response as any).interventores || []);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al cargar interventores' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar interventores' });
       }
     } catch (error: any) {
       this.logger.error('Error al listar interventores:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
     }
   }
 
@@ -78,23 +78,23 @@ export default class InterventorService {
     try {
       if (!interventor.isValid()) {
         const errors = interventor.validationError;
-        this.App.trigger('alert:error', errors.toString());
+        this.app.trigger('alert:error', errors.toString());
         return { success: false, message: errors.toString() };
       }
 
       const response = await this.saveInterventorApi(interventor.toJSON());
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Interventor guardado exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Interventor guardado exitosamente' });
         this.__addInterventores((response as any).interventor);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al guardar interventor' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar interventor' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al guardar interventor:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }
@@ -107,16 +107,16 @@ export default class InterventorService {
       const response = await this.removeInterventorApi(interventor.toJSON());
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Interventor eliminado exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Interventor eliminado exitosamente' });
         this.collections.interventores.remove(interventor);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al eliminar interventor' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar interventor' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al eliminar interventor:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }

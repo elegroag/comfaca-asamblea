@@ -6,28 +6,29 @@ import Logger from "./Logger";
 
 
 export class Controller {
-    App: AppInstance | null = null;
+    app: AppInstance | null = null;
     currentController: any = null;
     region: Region | any;
     layout: Layout | null = null;
     router: { [key: string]: any } = {};
     logger: Logger | any;
-    api?: ApiService | null = null;
+    api: ApiService;
     trigger: any;
     props: any;
 
     constructor(options: ControllerOptions) {
         this.currentController = undefined;
+        this.api = options.api;
         _.extend(this, options);
     }
 
     // Backbone Events methods
     listenTo(object: any, event: string, callback: (...args: any[]) => void): void {
-        window.Backbone.Events.listenTo.call(this, object, event, callback);
+        (Backbone as any).Events.listenTo.call(this, object, event, callback);
     }
 
     stopListening(object?: any, event?: string, callback?: (...args: any[]) => void): void {
-        window.Backbone.Events.stopListening.call(this, object, event, callback);
+        (Backbone as any).Events.stopListening.call(this, object, event, callback);
     }
 
     startController(ControllerClass: new (options: any) => any): any {

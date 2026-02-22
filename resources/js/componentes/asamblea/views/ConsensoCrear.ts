@@ -58,8 +58,8 @@ export default class ConsensoCrear extends BackboneView {
 
         const close = this.$el.find('#notice_modal').find('.close');
 
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
+        if (this.App && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea registrar el consenso.',
                 callback: async (status: boolean) => {
                     if (status) {
@@ -69,7 +69,7 @@ export default class ConsensoCrear extends BackboneView {
 
                             // Validación básica
                             if (!detalle || detalle.trim() === '') {
-                                this.App.trigger('alert:error', 'El detalle del consenso es requerido');
+                                this.app.trigger('alert:error', 'El detalle del consenso es requerido');
                                 close.trigger('click');
                                 return;
                             }
@@ -83,28 +83,28 @@ export default class ConsensoCrear extends BackboneView {
 
                             if (response && response.success) {
                                 // Actualizar consensos en el router
-                                if (this.App && this.App.router && typeof this.App.router.set_consensos === 'function') {
-                                    this.App.router.set_consensos(response.data);
+                                if (this.App && this.app.router && typeof this.app.router.set_consensos === 'function') {
+                                    this.app.router.set_consensos(response.data);
                                 }
 
                                 // Actualizar contador
-                                if (this.App && this.App.router && this.App.router.consensos) {
-                                    const consensosCount = this.App.router.consensos.length || 0;
+                                if (this.App && this.app.router && this.app.router.consensos) {
+                                    const consensosCount = this.app.router.consensos.length || 0;
                                     this.$el.find('#num_consensos').text(consensosCount.toString());
                                 }
 
                                 // Agregar nueva fila a la tabla
                                 this.addConsensosRow(response.data);
 
-                                this.App.trigger('alert:success', 'El registro se completo con éxito.');
+                                this.app.trigger('alert:success', 'El registro se completo con éxito.');
                                 close.trigger('click');
                             } else {
-                                this.App.trigger('alert:error', response.msj || 'Error al crear consenso');
+                                this.app.trigger('alert:error', response.msj || 'Error al crear consenso');
                                 close.trigger('click');
                             }
                         } catch (error: any) {
                             this.logger?.error('Error al crear consenso:', error);
-                            this.App.trigger('alert:error', {
+                            this.app.trigger('alert:error', {
                                 title: 'Error',
                                 text: error.message || 'Error de conexión',
                                 button: 'OK!'

@@ -71,11 +71,11 @@ export default class CarteraService {
             if (response?.success) {
                 this.__setCarteras((response as any).carteras || []);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al cargar carteras' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar carteras' });
             }
         } catch (error: any) {
             this.logger.error('Error al listar carteras:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
         }
     }
 
@@ -111,16 +111,16 @@ export default class CarteraService {
                 : await this.createCarteraApi(cartera);
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Cartera guardada exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Cartera guardada exitosamente' });
                 this.__addCartera((response as any).cartera);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al guardar cartera' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar cartera' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al guardar cartera:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -133,19 +133,19 @@ export default class CarteraService {
             const response = await this.deleteCarteraApi(id);
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Cartera eliminada exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Cartera eliminada exitosamente' });
                 const cartera = this.collections.carteras.get(id);
                 if (cartera) {
                     this.__removeCartera(cartera);
                 }
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al eliminar cartera' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar cartera' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al eliminar cartera:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -158,16 +158,16 @@ export default class CarteraService {
             const response = await this.uploadMasivoApi(formData);
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
+                this.app.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
                 await this.__findAll(); // Recargar datos
                 callback(true, response);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
                 callback(false);
             }
         } catch (error: any) {
             this.logger.error('Error en cargue masivo:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             callback(false);
         }
     }
@@ -180,16 +180,16 @@ export default class CarteraService {
             const response = await this.exportListaApi();
 
             if (response?.success && response.url) {
-                this.App.download({
+                this.app.download({
                     url: response.url,
                     filename: response.filename || 'carteras.csv'
                 });
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al exportar lista' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al exportar lista' });
             }
         } catch (error: any) {
             this.logger.error('Error al exportar lista:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
         }
     }
 

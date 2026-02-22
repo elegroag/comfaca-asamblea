@@ -12,7 +12,9 @@ export interface RechazoCollections {
 
 export default class RechazoService {
     private storage: BoxCollectionStorage;
-    private collections: RechazoCollections;
+    private collections: RechazoCollections = {
+        rechazos: null as any
+    };
 
     constructor(private readonly opts: RechazoServiceOptions) {
         this.storage = BoxCollectionStorage.getInstance();
@@ -50,11 +52,11 @@ export default class RechazoService {
             if (response?.success) {
                 this.__setRechazos((response as any).rechazos || []);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al cargar rechazos' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar rechazos' });
             }
         } catch (error: any) {
             this.logger.error('Error al listar rechazos:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
         }
     }
 
@@ -75,6 +77,25 @@ export default class RechazoService {
     }
 
     /**
+     * Métodos públicos para compatibilidad con eventos de Backbone
+     */
+    setRechazos(rechazos: any[]): void {
+        this.__setRechazos(rechazos);
+    }
+
+    addRechazos(rechazo: any): void {
+        this.__addRechazos(rechazo);
+    }
+
+    saveRechazo(model: any): Promise<ApiResponse> {
+        return this.__saveRechazo(model);
+    }
+
+    notifyPlataforma(model: any): Promise<void> {
+        return this.__notifyPlataforma(model);
+    }
+
+    /**
      * Guardar rechazo
      */
     async __saveRechazo(model: any): Promise<ApiResponse> {
@@ -82,16 +103,16 @@ export default class RechazoService {
             const response = await this.saveRechazoApi(model.toJSON());
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Rechazo guardado exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Rechazo guardado exitosamente' });
                 this.__addRechazos((response as any).rechazo);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al guardar rechazo' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar rechazo' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al guardar rechazo:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -101,13 +122,13 @@ export default class RechazoService {
             const response = await this.notifyPlataformaApi(model.toJSON());
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Notificación enviada exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Notificación enviada exitosamente' });
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al enviar notificación' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al enviar notificación' });
             }
         } catch (error: any) {
             this.logger.error('Error al enviar notificación:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
         }
     }
 
@@ -123,16 +144,16 @@ export default class RechazoService {
             const response = await this.removeRechazoApi(rechazo.toJSON());
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Rechazo eliminado exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Rechazo eliminado exitosamente' });
                 this.collections.rechazos.remove(rechazo);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al eliminar rechazo' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar rechazo' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al eliminar rechazo:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -145,16 +166,16 @@ export default class RechazoService {
             const response = await this.uploadMasivoApi(formData);
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
+                this.app.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
                 await this.__findAll(); // Recargar datos
                 callback(true, response);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
                 callback(false);
             }
         } catch (error: any) {
             this.logger.error('Error en cargue masivo:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             callback(false);
         }
     }
@@ -284,7 +305,7 @@ export default class RechazoService {
             return response;
         } catch (error: any) {
             this.logger.error('Error al buscar criterios:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }

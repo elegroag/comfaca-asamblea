@@ -35,7 +35,7 @@ export default class PoderesController extends Controller {
 
             const view = new PoderesListarView({
                 collection: (this.service as any).collections.poderes,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -71,7 +71,7 @@ export default class PoderesController extends Controller {
                 estado: 'inactivo'
             },
             isNew: true,
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -102,7 +102,7 @@ export default class PoderesController extends Controller {
             const view = new PoderCrear({
                 model: model,
                 isNew: false,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -137,7 +137,7 @@ export default class PoderesController extends Controller {
 
             const view = new PoderDetalle({
                 model: model,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -156,7 +156,7 @@ export default class PoderesController extends Controller {
      */
     buscar(): void {
         const view = new PoderBuscar({
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -170,7 +170,7 @@ export default class PoderesController extends Controller {
      */
     crearRechazo(): void {
         const view = new RechazaPoder({
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -184,7 +184,7 @@ export default class PoderesController extends Controller {
      */
     cargueMasivo(): void {
         const view = new PoderMasivo({
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,

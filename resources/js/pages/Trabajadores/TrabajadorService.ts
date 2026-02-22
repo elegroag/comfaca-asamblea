@@ -51,11 +51,11 @@ export default class TrabajadorService {
       if (response?.success) {
         this.__setTrabajadores((response as any).trabajadores || []);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al cargar trabajadores' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar trabajadores' });
       }
     } catch (error: any) {
       this.logger.error('Error al listar trabajadores:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
     }
   }
 
@@ -82,23 +82,23 @@ export default class TrabajadorService {
     try {
       if (!model.isValid()) {
         const errors = model.validationError;
-        this.App.trigger('alert:error', errors.toString());
+        this.app.trigger('alert:error', errors.toString());
         return { success: false, message: errors.toString() };
       }
 
       const response = await this.saveTrabajadorApi(model.toJSON());
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Trabajador guardado exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Trabajador guardado exitosamente' });
         this.__addTrabajadores((response as any).trabajador);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al guardar trabajador' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar trabajador' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al guardar trabajador:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }
@@ -111,16 +111,16 @@ export default class TrabajadorService {
       const response = await this.removeTrabajadorApi(trabajador.toJSON());
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Trabajador eliminado exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Trabajador eliminado exitosamente' });
         this.collections.trabajadores.remove(trabajador);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al eliminar trabajador' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar trabajador' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al eliminar trabajador:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }

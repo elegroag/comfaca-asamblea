@@ -66,8 +66,8 @@ export default class SubNavUsuarios extends BackboneView {
             this.parentView.remove();
         }
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('crear', { trigger: true });
+        if (this.App && this.app.router) {
+            this.app.router.navigate('crear', { trigger: true });
         }
     }
 
@@ -78,8 +78,8 @@ export default class SubNavUsuarios extends BackboneView {
             this.parentView.remove();
         }
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('listar', { trigger: true });
+        if (this.App && this.app.router) {
+            this.app.router.navigate('listar', { trigger: true });
         }
     }
 
@@ -104,8 +104,8 @@ export default class SubNavUsuarios extends BackboneView {
             this.parentView.remove();
         }
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('edita/' + nit, { trigger: true });
+        if (this.App && this.app.router) {
+            this.app.router.navigate('edita/' + nit, { trigger: true });
         }
     }
 }

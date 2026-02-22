@@ -95,8 +95,8 @@ export default class UsuarioCrear extends BackboneView {
 
 			if (confirmaClave !== clave) {
 				target.removeAttr('disabled');
-				if (this.App && typeof this.App.trigger === 'function') {
-					this.App.trigger('alert:error', 'La clave no es válida, no se puede confirmar el valor.');
+				if (this.App && typeof this.app.trigger === 'function') {
+					this.app.trigger('alert:error', 'La clave no es válida, no se puede confirmar el valor.');
 				}
 				return false;
 			}
@@ -113,8 +113,8 @@ export default class UsuarioCrear extends BackboneView {
 		// Validación básica
 		if (!usuarioData.cedtra || !usuarioData.nombre || !usuarioData.usuario) {
 			target.removeAttr('disabled');
-			if (this.App && typeof this.App.trigger === 'function') {
-				this.App.trigger('alert:error', 'Los campos cédula, nombre y usuario son requeridos');
+			if (this.App && typeof this.app.trigger === 'function') {
+				this.app.trigger('alert:error', 'Los campos cédula, nombre y usuario son requeridos');
 			}
 			return false;
 		}
@@ -140,27 +140,27 @@ export default class UsuarioCrear extends BackboneView {
 
 			if (response && response.success) {
 				if (response.usuario_sisu === false) {
-					this.App.trigger('alert:error', response.msj);
+					this.app.trigger('alert:error', response.msj);
 					this.$el.find('input').val('');
 				} else {
 					this.trigger('add:usuario_sisu', usuarioData);
-					this.App.trigger('alert:success', response.msj);
+					this.app.trigger('alert:success', response.msj);
 					this.$el.find('input').val('');
 
-					if (!this.isNew && this.App && this.App.router) {
-						this.App.router.navigate('listar', { trigger: true, replace: true });
+					if (!this.isNew && this.App && this.app.router) {
+						this.app.router.navigate('listar', { trigger: true, replace: true });
 					}
 				}
 			} else {
-				if (this.App && typeof this.App.trigger === 'function') {
-					this.App.trigger('alert:error', response?.msj || 'Error al guardar el usuario');
+				if (this.App && typeof this.app.trigger === 'function') {
+					this.app.trigger('alert:error', response?.msj || 'Error al guardar el usuario');
 				}
 			}
 		} catch (error: any) {
 			target.removeAttr('disabled');
 			this.logger?.error('Error al guardar usuario:', error);
-			if (this.App && typeof this.App.trigger === 'function') {
-				this.App.trigger('alert:error', {
+			if (this.App && typeof this.app.trigger === 'function') {
+				this.app.trigger('alert:error', {
 					title: 'Error',
 					text: error.message || 'Error de conexión',
 					button: 'OK!'
@@ -175,8 +175,8 @@ export default class UsuarioCrear extends BackboneView {
 		e.preventDefault();
 		this.remove();
 
-		if (this.App && this.App.router) {
-			this.App.router.navigate('listar', { trigger: true, replace: true });
+		if (this.App && this.app.router) {
+			this.app.router.navigate('listar', { trigger: true, replace: true });
 		}
 
 		return false;

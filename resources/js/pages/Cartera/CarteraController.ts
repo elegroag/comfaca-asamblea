@@ -29,7 +29,7 @@ export default class CarteraController extends Controller {
 
             const view = new CarterasListar({
                 collection: (this.service as any).collections.carteras,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -55,7 +55,7 @@ export default class CarteraController extends Controller {
         const view = new CarteraCrear({
             model: new Cartera(),
             isNew: true,
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -86,7 +86,7 @@ export default class CarteraController extends Controller {
             const view = new CarteraCrear({
                 model: model,
                 isNew: false,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -121,7 +121,7 @@ export default class CarteraController extends Controller {
 
             const view = new CarteraDetalle({
                 model: model,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -140,7 +140,7 @@ export default class CarteraController extends Controller {
      */
     cargueMasivoCartera(): void {
         const view = new CargueMasivoCartera({
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,

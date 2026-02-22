@@ -11,5 +11,5 @@ export interface RegisterCredentials {
 
 export interface RegisterViewOptions {
     region: Region;
-    App: AppInstance | any;
+    app: AppInstance | any;
 }

@@ -55,7 +55,7 @@ export default class TrabajadorCrear extends Controller {
                 const view = new TrabajadorCrearView({
                     model: new Trabajador({ isNew: true }),
                     collection: (this.App as any).Collections.trabajadores,
-                    App: this.App,
+                    app: this.app,
                     api: this.api,
                     logger: this.logger,
                     region: this.region,

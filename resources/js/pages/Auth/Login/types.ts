@@ -10,5 +10,5 @@ export interface LoginCredentials {
 
 export interface LoginViewOptions {
     region: Region;
-    App: AppInstance | any;
+    app: AppInstance | any;
 }

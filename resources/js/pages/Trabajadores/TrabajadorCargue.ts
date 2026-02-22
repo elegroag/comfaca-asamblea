@@ -47,7 +47,7 @@ export default class TrabajadorCargue extends Controller {
             if (bodyRegion) {
                 const view = new TrabajadorCargueView({
                     collection: (this.App as any).Collections.trabajadores,
-                    App: this.App,
+                    app: this.app,
                     api: this.api,
                     logger: this.logger,
                     region: this.region,

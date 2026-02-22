@@ -5,9 +5,15 @@ import RechazoService from "./RechazoService";
 import RechazoModel from "@/componentes/rechazos/models/RechazoModel";
 import { Controller } from "@/common/Controller";
 import { CommonDeps } from "@/types/CommonDeps";
+import { AppInstance } from "@/types/types";
+import ApiService from "@/services/ApiService";
 
 interface RechazoCrearOptions extends CommonDeps {
     [key: string]: any;
+    app: AppInstance;
+    api: ApiService;
+    logger: any;
+    region: any;
 }
 
 export default class RechazoCrear extends Controller {
@@ -15,10 +21,12 @@ export default class RechazoCrear extends Controller {
 
     constructor(options: RechazoCrearOptions) {
         super(options);
+        _.extend(this, options);
+
         this.rechazoService = new RechazoService({
             api: options.api,
             logger: options.logger,
-            app: options.app
+            app: options.App
         });
     }
 
@@ -47,7 +55,7 @@ export default class RechazoCrear extends Controller {
         const view = new RechazoCrearView({
             collection: (this.rechazoService as any).collections.rechazos,
             model: model,
-            App: this.App,
+            app: this.App,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -75,7 +83,7 @@ export default class RechazoCrear extends Controller {
                         masivo: true,
                         dataToggle: 'rechazos'
                     },
-                    App: this.App,
+                    app: this.App,
                     api: this.api,
                     logger: this.logger,
                     region: this.region,
@@ -108,7 +116,7 @@ export default class RechazoCrear extends Controller {
         const view = new RechazoCrearView({
             collection: (this.rechazoService as any).collections.rechazos,
             model: model,
-            App: this.App,
+            app: this.App,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -135,7 +143,7 @@ export default class RechazoCrear extends Controller {
                         masivo: true,
                         dataToggle: 'rechazos'
                     },
-                    App: this.App,
+                    app: this.App,
                     api: this.api,
                     logger: this.logger,
                     region: this.region,

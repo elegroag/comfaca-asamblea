@@ -47,7 +47,7 @@ export default class TrabajadorMostrar extends Controller {
             if (bodyRegion) {
                 const view = new TrabajadorMostrarView({
                     model: model,
-                    App: this.App,
+                    app: this.app,
                     api: this.api,
                     logger: this.logger,
                     region: this.region,

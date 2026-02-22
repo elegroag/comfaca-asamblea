@@ -53,11 +53,11 @@ export default class ConsensoService {
             if (response?.success) {
                 this.__setConsensos((response as any).consensos || []);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al cargar consensos' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar consensos' });
             }
         } catch (error: any) {
             this.logger.error('Error al listar consensos:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
         }
     }
 
@@ -87,12 +87,12 @@ export default class ConsensoService {
             if (response?.success) {
                 return response;
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al buscar consenso' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al buscar consenso' });
                 return { success: false, message: response?.msj || 'Error al buscar consenso' };
             }
         } catch (error: any) {
             this.logger.error('Error al buscar consenso por ID:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message || 'Error de conexión' };
         }
     }
@@ -104,23 +104,23 @@ export default class ConsensoService {
         try {
             if (!consenso.isValid()) {
                 const errors = consenso.validationError;
-                this.App.trigger('alert:error', errors.toString());
+                this.app.trigger('alert:error', errors.toString());
                 return { success: false, message: errors.toString() };
             }
 
             const response = await this.saveConsensoApi(consenso.toJSON());
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Consenso guardado exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Consenso guardado exitosamente' });
                 this.__addConsensos((response as any).consenso);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al guardar consenso' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar consenso' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al guardar consenso:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -133,16 +133,16 @@ export default class ConsensoService {
             const response = await this.removeConsensoApi(consenso.toJSON());
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Consenso eliminado exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Consenso eliminado exitosamente' });
                 this.collections.consensos.remove(consenso);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al eliminar consenso' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar consenso' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al eliminar consenso:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -155,19 +155,19 @@ export default class ConsensoService {
             const response = await this.activarConsensoApi(consenso.toJSON());
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Consenso activado exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Consenso activado exitosamente' });
                 // Actualizar el modelo en la colección
                 if (consenso.set) {
                     consenso.set('estado', 'activo');
                 }
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al activar consenso' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al activar consenso' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al activar consenso:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -180,19 +180,19 @@ export default class ConsensoService {
             const response = await this.inactivarConsensoApi(consenso.toJSON());
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Consenso inactivado exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Consenso inactivado exitosamente' });
                 // Actualizar el modelo en la colección
                 if (consenso.set) {
                     consenso.set('estado', 'inactivo');
                 }
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al inactivar consenso' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al inactivar consenso' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al inactivar consenso:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }

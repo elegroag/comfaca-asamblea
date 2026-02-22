@@ -23,7 +23,7 @@ export default class EmpresasController extends Controller {
 
         this.empresaService = new EmpresaService({
             api: this.api,
-            App: this.App,
+            app: this.app,
             logger: this.logger,
             EmpresaModel: Empresa,
         });
@@ -75,7 +75,7 @@ export default class EmpresasController extends Controller {
         } catch (err: any) {
             this.logger.error('Error al listar empresas:', err);
             if (this.App?.trigger) {
-                this.App.trigger('error', 'Error de conexión al listar empresas');
+                this.app.trigger('error', 'Error de conexión al listar empresas');
             }
         }
     }
@@ -136,7 +136,7 @@ export default class EmpresasController extends Controller {
         } catch (err: any) {
             this.logger.error('Error al editar empresa:', err);
             if (this.App?.trigger) {
-                this.App.trigger('alert:error', { message: 'Error de conexión al editar empresa' });
+                this.app.trigger('alert:error', { message: 'Error de conexión al editar empresa' });
             }
         }
     }
@@ -177,7 +177,7 @@ export default class EmpresasController extends Controller {
         } catch (err: any) {
             this.logger.error('Error al mostrar detalle de empresa:', err);
             if (this.App?.trigger) {
-                this.App.trigger('alert:error', { message: 'Error de conexión al mostrar detalles de la empresa' });
+                this.app.trigger('alert:error', { message: 'Error de conexión al mostrar detalles de la empresa' });
             }
         }
     }
@@ -224,7 +224,7 @@ export default class EmpresasController extends Controller {
             this.logger.error('Error al listar habiles:', err);
             if (Loading) Loading.hide();
             if (this.App?.trigger) {
-                this.App.trigger('alert:error', { message: 'Error de conexión al listar habiles' });
+                this.app.trigger('alert:error', { message: 'Error de conexión al listar habiles' });
             }
         }
     }

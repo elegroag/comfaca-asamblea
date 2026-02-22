@@ -4,7 +4,7 @@ import type { AppInstance } from '@/types/types';
 import rechazarPoder from '@/componentes/poderes/templates/rechazarPoder.hbs?raw';
 
 export default class RechazarDetallePoder extends BackboneView {
-    App: AppInstance;
+    app: AppInstance;
     constructor(options: any) {
         super({ ...options, id: 'box_rechazo_poder' });
         this.App = options.App;
@@ -59,7 +59,7 @@ export default class RechazarDetallePoder extends BackboneView {
 
     salir(e: Event) {
         e.preventDefault();
-        this.App.trigger('hide:modal', this);
+        this.app.trigger('hide:modal', this);
         this.trigger('change:criterio', this.model, this.model.get('notificacion'));
     }
 
@@ -77,7 +77,7 @@ export default class RechazarDetallePoder extends BackboneView {
         }
 
         const url = Utils.getURL('poderes/empresa_inactivar/' + this.model.get('documento'));
-        this.App.trigger('syncro', {
+        this.app.trigger('syncro', {
             url: url,
             data: {
                 motivo: motivo,
@@ -90,8 +90,8 @@ export default class RechazarDetallePoder extends BackboneView {
                     this.model.set('notificacion', motivo);
 
                     this.trigger('change:criterio', this.model, motivo);
-                    this.App.trigger('alert:success', response.msj);
-                    this.App.trigger('hide:modal', this);
+                    this.app.trigger('alert:success', response.msj);
+                    this.app.trigger('hide:modal', this);
                 }
             },
         });

@@ -54,11 +54,11 @@ export default class MesasService {
             if (response?.success) {
                 this.__setMesas((response as any).mesas || []);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al cargar mesas' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar mesas' });
             }
         } catch (error: any) {
             this.logger.error('Error al listar mesas:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
         }
     }
 
@@ -85,23 +85,23 @@ export default class MesasService {
         try {
             if (!mesa.isValid()) {
                 const errors = mesa.validationError;
-                this.App.trigger('alert:error', errors.toString());
+                this.app.trigger('alert:error', errors.toString());
                 return { success: false, message: errors.toString() };
             }
 
             const response = await this.saveMesaApi(mesa.toJSON());
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Mesa guardada exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Mesa guardada exitosamente' });
                 this.__addMesas((response as any).mesa);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al guardar mesa' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar mesa' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al guardar mesa:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -114,16 +114,16 @@ export default class MesasService {
             const response = await this.removeMesaApi(mesa.toJSON());
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Mesa eliminada exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Mesa eliminada exitosamente' });
                 this.collections.mesas.remove(mesa);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al eliminar mesa' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar mesa' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al eliminar mesa:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -136,19 +136,19 @@ export default class MesasService {
             const response = await this.activarMesaApi(mesa.toJSON());
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Mesa activada exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Mesa activada exitosamente' });
                 // Actualizar el modelo en la colección
                 if (mesa.set) {
                     mesa.set('estado', 'activo');
                 }
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al activar mesa' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al activar mesa' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al activar mesa:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -161,19 +161,19 @@ export default class MesasService {
             const response = await this.inactivarMesaApi(mesa.toJSON());
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Mesa inactivada exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Mesa inactivada exitosamente' });
                 // Actualizar el modelo en la colección
                 if (mesa.set) {
                     mesa.set('estado', 'inactivo');
                 }
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al inactivar mesa' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al inactivar mesa' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al inactivar mesa:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -187,7 +187,7 @@ export default class MesasService {
             return response;
         } catch (error: any) {
             this.logger.error('Error al validar poder:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             throw error;
         }
     }

@@ -46,7 +46,7 @@ export default class EmpresaListarView extends BackboneView {
         // Inicializar el servicio con las dependencias
         this.empresaService = new EmpresaService({
             api: this.api,
-            App: this.app,
+            app: this.app,
             logger: this.logger
         });
     }

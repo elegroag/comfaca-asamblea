@@ -14,7 +14,7 @@ import type {
 
 export interface EmpresaServiceOptions {
     api: any;
-    App: AppInstance | any;
+    app: AppInstance | any;
     logger: Logger;
     EmpresaModel?: any; // opcional, si se requiere construir explícitamente modelos de empresa
 }
@@ -23,7 +23,7 @@ export default class EmpresaService {
     storage: BoxCollectionStorage;
     Collections: xCollection | { [key: string]: any };
     api: any;
-    App: AppInstance | any;
+    app: AppInstance | any;
     logger: Logger;
     private EmpresaModel?: any;
 

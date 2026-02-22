@@ -69,11 +69,11 @@ export default class AsambleaService {
             if (response?.success) {
                 this.__setAsambleas((response as any).asambleas || []);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al cargar asambleas' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar asambleas' });
             }
         } catch (error: any) {
             this.logger.error('Error al listar asambleas:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
         }
     }
 
@@ -109,16 +109,16 @@ export default class AsambleaService {
                 : await this.createAsambleaApi(asamblea);
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Asamblea guardada exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Asamblea guardada exitosamente' });
                 this.__addAsamblea((response as any).asamblea);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al guardar asamblea' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar asamblea' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al guardar asamblea:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -131,19 +131,19 @@ export default class AsambleaService {
             const response = await this.deleteAsambleaApi(id);
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Asamblea eliminada exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Asamblea eliminada exitosamente' });
                 const asamblea = this.collections.asambleas.get(id);
                 if (asamblea) {
                     this.__removeAsamblea(asamblea);
                 }
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al eliminar asamblea' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar asamblea' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al eliminar asamblea:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -156,20 +156,20 @@ export default class AsambleaService {
             const response = await this.activarAsambleaApi(id);
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Asamblea activada exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Asamblea activada exitosamente' });
                 // Actualizar la asamblea en la colección
                 const asamblea = this.collections.asambleas.get(id);
                 if (asamblea) {
                     asamblea.set('estado', 'activa');
                 }
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al activar asamblea' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al activar asamblea' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al activar asamblea:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -182,16 +182,16 @@ export default class AsambleaService {
             const response = await this.exportListaApi();
 
             if (response?.success && response.url) {
-                this.App.download({
+                this.app.download({
                     url: response.url,
                     filename: response.filename || 'asambleas.csv'
                 });
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al exportar lista' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al exportar lista' });
             }
         } catch (error: any) {
             this.logger.error('Error al exportar lista:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
         }
     }
 

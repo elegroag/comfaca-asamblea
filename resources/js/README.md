@@ -8,7 +8,7 @@ Esta es la documentación oficial y vigente del módulo Habiles, alineada con:
 
 ## Dependencias inyectadas (patróncentralizado por módulo)
 - `api`: cliente HTTP (this.api.get/post/delete...)
-- `App`: bus de eventos/UX (this.App.trigger, this.App.download)
+- `App`: bus de eventos/UX (this.app.trigger, this.app.download)
 - `logger`: logging de errores/diagnóstico
 - `router`: navegación interna (router.navigate('ruta', { trigger: true }))
 - `EmpresaModel`: modelo tipado inyectado a vistas que crean/usan instancias
@@ -38,7 +38,7 @@ new EmpresaEditarView({ model, router, api, App, EmpresaModel })
 
 ## EmpresaNav (navegación y acciones)
 - Usa `this.router.navigate(...)` en lugar de `$App.router`.
-- Confirmaciones vía `this.App.trigger('confirma', { message, callback })`.
+- Confirmaciones vía `this.app.trigger('confirma', { message, callback })`.
 - Emite eventos `export:lista` y `export:informe` para que los Controllers deleguen al Service.
 
 ## EmpresaService: interfaz pública y privados
@@ -116,7 +116,7 @@ export default class EmpresasController extends Controller {
         
         this.empresaService = new EmpresaService({
             api: this.api,      // Inyección directa
-            App: this.App,
+            app: this.app,
             logger: this.logger,
             EmpresaModel: Empresa
         });
@@ -154,7 +154,7 @@ startSubApplication(SubApplication) {
 export class Controller {
     // Propiedades inyectadas automáticamente por $App
     api: ApiService | null = null;
-    App: AppInstance | null = null; 
+    app: AppInstance | null = null; 
     logger: Logger | any;
     region: Region;
     router: any;
@@ -334,7 +334,7 @@ startController(ControllerClass): any {
 
 #### **2. Eventos Globales Centralizados**
 - `$App` gestiona todos los eventos: `alert:*`, `confirma`, `syncro`
-- Services notifican vía `this.App.trigger()`
+- Services notifican vía `this.app.trigger()`
 - Controllers escuchan y delegan a services
 
 #### **3. Storage Persistente**
@@ -576,11 +576,11 @@ export default class EmpresaService {
       if (response?.success) {
         this.__setEmpresas(response.empresas);
       } else {
-        this.App.trigger('alert:error', { message: response.msj });
+        this.app.trigger('alert:error', { message: response.msj });
       }
     } catch (e:any) {
       this.logger.error('Error al listar empresas:', e);
-      this.App.trigger('alert:error', { message: e.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: e.message || 'Error de conexión' });
     }
   }
 }

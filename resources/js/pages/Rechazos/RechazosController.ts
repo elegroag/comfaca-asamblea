@@ -5,9 +5,15 @@ import RechazoCrear from "./RechazoCrear";
 import RechazosListar from "./RechazosListar";
 import RechazosMasivo from "./RechazosMasivo";
 import RechazoDetalle from "./RechazoDetalle";
+import ApiService from "@/services/ApiService";
+import { AppInstance } from "@/types/types";
 
 interface RechazosControllerOptions extends CommonDeps {
     [key: string]: any;
+    app: AppInstance;
+    api: ApiService;
+    logger: any;
+    region: any;
 }
 
 export default class RechazosController extends Controller {
@@ -15,10 +21,13 @@ export default class RechazosController extends Controller {
 
     constructor(options: RechazosControllerOptions) {
         super(options);
+        this.App = options.App;
+        _.extend(this, options);
+
         this.service = new RechazoService({
             api: options.api,
             logger: options.logger,
-            app: options.app
+            app: options.App
         });
     }
 
@@ -27,7 +36,7 @@ export default class RechazosController extends Controller {
      */
     showCreate(): void {
         const view = new RechazoCrear({
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -48,7 +57,7 @@ export default class RechazosController extends Controller {
 
             const view = new RechazosListar({
                 collection: (this.service as any).collections.rechazos,
-                App: this.App,
+                app: this.App,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -72,7 +81,7 @@ export default class RechazosController extends Controller {
      */
     showMasivo(): void {
         const view = new RechazosMasivo({
-            App: this.App,
+            app: this.App,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -91,10 +100,10 @@ export default class RechazosController extends Controller {
         try {
             // Asegurarse de que los rechazos estén cargados
             await this.service.__findAll();
-            
+
             const rechazos = (this.service as any).collections.rechazos;
             const model = rechazos.get(id);
-            
+
             if (!model) {
                 this.App?.trigger('alert:error', 'Rechazo no encontrado');
                 return;
@@ -102,10 +111,11 @@ export default class RechazosController extends Controller {
 
             const view = new RechazoDetalle({
                 model: model,
-                App: this.App,
+                app: this.App,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
+                router: this.router
             });
 
             this.region.show(view);
@@ -123,10 +133,10 @@ export default class RechazosController extends Controller {
         try {
             // Asegurarse de que los rechazos estén cargados
             await this.service.__findAll();
-            
+
             const rechazos = (this.service as any).collections.rechazos;
             const model = rechazos.get(id);
-            
+
             if (!model) {
                 this.App?.trigger('alert:error', 'Rechazo no encontrado');
                 return;
@@ -135,7 +145,7 @@ export default class RechazosController extends Controller {
             const view = new RechazoCrear({
                 model: model,
                 isNew: false,
-                App: this.App,
+                app: this.App,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,

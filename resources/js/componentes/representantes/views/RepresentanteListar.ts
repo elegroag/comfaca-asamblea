@@ -82,8 +82,8 @@ export default class RepresentanteListar extends BackboneView {
         e.preventDefault();
         const target = this.$el.find(e.currentTarget);
         const cedrep = target.attr('data-code');
-        if (this.App && this.App.router) {
-            this.App.router.navigate('mostrar/' + cedrep, { trigger: true, replace: true });
+        if (this.App && this.app.router) {
+            this.app.router.navigate('mostrar/' + cedrep, { trigger: true, replace: true });
         }
     }
 
@@ -91,8 +91,8 @@ export default class RepresentanteListar extends BackboneView {
         e.preventDefault();
         const target = this.$el.find(e.currentTarget);
         const cedrep = target.attr('data-code');
-        if (this.App && this.App.router) {
-            this.App.router.navigate('editar/' + cedrep, { trigger: true, replace: true });
+        if (this.App && this.app.router) {
+            this.app.router.navigate('editar/' + cedrep, { trigger: true, replace: true });
         }
     }
 
@@ -102,8 +102,8 @@ export default class RepresentanteListar extends BackboneView {
         const cedrep = target.attr('data-code');
 
         const model = this.collection.get(parseInt(cedrep));
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
+        if (this.App && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: '¡Confirma que desea borrar el registro!',
                 callback: (status: boolean) => {
                     if (status) {

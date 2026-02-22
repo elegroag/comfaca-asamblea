@@ -26,7 +26,7 @@ export default class AsambleaController extends Controller {
 
             const view = new AsambleaActiva({
                 collection: (this.service as any).collections.asambleas,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -53,7 +53,7 @@ export default class AsambleaController extends Controller {
 
             const view = new AsambleaListar({
                 collection: (this.service as any).collections.asambleas,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -91,7 +91,7 @@ export default class AsambleaController extends Controller {
 
             const view = new AsambleaDetalle({
                 model: model,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -132,7 +132,7 @@ export default class AsambleaController extends Controller {
         const view = new AsambleaDetalle({
             model: nuevaAsamblea,
             isNew: true,
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,

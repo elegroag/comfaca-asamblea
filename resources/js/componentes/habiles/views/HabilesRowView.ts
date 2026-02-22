@@ -32,7 +32,7 @@ export default class HabilesRowView extends BackboneView {
         // Inicializar el servicio con las dependencias
         this.habilesService = new HabilesService({
             api: this.api,
-            App: this.app,
+            app: this.app,
             logger: this.logger
         });
     }

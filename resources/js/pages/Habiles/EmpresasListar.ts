@@ -14,7 +14,7 @@ export default class EmpresasListar extends Controller {
 
         this.empresaService = new EmpresaService({
             api: this.api,
-            App: this.App,
+            app: this.app,
             logger: this.logger,
             EmpresaModel: Empresa
         });
@@ -43,7 +43,7 @@ export default class EmpresasListar extends Controller {
                 masivo: true,
             },
             api: this.api,
-            App: this.App,
+            app: this.app,
             router: this.router
         });
 

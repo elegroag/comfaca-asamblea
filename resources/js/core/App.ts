@@ -15,7 +15,7 @@ import {
 
 import Logger from '@/common/Logger';
 
-const $App: AppInstance = {
+const $app: AppInstance = {
     Models: {},
     Collections: {},
     router: null,
@@ -108,7 +108,7 @@ const $App: AppInstance = {
             props: this.props,
             logger: providedLogger,
             router: this.router,
-            App: this
+            app: this
         });
 
         _.extend(this.currentSubapp, (Backbone as any).Events);

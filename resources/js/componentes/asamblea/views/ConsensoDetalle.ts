@@ -66,8 +66,8 @@ export default class ConsensoDetalle extends BackboneView {
         if (target.is(':checked')) {
             if (this.model.get('estado') == 'A') return;
 
-            if (this.App && typeof this.App.trigger === 'function') {
-                this.App.trigger('confirma', {
+            if (this.App && typeof this.app.trigger === 'function') {
+                this.app.trigger('confirma', {
                     message: 'Se requiere de confirmar si desea activar el consenso.',
                     callback: async (continuar: boolean) => {
                         if (continuar) {
@@ -77,16 +77,16 @@ export default class ConsensoDetalle extends BackboneView {
                                 if (response && response.success) {
                                     this.model.set('estado', 'A');
                                     this.$el.find('#show_estado_text').text('ACTIVO');
-                                    this.App.trigger('alert:success', response.msj);
+                                    this.app.trigger('alert:success', response.msj);
 
                                     // Actualizar tabla de consensos
                                     this.updateConsensosTable(response.consensos);
                                 } else {
-                                    this.App.trigger('alert:error', response.msj || 'Error al activar consenso');
+                                    this.app.trigger('alert:error', response.msj || 'Error al activar consenso');
                                 }
                             } catch (error: any) {
                                 this.logger?.error('Error al activar consenso:', error);
-                                this.App.trigger('alert:error', {
+                                this.app.trigger('alert:error', {
                                     title: 'Error',
                                     text: error.message || 'Error de conexión',
                                     button: 'OK!'
@@ -100,8 +100,8 @@ export default class ConsensoDetalle extends BackboneView {
             }
         } else {
             if (this.model.get('estado') == 'A') {
-                if (this.App && typeof this.App.trigger === 'function') {
-                    this.App.trigger('confirma', {
+                if (this.App && typeof this.app.trigger === 'function') {
+                    this.app.trigger('confirma', {
                         message: 'Se requiere de confirmar si desea inactivar el consenso.',
                         callback: async (continuar: boolean) => {
                             if (continuar) {
@@ -111,16 +111,16 @@ export default class ConsensoDetalle extends BackboneView {
                                     if (response && response.success) {
                                         this.model.set('estado', 'I');
                                         this.$el.find('#show_estado_text').text('INACTIVO');
-                                        this.App.trigger('alert:success', response.msj);
+                                        this.app.trigger('alert:success', response.msj);
 
                                         // Actualizar tabla de consensos
                                         this.updateConsensosTable(response.consensos);
                                     } else {
-                                        this.App.trigger('alert:error', response.msj || 'Error al inactivar consenso');
+                                        this.app.trigger('alert:error', response.msj || 'Error al inactivar consenso');
                                     }
                                 } catch (error: any) {
                                     this.logger?.error('Error al inactivar consenso:', error);
-                                    this.App.trigger('alert:error', {
+                                    this.app.trigger('alert:error', {
                                         title: 'Error',
                                         text: error.message || 'Error de conexión',
                                         button: 'OK!'
@@ -153,8 +153,8 @@ export default class ConsensoDetalle extends BackboneView {
 
         const close = this.$el.find('#notice_modal').find('.close');
 
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
+        if (this.App && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea borrar el consenso. Con todos los datos que le relacionen.',
                 callback: async (status: boolean) => {
                     if (status) {
@@ -165,25 +165,25 @@ export default class ConsensoDetalle extends BackboneView {
                                 this.trigger('set:consensos', response.consensos);
 
                                 // Actualizar contador
-                                if (this.App && this.App.Collections && this.App.Collections.consensos) {
-                                    const consensosCount = this.App.Collections.consensos.length || 0;
+                                if (this.App && this.app.Collections && this.app.Collections.consensos) {
+                                    const consensosCount = this.app.Collections.consensos.length || 0;
                                     this.$el.find('#num_consensos').text(consensosCount.toString());
                                 }
 
                                 // Actualizar tabla de consensos
-                                if (this.App && this.App.Collections && this.App.Collections.consensos) {
-                                    this.updateConsensosTable(this.App.Collections.consensos.toJSON());
+                                if (this.App && this.app.Collections && this.app.Collections.consensos) {
+                                    this.updateConsensosTable(this.app.Collections.consensos.toJSON());
                                 }
 
-                                this.App.trigger('alert:success', response.msj);
+                                this.app.trigger('alert:success', response.msj);
                                 close.trigger('click');
                             } else {
-                                this.App.trigger('alert:error', response.msj || 'Error al borrar consenso');
+                                this.app.trigger('alert:error', response.msj || 'Error al borrar consenso');
                                 close.trigger('click');
                             }
                         } catch (error: any) {
                             this.logger?.error('Error al borrar consenso:', error);
-                            this.App.trigger('alert:error', {
+                            this.app.trigger('alert:error', {
                                 title: 'Error',
                                 text: error.message || 'Error de conexión',
                                 button: 'OK!'

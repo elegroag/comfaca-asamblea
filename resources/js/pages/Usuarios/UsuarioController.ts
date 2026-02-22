@@ -32,7 +32,7 @@ export default class UsuarioController extends Controller {
             await this.service.__findAll();
 
             const subNav = new SubNavUsuarios({
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -45,7 +45,7 @@ export default class UsuarioController extends Controller {
 
             const listView = new UsuariosListarAsa({
                 collection: (this.service as any).collections.usuarios,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: body,
@@ -79,7 +79,7 @@ export default class UsuarioController extends Controller {
                 estado: 'activo'
             },
             isNew: true,
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -104,7 +104,7 @@ export default class UsuarioController extends Controller {
                 estado: 'activo'
             },
             isNew: true,
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -125,7 +125,7 @@ export default class UsuarioController extends Controller {
 
             const view = new UsuariosListar({
                 collection: (this.service as any).collections.usuarios,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -151,10 +151,10 @@ export default class UsuarioController extends Controller {
         try {
             // Asegurarse de que los usuarios estén cargados
             await this.service.__findAll();
-            
+
             const usuarios = (this.service as any).collections.usuarios;
             const model = usuarios.get(id);
-            
+
             if (!model) {
                 this.App?.trigger('alert:error', 'Usuario no encontrado');
                 return;
@@ -162,7 +162,7 @@ export default class UsuarioController extends Controller {
 
             const view = new UsuarioMostrar({
                 model: model,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -183,10 +183,10 @@ export default class UsuarioController extends Controller {
         try {
             // Asegurarse de que los usuarios estén cargados
             await this.service.__findAll();
-            
+
             const usuarios = (this.service as any).collections.usuarios;
             const model = usuarios.get(id);
-            
+
             if (!model) {
                 this.App?.trigger('alert:error', 'Usuario no encontrado');
                 return;
@@ -195,7 +195,7 @@ export default class UsuarioController extends Controller {
             const view = new UsuarioCrear({
                 model: model,
                 isNew: false,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -217,7 +217,7 @@ export default class UsuarioController extends Controller {
      */
     cargarUsuariosCaja(): void {
         const view = new UsuariosCargue({
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -236,10 +236,10 @@ export default class UsuarioController extends Controller {
         try {
             // Asegurarse de que los usuarios estén cargados
             await this.service.__findAll();
-            
+
             const usuarios = (this.service as any).collections.usuarios;
             const model = usuarios.get(id);
-            
+
             if (!model) {
                 this.App?.trigger('alert:error', 'Usuario no encontrado');
                 return;
@@ -248,7 +248,7 @@ export default class UsuarioController extends Controller {
             const view = new UsuarioCrear({
                 model: model,
                 isNew: false,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,

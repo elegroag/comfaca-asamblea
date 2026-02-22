@@ -29,7 +29,7 @@ export default class NovedadesController extends Controller {
 
             const view = new NovedadesListar({
                 collection: (this.service as any).collections.novedades,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -75,7 +75,7 @@ export default class NovedadesController extends Controller {
 
             const view = new NovedadDetalle({
                 model: model,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -131,7 +131,7 @@ export default class NovedadesController extends Controller {
             // Crear una vista temporal para mostrar las no leídas
             const view = new NovedadesListar({
                 collection: new (this.App as any).Collection(noLeidas),
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,

@@ -51,11 +51,11 @@ export default class RepresentanteService {
       if (response?.success) {
         this.__setRepresentantes((response as any).representantes || []);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al cargar representantes' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar representantes' });
       }
     } catch (error: any) {
       this.logger.error('Error al listar representantes:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
     }
   }
 
@@ -82,23 +82,23 @@ export default class RepresentanteService {
     try {
       if (!representante.isValid()) {
         const errors = representante.validationError;
-        this.App.trigger('alert:error', errors.toString());
+        this.app.trigger('alert:error', errors.toString());
         return { success: false, message: errors.toString() };
       }
 
       const response = await this.saveRepresentanteApi(representante.toJSON());
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Representante guardado exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Representante guardado exitosamente' });
         this.__addRepresentantes((response as any).representante);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al guardar representante' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar representante' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al guardar representante:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }
@@ -111,16 +111,16 @@ export default class RepresentanteService {
       const response = await this.removeRepresentanteApi(representante.toJSON());
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Representante eliminado exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Representante eliminado exitosamente' });
         this.collections.representantes.remove(representante);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al eliminar representante' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar representante' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al eliminar representante:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }
@@ -133,16 +133,16 @@ export default class RepresentanteService {
       const response = await this.uploadMasivoApi(formData);
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
+        this.app.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
         await this.__findAll(); // Recargar datos
         callback(true, response);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
         callback(false);
       }
     } catch (error: any) {
       this.logger.error('Error en cargue masivo:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       callback(false);
     }
   }

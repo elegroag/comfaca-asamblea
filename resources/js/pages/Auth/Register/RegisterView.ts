@@ -6,7 +6,7 @@ import { route } from 'ziggy-js';
 
 // Vista de Register usando Backbone y Underscore
 class RegisterView extends ModelView {
-    App: AppInstance;
+    app: AppInstance;
 
     constructor(options: RegisterViewOptions) {
         super(options as any);
@@ -130,7 +130,7 @@ class RegisterView extends ModelView {
                 throw new Error('App no está inicializada');
             }
             // Enviar solicitud AJAX
-            this.App.trigger('ajax', [{
+            this.app.trigger('ajax', [{
                 url: route('register.store'),
                 method: 'POST',
                 data: credentials,

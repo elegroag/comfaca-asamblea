@@ -7,7 +7,7 @@ import { route } from 'ziggy-js';
 
 // Vista de Login usando Backbone y Underscore
 class LoginView extends ModelView {
-    App: AppInstance;
+    app: AppInstance;
 
     constructor(options: LoginViewOptions) {
         super(options as any);
@@ -108,18 +108,18 @@ class LoginView extends ModelView {
 
             const url = route('login.authenticate');
 
-            this.App.trigger('ajax', {
+            this.app.trigger('ajax', {
                 url,
                 method: 'POST',
                 data: credentials,
                 callback: (response: responseBody) => {
                     console.log('LoginView.handleLogin.success', response);
                     if (response && response.success) {
-                        this.App.trigger('notify', 'success', response.message || 'Login exitoso');
+                        this.app.trigger('notify', 'success', response.message || 'Login exitoso');
 
                         window.location.href = route('dashboard') || '/dashboard';
                     } else {
-                        this.App.trigger('notify', 'error', response.message || 'Error al iniciar sesión');
+                        this.app.trigger('notify', 'error', response.message || 'Error al iniciar sesión');
                         this.resetLoginButton();
                     }
                 }
@@ -127,7 +127,7 @@ class LoginView extends ModelView {
 
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
-            this.App.trigger('notify', 'error', 'Error al iniciar sesión');
+            this.app.trigger('notify', 'error', 'Error al iniciar sesión');
             this.resetLoginButton();
         }
     }
@@ -173,7 +173,7 @@ class LoginView extends ModelView {
         e.preventDefault();
 
         // Navegar a página de recuperación
-        this.App.trigger('navigate:forgot-password');
+        this.app.trigger('navigate:forgot-password');
     }
 
     // Manejar enlace de registro

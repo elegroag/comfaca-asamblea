@@ -11,7 +11,7 @@ declare global {
         bootstrap: any;
         route: (name: string, params?: Record<string, any>, absolute?: boolean) => string;
         Ziggy: any;
-        $App: AppInstance;
+        $app: AppInstance;
     }
 }
 
@@ -107,7 +107,7 @@ export interface SubApplicationOptions {
     props?: any;
     logger?: Logger;
     router?: BackboneRouter;
-    App: AppInstance;
+    app: AppInstance;
 }
 
 export interface SyncroRequest {
@@ -248,6 +248,7 @@ export interface ControllerOptions {
     props?: { [key: string]: any };
     logger: any;
     router: { [key: string]: any };
+    App?: AppInstance | null;
 }
 
 

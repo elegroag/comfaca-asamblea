@@ -30,7 +30,7 @@ export default class MesasController extends Controller {
 
             const view = new MesasListar({
                 collection: (this.service as any).collections.mesas,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -64,7 +64,7 @@ export default class MesasController extends Controller {
                 estado: 'inactivo'
             },
             isNew: true,
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -94,7 +94,7 @@ export default class MesasController extends Controller {
 
             const view = new MesaMostrar({
                 model: model,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -127,7 +127,7 @@ export default class MesasController extends Controller {
             const view = new MesasCrear({
                 model: model,
                 isNew: false,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,

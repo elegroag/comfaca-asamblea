@@ -93,11 +93,11 @@ export default class RecepcionService {
       if (response?.success) {
         this.__setAsistencias((response as any).asistencias || []);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al cargar asistencias' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar asistencias' });
       }
     } catch (error: any) {
       this.logger.error('Error al listar asistencias:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
     }
   }
 
@@ -116,23 +116,23 @@ export default class RecepcionService {
     try {
       if (!asistencia.isValid()) {
         const errors = asistencia.validationError;
-        this.App.trigger('alert:error', errors.toString());
+        this.app.trigger('alert:error', errors.toString());
         return { success: false, message: errors.toString() };
       }
 
       const response = await this.saveAsistenciaApi(asistencia.toJSON());
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Asistencia guardada exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Asistencia guardada exitosamente' });
         this.__addAsistencias((response as any).asistencia);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al guardar asistencia' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar asistencia' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al guardar asistencia:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }
@@ -145,16 +145,16 @@ export default class RecepcionService {
       const response = await this.removeAsistenciaApi(asistencia.toJSON());
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Asistencia eliminada exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Asistencia eliminada exitosamente' });
         this.collections.asistencias.remove(asistencia);
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al eliminar asistencia' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar asistencia' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al eliminar asistencia:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }
@@ -219,19 +219,19 @@ export default class RecepcionService {
       const response = await this.registrarEmpresaApi(empresa.toJSON());
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Empresa registrada exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Empresa registrada exitosamente' });
         // Agregar a la colección de empresas si existe
         if (this.collections.empresas) {
           this.collections.empresas.add((response as any).empresa, { merge: true });
         }
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al registrar empresa' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al registrar empresa' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al registrar empresa:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }
@@ -442,15 +442,15 @@ export default class RecepcionService {
       const response = await this.ingresarPoderConsensoApi(data);
 
       if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Poder ingresado al consenso exitosamente' });
+        this.app.trigger('alert:success', { message: response.msj || 'Poder ingresado al consenso exitosamente' });
       } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error al ingresar poder al consenso' });
+        this.app.trigger('alert:error', { message: response?.msj || 'Error al ingresar poder al consenso' });
       }
 
       return response;
     } catch (error: any) {
       this.logger.error('Error al ingresar poder consenso:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
   }

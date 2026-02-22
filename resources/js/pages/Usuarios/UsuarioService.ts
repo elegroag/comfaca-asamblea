@@ -51,11 +51,11 @@ export default class UsuarioService {
             if (response?.success) {
                 this.__setUsuarios((response as any).usuarios || []);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al cargar usuarios' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar usuarios' });
             }
         } catch (error: any) {
             this.logger.error('Error al listar usuarios:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
         }
     }
 
@@ -82,23 +82,23 @@ export default class UsuarioService {
         try {
             if (!usuario.isValid()) {
                 const errors = usuario.validationError;
-                this.App.trigger('alert:error', errors.toString());
+                this.app.trigger('alert:error', errors.toString());
                 return { success: false, message: errors.toString() };
             }
 
             const response = await this.saveUsuarioApi(usuario.toJSON());
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Usuario guardado exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Usuario guardado exitosamente' });
                 this.__addUsuarios((response as any).usuario);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al guardar usuario' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar usuario' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al guardar usuario:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -111,16 +111,16 @@ export default class UsuarioService {
             const response = await this.removeUsuarioApi(usuario.toJSON());
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Usuario eliminado exitosamente' });
+                this.app.trigger('alert:success', { message: response.msj || 'Usuario eliminado exitosamente' });
                 this.collections.usuarios.remove(usuario);
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error al eliminar usuario' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar usuario' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al eliminar usuario:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -138,16 +138,16 @@ export default class UsuarioService {
             const response = await this.uploadMasivoApi(formData);
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
+                this.app.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
                 await this.__findAll(); // Recargar datos
                 return response;
             } else {
-                this.App.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
+                this.app.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
                 throw new Error(response?.msj || 'Error en el cargue masivo');
             }
         } catch (error: any) {
             this.logger.error('Error en cargue masivo:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             throw error;
         }
     }
@@ -169,15 +169,15 @@ export default class UsuarioService {
             const response = await this.api.post('/admin/asa_usuario_create', data);
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: (response as any).msj || 'Vinculación exitosa' });
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Vinculación exitosa' });
                 return response;
             } else {
-                this.App.trigger('alert:error', { message: (response as any).msj || 'Error en la vinculación' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error en la vinculación' });
                 throw new Error((response as any).msj || 'Error en la vinculación');
             }
         } catch (error: any) {
             this.logger.error('Error al vincular usuario con asamblea:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             throw error;
         }
     }
@@ -192,15 +192,15 @@ export default class UsuarioService {
             const response = await this.api.post('/admin/vincular_mesa', data);
 
             if (response?.success) {
-                this.App.trigger('alert:success', { message: (response as any).msj || 'Vinculación exitosa' });
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Vinculación exitosa' });
                 return response;
             } else {
-                this.App.trigger('alert:error', { message: (response as any).msj || 'Error en la vinculación' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error en la vinculación' });
                 throw new Error((response as any).msj || 'Error en la vinculación');
             }
         } catch (error: any) {
             this.logger.error('Error al vincular usuario con mesa:', error);
-            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
             throw error;
         }
     }

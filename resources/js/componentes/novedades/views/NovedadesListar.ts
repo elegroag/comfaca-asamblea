@@ -192,8 +192,8 @@ export default class NovedadesListar extends BackboneView {
 
         const id = this.$el.find(e.currentTarget).attr('data-code');
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('detalle/' + id, { trigger: true, replace: true });
+        if (this.App && this.app.router) {
+            this.app.router.navigate('detalle/' + id, { trigger: true, replace: true });
         }
     }
 

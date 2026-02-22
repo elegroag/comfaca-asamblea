@@ -30,7 +30,7 @@ export default class RepresentanteController extends Controller {
 
             const view = new RepresentantesListar({
                 collection: (this.service as any).collections.representantes,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -64,7 +64,7 @@ export default class RepresentanteController extends Controller {
                 estado: 'activo'
             },
             isNew: true,
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -94,7 +94,7 @@ export default class RepresentanteController extends Controller {
 
             const view = new RepresentanteMostrar({
                 model: model,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -127,7 +127,7 @@ export default class RepresentanteController extends Controller {
             const view = new RepresentanteCrear({
                 model: model,
                 isNew: false,
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -167,7 +167,7 @@ export default class RepresentanteController extends Controller {
             },
             isNew: true,
             isMasivo: true,
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -189,7 +189,7 @@ export default class RepresentanteController extends Controller {
             // Crear una vista temporal para mostrar los resultados
             const view = new RepresentantesListar({
                 collection: new (this.App as any).Collection(representantes),
-                App: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
