@@ -15,7 +15,7 @@ import {
 
 import Logger from '@/common/Logger';
 
-const $app: AppInstance = {
+const $App: AppInstance = {
     Models: {},
     Collections: {},
     router: null,

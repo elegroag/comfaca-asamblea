@@ -46,7 +46,7 @@ interface UpdateTaskData {
 // 1. Obtener tareas del usuario
 async function loadTasks(): Promise<Task[]> {
     try {
-        const response: ApiResponse<Task[]> = await $App.api.get('/tasks');
+        const response: ApiResponse<Task[]> = await this.api.get('/tasks');
         console.log('Tasks loaded:', response.data);
 
         // Renderizar tareas en la vista
@@ -54,7 +54,7 @@ async function loadTasks(): Promise<Task[]> {
         return response.data;
     } catch (error) {
         console.error('Error loading tasks:', error);
-        $App.notify('error', 'Error al cargar tareas');
+        this.app.notify('error', 'Error al cargar tareas');
         return [];
     }
 }
@@ -62,21 +62,21 @@ async function loadTasks(): Promise<Task[]> {
 // 2. Crear nueva tarea
 async function createTask(taskData: CreateTaskData): Promise<Task | null> {
     try {
-        const response: ApiResponse<Task> = await $App.api.post('/tasks', {
+        const response: ApiResponse<Task> = await this.api.post('/tasks', {
             title: taskData.title,
             description: taskData.description || null,
             completed: taskData.completed || false
         });
 
         console.log('Task created:', response.data);
-        $App.notify('success', 'Tarea creada exitosamente');
+        this.app.notify('success', 'Tarea creada exitosamente');
 
         // Recargar lista de tareas
         await loadTasks();
         return response.data;
     } catch (error) {
         console.error('Error creating task:', error);
-        $App.notify('error', 'Error al crear tarea');
+        this.app.notify('error', 'Error al crear tarea');
         return null;
     }
 }
@@ -84,17 +84,17 @@ async function createTask(taskData: CreateTaskData): Promise<Task | null> {
 // 3. Actualizar tarea
 async function updateTask(taskId: number, taskData: UpdateTaskData): Promise<Task | null> {
     try {
-        const response: ApiResponse<Task> = await $App.api.put(`/tasks/${taskId}`, taskData);
+        const response: ApiResponse<Task> = await this.api.put(`/tasks/${taskId}`, taskData);
 
         console.log('Task updated:', response.data);
-        $App.notify('success', 'Tarea actualizada exitosamente');
+        this.app.notify('success', 'Tarea actualizada exitosamente');
 
         // Recargar lista de tareas
         await loadTasks();
         return response.data;
     } catch (error) {
         console.error('Error updating task:', error);
-        $App.notify('error', 'Error al actualizar tarea');
+        this.app.notify('error', 'Error al actualizar tarea');
         return null;
     }
 }
@@ -106,17 +106,17 @@ async function deleteTask(taskId: number): Promise<boolean> {
     }
 
     try {
-        await $App.api.delete(`/tasks/${taskId}`);
+        await this.api.delete(`/tasks/${taskId}`);
 
         console.log('Task deleted:', taskId);
-        $App.notify('success', 'Tarea eliminada exitosamente');
+        this.app.notify('success', 'Tarea eliminada exitosamente');
 
         // Recargar lista de tareas
         await loadTasks();
         return true;
     } catch (error) {
         console.error('Error deleting task:', error);
-        $App.notify('error', 'Error al eliminar tarea');
+        this.app.notify('error', 'Error al eliminar tarea');
         return false;
     }
 }
@@ -124,17 +124,17 @@ async function deleteTask(taskId: number): Promise<boolean> {
 // 5. Marcar tarea como completada
 async function toggleTaskComplete(taskId: number): Promise<Task | null> {
     try {
-        const response: ApiResponse<Task> = await $App.api.post(`/tasks/${taskId}/toggle-complete`);
+        const response: ApiResponse<Task> = await this.api.post(`/tasks/${taskId}/toggle-complete`);
 
         console.log('Task status toggled:', response.data);
-        $App.notify('success', 'Estado de tarea actualizado');
+        this.app.notify('success', 'Estado de tarea actualizado');
 
         // Recargar lista de tareas
         await loadTasks();
         return response.data;
     } catch (error) {
         console.error('Error toggling task:', error);
-        $App.notify('error', 'Error al cambiar estado de tarea');
+        this.app.notify('error', 'Error al cambiar estado de tarea');
         return null;
     }
 }
@@ -142,7 +142,7 @@ async function toggleTaskComplete(taskId: number): Promise<Task | null> {
 // 6. Obtener estadísticas de tareas
 async function loadTaskStats(): Promise<TaskStats | null> {
     try {
-        const response: ApiResponse<TaskStats> = await $App.api.get('/tasks/stats');
+        const response: ApiResponse<TaskStats> = await this.api.get('/tasks/stats');
         console.log('Task stats:', response.data);
 
         // Renderizar estadísticas
@@ -157,7 +157,7 @@ async function loadTaskStats(): Promise<TaskStats | null> {
 // 7. Buscar tareas
 async function searchTasks(query: string): Promise<Task[]> {
     try {
-        const response: ApiResponse<Task[]> = await $App.api.get('/tasks/search', { q: query });
+        const response: ApiResponse<Task[]> = await this.api.get('/tasks/search', { q: query });
         console.log('Search results:', response.data);
 
         // Renderizar resultados de búsqueda
@@ -165,7 +165,7 @@ async function searchTasks(query: string): Promise<Task[]> {
         return response.data;
     } catch (error) {
         console.error('Error searching tasks:', error);
-        $App.notify('error', 'Error al buscar tareas');
+        this.app.notify('error', 'Error al buscar tareas');
         return [];
     }
 }
@@ -173,14 +173,14 @@ async function searchTasks(query: string): Promise<Task[]> {
 // 8. Obtener tareas completadas
 async function loadCompletedTasks(): Promise<Task[]> {
     try {
-        const response: ApiResponse<Task[]> = await $App.api.get('/tasks/completed');
+        const response: ApiResponse<Task[]> = await this.api.get('/tasks/completed');
         console.log('Completed tasks:', response.data);
 
         renderTasks(response.data);
         return response.data;
     } catch (error) {
         console.error('Error loading completed tasks:', error);
-        $App.notify('error', 'Error al cargar tareas completadas');
+        this.app.notify('error', 'Error al cargar tareas completadas');
         return [];
     }
 }
@@ -188,14 +188,14 @@ async function loadCompletedTasks(): Promise<Task[]> {
 // 9. Obtener tareas pendientes
 async function loadPendingTasks(): Promise<Task[]> {
     try {
-        const response: ApiResponse<Task[]> = await $App.api.get('/tasks/pending');
+        const response: ApiResponse<Task[]> = await this.api.get('/tasks/pending');
         console.log('Pending tasks:', response.data);
 
         renderTasks(response.data);
         return response.data;
     } catch (error) {
         console.error('Error loading pending tasks:', error);
-        $App.notify('error', 'Error al cargar tareas pendientes');
+        this.app.notify('error', 'Error al cargar tareas pendientes');
         return [];
     }
 }
@@ -258,10 +258,10 @@ class TasksComponent {
 
     async mounted(): Promise<void> {
         // Verificar si hay token disponible
-        const token = $App.api.getToken();
+        const token = this.api.getToken();
         if (!token) {
             console.warn('No Sanctum token available');
-            $App.notify('error', 'No hay token de API disponible');
+            this.app.notify('error', 'No hay token de API disponible');
             return;
         }
 

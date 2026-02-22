@@ -37,7 +37,7 @@ new EmpresaEditarView({ model, router, api, App, EmpresaModel })
 - `EmpresaMasivoView` emite `file:upload` con `FormData` y no hace llamadas HTTP.
 
 ## EmpresaNav (navegación y acciones)
-- Usa `this.router.navigate(...)` en lugar de `$App.router`.
+- Usa `this.router.navigate(...)` en lugar de `this.router`.
 - Confirmaciones vía `this.app.trigger('confirma', { message, callback })`.
 - Emite eventos `export:lista` y `export:informe` para que los Controllers deleguen al Service.
 

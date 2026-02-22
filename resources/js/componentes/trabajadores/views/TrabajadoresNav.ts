@@ -46,35 +46,35 @@ export default class TrabajadoresNav extends BackboneView {
     nuevoRegistro(e: any) {
         e.preventDefault();
         if (TrabajadoresNav.parentView) TrabajadoresNav.parentView.remove();
-        $App.router.navigate('crear', { trigger: true });
+        this.router.navigate('crear', { trigger: true });
     }
 
     masivoRegistro(e: any) {
         e.preventDefault();
         if (TrabajadoresNav.parentView) TrabajadoresNav.parentView.remove();
-        $App.router.navigate('cargue', { trigger: true });
+        this.router.navigate('cargue', { trigger: true });
     }
 
     listarData(e: any) {
         e.preventDefault();
         if (TrabajadoresNav.parentView) TrabajadoresNav.parentView.remove();
-        $App.router.navigate('listar', { trigger: true });
+        this.router.navigate('listar', { trigger: true });
     }
 
     editaRegistro(e: any) {
         e.preventDefault();
         let nit = this.model.get('nit');
         if (TrabajadoresNav.parentView) TrabajadoresNav.parentView.remove();
-        $App.router.navigate('edita/' + nit, { trigger: true });
+        this.router.navigate('edita/' + nit, { trigger: true });
     }
 
     static staticExportData() {
-        $App.trigger('confirma', {
+        this.app.trigger('confirma', {
             message: 'Se requiere de confirmar si desea exportar la lista.',
             callback: (status: boolean) => {
                 if (status) {
                     const url = create_url('rechazos/exportar_lista');
-                    $App.trigger('syncro', {
+                    this.app.trigger('syncro', {
                         url: url,
                         data: {},
                         callback: (response: any) => {
@@ -106,12 +106,12 @@ export default class TrabajadoresNav extends BackboneView {
     }
 
     static staticInformeData() {
-        $App.trigger('confirma', {
+        this.app.trigger('confirma', {
             message: 'Se requiere de confirmar si desea generar el informe.',
             callback: (status: boolean) => {
                 if (status) {
                     const url = create_url('rechazos/exportar_pdf');
-                    $App.trigger('syncro', {
+                    this.app.trigger('syncro', {
                         url,
                         data: {},
                         callback: (response: any) => {

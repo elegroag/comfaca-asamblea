@@ -193,7 +193,7 @@ export default class AsistenciasCrear extends BackboneView {
                             },
                         }).render().$el;
                     } else {
-                        $App.trigger('alert:error', response.msj);
+                        this.app.trigger('alert:error', response.msj);
                     }
                 }
             },
@@ -221,7 +221,7 @@ export default class AsistenciasCrear extends BackboneView {
                                 },
                             }).render().$el;
                         } else {
-                            $App.trigger('alert:error', { message: response.msj });
+                            this.app.trigger('alert:error', { message: response.msj });
                         }
                     }
                 },
