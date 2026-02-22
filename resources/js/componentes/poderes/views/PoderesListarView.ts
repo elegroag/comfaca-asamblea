@@ -74,8 +74,9 @@ export default class PoderesListarView extends BackboneView {
         const _template = _.template(listarPoderes);
         this.el.innerHTML = _template({ datatable: 'tb_data_poderes' });
 
-        // Limpiar filas existentes
+        // Limpiar filas existentes y children
         this.$('#show_data_poderes').empty();
+        this.closeChildren();
 
         // Renderizar cada modelo como una fila
         this.collection.forEach((model: any) => {
@@ -96,8 +97,8 @@ export default class PoderesListarView extends BackboneView {
             this.children[model.get('cid')] = rowView;
         });
 
-        // Inicializar DataTable si es necesario
-        // this.initTable();
+        // Inicializar DataTable después de renderizar las filas
+        this.initTable();
 
         return this;
     }
@@ -239,18 +240,24 @@ export default class PoderesListarView extends BackboneView {
     }
 
     addModel(model: BackboneModel) {
-        let view = this.renderModel(model);
+        const view = this.renderModel(model);
         this.$el.find('#show_data_poderes').append(view.$el);
+
+        // Si DataTable está inicializado, recargarlo
+        if (this.tableModule) {
+            this.tableModule.row.add(view.$el).draw();
+        }
     }
 
-    renderModel(model: BackboneModel) {
-        let view;
-        if (_.size(this.children) > 0) {
-            if (_.indexOf(this.children, model.get('cid')) != -1) {
-                view = this.children[model.get('cid')];
-            }
-        }
-        if (!view) {
+    renderModel(model: BackboneModel): PoderRowView {
+        let view: PoderRowView | undefined;
+        const modelCid = model.get('cid');
+
+        // Reutilizar vista existente si está disponible
+        if (this.children[modelCid]) {
+            view = this.children[modelCid] as PoderRowView;
+        } else {
+            // Crear nueva vista con todas las dependencias
             view = new PoderRowView({
                 model,
                 app: this.app,
@@ -259,21 +266,35 @@ export default class PoderesListarView extends BackboneView {
                 storage: this.storage,
                 region: this.region
             });
-            this.children[model.get('cid')] = view;
+
+            // Guardar referencia y configurar eventos
+            this.children[modelCid] = view;
+
+            this.listenTo(view, 'all', (eventName: any, ...args: any[]) => {
+                this.trigger('item:' + eventName, view, model, ...args);
+            });
         }
 
-        this.listenTo(view, 'all', (eventName: any) => {
-            this.trigger('item:' + eventName, view, model);
-        });
-
+        // Renderizar y retornar la vista
         view.render();
         return view;
     }
 
     removeModel(model: BackboneModel) {
-        let view = this.children[model.get('cid')];
+        const view = this.children[model.get('cid')] as PoderRowView;
         if (view) {
-            view.remove();
+            // Remover del DataTable si está inicializado
+            if (this.tableModule) {
+                const row = this.tableModule.row(view.$el);
+                if (row) {
+                    row.remove().draw();
+                }
+            } else {
+                // Remover del DOM directamente
+                view.remove();
+            }
+
+            // Limpiar referencia
             this.children[model.get('cid')] = undefined;
         }
     }
