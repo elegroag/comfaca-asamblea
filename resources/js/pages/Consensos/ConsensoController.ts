@@ -1,173 +1,182 @@
 import { Controller } from '@/common/Controller';
+import { CommonDeps } from '@/types/CommonDeps';
+import ConsensoService from './ConsensoService';
 import ConsensosListar from "@/componentes/consensos/views/ConsensosListar";
 import ConsensoCrear from "@/componentes/consensos/views/ConsensoCrear";
 import ConsensoDetalle from "@/componentes/consensos/views/ConsensoDetalle";
-import $App from "@/core/App";
 
-// Declaraciones para las colecciones globales
-declare global {
-	var $: any;
-	var _: any;
-	var $App: any;
-	var create_url: (path: string) => string;
-	var scroltop: () => void;
-	var ConsensosCollection: any;
-}
-
-interface ConsensoControllerOptions {
-	region?: {
-		el: HTMLElement;
-		id: string;
-	};
-	router?: any;
-	logger?: any;
-	api?: any;
+interface ConsensoControllerOptions extends CommonDeps {
+    [key: string]: any;
 }
 
 export default class ConsensoController extends Controller {
-	public currentView: any;
-	public Collections: any;
+    private service: ConsensoService;
 
-	constructor(options: ConsensoControllerOptions = {}) {
-		super(options);
-		this.currentView = null;
-		this.Collections = {
-			asambleas: null,
-			consensos: null,
-		};
-		this.__initializeCollections();
-	}
+    constructor(options: ConsensoControllerOptions) {
+        super(options);
+        this.service = new ConsensoService({
+            api: options.api,
+            logger: options.logger,
+            app: options.app
+        });
+    }
 
-	/**
-	 * Inicializar las colecciones necesarias
-	 */
-	private __initializeCollections(): void {
-		if ($App && $App.Collections) {
-			$App.Collections.asambleas = null;
-			$App.Collections.consensos = null;
-		}
-	}
+    /**
+     * Listar todos los consensos
+     */
+    async listarConsensos(): Promise<void> {
+        try {
+            await this.service.__findAll();
 
-	/**
-	 * Listar consensos
-	 */
-	async listarConsensos(): Promise<void> {
-		console.log('ConsensoController.listarConsensos() called');
+            const view = new ConsensosListar({
+                collection: (this.service as any).collections.consensos,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-		try {
-			this.__createContent();
+            this.region.show(view);
 
-			if (!this.Collections.consensos || this.Collections.consensos.length === 0) {
-				const url = create_url('admin/listar_consensos');
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'remove:consenso', this.service.__removeConsenso.bind(this.service));
+            this.listenTo(view, 'show:consenso', this.mostrarDetalle.bind(this));
+            this.listenTo(view, 'edit:consenso', this.editarConsenso.bind(this));
+            this.listenTo(view, 'activar:consenso', this.service.__activarConsenso.bind(this.service));
+            this.listenTo(view, 'inactivar:consenso', this.service.__inactivarConsenso.bind(this.service));
 
-				if ($App && typeof $App.trigger === 'function') {
-					$App.trigger('syncro', {
-						url,
-						data: {},
-						callback: (response: any) => {
-							if (response && response.success) {
-								this.__setConsensos(response.consenso);
+        } catch (error: any) {
+            this.logger?.error('Error al listar consensos:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar consensos');
+        }
+    }
 
-								const view = new ConsensosListar({
-									collection: this.Collections.consensos,
-								});
+    /**
+     * Crear consenso
+     */
+    crearConsenso(): void {
+        const view = new ConsensoCrear({
+            model: {
+                id: null,
+                titulo: '',
+                descripcion: '',
+                fecha: '',
+                estado: 'inactivo'
+            },
+            isNew: true,
+            App: this.App,
+            api: this.api,
+            logger: this.logger,
+            region: this.region,
+        });
 
-								this.currentView = view;
-								$(this.region.el).html(view.render().el);
+        this.region.show(view);
 
-								if (typeof this.listenTo === 'function') {
-									this.listenTo(view, 'set:consensos', this.__setConsensos);
-								}
-							}
-						},
-					});
-				}
-			} else {
-				const view = new ConsensosListar({
-					collection: this.Collections.consensos,
-				});
+        // Conectar eventos con el servicio
+        this.listenTo(view, 'add:consenso', this.service.__saveConsenso.bind(this.service));
+    }
 
-				this.currentView = view;
-				$(this.region.el).html(view.render().el);
-			}
-		} catch (err: any) {
-			console.error('Error al listar consensos:', err);
-			this.trigger('alert:error', { message: 'Error de conexión al listar consensos' });
-		}
-	}
+    /**
+     * Editar consenso
+     */
+    async editarConsenso(id: string): Promise<void> {
+        try {
+            // Asegurarse de que los consensos estén cargados
+            await this.service.__findAll();
 
-	/**
-	 * Formulario crear consenso
-	 */
-	formCrearConsenso(): void {
-		console.log('ConsensoController.formCrearConsenso() called');
+            const consensos = (this.service as any).collections.consensos;
+            const model = consensos.get(id);
 
-		this.__createContent();
-		const view = new ConsensoCrear();
+            if (!model) {
+                this.App?.trigger('alert:error', 'Consenso no encontrado');
+                return;
+            }
 
-		this.currentView = view;
-		$(this.region.el).html(view.render().el);
-	}
+            const view = new ConsensoCrear({
+                model: model,
+                isNew: false,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-	/**
-	 * Formulario editar consenso
-	 */
-	formEditConsenso(id: string): void {
-		console.log('ConsensoController.formEditConsenso() called', id);
+            this.region.show(view);
 
-		this.__createContent();
-		const view = new ConsensoCrear({ id: id });
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'add:consenso', this.service.__saveConsenso.bind(this.service));
 
-		this.currentView = view;
-		$(this.region.el).html(view.render().el);
-	}
+        } catch (error: any) {
+            this.logger?.error('Error al editar consenso:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar consenso');
+        }
+    }
 
-	/**
-	 * Detalle del consenso
-	 */
-	consensoDetalle(id: string): void {
-		console.log('ConsensoController.consensoDetalle() called', id);
+    /**
+     * Mostrar detalle de consenso
+     */
+    async consensoDetalle(id: string): Promise<void> {
+        try {
+            // Asegurarse de que los consensos estén cargados
+            await this.service.__findAll();
 
-		this.__createContent();
-		const view = new ConsensoDetalle({ id: id });
+            const consensos = (this.service as any).collections.consensos;
+            const model = consensos.get(id);
 
-		this.currentView = view;
-		$(this.region.el).html(view.render().el);
-	}
+            if (!model) {
+                this.App?.trigger('alert:error', 'Consenso no encontrado');
+                return;
+            }
 
-	/**
-	 * Establecer consensos
-	 */
-	private __setConsensos(_consensos: any): void {
-		if (!this.Collections.consensos && typeof ConsensosCollection !== 'undefined') {
-			this.Collections.consensos = new ConsensosCollection();
-			if (typeof this.Collections.consensos.reset === 'function') {
-				this.Collections.consensos.reset();
-			}
-		}
+            const view = new ConsensoDetalle({
+                model: model,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-		if (this.Collections.consensos && typeof this.Collections.consensos.add === 'function') {
-			this.Collections.consensos.add(_consensos, { merge: true });
-		}
-	}
+            this.region.show(view);
 
-	/**
-	 * Crear el contenido principal
-	 */
-	private __createContent(): HTMLElement {
-		$(this.region.el).remove();
-		const _el = document.createElement('div');
-		_el.setAttribute('id', this.region.id);
+        } catch (error: any) {
+            this.logger?.error('Error al mostrar detalle:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar consenso');
+        }
+    }
 
-		const appElement = document.getElementById('app');
-		if (appElement) {
-			appElement.appendChild(_el);
-		}
+    /**
+     * Mostrar detalle de consenso (alias)
+     */
+    async mostrarDetalle(id: string): Promise<void> {
+        await this.consensoDetalle(id);
+    }
 
-		if (scroltop) {
-			scroltop();
-		}
+    /**
+     * Formulario para crear consenso (alias para router)
+     */
+    formCrearConsenso(): void {
+        this.crearConsenso();
+    }
 
-		return _el;
-	}
+    /**
+     * Formulario para editar consenso (alias para router)
+     */
+    async formEditConsenso(id: string): Promise<void> {
+        await this.editarConsenso(id);
+    }
+
+    /**
+     * Manejar errores
+     */
+    error(): void {
+        this.App?.trigger('alert:error', 'Error en la aplicación de Consensos');
+    }
+
+    /**
+     * Limpiar recursos
+     */
+    destroy(): void {
+        this.stopListening();
+        this.region.remove();
+    }
 }

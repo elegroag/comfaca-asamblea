@@ -1,19 +1,18 @@
 import { BackboneRouter } from "@/common/Bone";
 import AsambleaController from "./AsambleaController";
-import $App from "@/core/App";
-
-declare global {
-    var $App: any;
-}
+import type { AppInstance } from "@/types/types";
 
 interface RouterAsambleaOptions {
+    app: AppInstance;
+    routes?: Record<string, string>;
     [key: string]: any;
 }
 
 export default class RouterAsamblea extends BackboneRouter {
     controller: AsambleaController | null = null;
+    private app: AppInstance;
 
-    constructor(options: RouterAsambleaOptions = {}) {
+    constructor(options: RouterAsambleaOptions) {
         super({
             routes: {
                 '': 'asambleaActiva',
@@ -24,11 +23,14 @@ export default class RouterAsamblea extends BackboneRouter {
             ...options,
         });
 
+        // Patrón descentralizado: inyección directa del app
+        this.app = options.app;
         this._bindRoutes();
     }
 
-    init() {
-        this.controller = $App.startSubApplication(AsambleaController);
+    private init() {
+        // Patrón descentralizado: usar app.startSubApplication()
+        this.controller = this.app.startSubApplication(AsambleaController);
     }
 
     /**
@@ -39,9 +41,7 @@ export default class RouterAsamblea extends BackboneRouter {
         console.log('RouterAsamblea.asambleaDetalle() called', id);
 
         if (id === '' || id === undefined || id === void 0) {
-            if ($App && typeof $App.trigger === 'function') {
-                $App.trigger('warning', 'El id de la asamblea es requerido.');
-            }
+            this.app.trigger('warning', 'El id de la asamblea es requerido.');
             this.navigate('asamblea', { trigger: true });
             return;
         }

@@ -1,289 +1,191 @@
-import { Region } from '@/common/Region';
 import { Controller } from '@/common/Controller';
+import { CommonDeps } from '@/types/CommonDeps';
+import NovedadesService from './NovedadesService';
 import NovedadesListar from '@/componentes/novedades/views/NovedadesListar';
+import NovedadCrear from '@/componentes/novedades/views/NovedadCrear';
 import NovedadDetalle from '@/componentes/novedades/views/NovedadDetalle';
-import Novedad from '@/componentes/novedades/models/Novedad';
-import NovedadesCollection from '@/componentes/novedades/models/NovedadesCollection';
 
-import {
-	NovedadResponse,
-	NovedadesListResponse
-} from './types';
-
-declare global {
-	var $: any;
-	var _: any;
-	var $App: any;
-	var create_url: (path: string) => string;
-	var scroltop: () => void;
-}
-
-interface NovedadesControllerOptions {
-	region?: Region;
-	[key: string]: any;
+interface NovedadesControllerOptions extends CommonDeps {
+    [key: string]: any;
 }
 
 export default class NovedadesController extends Controller {
-	currentView: any;
+    private service: NovedadesService;
 
-	constructor(options: NovedadesControllerOptions = {}) {
-		super(options);
+    constructor(options: NovedadesControllerOptions) {
+        super(options);
+        this.service = new NovedadesService({
+            api: options.api,
+            logger: options.logger,
+            app: options.app
+        });
+    }
 
-		// Inicializar colección de novedades
-		if (!$App.Collections) {
-			$App.Collections = {};
-		}
-		$App.Collections.novedades = null;
+    /**
+     * Listar todas las novedades
+     */
+    async listarNovedades(): Promise<void> {
+        try {
+            await this.service.__findAll();
 
-		// Configurar listeners
-		this.listenTo(this, 'set:novedades', this.__setNovedades);
-		this.listenTo(this, 'add:novedad', this.__addNovedad);
-	}
+            const view = new NovedadesListar({
+                collection: (this.service as any).collections.novedades,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-	/**
-	 * Listar novedades
-	 */
-	async listarNovedades(): Promise<void> {
-		try {
-			console.log('NovedadesController.listarNovedades() called');
+            this.region.show(view);
 
-			this.__createContent();
-			this.__initNovedades();
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'remove:novedad', this.service.__removeNovedad.bind(this.service));
+            this.listenTo(view, 'show:novedad', this.mostrarDetalle.bind(this));
+            this.listenTo(view, 'edit:novedad', this.editarNovedad.bind(this));
+            this.listenTo(view, 'marcar:leida', this.service.__marcarLeida.bind(this.service));
 
-			if (!this.api) return;
+        } catch (error: any) {
+            this.logger?.error('Error al listar novedades:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar novedades');
+        }
+    }
 
-			const response = await this.api.get('/novedades/listar/');
+    /**
+     * Crear novedad
+     */
+    crearNovedad(): void {
+        const view = new NovedadCrear({
+            model: {
+                id: null,
+                titulo: '',
+                descripcion: '',
+                tipo: 'general',
+                estado: 'activo',
+                leida: false
+            },
+            isNew: true,
+            App: this.App,
+            api: this.api,
+            logger: this.logger,
+            region: this.region,
+        });
 
-			if (response && response.success) {
-				this.trigger('set:novedades', response.novedades);
+        this.region.show(view);
 
-				const view = new NovedadesListar({
-					collection: $App.Collections.novedades,
-					App: this
-				});
+        // Conectar eventos con el servicio
+        this.listenTo(view, 'add:novedad', this.service.__saveNovedad.bind(this.service));
+    }
 
-				this.currentView = view;
-				this.showView(view);
+    /**
+     * Mostrar detalle de novedad
+     */
+    async mostrarDetalle(id: string): Promise<void> {
+        try {
+            // Asegurarse de que las novedades estén cargadas
+            await this.service.__findAll();
+            
+            const novedades = (this.service as any).collections.novedades;
+            const model = novedades.get(id);
+            
+            if (!model) {
+                this.App?.trigger('alert:error', 'Novedad no encontrada');
+                return;
+            }
 
-				this.listenTo(view, 'remove:row', this.__removeNovedad);
-				this.listenTo(view, 'item:procesar', this.__procesarNovedad);
-				this.listenTo(view, 'all:procesar', this.__procesarAll);
-				this.listenTo(view, 'all:update', this.__updateAll);
-			} else {
-				this.trigger('alert:error', { message: response.msj || 'Error al cargar novedades' });
-			}
-		} catch (error: any) {
-			this.logger.error(error);
-			this.trigger('alert:error', { message: error.message || 'Error al cargar las novedades' });
-		}
-	}
+            const view = new NovedadDetalle({
+                model: model,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-	/**
-	 * Mostrar detalle de novedad
-	 */
-	async detalleNovedad(id: string): Promise<void> {
-		try {
-			console.log('NovedadesController.detalleNovedad() called', id);
+            this.region.show(view);
 
-			this.__createContent();
-			this.__initNovedades();
+        } catch (error: any) {
+            this.logger?.error('Error al mostrar detalle:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar novedad');
+        }
+    }
 
-			if (!$App.Collections.novedades || _.size($App.Collections.novedades) === 0) {
-				if (!this.api) return;
+    /**
+     * Editar novedad
+     */
+    async editarNovedad(id: string): Promise<void> {
+        try {
+            // Asegurarse de que las novedades estén cargadas
+            await this.service.__findAll();
+            
+            const novedades = (this.service as any).collections.novedades;
+            const model = novedades.get(id);
+            
+            if (!model) {
+                this.App?.trigger('alert:error', 'Novedad no encontrada');
+                return;
+            }
 
-				const response = await this.api.get('/novedades/listar/');
+            const view = new NovedadCrear({
+                model: model,
+                isNew: false,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-				if (response && response.success) {
-					this.trigger('set:novedades', response.novedades);
-					const model = $App.Collections.novedades.get(id);
+            this.region.show(view);
 
-					if (model) {
-						const view = new NovedadDetalle({
-							model: model,
-							App: this
-						});
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'add:novedad', this.service.__saveNovedad.bind(this.service));
 
-						this.currentView = view;
-						this.showView(view);
-						this.listenTo(view, 'item:procesar', this.__procesarNovedad);
-					}
-				} else {
-					this.trigger('alert:error', { message: response.msj || 'Error al cargar novedades' });
-				}
-			} else {
-				const model = $App.Collections.novedades.get(id);
+        } catch (error: any) {
+            this.logger?.error('Error al editar novedad:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar novedad');
+        }
+    }
 
-				if (model) {
-					const view = new NovedadDetalle({
-						model: model,
-						App: this
-					});
+    /**
+     * Listar novedades no leídas
+     */
+    async listarNoLeidas(): Promise<void> {
+        try {
+            const noLeidas = await this.service.__getNoLeidas();
+            
+            // Crear una vista temporal para mostrar las no leídas
+            const view = new NovedadesListar({
+                collection: new (this.App as any).Collection(noLeidas),
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-					this.currentView = view;
-					this.showView(view);
-					this.listenTo(view, 'item:procesar', this.__procesarNovedad);
-				}
-			}
-		} catch (error: any) {
-			this.logger.error(error);
-			this.trigger('alert:error', { message: error.message || 'Error al cargar el detalle de la novedad' });
-		}
-	}
+            this.region.show(view);
 
-	/**
-	 * Eliminar novedad
-	 */
-	private __removeNovedad(transfer: { model: any; callback: (response: any) => void }): void {
-		const { model, callback } = transfer;
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'remove:novedad', this.service.__removeNovedad.bind(this.service));
+            this.listenTo(view, 'show:novedad', this.mostrarDetalle.bind(this));
+            this.listenTo(view, 'edit:novedad', this.editarNovedad.bind(this));
+            this.listenTo(view, 'marcar:leida', this.service.__marcarLeida.bind(this.service));
 
-		if (!this.api) {
-			callback(false);
-			return;
-		}
+        } catch (error: any) {
+            this.logger?.error('Error al listar novedades no leídas:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar novedades');
+        }
+    }
 
-		this.api.delete('/novedades/remove/' + model.get('id'))
-			.then((response: any) => {
-				if (response && response.success) {
-					callback(response);
-				} else {
-					callback(false);
-				}
-			})
-			.catch((error: any) => {
-				this.logger.error(error);
-				callback(false);
-			});
-	}
+    /**
+     * Manejar errores
+     */
+    error(): void {
+        this.App?.trigger('alert:error', 'Error en la aplicación de Novedades');
+    }
 
-	/**
-	 * Procesar novedad
-	 */
-	private __procesarNovedad(transfer: { model: any; callback: (response: any) => void }): void {
-		const { model, callback } = transfer;
-
-		if (!this.api) {
-			callback(false);
-			return;
-		}
-
-		this.api.post('/novedades/procesar/' + model.get('id'), model.toJSON())
-			.then((response: any) => {
-				if (response) {
-					callback(response);
-				} else {
-					callback(false);
-				}
-			})
-			.catch((error: any) => {
-				this.logger.error(error);
-				callback(false);
-			});
-	}
-
-	/**
-	 * Actualizar todos
-	 */
-	private __updateAll(transfer: { estado: any; callback: (response: any) => void }): void {
-		const { estado, callback } = transfer;
-
-		if (!this.api) {
-			callback(false);
-			return;
-		}
-
-		this.api.post('/novedades/updateHabiles', { estado })
-			.then((response: any) => {
-				if (response) {
-					callback(response);
-				} else {
-					callback(false);
-				}
-			})
-			.catch((error: any) => {
-				this.logger.error(error);
-				callback(false);
-			});
-	}
-
-	/**
-	 * Procesar todos
-	 */
-	private __procesarAll(transfer: { estado: any; callback: (response: any) => void }): void {
-		const { estado, callback } = transfer;
-
-		if (!this.api) {
-			callback(false);
-			return;
-		}
-
-		this.api.post('/novedades/procesaActivar', { estado })
-			.then((response: any) => {
-				if (response) {
-					callback(response);
-				} else {
-					callback(false);
-				}
-			})
-			.catch((error: any) => {
-				this.logger.error(error);
-				callback(false);
-			});
-	}
-
-	/**
-	 * Establecer novedades
-	 */
-	private __setNovedades(novedades: any[]): void {
-		this.__initNovedades();
-		$App.Collections.novedades.add(novedades, { merge: true });
-	}
-
-	/**
-	 * Agregar novedad
-	 */
-	private __addNovedad(novedad: any): void {
-		this.__initNovedades();
-		const _novedad = novedad instanceof Novedad ? novedad : new Novedad(novedad);
-		$App.Collections.novedades.add(_novedad, { merge: true });
-	}
-
-	/**
-	 * Inicializar novedades
-	 */
-	private __initNovedades(): void {
-		if (!$App.Collections.novedades) {
-			$App.Collections.novedades = new NovedadesCollection();
-			$App.Collections.novedades.reset();
-		}
-	}
-
-	/**
-	 * Crear contenido
-	 */
-	private __createContent(): void {
-		if (this.region && this.region.el) {
-			$(this.region.el).remove();
-		}
-
-		const _el = document.createElement('div');
-		_el.setAttribute('id', this.region.id);
-
-		const appElement = document.getElementById('app');
-		if (appElement) {
-			appElement.appendChild(_el);
-		}
-
-		if (typeof scroltop === 'function') {
-			scroltop();
-		}
-	}
-
-	/**
-	 * Mostrar vista
-	 */
-	private showView(view: any): void {
-		if (this.region && this.region.el) {
-			$(this.region.el).html(view.render().el);
-		}
-	}
+    /**
+     * Limpiar recursos
+     */
+    destroy(): void {
+        this.stopListening();
+        this.region.remove();
+    }
 }

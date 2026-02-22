@@ -1,155 +1,160 @@
-import { Region } from '@/common/Region';
 import { Controller } from '@/common/Controller';
+import { CommonDeps } from '@/types/CommonDeps';
+import InterventorService from './InterventorService';
 import InterventorMostrarView from '@/componentes/interventores/views/InterventorMostrarView';
 import InterventorCrearView from '@/componentes/interventores/views/InterventorCrearView';
 import InterventoresListView from '@/componentes/interventores/views/InterventoresListView';
 
-import {
-    InterventorResponse,
-    InterventoresListResponse
-} from './types';
-
-declare global {
-    var $: any;
-    var _: any;
-    var axios: any;
-    var loading: any;
-    var create_url: (path: string) => string;
-    var _view: any;
-    var scroltop: () => void;
-}
-
-interface InterventorControllerOptions {
-    region?: Region;
+interface InterventorControllerOptions extends CommonDeps {
     [key: string]: any;
 }
 
 export default class InterventorController extends Controller {
-    currentView: any;
-    interventores: any;
+    private service: InterventorService;
 
-    constructor(options: InterventorControllerOptions = {}) {
+    constructor(options: InterventorControllerOptions) {
         super(options);
-        this.interventores = undefined;
+        this.service = new InterventorService({
+            api: options.api,
+            logger: options.logger,
+            app: options.app
+        });
     }
 
     /**
-     * Mostrar detalle de interventor
+     * Listar todos los interventores
      */
-    async mostrar_interventor(usuario: string = ''): Promise<void> {
+    async listarInterventores(): Promise<void> {
         try {
-            console.log('InterventorController.mostrar_interventor() called', usuario);
+            await this.service.__findAll();
 
-            this.__createContent();
+            const view = new InterventoresListView({
+                collection: (this.service as any).collections.interventores,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-            if (!usuario) return;
+            this.region.show(view);
 
-            if (!this.api) return;
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'remove:interventor', this.service.__removeInterventor.bind(this.service));
+            this.listenTo(view, 'show:interventor', this.mostrarInterventor.bind(this));
+            this.listenTo(view, 'edit:interventor', this.editarInterventor.bind(this));
 
-            const url = Utils.getURL('admin/usuario_detalle/' + usuario);
-
-            // Mostrar loading
-            if (loading && typeof loading.show === 'function') {
-                loading.show(true);
-            }
-
-            const response = await this.api.get('/admin/usuario_detalle/' + usuario);
-
-            if (loading && typeof loading.hide === 'function') {
-                loading.hide(true);
-            }
-
-            if (response && response.data) {
-                const view = new InterventorMostrarView({
-                    el: '#content_template',
-                    model: response.data.interventor,
-                    App: this
-                });
-                this.currentView = view;
-            }
         } catch (error: any) {
-            if (loading && typeof loading.hide === 'function') {
-                loading.hide(true);
-            }
-            this.logger.error(error);
-            this.trigger('alert:error', { message: error.message || 'Error al cargar el interventor' });
+            this.logger?.error('Error al listar interventores:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar interventores');
         }
     }
 
     /**
      * Crear interventor
      */
-    crear_interventor(): void {
-        console.log('InterventorController.crear_interventor() called');
-
-        this.__createContent();
-
+    crearInterventor(): void {
         const view = new InterventorCrearView({
-            el: '#content_template',
-            App: this
+            model: {
+                id: null,
+                nombre: '',
+                identificacion: '',
+                email: '',
+                telefono: '',
+                estado: 'activo'
+            },
+            isNew: true,
+            App: this.App,
+            api: this.api,
+            logger: this.logger,
+            region: this.region,
         });
-        this.currentView = view;
+
+        this.region.show(view);
+
+        // Conectar eventos con el servicio
+        this.listenTo(view, 'add:interventor', this.service.__saveInterventor.bind(this.service));
     }
 
     /**
-     * Listar interventores
+     * Mostrar interventor
      */
-    async lista_interventores(): Promise<void> {
+    async mostrarInterventor(id: string): Promise<void> {
         try {
-            console.log('InterventorController.lista_interventores() called');
-
-            this.__createContent();
-
-            if (!this.api) return;
-
-            // Mostrar loading
-            if (loading && typeof loading.show === 'function') {
-                loading.show(true);
+            // Asegurarse de que los interventores estén cargados
+            await this.service.__findAll();
+            
+            const interventores = (this.service as any).collections.interventores;
+            const model = interventores.get(id);
+            
+            if (!model) {
+                this.App?.trigger('alert:error', 'Interventor no encontrado');
+                return;
             }
 
-            const response = await this.api.get('/interventores/listar');
+            const view = new InterventorMostrarView({
+                model: model,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-            if (loading && typeof loading.hide === 'function') {
-                loading.hide(true);
-            }
+            this.region.show(view);
 
-            if (response && response.status === 200 && response.data) {
-                const view = new InterventoresListView({
-                    collection: response.data.interventores,
-                    el: '#content_template',
-                    App: this
-                });
-                this.currentView = view;
-            } else {
-                this.trigger('alert:error', { message: 'No se encontraron interventores' });
-            }
         } catch (error: any) {
-            if (loading && typeof loading.hide === 'function') {
-                loading.hide(true);
-            }
-            this.logger.error(error);
-            this.trigger('alert:error', { message: error.message || 'Error al cargar los interventores' });
+            this.logger?.error('Error al mostrar interventor:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar interventor');
         }
     }
 
     /**
-     * Crear contenido
+     * Editar interventor
      */
-    private __createContent(): void {
-        if (this.region && this.region.el) {
-            $(this.region.el).remove();
-        }
+    async editarInterventor(id: string): Promise<void> {
+        try {
+            // Asegurarse de que los interventores estén cargados
+            await this.service.__findAll();
+            
+            const interventores = (this.service as any).collections.interventores;
+            const model = interventores.get(id);
+            
+            if (!model) {
+                this.App?.trigger('alert:error', 'Interventor no encontrado');
+                return;
+            }
 
-        const _el = document.createElement('div');
-        _el.setAttribute('id', this.region.id);
+            const view = new InterventorCrearView({
+                model: model,
+                isNew: false,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-        const appElement = document.getElementById('app');
-        if (appElement) {
-            appElement.appendChild(_el);
-        }
+            this.region.show(view);
 
-        if (typeof scroltop === 'function') {
-            scroltop();
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'add:interventor', this.service.__saveInterventor.bind(this.service));
+
+        } catch (error: any) {
+            this.logger?.error('Error al editar interventor:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar interventor');
         }
+    }
+
+    /**
+     * Manejar errores
+     */
+    error(): void {
+        this.App?.trigger('alert:error', 'Error en la aplicación de Interventores');
+    }
+
+    /**
+     * Limpiar recursos
+     */
+    destroy(): void {
+        this.stopListening();
+        this.region.remove();
     }
 }

@@ -1,283 +1,214 @@
 import { Controller } from '@/common/Controller';
+import { CommonDeps } from '@/types/CommonDeps';
+import UsuarioService from './UsuarioService';
 import UsuariosListar from "@/componentes/usuarios/views/UsuariosListar";
 import UsuarioCrear from "@/componentes/usuarios/views/UsuarioCrear";
 import UsuarioMostrar from "@/componentes/usuarios/views/UsuarioMostrar";
 import UsuariosCargue from "@/componentes/usuarios/views/UsuariosCargue";
 import UsuariosListarAsa from "@/componentes/usuarios/views/UsuariosListarAsa";
 import SubNavUsuarios from "@/componentes/usuarios/views/SubNavUsuarios";
-import $App from "@/core/App";
 
-// Declaraciones para las colecciones globales
-declare global {
-    var $: any;
-    var _: any;
-    var $App: any;
-    var create_url: (path: string) => string;
-    var loading: {
-        show: (show?: boolean) => void;
-        hide: (hide?: boolean) => void;
-    };
-    var scroltop: () => void;
-    var axios: {
-        get: (url: string) => Promise<any>;
-        post: (url: string, data: any) => Promise<any>;
-    };
-    var Usuario: any;
-    var UsuariosCollection: any;
-    var AsaUsuario: any;
-    var AsaUsuariosCollection: any;
-    var Asamblea: any;
-    var Mesa: any;
-    var MesasCollection: any;
-}
-
-interface UsuarioControllerOptions {
-    region?: {
-        el: HTMLElement;
-        id: string;
-    };
-    router?: any;
-    logger?: any;
-    api?: any;
+interface UsuarioControllerOptions extends CommonDeps {
+    [key: string]: any;
 }
 
 export default class UsuarioController extends Controller {
-    private asamblea: any;
-    public currentView: any;
-    public Collections: any;
+    private service: UsuarioService;
 
-    constructor(options: UsuarioControllerOptions = {}) {
+    constructor(options: UsuarioControllerOptions) {
         super(options);
-        this.asamblea = null;
-        this.currentView = null;
-        this.Collections = {
-            usuarios: new UsuariosCollection(),
-            asa_usuarios: new AsaUsuariosCollection(),
-            mesas_disponibles: new MesasCollection(),
-            asamblea: null,
-        };
-        this.__initializeCollections();
-    }
-
-    /**
-     * Inicializar las colecciones necesarias
-     */
-    private __initializeCollections(): void {
-        if ($App && $App.Collections) {
-            $App.Collections.usuarios = undefined;
-            $App.Collections.asa_usuarios = undefined;
-            $App.Collections.mesas_disponibles = undefined;
-            $App.Collections.asamblea = undefined;
-        }
+        this.service = new UsuarioService({
+            api: options.api,
+            logger: options.logger,
+            app: options.app
+        });
     }
 
     /**
      * Listar usuarios de asamblea
      */
     async listaUsuariosAsamblea(): Promise<void> {
-        console.log('UsuarioController.listaUsuariosAsamblea() called');
-
         try {
-            this.__createContent();
-            const url = create_url('admin/listar_usuarios_asa');
-            loading.show(true);
+            await this.service.__findAll();
 
-            const salida = await axios.get(url);
-            loading.hide(true);
+            const subNav = new SubNavUsuarios({
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-            if (salida && salida.status === 200 && salida.data) {
-                this.Collections.asa_usuarios.add(salida.data.asa_usuarios, { merge: true });
-
-                if (salida.data.asamblea && typeof Asamblea !== 'undefined') {
-                    this.asamblea = new Asamblea(salida.data.asamblea);
-                    this.Collections.asamblea = this.asamblea;
-                }
-
-                const view = new UsuariosListarAsa({
-                    model: this.asamblea,
-                    collection: this.Collections.asa_usuarios,
-                });
-
-                this.currentView = view;
-                $(this.region.el).html(view.render().el);
-            } else {
-                this.trigger('alert:error', { message: 'Error al listar usuarios de asamblea' });
-                this.router?.navigate('error', { trigger: true });
+            const body = this.region.getRegion('body');
+            if (body) {
+                body.show(subNav);
             }
-        } catch (err: any) {
-            loading.hide(true);
-            console.error('Error al listar usuarios de asamblea:', err);
-            this.trigger('alert:error', { message: 'Error de conexión al listar usuarios de asamblea' });
-            this.router?.navigate('error', { trigger: true });
+
+            const listView = new UsuariosListarAsa({
+                collection: (this.service as any).collections.usuarios,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: body,
+            });
+
+            if (body) {
+                body.show(listView);
+            }
+
+            // Conectar eventos con el servicio
+            this.listenTo(listView, 'remove:usuario', this.service.__removeUsuario.bind(this.service));
+            this.listenTo(listView, 'show:usuario', this.mostrarUsuario.bind(this));
+            this.listenTo(listView, 'edit:usuario', this.editarUsuario.bind(this));
+
+        } catch (error: any) {
+            this.logger?.error('Error al listar usuarios:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar usuarios');
         }
+    }
+
+    /**
+     * Crear usuario
+     */
+    crearUsuario(): void {
+        const view = new UsuarioCrear({
+            model: {
+                id: null,
+                nombre: '',
+                email: '',
+                rol: '',
+                estado: 'activo'
+            },
+            isNew: true,
+            App: this.App,
+            api: this.api,
+            logger: this.logger,
+            region: this.region,
+        });
+
+        this.region.show(view);
+
+        // Conectar eventos con el servicio
+        this.listenTo(view, 'add:usuario', this.service.__saveUsuario.bind(this.service));
+    }
+
+    /**
+     * Crear usuario de asamblea
+     */
+    crearUsuarioAsa(): void {
+        const view = new UsuarioCrear({
+            model: {
+                id: null,
+                nombre: '',
+                email: '',
+                rol: 'asa_usuario',
+                estado: 'activo'
+            },
+            isNew: true,
+            App: this.App,
+            api: this.api,
+            logger: this.logger,
+            region: this.region,
+        });
+
+        this.region.show(view);
+
+        // Conectar eventos con el servicio
+        this.listenTo(view, 'add:usuario', this.service.__saveUsuario.bind(this.service));
     }
 
     /**
      * Listar usuarios de caja
      */
     async listarUsuariosCaja(): Promise<void> {
-        console.log('UsuarioController.listarUsuariosCaja() called');
-
         try {
-            this.__createContent();
-            const url = create_url('admin/listar_usuarios');
-            loading.show(true);
+            await this.service.__findAll();
 
-            const salida = await axios.get(url);
-            loading.hide(true);
+            const view = new UsuariosListar({
+                collection: (this.service as any).collections.usuarios,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-            if (salida && salida.status === 200 && salida.data) {
-                this.Collections.usuarios.add(salida.data.usuarios, { merge: true });
+            this.region.show(view);
 
-                const view = new UsuariosListar({
-                    collection: this.Collections.usuarios,
-                });
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'remove:usuario', this.service.__removeUsuario.bind(this.service));
+            this.listenTo(view, 'show:usuario', this.mostrarUsuario.bind(this));
+            this.listenTo(view, 'edit:usuario', this.editarUsuario.bind(this.service));
 
-                this.currentView = view;
-                $(this.region.el).html(view.render().el);
-            } else {
-                this.trigger('alert:error', { message: 'Error al listar usuarios de caja' });
-                this.router?.navigate('error', { trigger: true });
-            }
-        } catch (err: any) {
-            loading.hide(true);
-            console.error('Error al listar usuarios de caja:', err);
-            this.trigger('alert:error', { message: 'Error de conexión al listar usuarios de caja' });
-            this.router?.navigate('error', { trigger: true });
+        } catch (error: any) {
+            this.logger?.error('Error al listar usuarios:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar usuarios');
         }
     }
 
     /**
-     * Crear nuevo usuario
+     * Mostrar usuario
      */
-    crearUsuario(): void {
-        console.log('UsuarioController.crearUsuario() called');
+    async mostrarUsuario(id: string): Promise<void> {
+        try {
+            // Asegurarse de que los usuarios estén cargados
+            await this.service.__findAll();
+            
+            const usuarios = (this.service as any).collections.usuarios;
+            const model = usuarios.get(id);
+            
+            if (!model) {
+                this.App?.trigger('alert:error', 'Usuario no encontrado');
+                return;
+            }
 
-        this.__createContent();
-        const model = new Usuario();
-        const view = new UsuarioCrear({
-            model,
-            isNew: true
-        });
+            const view = new UsuarioMostrar({
+                model: model,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-        this.currentView = view;
-        $(this.region.el).html(view.render().el);
+            this.region.show(view);
 
-        // Escuchar eventos si el método está disponible
-        if (typeof this.listenTo === 'function') {
-            this.listenTo(view, 'add:usuario_sisu', this.__addUsuarioSisu);
+        } catch (error: any) {
+            this.logger?.error('Error al mostrar usuario:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar usuario');
         }
     }
 
     /**
-     * Mostrar detalle de un usuario
+     * Editar usuario
      */
-    async mostrarUsuario(usuario: string = ''): Promise<void> {
-        console.log('UsuarioController.mostrarUsuario() called', usuario);
-
-        if (!usuario || usuario.trim() === '') {
-            this.trigger('warning', 'El usuario es requerido.');
-            this.router?.navigate('listar', { trigger: true });
-            return;
-        }
-
+    async editarUsuario(id: string): Promise<void> {
         try {
-            this.__createContent();
-            const url = create_url('admin/usuario_detalle/' + usuario);
-            loading.show(true);
-
-            const salida = await axios.get(url);
-            loading.hide(true);
-
-            if (salida && salida.data) {
-                // Inicializar asamblea si existe
-                if (salida.data.asamblea && typeof Asamblea !== 'undefined') {
-                    this.asamblea = new Asamblea(salida.data.asamblea);
-                    this.Collections.asamblea = this.asamblea;
-                }
-
-                const usuarioModel = new Usuario(salida.data.usuario);
-                const usuarioAsa = salida.data.asa_usuario ? new AsaUsuario(salida.data.asa_usuario) : false;
-                const mesa = salida.data.mesa ? new Mesa(salida.data.mesa) : false;
-                const roles = salida.data.roles || false;
-                const mesasDisponibles = salida.data.mesas_disponibles
-                    ? new MesasCollection(salida.data.mesas_disponibles)
-                    : false;
-
-                if (mesasDisponibles) {
-                    this.Collections.mesas_disponibles.add(mesasDisponibles.toJSON(), { merge: true });
-                }
-
-                const view = new UsuarioMostrar({
-                    model: usuarioModel,
-                    collection: [
-                        {
-                            asamblea: this.asamblea,
-                            usuarioAsa,
-                            mesa,
-                            mesasDisponibles,
-                            roles,
-                        },
-                    ],
-                });
-
-                this.currentView = view;
-                $(this.region.el).html(view.render().el);
-            } else {
-                this.trigger('alert:error', { message: 'Respuesta inválida al obtener usuario' });
-                this.router?.navigate('error', { trigger: true });
+            // Asegurarse de que los usuarios estén cargados
+            await this.service.__findAll();
+            
+            const usuarios = (this.service as any).collections.usuarios;
+            const model = usuarios.get(id);
+            
+            if (!model) {
+                this.App?.trigger('alert:error', 'Usuario no encontrado');
+                return;
             }
-        } catch (err: any) {
-            loading.hide(true);
-            console.error('Error al obtener usuario:', err);
-            this.trigger('alert:error', { message: 'Error de conexión al obtener usuario' });
-            this.router?.navigate('error', { trigger: true });
-        }
-    }
 
-    /**
-     * Editar usuario SISU
-     */
-    async editaUserSisu(usuario: string): Promise<void> {
-        console.log('UsuarioController.editaUserSisu() called', usuario);
+            const view = new UsuarioCrear({
+                model: model,
+                isNew: false,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-        if (!usuario || usuario.trim() === '') {
-            this.trigger('warning', 'El usuario es requerido.');
-            this.router?.navigate('listar', { trigger: true });
-            return;
-        }
+            this.region.show(view);
 
-        try {
-            this.__createContent();
-            const url = create_url('admin/usuario_detalle/' + usuario);
-            loading.show(true);
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'add:usuario', this.service.__saveUsuario.bind(this.service));
 
-            const salida = await axios.get(url);
-            loading.hide(true);
-
-            if (salida && salida.data) {
-                const usuarioModel = new Usuario(salida.data.usuario);
-                const view = new UsuarioCrear({
-                    model: usuarioModel,
-                    isNew: false
-                });
-
-                this.currentView = view;
-                $(this.region.el).html(view.render().el);
-
-                // Escuchar eventos si el método está disponible
-                if (typeof this.listenTo === 'function') {
-                    this.listenTo(view, 'add:usuario_sisu', this.__addUsuarioSisu);
-                }
-            } else {
-                this.trigger('alert:error', { message: 'Respuesta inválida al obtener usuario para editar' });
-                this.router?.navigate('error', { trigger: true });
-            }
-        } catch (err: any) {
-            loading.hide(true);
-            console.error('Error al obtener usuario para editar:', err);
-            this.trigger('alert:error', { message: 'Error de conexión al obtener usuario para editar' });
-            this.router?.navigate('error', { trigger: true });
+        } catch (error: any) {
+            this.logger?.error('Error al editar usuario:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar usuario');
         }
     }
 
@@ -285,56 +216,67 @@ export default class UsuarioController extends Controller {
      * Cargar usuarios de caja
      */
     cargarUsuariosCaja(): void {
-        console.log('UsuarioController.cargarUsuariosCaja() called');
+        const view = new UsuariosCargue({
+            App: this.App,
+            api: this.api,
+            logger: this.logger,
+            region: this.region,
+        });
 
-        this.__createContent();
-        const view = new UsuariosCargue();
+        this.region.show(view);
 
-        this.currentView = view;
-        $(this.region.el).html(view.render().el);
+        // Conectar eventos con el servicio
+        this.listenTo(view, 'file:upload', this.service.__uploadMasivo.bind(this.service));
     }
 
     /**
-     * Crear el contenido principal
+     * Editar usuario SISU
      */
-    private __createContent(): HTMLElement {
-        $(this.region.el).remove();
-        const _el = document.createElement('div');
-        _el.setAttribute('id', this.region.id);
-
-        const appElement = document.getElementById('app');
-        if (appElement) {
-            appElement.appendChild(_el);
-        }
-
-        if (scroltop) {
-            scroltop();
-        }
-
-        return _el;
-    }
-
-    /**
-     * Agregar usuario SISU
-     */
-    private __addUsuarioSisu(usuario: any): void {
-        this.__initUsuariosSisu();
-        const _usuario = usuario instanceof Usuario ? usuario : new Usuario(usuario);
-
-        if (this.Collections.usuarios && typeof this.Collections.usuarios.add === 'function') {
-            this.Collections.usuarios.add(_usuario, { merge: true });
-        }
-    }
-
-    /**
-     * Inicializar usuarios SISU
-     */
-    private __initUsuariosSisu(): void {
-        if (!this.Collections.usuarios && typeof UsuariosCollection !== 'undefined') {
-            this.Collections.usuarios = new UsuariosCollection();
-            if (typeof this.Collections.usuarios.reset === 'function') {
-                this.Collections.usuarios.reset();
+    async editaUserSisu(id: string): Promise<void> {
+        try {
+            // Asegurarse de que los usuarios estén cargados
+            await this.service.__findAll();
+            
+            const usuarios = (this.service as any).collections.usuarios;
+            const model = usuarios.get(id);
+            
+            if (!model) {
+                this.App?.trigger('alert:error', 'Usuario no encontrado');
+                return;
             }
+
+            const view = new UsuarioCrear({
+                model: model,
+                isNew: false,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
+
+            this.region.show(view);
+
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'add:usuario', this.service.__saveUsuario.bind(this.service));
+
+        } catch (error: any) {
+            this.logger?.error('Error al editar usuario SISU:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar usuario');
         }
+    }
+
+    /**
+     * Manejar errores
+     */
+    error(): void {
+        this.App?.trigger('alert:error', 'Error en la aplicación de Usuarios');
+    }
+
+    /**
+     * Limpiar recursos
+     */
+    destroy(): void {
+        this.stopListening();
+        this.region.remove();
     }
 }

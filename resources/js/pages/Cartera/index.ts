@@ -1,7 +1,7 @@
 import useLayout from "@/componentes/useLayout";
-import $App from "@/core/App";
 import type { BackendAuthProps } from "@/types/types";
 import CarteraRouter from "./CarteraRouter";
+import $App from "@/core/App";
 
 interface DashboardComponent {
     props: string[];
@@ -11,7 +11,7 @@ interface DashboardComponent {
     render(props: BackendAuthProps): string;
 }
 
-// Componente Cartera con TypeScript
+// Componente Cartera con TypeScript y patrón DI
 const Cartera: DashboardComponent = {
     props: ["title", "user", "stats"],
     template: null,

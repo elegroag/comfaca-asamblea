@@ -1,7 +1,7 @@
 import useLayout from "@/componentes/useLayout";
-import $App from "@/core/App";
 import type { BackendAuthProps } from "@/types/types";
-import MesasRouter from "./MesasRouter";
+import MesasRouter from "./MesasRouter.ts";
+import $App from "@/core/App";
 
 interface DashboardComponent {
     props: string[];
@@ -11,7 +11,7 @@ interface DashboardComponent {
     render(props: BackendAuthProps): string;
 }
 
-// Componente Mesas con TypeScript
+// Componente Mesas con patrón descentralizado de Habiles
 const Mesas: DashboardComponent = {
     props: ["title", "user", "stats"],
     template: null,
@@ -30,7 +30,7 @@ const Mesas: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-
+        // Patrón descentralizado: $App.startApp() como Habiles
         $App.startApp(MesasRouter, {
             defaultRoute: "listar",
             mainRegion: layout.getRegion('content'),

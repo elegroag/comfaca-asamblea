@@ -1,16 +1,14 @@
+import { BackboneRouter } from "@/common/Bone";
 import RepresentanteController from "./RepresentanteController";
+import { CommonDeps } from "@/types/CommonDeps";
 
-declare global {
-    var Backbone: any;
-    var $App: any;
+interface RepresentanteRouterOptions extends Partial<CommonDeps> {
+    region?: any;
 }
 
-interface RepresentanteRouterOptions {
-    [key: string]: any;
-}
-
-export default class RepresentanteRouter extends Backbone.Router {
-    currentApp: any;
+export default class RepresentanteRouter extends BackboneRouter {
+    private controller: RepresentanteController | null = null;
+    private deps: CommonDeps;
 
     constructor(options: RepresentanteRouterOptions = {}) {
         super({
@@ -22,44 +20,40 @@ export default class RepresentanteRouter extends Backbone.Router {
                 'mostrar/:cedula': 'mostrarRepresentante',
                 '*path': 'defaultRoute',
             },
-            currentApp: null,
         });
+
+        // Guardar dependencias inyectadas
+        this.deps = options as CommonDeps;
+        this.controller = new RepresentanteController(this.deps);
         this._bindRoutes();
     }
 
-    initialize(): void {
-        this.currentApp = $App.startSubApplication(RepresentanteController);
-    }
-
-    mostrarRepresentante(cedula: string): boolean {
-        if (cedula === '' || cedula === undefined || cedula === void 0) {
-            $App.trigger('warning', 'El usuario es requerido.');
-            this.navigate('listar', { trigger: true });
-            return false;
+    listaRepresentantes(): void {
+        if (this.controller && typeof this.controller.listaRepresentantes === 'function') {
+            this.controller.listaRepresentantes();
         }
-        this.currentApp.mostrarRepresentante(cedula);
-        return true;
     }
 
     crearRepresentante(): void {
-        this.currentApp.crearRepresentante();
-    }
-
-    editaRepresentante(cedula: string): boolean {
-        if (cedula === '' || cedula === undefined || cedula === void 0) {
-            $App.trigger('warning', 'El usuario es requerido.');
-            this.navigate('listar', { trigger: true });
-            return false;
+        if (this.controller && typeof this.controller.crearRepresentante === 'function') {
+            this.controller.crearRepresentante();
         }
-        this.currentApp.editaRepresentante(cedula);
-        return true;
     }
 
-    listaRepresentantes(): void {
-        this.currentApp.listaRepresentantes();
+    editaRepresentante(cedula: string): void {
+        if (this.controller && typeof this.controller.editaRepresentante === 'function') {
+            this.controller.editaRepresentante(cedula);
+        }
+    }
+
+    mostrarRepresentante(cedula: string): void {
+        if (this.controller && typeof this.controller.mostrarRepresentante === 'function') {
+            this.controller.mostrarRepresentante(cedula);
+        }
     }
 
     defaultRoute(): void {
-        this.navigate('listar', { trigger: true, replace: true });
+        // Redirigir a listar si no hay ruta específica
+        this.navigate('listar', { trigger: true });
     }
 }

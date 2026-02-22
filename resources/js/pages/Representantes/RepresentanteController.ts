@@ -1,226 +1,218 @@
-'use strict';
+import { Controller } from '@/common/Controller';
+import { CommonDeps } from '@/types/CommonDeps';
+import RepresentanteService from './RepresentanteService';
+import RepresentantesListar from '@/componentes/representantes/views/RepresentantesListar';
+import RepresentanteCrear from '@/componentes/representantes/views/RepresentanteCrear';
+import RepresentanteMostrar from '@/componentes/representantes/views/RepresentanteMostrar';
 
-class RepresentanteController {
-    constructor({ region, ...options }) {
-        this.region = region;
-        _.extend(this, Backbone.Events);
+interface RepresentanteControllerOptions extends CommonDeps {
+    [key: string]: any;
+}
 
-        $App.Collections.representantes = null;
-        this.listenTo(this, 'set:representantes', this.__setRepresentantes);
-        this.listenTo(this, 'add:representante', this.__addRepresentante);
-    }
+export default class RepresentanteController extends Controller {
+    private service: RepresentanteService;
 
-    listaRepresentantes() {
-        this.__createContent();
-        if ($App.Collections.representantes == null) {
-            $App.trigger('syncro', {
-                url: create_url('representantes/listar'),
-                data: {},
-                callback: (response) => {
-                    if (response) {
-                        if (response.success) {
-                            this.trigger('set:representantes', response.representantes);
-
-                            const view = new RepresentanteListar({
-                                collection: $App.Collections.representantes,
-                            });
-                            $(this.region.el).html(view.render().el);
-                            this.listenTo(view, 'remove:representante', this.__removeRepresentante);
-                        }
-                    } else {
-                        $App.trigger('alert:error', response);
-                    }
-                },
-            });
-        } else {
-            loading.show(true);
-
-            const view = new RepresentanteListar({
-                collection: $App.Collections.representantes,
-            });
-
-            $(this.region.el).html(view.render().el);
-            this.listenTo(view, 'remove:representante', this.__removeRepresentante);
-
-            setTimeout(() => loading.hide(true), 100);
-        }
-    }
-
-    mostrarRepresentante(cedula) {
-        this.__createContent();
-        if ($App.Collections.representantes == null) {
-            $App.trigger('syncro', {
-                url: create_url(`representantes/buscar/${cedula}`),
-                data: {},
-                callback: (response) => {
-                    if (response) {
-                        if (response.success) {
-                            if (response.isValid == false) {
-                                $App.trigger('error', response.msj);
-                                $App.router.navigate('listar', { trigger: true, replace: true });
-                                return false;
-                            }
-                            const representante = new Representante(response.representante);
-                            representante.set('registro_ingresos', response.registro_ingresos ?? false);
-
-                            let view = new RepresentanteMostrar({
-                                model: representante,
-                            });
-                            $(this.region.el).html(view.render().el);
-                            this.listenTo(view, 'add:representante', this.__addRepresentante);
-                        }
-                    } else {
-                        $App.trigger('alert:error', response);
-                    }
-                },
-            });
-        } else {
-            loading.show(true);
-            const representante = $App.Collections.representantes.get(cedula);
-            let view = new RepresentanteMostrar({ model: representante });
-            $(this.region.el).html(view.render().el);
-            this.listenTo(view, 'add:representante', this.__addRepresentante);
-            setTimeout(() => loading.hide(true), 100);
-        }
-    }
-
-    crearRepresentante() {
-        this.__createContent();
-        let view = new RepresentanteCrear({ model: new Representante(), isNew: true });
-        $(this.region.el).html(view.render().el);
-        this.listenTo(view, 'add:representante', this.__addRepresentante);
-        this.listenTo(view, 'valid:representante', this.__validRepresentante);
-        this.listenTo(view, 'search:empresa', this.__empresaDisponible);
-    }
-
-    editaRepresentante(cedula) {
-        this.__createContent();
-        if ($App.Collections.representantes == null) {
-            $App.trigger('syncro', {
-                url: create_url(`representantes/buscar/${cedula}`),
-                data: {},
-                callback: (response) => {
-                    if (response) {
-                        if (response.success) {
-                            if (response.isValid == false) {
-                                $App.trigger('error', response.msj);
-                                $App.router.navigate('listar', { trigger: true, replace: true });
-                                return false;
-                            }
-                            const representante = new Representante(response.representante);
-                            representante.set('registro_ingresos', response.registro_ingresos ?? false);
-
-                            let view = new RepresentanteCrear({
-                                model: representante,
-                                isNew: false,
-                            });
-                            $(this.region.el).html(view.render().el);
-                            this.listenTo(view, 'add:representante', this.__addRepresentante);
-                        }
-                    } else {
-                        $App.trigger('alert:error', response);
-                    }
-                },
-            });
-        } else {
-            loading.show(true);
-            const representante = $App.Collections.representantes.get(cedula);
-            let view = new RepresentanteCrear({ model: representante, isNew: false });
-            $(this.region.el).html(view.render().el);
-            this.listenTo(view, 'add:representante', this.__addRepresentante);
-            setTimeout(() => loading.hide(true), 100);
-        }
-    }
-
-    __removeRepresentante(transfer) {
-        const { model, responseTransaction } = transfer;
-        if (model instanceof Representante == false) {
-            $App.trigger('alert:error', 'El modelo no corresponde a un representante');
-            responseTransaction(false);
-        } else {
-            $App.trigger('syncro', {
-                url: create_url(`representantes/removeRepresentante/${model.get('id')}`),
-                data: {},
-                callback: (response) => {
-                    if (response) {
-                        if (response.success) {
-                            $App.trigger('success', response.msj);
-                            responseTransaction(true);
-                            $App.Collections.representantes.remove(model);
-                        } else {
-                            $App.trigger('alert:error', response.msj);
-                            responseTransaction(false);
-                        }
-                    }
-                },
-            });
-        }
-        return false;
-    }
-
-    __validRepresentante(transfer) {
-        const { cedrep, callback } = transfer;
-
-        $App.trigger('syncro', {
-            url: create_url(`representantes/validRepresentante/${cedrep}`),
-            data: {},
-            callback: (response) => {
-                if (response) {
-                    if (response.isValid == true) {
-                        $App.trigger('alert:success', response.msj);
-                        callback(true);
-                    } else {
-                        $App.trigger('alert:error', response.msj);
-                        callback(false);
-                    }
-                }
-            },
+    constructor(options: RepresentanteControllerOptions) {
+        super(options);
+        this.service = new RepresentanteService({
+            api: options.api,
+            logger: options.logger,
+            app: options.app
         });
     }
 
-    __empresaDisponible(transfer) {
-        const { nit, callback } = transfer;
+    /**
+     * Listar todos los representantes
+     */
+    async listarRepresentantes(): Promise<void> {
+        try {
+            await this.service.__findAll();
 
-        $App.trigger('syncro', {
-            url: create_url(`representantes/empresaDisponible/${nit}`),
-            data: {},
-            callback: (response) => {
-                if (response) {
-                    if (response.isValid == true) {
-                        callback(response);
-                    } else {
-                        $App.trigger('alert:error', response.msj);
-                        callback(false);
-                    }
-                }
-            },
-        });
-    }
+            const view = new RepresentantesListar({
+                collection: (this.service as any).collections.representantes,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-    __initRepresentantes() {
-        if ($App.Collections.representantes == null) {
-            $App.Collections.representantes = new RepresentantesCollection();
-            $App.Collections.representantes.reset();
+            this.region.show(view);
+
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'remove:representante', this.service.__removeRepresentante.bind(this.service));
+            this.listenTo(view, 'show:representante', this.mostrarRepresentante.bind(this));
+            this.listenTo(view, 'edit:representante', this.editarRepresentante.bind(this));
+
+        } catch (error: any) {
+            this.logger?.error('Error al listar representantes:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar representantes');
         }
     }
 
-    __setRepresentantes(representantes) {
-        this.__initRepresentantes();
-        $App.Collections.representantes.add(representantes, { merge: true });
+    /**
+     * Crear representante
+     */
+    crearRepresentante(): void {
+        const view = new RepresentanteCrear({
+            model: {
+                id: null,
+                nombre: '',
+                identificacion: '',
+                email: '',
+                telefono: '',
+                empresa_id: null,
+                estado: 'activo'
+            },
+            isNew: true,
+            App: this.App,
+            api: this.api,
+            logger: this.logger,
+            region: this.region,
+        });
+
+        this.region.show(view);
+
+        // Conectar eventos con el servicio
+        this.listenTo(view, 'add:representante', this.service.__saveRepresentante.bind(this.service));
     }
 
-    __addRepresentante(representante) {
-        let _representante = representante instanceof Representante ? representante : new Representante(representante);
-        this.__initRepresentantes();
-        $App.Collections.representantes.add(_representante, { merge: true });
+    /**
+     * Mostrar representante
+     */
+    async mostrarRepresentante(id: string): Promise<void> {
+        try {
+            // Asegurarse de que los representantes estén cargados
+            await this.service.__findAll();
+            
+            const representantes = (this.service as any).collections.representantes;
+            const model = representantes.get(id);
+            
+            if (!model) {
+                this.App?.trigger('alert:error', 'Representante no encontrado');
+                return;
+            }
+
+            const view = new RepresentanteMostrar({
+                model: model,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
+
+            this.region.show(view);
+
+        } catch (error: any) {
+            this.logger?.error('Error al mostrar representante:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar representante');
+        }
     }
 
-    __createContent() {
-        $(this.region.el).remove();
-        let _el = document.createElement('div');
-        _el.setAttribute('id', this.region.id);
-        document.getElementById('app').appendChild(_el);
-        scroltop();
-        return _el;
+    /**
+     * Editar representante
+     */
+    async editarRepresentante(id: string): Promise<void> {
+        try {
+            // Asegurarse de que los representantes estén cargados
+            await this.service.__findAll();
+            
+            const representantes = (this.service as any).collections.representantes;
+            const model = representantes.get(id);
+            
+            if (!model) {
+                this.App?.trigger('alert:error', 'Representante no encontrado');
+                return;
+            }
+
+            const view = new RepresentanteCrear({
+                model: model,
+                isNew: false,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
+
+            this.region.show(view);
+
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'add:representante', this.service.__saveRepresentante.bind(this.service));
+
+        } catch (error: any) {
+            this.logger?.error('Error al editar representante:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar representante');
+        }
+    }
+
+    /**
+     * Cargar representantes masivamente
+     */
+    cargarMasivo(): void {
+        const view = new RepresentanteCrear({
+            model: {
+                id: null,
+                nombre: '',
+                identificacion: '',
+                email: '',
+                telefono: '',
+                empresa_id: null,
+                estado: 'activo'
+            },
+            isNew: true,
+            isMasivo: true,
+            App: this.App,
+            api: this.api,
+            logger: this.logger,
+            region: this.region,
+        });
+
+        this.region.show(view);
+
+        // Conectar eventos con el servicio
+        this.listenTo(view, 'file:upload', this.service.__uploadMasivo.bind(this.service));
+    }
+
+    /**
+     * Buscar representantes por criterio
+     */
+    async buscarRepresentantes(criterio: string): Promise<void> {
+        try {
+            const representantes = await this.service.__buscarRepresentantes(criterio);
+            
+            // Crear una vista temporal para mostrar los resultados
+            const view = new RepresentantesListar({
+                collection: new (this.App as any).Collection(representantes),
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
+
+            this.region.show(view);
+
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'remove:representante', this.service.__removeRepresentante.bind(this.service));
+            this.listenTo(view, 'show:representante', this.mostrarRepresentante.bind(this));
+            this.listenTo(view, 'edit:representante', this.editarRepresentante.bind(this));
+
+        } catch (error: any) {
+            this.logger?.error('Error al buscar representantes:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al buscar representantes');
+        }
+    }
+
+    /**
+     * Manejar errores
+     */
+    error(): void {
+        this.App?.trigger('alert:error', 'Error en la aplicación de Representantes');
+    }
+
+    /**
+     * Limpiar recursos
+     */
+    destroy(): void {
+        this.stopListening();
+        this.region.remove();
     }
 }

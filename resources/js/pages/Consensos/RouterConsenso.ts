@@ -1,20 +1,18 @@
 import { BackboneRouter } from "@/common/Bone";
 import ConsensoController from "./ConsensoController";
-import $App from "@/core/App";
-
-declare global {
-    var $App: any;
-}
+import type { AppInstance } from "@/types/types";
 
 interface RouterConsensoOptions {
+    app: AppInstance;
     routes?: Record<string, string>;
-    controller?: any;
+    [key: string]: any;
 }
 
 export default class RouterConsenso extends BackboneRouter {
-    controller: ConsensoController;
+    private controller: ConsensoController | null = null;
+    private app: AppInstance;
 
-    constructor(options: RouterConsensoOptions = {}) {
+    constructor(options: RouterConsensoOptions) {
         super({
             routes: {
                 '': 'listarConsensos',
@@ -26,83 +24,41 @@ export default class RouterConsenso extends BackboneRouter {
             ...options,
         });
 
-        this.controller = $App.startSubApplication(ConsensoController, this);
+        // Patrón descentralizado: inyección directa del app
+        this.app = options.app;
         this._bindRoutes();
     }
 
-    /**
-     * Manejar ruta de error
-     */
-    error(): void {
-        console.log('RouterConsenso.error() called');
-        if (this.controller && typeof this.controller.error === 'function') {
-            this.controller.error();
-        }
+    private init() {
+        // Patrón descentralizado: usar app.startSubApplication()
+        this.controller = this.app.startSubApplication(ConsensoController);
     }
 
-    /**
-     * Listar consensos
-     */
     listarConsensos(): void {
-        console.log('RouterConsenso.listarConsensos() called');
+        this.init();
         if (this.controller && typeof this.controller.listarConsensos === 'function') {
             this.controller.listarConsensos();
         }
     }
 
-    /**
-     * Formulario crear consenso
-     */
     formCrearConsenso(): void {
-        console.log('RouterConsenso.formCrearConsenso() called');
+        this.init();
         if (this.controller && typeof this.controller.formCrearConsenso === 'function') {
             this.controller.formCrearConsenso();
         }
     }
 
-    /**
-     * Formulario editar consenso
-     */
-    formEditConsenso(id: string): boolean {
-        console.log('RouterConsenso.formEditConsenso() called', id);
-
-        if (!id || id.trim() === '') {
-            if ($App && typeof $App.trigger === 'function') {
-                $App.trigger('warning', 'El id del consenso es requerido.');
-            }
-            this.navigate('listar', { trigger: true });
-            return false;
-        }
-
+    formEditConsenso(id: string): void {
+        this.init();
         if (this.controller && typeof this.controller.formEditConsenso === 'function') {
             this.controller.formEditConsenso(id);
-            return true;
-        } else {
-            console.error('Controller.formEditConsenso no está disponible');
-            return false;
         }
     }
 
-    /**
-     * Detalle del consenso
-     */
-    consensoDetalle(id: string): boolean {
-        console.log('RouterConsenso.consensoDetalle() called', id);
-
-        if (!id || id.trim() === '') {
-            if ($App && typeof $App.trigger === 'function') {
-                $App.trigger('warning', 'El id del consenso es requerido.');
-            }
-            this.navigate('listar', { trigger: true });
-            return false;
-        }
-
+    consensoDetalle(id: string): void {
+        this.init();
         if (this.controller && typeof this.controller.consensoDetalle === 'function') {
             this.controller.consensoDetalle(id);
-            return true;
-        } else {
-            console.error('Controller.consensoDetalle no está disponible');
-            return false;
         }
     }
 }

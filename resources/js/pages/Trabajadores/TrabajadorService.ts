@@ -1,106 +1,179 @@
-import TrabajadoresCollection from "@/componentes/trabajadores/collections/TrabajadoresCollection";
-import Trabajador from "@/componentes/trabajadores/models/Trabajador";
+import { CommonDeps, ServiceOptions, ApiResponse } from '@/types/CommonDeps';
+import { BoxCollectionStorage } from '@/componentes/useStorage';
+import TrabajadoresCollection from '@/componentes/trabajadores/collections/TrabajadoresCollection';
+import Trabajador from '@/componentes/trabajadores/models/Trabajador';
 
-declare global {
-	var $App: any;
-	var create_url: (path: string) => string;
+export interface TrabajadorServiceOptions extends ServiceOptions {
+  // Opciones adicionales específicas del servicio si se necesitan
 }
 
-interface SaveTrabajadorTransfer {
-	model: any;
-	callback: (response: any) => void;
-}
-
-interface RemoveTrabajadorTransfer {
-	trabajador: any;
-	callback: (response: any) => void;
+export interface TrabajadorCollections {
+  trabajadores: TrabajadoresCollection;
 }
 
 export default class TrabajadorService {
-	trabajadores: any[];
+  private storage: BoxCollectionStorage;
+  private collections: TrabajadorCollections;
 
-	constructor() {
-		this.trabajadores = [];
-	}
+  constructor(private readonly opts: TrabajadorServiceOptions) {
+    this.storage = BoxCollectionStorage.getInstance();
+    this.__initializeCollections();
+  }
 
-	static initTrabajadores(): void {
-		if (!$App.Collections.trabajadores) {
-			$App.Collections.trabajadores = new TrabajadoresCollection();
-			$App.Collections.trabajadores.reset();
-		}
-	}
+  private get api() { return this.opts.api; }
+  private get logger() { return this.opts.logger; }
+  private get App() { return this.opts.app; }
 
-	__findAll(): void {
-		$App.trigger('syncro', {
-			url: create_url('trabajadores/listar'),
-			data: {},
-			callback: (response: any) => {
-				if (response.success === true) {
-					TrabajadorService.initTrabajadores();
-					$App.Collections.trabajadores.add(response.trabajadores, { merge: true });
-				} else {
-					$App.trigger('alert:error', response.msj);
-				}
-			},
-		});
-	}
+  /**
+   * Inicializar las colecciones necesarias usando BoxCollectionStorage
+   */
+  private __initializeCollections(): void {
+    // Inicializar colecciones persistentes en localStorage
+    const trabajadoresStorage = this.storage.getCollection('trabajadores')?.value;
 
-	__setTrabajadores(trabajadores: any): void {
-		TrabajadorService.initTrabajadores();
-		$App.Collections.trabajadores.add(trabajadores, { merge: true });
-	}
+    // Crear colecciones Backbone si no existen
+    this.collections.trabajadores = (trabajadoresStorage as TrabajadoresCollection) || new TrabajadoresCollection();
 
-	__addTrabajadores(trabajador: any): void {
-		TrabajadorService.initTrabajadores();
-		const _trabajador = trabajador instanceof Trabajador ? trabajador : new Trabajador(trabajador);
-		$App.Collections.trabajadores.add(_trabajador, { merge: true });
-	}
+    // Guardar colecciones en storage si no existen
+    if (!trabajadoresStorage) {
+      this.storage.addCollection('trabajadores', this.collections.trabajadores);
+    }
+  }
 
-	__saveTrabajador(transfer: SaveTrabajadorTransfer = {} as SaveTrabajadorTransfer): void {
-		const { model, callback } = transfer;
-		if (!model.isValid()) {
-			const errors = model.validationError;
-			$App.trigger('alert:error', errors.toString());
-			callback(false);
-		} else {
-			$App.trigger('confirma', {
-				message: 'Se requiere de confirmar la acción a realizar para guardar los datos',
-				callback: (confirm: boolean) => {
-					if (confirm) {
-						$App.trigger('syncro', {
-							url: create_url('trabajadores/saveTrabajador'),
-							data: model.toJSON(),
-							callback: (response: any) => {
-								return callback(response);
-							},
-						});
-					}
-				},
-			});
-		}
-	}
+  // Métodos públicos (interfaz para controllers/vistas)
 
-	__removeTrabajador(transfer: RemoveTrabajadorTransfer = {} as RemoveTrabajadorTransfer): void {
-		const { trabajador, callback } = transfer;
-		$App.trigger('syncro', {
-			url: create_url('trabajadores/removeTrabajador'),
-			data: trabajador.toJSON(),
-			callback: (response: any) => {
-				return callback(response);
-			},
-		});
-	}
+  /**
+   * Obtener todos los trabajadores
+   */
+  async __findAll(): Promise<void> {
+    try {
+      const response = await this.findAllApi();
+      if (response?.success) {
+        this.__setTrabajadores((response as any).trabajadores || []);
+      } else {
+        this.App.trigger('alert:error', { message: response?.msj || 'Error al cargar trabajadores' });
+      }
+    } catch (error: any) {
+      this.logger.error('Error al listar trabajadores:', error);
+      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+    }
+  }
 
-	removeTrabajador(trabajador: any): void {
-		this.__removeTrabajador({
-			trabajador, callback: (response: any) => {
-				if (response && response.success) {
-					$App.Collections.trabajadores.remove(trabajador);
-					$App.trigger('alert:success', response.msj);
-				} else {
-					$App.trigger('alert:error', response.msj);
-				}
-			}
-		});
-	}
+  /**
+   * Establecer lista de trabajadores
+   */
+  __setTrabajadores(trabajadores: any[]): void {
+    this.collections.trabajadores.reset();
+    this.collections.trabajadores.add(trabajadores, { merge: true });
+  }
+
+  /**
+   * Agregar trabajador a la colección
+   */
+  __addTrabajadores(trabajador: any): void {
+    const _trabajador = trabajador instanceof Trabajador ? trabajador : new Trabajador(trabajador);
+    this.collections.trabajadores.add(_trabajador, { merge: true });
+  }
+
+  /**
+   * Guardar trabajador
+   */
+  async __saveTrabajador(model: any): Promise<ApiResponse> {
+    try {
+      if (!model.isValid()) {
+        const errors = model.validationError;
+        this.App.trigger('alert:error', errors.toString());
+        return { success: false, message: errors.toString() };
+      }
+
+      const response = await this.saveTrabajadorApi(model.toJSON());
+
+      if (response?.success) {
+        this.App.trigger('alert:success', { message: response.msj || 'Trabajador guardado exitosamente' });
+        this.__addTrabajadores((response as any).trabajador);
+      } else {
+        this.App.trigger('alert:error', { message: response?.msj || 'Error al guardar trabajador' });
+      }
+
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error al guardar trabajador:', error);
+      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      return { success: false, message: error.message };
+    }
+  }
+
+  /**
+   * Eliminar trabajador
+   */
+  async __removeTrabajador(trabajador: any): Promise<ApiResponse> {
+    try {
+      const response = await this.removeTrabajadorApi(trabajador.toJSON());
+
+      if (response?.success) {
+        this.App.trigger('alert:success', { message: response.msj || 'Trabajador eliminado exitosamente' });
+        this.collections.trabajadores.remove(trabajador);
+      } else {
+        this.App.trigger('alert:error', { message: response?.msj || 'Error al eliminar trabajador' });
+      }
+
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error al eliminar trabajador:', error);
+      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      return { success: false, message: error.message };
+    }
+  }
+
+  /**
+   * Cargue masivo de trabajadores
+   */
+  async __uploadMasivo({ formData, callback }: any): Promise<void> {
+    try {
+      const response = await this.uploadMasivoApi(formData);
+
+      if (response?.success) {
+        this.App.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
+        await this.__findAll(); // Recargar datos
+        callback(true, response);
+      } else {
+        this.App.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
+        callback(false);
+      }
+    } catch (error: any) {
+      this.logger.error('Error en cargue masivo:', error);
+      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      callback(false);
+    }
+  }
+
+  // Métodos privados (solo Service)
+
+  /**
+   * Obtener trabajadores desde API
+   */
+  private async findAllApi(): Promise<ApiResponse> {
+    return await this.api.get('/trabajadores/listar');
+  }
+
+  /**
+   * Guardar trabajador en API
+   */
+  private async saveTrabajadorApi(data: any): Promise<ApiResponse> {
+    return await this.api.post('/trabajadores/saveTrabajador', data);
+  }
+
+  /**
+   * Eliminar trabajador en API
+   */
+  private async removeTrabajadorApi(data: any): Promise<ApiResponse> {
+    return await this.api.post('/trabajadores/removeTrabajador', data);
+  }
+
+  /**
+   * Subir archivo masivo a API
+   */
+  private async uploadMasivoApi(formData: FormData): Promise<ApiResponse> {
+    return await this.api.post('/trabajadores/cargue_masivo', formData);
+  }
 }

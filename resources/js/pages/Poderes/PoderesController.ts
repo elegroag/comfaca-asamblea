@@ -5,297 +5,209 @@ import PoderBuscar from '@/componentes/poderes/views/PoderBuscar';
 import RechazaPoder from '@/componentes/poderes/views/RechazaPoder';
 import PoderMasivo from '@/componentes/poderes/views/PoderMasivo';
 import PoderDetalle from '@/componentes/poderes/views/PoderDetalle';
+import { CommonDeps } from '@/types/CommonDeps';
+import PoderService from './PoderService';
+import type { Poder } from './types';
 
-import {
-    PoderDetalleResponse,
-    BuscarPersonaResponse,
-    CriteriosRechazoResponse,
-    EmpresaResponse
-} from './types';
-
-import PoderesCollection from '@/collections/Poderes';
-import EmpresasCollection from '@/collections/EmpresasCollection';
-import CriteriosRechazos from '@/collections/CriteriosRechazos';
+interface PoderesControllerOptions extends CommonDeps {
+    region?: any;
+    [key: string]: any;
+}
 
 export default class PoderesController extends Controller {
+    private service: PoderService;
 
-    currentView: any;
-    Collections: any;
-
-    constructor(options: any) {
+    constructor(options: PoderesControllerOptions) {
         super(options);
-        this.Collections = {
-            poderes: new PoderesCollection(),
-            empresas: new EmpresasCollection(),
-            criteriosRechazos: new CriteriosRechazos(),
-        };
+        this.service = new PoderService({
+            api: options.api,
+            logger: options.logger,
+            app: options.app
+        });
     }
 
-    // Listar poderes
+    /**
+     * Listar todos los poderes
+     */
     async listar(): Promise<void> {
         try {
-            if (!this.api) return;
+            await this.service.__findAll();
 
-            const response = await this.api.get('/poderes/listar');
+            const view = new PoderesListarView({
+                collection: (this.service as any).collections.poderes,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
 
-            if (response.success && (response as any).poderes) {
+            this.region.show(view);
 
-                this.Collections.poderes.add((response as any).poderes, { merge: true });
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'remove:poder', this.service.__deletePoder.bind(this.service));
+            this.listenTo(view, 'edit:poder', this.editarPoder.bind(this));
+            this.listenTo(view, 'show:poder', this.mostrarDetalle.bind(this));
+            this.listenTo(view, 'activar:poder', this.service.__activarPoder.bind(this.service));
+            this.listenTo(view, 'inactivar:poder', this.service.__inactivarPoder.bind(this.service));
+            this.listenTo(view, 'export:lista', this.service.__exportLista.bind(this.service));
+            this.listenTo(view, 'file:upload', this.service.__uploadMasivo.bind(this.service));
 
-                const view = new PoderesListarView({
-                    collection: this.Collections.poderes,
-                    App: this.App,
-                    router: this.router,
-                    logger: this.logger,
-                    api: this.api,
-                    props: this.props
-                });
-                this.region.show(view);
-                this.currentView = view;
-            } else {
-                this.App?.trigger('alert:error', { message: response.message || 'Error al cargar los poderes' });
-                this.router.navigate('error', { trigger: true });
-            }
         } catch (error: any) {
-            this.logger.error(error);
-            this.App?.trigger('alert:error', { message: error.message || 'Error de conexión' });
-            this.router.navigate('error', { trigger: true });
+            this.logger?.error('Error al listar poderes:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar poderes');
         }
     }
 
-    // Crear poder
-    crear(): void {
-        console.log('PoderesController.crear() called');
+    /**
+     * Mostrar vista de creación de poder
+     */
+    crearPoder(): void {
         const view = new PoderCrear({
-            collection: this.Collections.empresas,
-            App: this,
+            model: {
+                id: null,
+                nombre: '',
+                identificacion: '',
+                tipo: '',
+                estado: 'inactivo'
+            },
+            isNew: true,
+            App: this.App,
             api: this.api,
-            router: this.router,
             logger: this.logger,
-            props: this.props
+            region: this.region,
         });
 
-        this.currentView = view;
         this.region.show(view);
-        this.listenTo(view, 'search:empresa', this.__searchEmpresaValidation);
+
+        // Conectar eventos con el servicio
+        this.listenTo(view, 'add:poder', this.service.__savePoder.bind(this.service));
     }
 
-    // Buscar poder
-    buscar(): void {
-        console.log('PoderesController.buscar() called');
+    /**
+     * Editar un poder existente
+     */
+    async editarPoder(id: string): Promise<void> {
+        try {
+            // Asegurarse de que los poderes estén cargados
+            await this.service.__findAll();
 
+            const poderes = (this.service as any).collections.poderes;
+            const model = poderes.get(id);
+
+            if (!model) {
+                this.App?.trigger('alert:error', 'Poder no encontrado');
+                return;
+            }
+
+            const view = new PoderCrear({
+                model: model,
+                isNew: false,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
+
+            this.region.show(view);
+
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'add:poder', this.service.__savePoder.bind(this.service));
+
+        } catch (error: any) {
+            this.logger?.error('Error al editar poder:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar poder');
+        }
+    }
+
+    /**
+     * Mostrar detalle de un poder
+     */
+    async mostrarDetalle(id: string): Promise<void> {
+        try {
+            // Asegurarse de que los poderes estén cargados
+            await this.service.__findAll();
+
+            const poderes = (this.service as any).collections.poderes;
+            const model = poderes.get(id);
+
+            if (!model) {
+                this.App?.trigger('alert:error', 'Poder no encontrado');
+                return;
+            }
+
+            const view = new PoderDetalle({
+                model: model,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
+
+            this.region.show(view);
+
+        } catch (error: any) {
+            this.logger?.error('Error al mostrar detalle:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar poder');
+        }
+    }
+
+    /**
+     * Buscar poder
+     */
+    buscar(): void {
         const view = new PoderBuscar({
             App: this.App,
-            router: this.router,
-            logger: this.logger,
             api: this.api,
-            props: this.props
+            logger: this.logger,
+            region: this.region,
         });
-        this.currentView = view;
+
         this.region.show(view);
     }
 
-    // Mostrar detalle de poder
-    async mostrar(documento: string): Promise<void> {
-        console.log('PoderesController.mostrar() called', documento);
+    /**
+     * Crear rechazo de poder
+     */
+    crearRechazo(): void {
+        const view = new RechazaPoder({
+            App: this.App,
+            api: this.api,
+            logger: this.logger,
+            region: this.region,
+        });
 
-        try {
-            if (!this.api) return;
-
-            const response = await this.api.get(`/poderes/detalle/${documento}`) as unknown as PoderDetalleResponse;
-
-            if (response && response.success === true && response.poder) {
-
-                if (response.poder === false) {
-                    this.App?.trigger('errors', response.msj);
-                } else {
-                    const view = new PoderDetalle({
-                        model: response.poder,
-                        apoderado: response.habil_apoderado,
-                        poderdante: response.habil_poderdante,
-                        criteriosRechazos: response.criterio_rechazos,
-                        App: this,
-                        router: this.router,
-                        logger: this.logger,
-                        api: this.api,
-                        props: this.props
-                    });
-                    this.currentView = view;
-                    this.region.show(view);
-                }
-
-            }
-        } catch (error: any) {
-            this.App?.trigger('error', error.message || 'Error de conexión');
-            this.router.navigate('listar', { trigger: true });
-        }
-    }
-
-    // Buscar apoderado
-    async buscarApoderado(nit: string): Promise<void> {
-        console.log('PoderesController.buscarApoderado() called', nit);
-
-        this.App?.trigger('hide:modal', null);
-
-        try {
-            if (!this.api) return;
-
-            const response = await this.api.get(`/poderes/buscar_apoderado/${nit}`) as unknown as BuscarPersonaResponse;
-
-            if (response && response.success === true) {
-                const view = new PoderDetalle({
-                    model: response.poder,
-                    apoderado: response.apoderado,
-                    poderdante: response.poderdante,
-                    criteriosRechazos: response.criterio_rechazos,
-                    App: this,
-                    router: this.router,
-                    logger: this.logger,
-                    api: this.api,
-                    props: this.props
-                });
-                this.currentView = view;
-                this.region.show(view);
-            } else {
-                this.App?.trigger('error', response.msj);
-                this.router.navigate('listar', { trigger: true });
-            }
-        } catch (error: any) {
-            this.App?.trigger('error', error.message || 'Error de conexión');
-            this.router.navigate('listar', { trigger: true });
-        }
-    }
-
-    // Buscar poderdante
-    async buscarPoderdante(nit: string): Promise<void> {
-        console.log('PoderesController.buscarPoderdante() called', nit);
-
-        this.App?.trigger('hide:modal', null);
-
-        try {
-            if (!this.api) return;
-
-            const response = await this.api.get(`/poderes/buscar_poderdante/${nit}`) as unknown as BuscarPersonaResponse;
-
-            if (response && response.success === true) {
-                const view = new PoderDetalle({
-                    model: response.poder,
-                    apoderado: response.apoderado,
-                    poderdante: response.poderdante,
-                    criteriosRechazos: response.criterio_rechazos,
-                    App: this,
-                    router: this.router,
-                    logger: this.logger,
-                    api: this.api,
-                    props: this.props
-
-                });
-                this.currentView = view;
-                this.region.show(view);
-            } else {
-                this.App?.trigger('warning', response.msj);
-                this.router.navigate('listar', { trigger: true });
-            }
-        } catch (error: any) {
-            this.App?.trigger('error', error.message || 'Error de conexión');
-            this.router.navigate('listar', { trigger: true });
-        }
-    }
-
-    // Rechazar poder
-    async rechazar(): Promise<void> {
-        console.log('PoderesController.rechazar() called');
-
-        if (!this.Collections.criteriosRechazos || this.Collections.criteriosRechazos.length === 0) {
-            try {
-                if (!this.api) return;
-
-                const response = await this.api.get('/poderes/criterios-rechazo') as unknown as CriteriosRechazoResponse;
-
-                if (response && response.success === true) {
-                    this.Collections.criteriosRechazos = response.criterios || [];
-                    const view = new RechazaPoder({
-                        collection: this.Collections.criteriosRechazos,
-                        App: this,
-                        router: this.router,
-                        logger: this.logger,
-                        api: this.api,
-                        props: this.props
-                    });
-                    this.currentView = view;
-                    this.region.show(view);
-                    this.listenTo(view, 'add:poder', () => {
-                        console.log('Adiciona poder por implementar');
-                    });
-                } else {
-                    this.App?.trigger('alert:error', { message: response.msj });
-                }
-            } catch (error: any) {
-                console.error(error);
-                this.App?.trigger('alert:error', { message: error.message || 'Error de conexión' });
-            }
-        } else {
-            const view = new RechazaPoder({
-                collection: this.Collections.criteriosRechazos,
-                App: this,
-                router: this.router,
-                logger: this.logger,
-                api: this.api,
-                props: this.props
-            });
-            this.currentView = view;
-            this.region.show(view);
-        }
-    }
-
-    // Cargue masivo
-    masivo(): void {
-        console.log('PoderesController.masivo() called');
-
-        const view = new PoderMasivo({ App: this });
-        this.currentView = view;
         this.region.show(view);
     }
 
-    // Métodos privados
-    private async __searchEmpresaValidation(transfer: any): Promise<void> {
-        const { nit, callback } = transfer;
+    /**
+     * Cargue masivo de poderes
+     */
+    cargueMasivo(): void {
+        const view = new PoderMasivo({
+            App: this.App,
+            api: this.api,
+            logger: this.logger,
+            region: this.region,
+        });
 
-        try {
-            if (!this.api) return;
+        this.region.show(view);
 
-            const response = await this.api.get(`/poderes/buscar-empresa/${nit}`) as unknown as EmpresaResponse;
-
-            if (response) {
-                if (response.success === false) {
-                    this.App?.trigger('alert:error', response.msj);
-                    callback(false);
-                } else {
-                    callback(response);
-                }
-            } else {
-                this.App?.trigger(
-                    'alert:error',
-                    'Se ha generado un error interno. Se requiere de reportar al área de TICS'
-                );
-                callback(false);
-            }
-        } catch (error: any) {
-            this.App?.trigger('alert:error', error.message || 'Error de conexión');
-            callback(false);
-        }
+        // Conectar eventos con el servicio
+        this.listenTo(view, 'file:upload', this.service.__uploadMasivo.bind(this.service));
     }
 
-    error() {
-        console.log('PoderesController.error() called');
-        this.App?.trigger('error', 'Error al cargar los poderes');
+    /**
+     * Manejar errores
+     */
+    error(): void {
+        this.App?.trigger('alert:error', 'Error en la aplicación de Poderes');
     }
 
-    // Destruir controlador
+    /**
+     * Limpiar recursos
+     */
     destroy(): void {
-        if (this.currentView && this.currentView.remove) {
-            this.currentView.remove();
-        }
+        this.stopListening();
         this.region.remove();
     }
 }

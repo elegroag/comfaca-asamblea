@@ -1,14 +1,11 @@
 import { BackboneRouter } from "@/common/Bone";
 import EmpresasController from "./EmpresasController";
-import type { AppInstance } from "@/types/types";
-import { RouterHabilesOptions } from "./types";
-
+import { RouterOptions } from "@/types/CommonDeps";
 
 export default class RouterHabiles extends BackboneRouter {
     public controller: EmpresasController | null;
-    private app: AppInstance;
 
-    constructor(options: RouterHabilesOptions) {
+    constructor(options: RouterOptions) {
         super({
             ...options,
             routes: {

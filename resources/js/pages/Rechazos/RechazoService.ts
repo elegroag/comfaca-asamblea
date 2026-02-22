@@ -1,142 +1,172 @@
-import RechazosCollection from "@/componentes/rechazos/collections/RechazosCollection";
-import RechazoModel from "@/componentes/rechazos/models/RechazoModel";
+import { CommonDeps, ServiceOptions, ApiResponse } from '@/types/CommonDeps';
+import { BoxCollectionStorage } from '@/componentes/useStorage';
+import type { RechazoModel } from '@/componentes/rechazos/models/RechazoModel';
 
-declare global {
-	var $App: any;
-	var create_url: (path: string) => string;
+export interface RechazoServiceOptions extends ServiceOptions {
+    // Opciones adicionales específicas del servicio si se necesitan
 }
 
-interface SaveRechazoTransfer {
-	model: any;
-	callback: (response: any) => void;
-}
-
-interface RemoveRechazoTransfer {
-	model: any;
-	callback: (response: any) => void;
+export interface RechazoCollections {
+    rechazos: any; // RechazosCollection si existe
 }
 
 export default class RechazoService {
-	static initEmpresas(): void {
-		if (!$App.Collections.rechazos) {
-			$App.Collections.rechazos = new RechazosCollection();
-			$App.Collections.rechazos.reset();
-		}
-	}
+    private storage: BoxCollectionStorage;
+    private collections: RechazoCollections;
 
-	findAll(): void {
-		$App.trigger('syncro', {
-			url: create_url('rechazos/listar'),
-			data: {},
-			callback: (response: any) => {
-				if (response.success === true) {
-					RechazoService.initEmpresas();
-					$App.Collections.rechazos.add(response.empresas, { merge: true });
-				} else {
-					$App.trigger('alert:error', response.msj);
-				}
-			},
-		});
-	}
+    constructor(private readonly opts: RechazoServiceOptions) {
+        this.storage = BoxCollectionStorage.getInstance();
+        this.__initializeCollections();
+    }
 
-	setRechazos(rechazos: any): void {
-		RechazoService.initEmpresas();
-		$App.Collections.rechazos.add(rechazos, { merge: true });
-	}
+    private get api() { return this.opts.api; }
+    private get logger() { return this.opts.logger; }
+    private get App() { return this.opts.app; }
 
-	addRechazos(rechazos: any): void {
-		RechazoService.initEmpresas();
-		const _empresa = rechazos instanceof RechazoModel ? rechazos : new RechazoModel(rechazos);
-		$App.Collections.rechazos.add(_empresa, { merge: true });
-	}
+    /**
+     * Inicializar las colecciones necesarias usando BoxCollectionStorage
+     */
+    private __initializeCollections(): void {
+        // Inicializar colecciones persistentes en localStorage
+        const rechazosStorage = this.storage.getCollection('rechazos')?.value;
 
-	saveRechazo(transfer: SaveRechazoTransfer = {} as SaveRechazoTransfer): void {
-		const { model, callback } = transfer;
-		if (!model.isValid()) {
-			const errors = model.validationError;
-			$App.trigger('alert:error', errors.toString());
-			callback(false);
-		} else {
-			$App.trigger('confirma', {
-				message: 'Se requiere de confirmar la acción a realizar para guardar los datos',
-				callback: (confirm: boolean) => {
-					if (confirm) {
-						$App.trigger('syncro', {
-							url: create_url('rechazos/saveRechazo'),
-							data: model.toJSON(),
-							callback: (response: any) => {
-								if (response) {
-									if (response.success) {
-										$App.trigger('success', response.msj);
-										return callback(response);
-									} else {
-										$App.trigger('error', response.msj);
-									}
-								}
-								return callback(false);
-							},
-						});
-					} else {
-						return callback(false);
-					}
-				},
-			});
-		}
-	}
+        // Crear colecciones Backbone si no existen
+        this.collections.rechazos = rechazosStorage || new (this.App as any).Collection();
 
-	removeRechazo(transfer: RemoveRechazoTransfer = {} as RemoveRechazoTransfer): void {
-		const { model, callback } = transfer;
+        // Guardar colecciones en storage si no existen
+        if (!rechazosStorage) {
+            this.storage.addCollection('rechazos', this.collections.rechazos);
+        }
+    }
 
-		if (model instanceof RechazoModel) {
-			$App.trigger('confirma', {
-				message: 'Se requiere de confirmar la acción a realizar para remover el registro',
-				callback: (confirm: boolean) => {
-					if (confirm == true) {
-						$App.trigger('syncro', {
-							url: create_url(`rechazos/removeRechazo`),
-							data: {
-								id: model.get('id'),
-								cedrep: model.get('cedula_representa'),
-								nit: model.get('nit'),
-								criterio: model.get('criterio'),
-							},
-							callback: (response: any) => {
-								if (response) {
-									if (response.success) {
-										$App.Collections.rechazos.remove(model);
-										$App.trigger('alert:success', response.msj);
-										return callback(response);
-									} else {
-										$App.trigger('alert:error', response.msj);
-									}
-								}
-								return callback(false);
-							},
-						});
-					}
-					return callback(false);
-				},
-			});
-		} else {
-			return callback(false);
-		}
-	}
+    // Métodos públicos (interfaz para controllers/vistas)
 
-	notifyPlataforma(nit: string): void {
-		$App.trigger('syncro', {
-			url: create_url('novedades/notyNuevoHabil'),
-			data: {
-				nit,
-			},
-			callback: (response: any) => {
-				if (response) {
-					if (response.success) {
-						$App.trigger('alert:success', response.msj);
-					} else {
-						$App.trigger('alert:error', response.msj);
-					}
-				}
-			},
-		});
-	}
+    /**
+     * Obtener todos los rechazos
+     */
+    async __findAll(): Promise<void> {
+        try {
+            const response = await this.findAllApi();
+            if (response?.success) {
+                this.__setRechazos((response as any).rechazos || []);
+            } else {
+                this.App.trigger('alert:error', { message: response?.msj || 'Error al cargar rechazos' });
+            }
+        } catch (error: any) {
+            this.logger.error('Error al listar rechazos:', error);
+            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+        }
+    }
+
+    /**
+     * Establecer lista de rechazos
+     */
+    __setRechazos(rechazos: any[]): void {
+        this.collections.rechazos.reset();
+        this.collections.rechazos.add(rechazos, { merge: true });
+    }
+
+    /**
+     * Agregar rechazo a la colección
+     */
+    __addRechazos(rechazo: any): void {
+        const _rechazo = rechazo instanceof RechazoModel ? rechazo : new RechazoModel(rechazo);
+        this.collections.rechazos.add(_rechazo, { merge: true });
+    }
+
+    /**
+     * Guardar rechazo
+     */
+    async __saveRechazo(model: any): Promise<ApiResponse> {
+        try {
+            const response = await this.saveRechazoApi(model.toJSON());
+
+            if (response?.success) {
+                this.App.trigger('alert:success', { message: response.msj || 'Rechazo guardado exitosamente' });
+                this.__addRechazos((response as any).rechazo);
+            } else {
+                this.App.trigger('alert:error', { message: response?.msj || 'Error al guardar rechazo' });
+            }
+
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al guardar rechazo:', error);
+            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return { success: false, message: error.message };
+        }
+    }
+
+    /**
+     * Eliminar rechazo
+     */
+    async __removeRechazo(rechazo: any): Promise<ApiResponse> {
+        try {
+            const response = await this.removeRechazoApi(rechazo.toJSON());
+
+            if (response?.success) {
+                this.App.trigger('alert:success', { message: response.msj || 'Rechazo eliminado exitosamente' });
+                this.collections.rechazos.remove(rechazo);
+            } else {
+                this.App.trigger('alert:error', { message: response?.msj || 'Error al eliminar rechazo' });
+            }
+
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al eliminar rechazo:', error);
+            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return { success: false, message: error.message };
+        }
+    }
+
+    /**
+     * Cargue masivo de rechazos
+     */
+    async __uploadMasivo({ formData, callback }: any): Promise<void> {
+        try {
+            const response = await this.uploadMasivoApi(formData);
+
+            if (response?.success) {
+                this.App.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
+                await this.__findAll(); // Recargar datos
+                callback(true, response);
+            } else {
+                this.App.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
+                callback(false);
+            }
+        } catch (error: any) {
+            this.logger.error('Error en cargue masivo:', error);
+            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            callback(false);
+        }
+    }
+
+    // Métodos privados (solo Service)
+
+    /**
+     * Obtener rechazos desde API
+     */
+    private async findAllApi(): Promise<ApiResponse> {
+        return await this.api.get('/rechazos/listar');
+    }
+
+    /**
+     * Guardar rechazo en API
+     */
+    private async saveRechazoApi(data: any): Promise<ApiResponse> {
+        return await this.api.post('/rechazos/saveRechazo', data);
+    }
+
+    /**
+     * Eliminar rechazo en API
+     */
+    private async removeRechazoApi(data: any): Promise<ApiResponse> {
+        return await this.api.post('/rechazos/removeRechazo', data);
+    }
+
+    /**
+     * Subir archivo masivo a API
+     */
+    private async uploadMasivoApi(formData: FormData): Promise<ApiResponse> {
+        return await this.api.post('/rechazos/cargue_masivo', formData);
+    }
 }

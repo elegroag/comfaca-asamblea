@@ -1,7 +1,6 @@
 // Tipos globales para la aplicación
 declare global {
     interface Window {
-        route: (name: string, params?: Record<string, any>) => string;
         app: any;
         $: JQueryStatic;
         jQuery: JQueryStatic;
@@ -10,6 +9,9 @@ declare global {
         Noty: any;
         Swal: any;
         bootstrap: any;
+        route: (name: string, params?: Record<string, any>, absolute?: boolean) => string;
+        Ziggy: any;
+        $App: AppInstance;
     }
 }
 
@@ -45,6 +47,24 @@ export type {
     EntityType,
     DocumentTypeCode
 } from './models';
+
+// Tipos para el sistema de páginas
+export interface PageComponent {
+    render?(props: any): string;
+    mount?(el: HTMLElement, props: any): void;
+    setup?: () => void;
+    default?: any;
+}
+
+export interface PageData {
+    component: string;
+    props: any;
+    url: string;
+    version?: string;
+    meta?: Record<string, any>;
+    page?: any
+}
+
 
 // Tipos para componentes
 export interface Component {

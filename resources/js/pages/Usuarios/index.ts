@@ -1,5 +1,4 @@
 import useLayout from "@/componentes/useLayout";
-import $App from "@/core/App";
 import type { BackendAuthProps } from "@/types/types";
 import RouterUsuarios from "./RouterUsuarios";
 
@@ -11,7 +10,7 @@ interface DashboardComponent {
     render(props: BackendAuthProps): string;
 }
 
-// Componente Dashboard con TypeScript
+// Componente Usuarios con TypeScript y patrón DI
 const Usuarios: DashboardComponent = {
     props: ["title", "user", "stats"],
     template: null,

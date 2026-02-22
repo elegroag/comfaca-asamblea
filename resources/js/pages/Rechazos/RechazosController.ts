@@ -1,79 +1,169 @@
 import { Controller } from "@/common/Controller";
+import { CommonDeps } from '@/types/CommonDeps';
 import RechazoService from "./RechazoService";
 import RechazoCrear from "./RechazoCrear";
 import RechazosListar from "./RechazosListar";
 import RechazosMasivo from "./RechazosMasivo";
 import RechazoDetalle from "./RechazoDetalle";
 
+interface RechazosControllerOptions extends CommonDeps {
+    [key: string]: any;
+}
+
 export default class RechazosController extends Controller {
+    private service: RechazoService;
 
-    rechazoService: RechazoService;
-
-    constructor(options: any) {
+    constructor(options: RechazosControllerOptions) {
         super(options);
-        this.rechazoService = new RechazoService();
+        this.service = new RechazoService({
+            api: options.api,
+            logger: options.logger,
+            app: options.app
+        });
     }
 
-    showCreate() {
-        const auth = this.startController(RechazoCrear);
-        auth.showCreate();
+    /**
+     * Mostrar vista de creación de rechazo
+     */
+    showCreate(): void {
+        const view = new RechazoCrear({
+            App: this.App,
+            api: this.api,
+            logger: this.logger,
+            region: this.region,
+        });
+
+        this.region.show(view);
+
+        // Conectar eventos con el servicio
+        this.listenTo(view, 'add:rechazo', this.service.__saveRechazo.bind(this.service));
     }
 
-    showList() {
-        const auth = this.startController(RechazosListar);
-        auth.listaRechazos();
-    }
+    /**
+     * Listar todos los rechazos
+     */
+    async showList(): Promise<void> {
+        try {
+            await this.service.__findAll();
 
-    showMasivo() {
-        const auth = this.startController(RechazosMasivo);
-        auth.cargueMasivo();
-    }
-
-    showDetalle(id: string) {
-        const auth = this.startController(RechazoDetalle);
-        if (!$App.Collections.rechazos || _.size($App.Collections.rechazos) == 0) {
-            $App.trigger('syncro', {
-                url: create_url('rechazos/detail'),
-                data: {
-                    id: id,
-                },
-                callback: (response: any) => {
-                    if (response.success == true) {
-                        const criterios = response.data;
-                        const model = new RechazoModel({
-                            ...criterios,
-                            isNew: false,
-                        });
-                        auth.showDetalle(model);
-                    } else {
-                        $App.trigger('error', response.msj);
-                    }
-                },
+            const view = new RechazosListar({
+                collection: (this.service as any).collections.rechazos,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
             });
-        } else {
-            const model = $App.Collections.rechazos.get(id);
-            auth.showDetalle(model);
+
+            this.region.show(view);
+
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'remove:rechazo', this.service.__removeRechazo.bind(this.service));
+            this.listenTo(view, 'show:rechazo', this.mostrarDetalle.bind(this));
+            this.listenTo(view, 'edit:rechazo', this.editarRechazo.bind(this));
+
+        } catch (error: any) {
+            this.logger?.error('Error al listar rechazos:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar rechazos');
         }
     }
 
-    showEditar(id: string) {
-        const auth = this.startController(RechazoCrear);
-        if (!$App.Collections.rechazos || _.size($App.Collections.rechazos) == 0) {
-            $App.trigger('syncro', {
-                url: create_url('rechazos/detail'),
-                data: {
-                    id: id,
-                },
-                callback: (response: any) => {
-                    if (response.success == true) {
-                        const model = new RechazoModel(response.data);
-                        auth.showEditar(model);
-                    }
-                },
+    /**
+     * Mostrar vista de cargue masivo
+     */
+    showMasivo(): void {
+        const view = new RechazosMasivo({
+            App: this.App,
+            api: this.api,
+            logger: this.logger,
+            region: this.region,
+        });
+
+        this.region.show(view);
+
+        // Conectar eventos con el servicio
+        this.listenTo(view, 'file:upload', this.service.__uploadMasivo.bind(this.service));
+    }
+
+    /**
+     * Mostrar detalle de un rechazo
+     */
+    async mostrarDetalle(id: string): Promise<void> {
+        try {
+            // Asegurarse de que los rechazos estén cargados
+            await this.service.__findAll();
+            
+            const rechazos = (this.service as any).collections.rechazos;
+            const model = rechazos.get(id);
+            
+            if (!model) {
+                this.App?.trigger('alert:error', 'Rechazo no encontrado');
+                return;
+            }
+
+            const view = new RechazoDetalle({
+                model: model,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
             });
-        } else {
-            const model = $App.Collections.rechazos.get(id);
-            auth.showEditar(model);
+
+            this.region.show(view);
+
+        } catch (error: any) {
+            this.logger?.error('Error al mostrar detalle:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar rechazo');
         }
+    }
+
+    /**
+     * Editar un rechazo
+     */
+    async editarRechazo(id: string): Promise<void> {
+        try {
+            // Asegurarse de que los rechazos estén cargados
+            await this.service.__findAll();
+            
+            const rechazos = (this.service as any).collections.rechazos;
+            const model = rechazos.get(id);
+            
+            if (!model) {
+                this.App?.trigger('alert:error', 'Rechazo no encontrado');
+                return;
+            }
+
+            const view = new RechazoCrear({
+                model: model,
+                isNew: false,
+                App: this.App,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+            });
+
+            this.region.show(view);
+
+            // Conectar eventos con el servicio
+            this.listenTo(view, 'add:rechazo', this.service.__saveRechazo.bind(this.service));
+
+        } catch (error: any) {
+            this.logger?.error('Error al editar rechazo:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al cargar rechazo');
+        }
+    }
+
+    /**
+     * Manejar errores
+     */
+    error(): void {
+        this.App?.trigger('alert:error', 'Error en la aplicación de Rechazos');
+    }
+
+    /**
+     * Limpiar recursos
+     */
+    destroy(): void {
+        this.stopListening();
+        this.region.remove();
     }
 }

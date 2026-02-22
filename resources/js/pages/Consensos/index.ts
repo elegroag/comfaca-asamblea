@@ -1,7 +1,7 @@
 import useLayout from "@/componentes/useLayout";
-import $App from "@/core/App";
 import type { BackendAuthProps } from "@/types/types";
 import RouterConsenso from "./RouterConsenso";
+import $App from "@/core/App";
 
 interface DashboardComponent {
     props: string[];
@@ -11,7 +11,7 @@ interface DashboardComponent {
     render(props: BackendAuthProps): string;
 }
 
-// Componente Dashboard con TypeScript
+// Componente Consensos con patrón descentralizado de Habiles
 const Consensos: DashboardComponent = {
     props: ["title", "user", "stats"],
     template: null,
@@ -30,6 +30,7 @@ const Consensos: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
+        // Patrón descentralizado: $App.startApp() como Habiles
         $App.startApp(RouterConsenso, {
             defaultRoute: "listar",
             mainRegion: layout.getRegion('content'),

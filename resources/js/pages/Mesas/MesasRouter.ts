@@ -1,71 +1,48 @@
-import { Router } from "backbone";
+import { BackboneRouter } from "@/common/Bone";
 import MesasController from "./MesasController";
+import { RouterOptions } from "@/types/CommonDeps";
 
-declare global {
-	var $App: any;
-	var MesasApp: any;
-}
+export default class MesasRouter extends BackboneRouter {
+    private controller: MesasController | null = null;
 
-interface MesasRouterOptions {
-	el?: string;
-	defaultRoute?: string;
-}
+    constructor(options: RouterOptions = {}) {
+        super({
+            routes: {
+                listar: 'listarMesas',
+                crear: 'crearMesa',
+                listar_comfaca: 'listarMesas',
+                'editar/:id': 'editaMesa',
+                'mostrar/:mesa': 'mostrarMesas',
+            },
+            ...options,
+        });
 
-export default class MesasRouter extends Router {
-	private currentApp: MesasController | null;
-	private defaultRoute: string;
 
-	constructor(options: MesasRouterOptions = {}) {
-		super({
-			routes: {
-				listar: 'listarMesas',
-				crear: 'crearMesa',
-				listar_comfaca: 'listarMesas',
-				'editar/:id': 'editaMesa',
-				'mostrar/:mesa': 'mostrarMesas',
-			},
-		});
+        this.controller = null;
+        this._bindRoutes();
+    }
 
-		this.defaultRoute = options.defaultRoute || 'listar';
-		this.currentApp = null;
-		this._bindRoutes();
-	}
+    init() {
+        this.controller = this.app.startSubApplication(MesasController);
+    }
 
-	initialize(): void {
-		this.currentApp = new MesasController({ router: this });
-	}
+    listarMesas(): void {
+        this.init();
+        this.controller?.listarMesas();
+    }
 
-	mostrarMesas(id: string): void {
-		if (!id || id.trim() === '') {
-			this.navigate(this.defaultRoute, { trigger: true });
-			return;
-		}
+    crearMesa(): void {
+        this.init();
+        this.controller?.crearMesa();
+    }
 
-		if (this.currentApp) {
-			this.currentApp.mostrarMesas(id);
-		}
-	}
+    editaMesa(id: string): void {
+        this.init();
+        this.controller?.editarMesa(id);
+    }
 
-	crearMesa(): void {
-		if (this.currentApp) {
-			this.currentApp.crearMesa();
-		}
-	}
-
-	editaMesa(id: string): void {
-		if (!id || id.trim() === '') {
-			this.navigate(this.defaultRoute, { trigger: true });
-			return;
-		}
-
-		if (this.currentApp) {
-			this.currentApp.editaMesa(id);
-		}
-	}
-
-	listarMesas(): void {
-		if (this.currentApp) {
-			this.currentApp.listarMesas();
-		}
-	}
+    mostrarMesas(mesa: string): void {
+        this.init();
+        this.controller?.mostrarMesa(mesa);
+    }
 }

@@ -1,20 +1,18 @@
 import { BackboneRouter } from "@/common/Bone";
 import UsuarioController from "./UsuarioController";
-import $App from "@/core/App";
-
-declare global {
-    var $App: any;
-}
+import type { AppInstance } from "@/types/types";
 
 interface RouterUsuariosOptions {
+    app: AppInstance;
     routes?: Record<string, string>;
-    controller?: any;
+    [key: string]: any;
 }
 
 export default class RouterUsuarios extends BackboneRouter {
-    controller: UsuarioController;
+    controller: UsuarioController | null = null;
+    private app: AppInstance;
 
-    constructor(options: RouterUsuariosOptions = {}) {
+    constructor(options: RouterUsuariosOptions) {
         super({
             routes: {
                 '': 'listaUsuariosAsa',
@@ -29,22 +27,32 @@ export default class RouterUsuarios extends BackboneRouter {
             ...options,
         });
 
-        this.controller = $App.startSubApplication(UsuarioController, this);
+        // Patrón descentralizado: inyección directa del app
+        this.app = options.app;
         this._bindRoutes();
+    }
+
+    private init() {
+        // Patrón descentralizado: usar app.startSubApplication()
+        this.controller = this.app.startSubApplication(UsuarioController);
     }
 
     /**
      * Manejar ruta de error
      */
     error(): void {
+        this.init();
         console.log('RouterUsuarios.error() called');
-        // UsuarioController no tiene método error, pero seguimos el patrón
+        if (this.controller && typeof this.controller.error === 'function') {
+            this.controller.error();
+        }
     }
 
     /**
      * Listar usuarios de asamblea
      */
     listaUsuariosAsa(): void {
+        this.init();
         console.log('RouterUsuarios.listaUsuariosAsa() called');
         if (this.controller && typeof this.controller.listaUsuariosAsamblea === 'function') {
             this.controller.listaUsuariosAsamblea();
@@ -52,9 +60,10 @@ export default class RouterUsuarios extends BackboneRouter {
     }
 
     /**
-     * Crear nuevo usuario
+     * Crear usuario
      */
     crearUsuario(): void {
+        this.init();
         console.log('RouterUsuarios.crearUsuario() called');
         if (this.controller && typeof this.controller.crearUsuario === 'function') {
             this.controller.crearUsuario();
@@ -65,10 +74,10 @@ export default class RouterUsuarios extends BackboneRouter {
      * Crear usuario de asamblea
      */
     crearUsuarioAsa(): void {
+        this.init();
         console.log('RouterUsuarios.crearUsuarioAsa() called');
-        if (this.controller && typeof this.controller.crearUsuario === 'function') {
-            // UsuarioController usa crearUsuario para ambos casos
-            this.controller.crearUsuario();
+        if (this.controller && typeof this.controller.crearUsuarioAsa === 'function') {
+            this.controller.crearUsuarioAsa();
         }
     }
 
@@ -76,6 +85,7 @@ export default class RouterUsuarios extends BackboneRouter {
      * Listar usuarios de caja
      */
     listarUsuariosCaja(): void {
+        this.init();
         console.log('RouterUsuarios.listarUsuariosCaja() called');
         if (this.controller && typeof this.controller.listarUsuariosCaja === 'function') {
             this.controller.listarUsuariosCaja();
@@ -83,48 +93,13 @@ export default class RouterUsuarios extends BackboneRouter {
     }
 
     /**
-     * Mostrar detalle de usuario
+     * Mostrar usuario
      */
-    mostrarUsuario(usuario: string): boolean {
+    mostrarUsuario(usuario: string): void {
+        this.init();
         console.log('RouterUsuarios.mostrarUsuario() called', usuario);
-
-        if (!usuario || usuario.trim() === '') {
-            if ($App && typeof $App.trigger === 'function') {
-                $App.trigger('warning', 'El usuario es requerido.');
-            }
-            this.navigate('listar', { trigger: true });
-            return false;
-        }
-
         if (this.controller && typeof this.controller.mostrarUsuario === 'function') {
             this.controller.mostrarUsuario(usuario);
-            return true;
-        } else {
-            console.error('Controller.mostrarUsuario no está disponible');
-            return false;
-        }
-    }
-
-    /**
-     * Editar usuario SISU
-     */
-    editaUserSisu(usuario: string): boolean {
-        console.log('RouterUsuarios.editaUserSisu() called', usuario);
-
-        if (!usuario || usuario.trim() === '') {
-            if ($App && typeof $App.trigger === 'function') {
-                $App.trigger('warning', 'El usuario es requerido.');
-            }
-            this.navigate('listar', { trigger: true });
-            return false;
-        }
-
-        if (this.controller && typeof this.controller.editaUserSisu === 'function') {
-            this.controller.editaUserSisu(usuario);
-            return true;
-        } else {
-            console.error('Controller.editaUserSisu no está disponible');
-            return false;
         }
     }
 
@@ -132,9 +107,21 @@ export default class RouterUsuarios extends BackboneRouter {
      * Cargar usuarios de caja
      */
     cargarUsuariosCaja(): void {
+        this.init();
         console.log('RouterUsuarios.cargarUsuariosCaja() called');
         if (this.controller && typeof this.controller.cargarUsuariosCaja === 'function') {
             this.controller.cargarUsuariosCaja();
+        }
+    }
+
+    /**
+     * Editar usuario SISU
+     */
+    editaUserSisu(usuario: string): void {
+        this.init();
+        console.log('RouterUsuarios.editaUserSisu() called', usuario);
+        if (this.controller && typeof this.controller.editaUserSisu === 'function') {
+            this.controller.editaUserSisu(usuario);
         }
     }
 }

@@ -1,12 +1,12 @@
-# Patrón DI actualizado en Habiles (versión vigente)
+# Patrón DI Descentralizado en Habiles (versión vigente)
 
 Esta es la documentación oficial y vigente del módulo Habiles, alineada con:
-- Inversión de dependencias (DI) explícita en Router/Controllers/Services/Views.
+- Inversión de dependencias (DI) **descentralizada** en Router/Controllers/Services/Views.
 - Eliminación de globales como `$App`, `$.ajax`, `Empresa` y navegación global.
 - Plantillas unificadas con imports `?raw` y compilación única con `_.template`.
 - Delegación de toda I/O de backend al `Service` usando `this.api`.
 
-## Dependencias inyectadas (contrato común)
+## Dependencias inyectadas (patróncentralizado por módulo)
 - `api`: cliente HTTP (this.api.get/post/delete...)
 - `App`: bus de eventos/UX (this.App.trigger, this.App.download)
 - `logger`: logging de errores/diagnóstico
@@ -20,11 +20,12 @@ Esta es la documentación oficial y vigente del módulo Habiles, alineada con:
 - Vistas (BackboneView): UI, emiten eventos; NO hacen I/O
 - Layout/Region: infraestructura de renderizado; regiones con guards
 
-## Flujo estándar
-1) Controller crea `new LayoutView()` y lo muestra en su `region`.
-2) Crea `EmpresaNav` con `{ router, App, api, model: { flags } }` y lo muestra en `subheader`.
-3) Muestra la vista principal en `body` y conecta eventos → métodos `__*` del Service.
-4) El Service llama a `this.api` y notifica con `this.App.trigger('alert:*')` y/o `this.App.download`.
+## Flujo de inicialización (Descentralizado)
+1) `index.ts` usa `useLayout` para montar el layout y llama `$App.startApp(RouterHabiles, options)`.
+2) `$App` inyecta `api`, `logger`, `App` en el Controller base automáticamente.
+3) `RouterHabiles` recibe `app` por constructor y crea Controllers vía `app.startSubApplication()`.
+4) `Controller` hereda dependencias del base y crea `EmpresaService` con `{ api, App, logger }`.
+5) El `Controller` crea `LayoutView`, muestra vistas en regiones y conecta eventos a métodos `__*` del Service.
 
 ## Vistas: opciones y ejemplos
 - Ejemplo `EmpresaEditarView`/`EmpresaCrearView`:
@@ -66,36 +67,60 @@ const sub = layout.getRegion('subheader'); if (sub) sub.show(navView)
 const body = layout.getRegion('body'); if (body) body.show(view)
 ```
 
-## Ejemplos clave
-- Cargue masivo (vista → controller → service):
-```ts
-// EmpresaMasivoView
-this.trigger('file:upload', { formData, callback })
+## Ejemplo de inicialización (Patrón Descentralizado)
 
-// EmpresaMasivo (controller)
-this.listenTo(masivoView, 'file:upload', this.empresaService.__uploadMasivo)
+### index.ts (Punto de entrada)
+```typescript
+import useLayout from "@/componentes/useLayout";
+import $App from "@/core/App";
+import RouterHabiles from "./RouterHabiles";
 
-// EmpresaService
-__uploadMasivo = async ({ formData, callback }) => {
-  const res = await this.api.post('/habiles/cargue_masivo', formData)
-  if (res?.success) { this.App.trigger('alert:success', { message: res.msj }); callback(true, res) }
-  else { this.App.trigger('alert:error', { message: res?.msj || 'Error' }); callback(false) }
+const Habiles = {
+    mount(el: HTMLElement, props: BackendAuthProps): void {
+        const { layout } = useLayout(props);
+        
+        $App.startApp(RouterHabiles, {
+            defaultRoute: "listar",
+            mainRegion: layout.getRegion('content'),
+            props
+        });
+    }
+};
+```
+
+### RouterHabiles.ts
+```typescript
+export default class RouterHabiles extends BackboneRouter {
+    constructor(options: RouterHabilesOptions) {
+        super({ routes: { listar: 'listaEmpresas' } });
+        this.app = options.app;  // Inyección directa
+        this._bindRoutes();
+    }
+
+    listaEmpresas(): void {
+        this.init();
+        this.controller?.listaEmpresas();
+    }
+
+    init() {
+        this.controller = this.app.startSubApplication(EmpresasController);
+    }
 }
 ```
 
-- Exportar lista / informe:
-```ts
-// EmpresaNav
-this.App.trigger('confirma', { message, callback: (ok) => ok && this.trigger('export:lista') })
-
-// Controller
-this.listenTo(navView, 'export:lista', this.empresaService.__exportLista)
-this.listenTo(navView, 'export:informe', this.empresaService.__exportInforme)
-
-// EmpresaService
-__exportLista = async () => {
-  const r = await this.api.get('/habiles/exportar_lista')
-  if (r?.success && r.url) { this.App.download({ url: r.url, filename: r.filename || 'empresas.csv' }) }
+### EmpresasController.ts
+```typescript
+export default class EmpresasController extends Controller {
+    constructor(options: any) {
+        super(options);  // Hereda: this.api, this.App, this.logger
+        
+        this.empresaService = new EmpresaService({
+            api: this.api,      // Inyección directa
+            App: this.App,
+            logger: this.logger,
+            EmpresaModel: Empresa
+        });
+    }
 }
 ```
 
@@ -105,9 +130,293 @@ __exportLista = async () => {
 - Tipos/Options por vista y controller; evitar `any` en código nuevo.
 - Vistas no conocen de API ni de almacenamiento; emiten eventos.
 
+## 🏗️ Arquitectura Detallada del Patrón Descentralizado
+
+### 📦 **Componentes Clave del Sistema**
+
+#### 1. **$App (Core/App.ts) - Orquestador Central**
+```typescript
+// $App es el SINGLETON que gestiona el ciclo de vida
+startApp(RouterModule, options) {
+    // Inyecta automáticamente: api, logger, props, router
+    // Configura eventos globales: alert:*, confirma, syncro, upload/download
+    // Inicia Backbone History y routing
+}
+
+startSubApplication(SubApplication) {
+    // Crea Controller con dependencias inyectadas
+    // Retorna instancia con Backbone.Events extendidos
+}
+```
+
+#### 2. **Controller Base (common/Controller.ts) - Herencia de Dependencias**
+```typescript
+export class Controller {
+    // Propiedades inyectadas automáticamente por $App
+    api: ApiService | null = null;
+    App: AppInstance | null = null; 
+    logger: Logger | any;
+    region: Region;
+    router: any;
+    props: any;
+    
+    startController(ControllerClass) {
+        // Factory con inyección de dependencias
+        // Maneja ciclo de vida: destroy() si existe instancia previa
+    }
+}
+```
+
+#### 3. **Router con App Inyectada**
+```typescript
+export default class RouterHabiles extends BackboneRouter {
+    constructor(options: RouterHabilesOptions) {
+        this.app = options.app;  // Inyección directa del $App
+    }
+    
+    init() {
+        // Usa app.startSubApplication() - NO new Controller()
+        this.controller = this.app.startSubApplication(EmpresasController);
+    }
+}
+```
+
+### 🔄 **Flujo Completo de Inicialización**
+
+```mermaid
+graph TD
+    A[index.ts] --> B[useLayout]
+    B --> C[$App.startApp]
+    C --> D[RouterHabiles]
+    D --> E[app.startSubApplication]
+    E --> F[EmpresasController]
+    F --> G[EmpresaService]
+    G --> H[Views]
+    
+    C --> I[Inyección automática]
+    I --> J[api, logger, App, router, props]
+    J --> F
+```
+
+### 🎯 **Patrones de Inyección por Capa**
+
+#### **Capa 1: $App (Singleton Global)**
+- **Responsabilidad**: Orquestar ciclo de vida, eventos globales, inyección base
+- **Inyección**: `api`, `logger`, `props`, `router` automáticos
+- **Eventos**: `alert:*`, `confirma`, `syncro`, `upload`, `download`
+
+#### **Capa 2: Router (Específico del Módulo)**
+- **Responsabilidad**: Resolver rutas, delegar a controllers
+- **Inyección**: `app` por constructor
+- **Patrón**: `app.startSubApplication()` vs `new Controller()`
+
+#### **Capa 3: Controller (Hereda del Base)**
+- **Responsabilidad**: Orquestar vistas, conectar eventos
+- **Inyección**: Hereda `api`, `App`, `logger`, `region` del base
+- **Patrón**: `super(options)` + inyección manual al Service
+
+#### **Capa 4: Service (Inyección Explícita)**
+- **Responsabilidad**: Lógica de negocio, acceso a API
+- **Inyección**: Constructor explícito `{ api, App, logger, EmpresaModel }`
+- **Patrón**: Métodos públicos `__*`, privados `*Api`
+
+#### **Capa 5: Views (Inyección Opcional)**
+- **Responsabilidad**: UI, eventos de usuario
+- **Inyección**: Por `options` cuando necesitan acceso
+- **Patrón**: `trigger(event, data)` → Controller → Service
+
+### 🔧 **Patrones Específicos de Habiles**
+
+#### **1. Doble Inyección de Controller**
+```typescript
+// RouterHabiles crea controllers de dos formas:
+init() {
+    // 1) Controller principal (hereda de Controller base)
+    this.controller = this.app.startSubApplication(EmpresasController);
+}
+
+// 2) Controllers específicos (startController factory)
+listaEmpresas() {
+    const controller = this.startController(EmpresaListar);  // Factory con inyección
+    controller.listaEmpresas();
+}
+```
+
+#### **2. Colecciones Compartidas entre Controllers**
+```typescript
+// EmpresasController tiene colecciones globales
+this.Collections = {
+    empresas: new EmpresasCollection(),
+    habiles: new HabilesCollection(),
+};
+
+// Service accede a las mismas colecciones
+this.empresaService.initializeCollections(); // BoxCollectionStorage
+```
+
+#### **3. Eventos Multi-nivel**
+```typescript
+// Nivel 1: View → Controller
+this.trigger('remove:empresa', { model, callback });
+
+// Nivel 2: Controller → Service  
+this.listenTo(listView, 'remove:empresa', this.empresaService.__removeEmpresa);
+
+// Nivel 3: Service → App (global)
+this.App?.trigger('alert:success', { message: response.msj });
+```
+
+#### **4. Layouts Anidados con Guards**
+```typescript
+// Layout principal (useLayout)
+const layout = new LayoutMain();
+region.show(layout);
+
+// Layout específico del módulo
+const moduleLayout = new LayoutView();
+this.region.show(moduleLayout);
+
+// Guards obligatorios
+const subheader = layout.getRegion('subheader');
+if (subheader) subheader.show(navView);
+```
+
+### 📊 **Ciclo de Vida y Gestión de Memoria**
+
+#### **Inicialización**
+```typescript
+index.ts → useLayout() → $App.startApp() → Router → Controllers → Services
+```
+
+#### **Destrucción Limpia**
+```typescript
+destroy(): void {
+    if (this.region && typeof this.region.remove === 'function') {
+        this.region.remove();  // Limpia DOM
+    }
+    
+    if (typeof this.stopListening === 'function') {
+        this.stopListening();  // Limpia eventos Backbone
+    }
+}
+```
+
+#### **Factory Pattern para Controllers**
+```typescript
+startController(ControllerClass): any {
+    // 1) Reutiliza instancia si existe
+    if (this.currentController && this.currentController instanceof ControllerClass) {
+        return this.currentController;
+    }
+    
+    // 2) Destruye anterior si existe
+    if (this.currentController && this.currentController.destroy) {
+        this.currentController.destroy();
+    }
+    
+    // 3) Crea nueva con inyección
+    this.currentController = new ControllerClass({
+        region: this.region,
+        api: this.api,
+        props: this.props,
+        logger: this.logger,
+        router: this.router
+    });
+}
+```
+
+### 🎯 **Características Únicas del Patrón Habiles**
+
+#### **1. Herencia Mixta**
+- Controllers heredan de `Controller` base (inyección automática)
+- Services usan inyección explícita (constructor)
+- Views usan inyección opcional (options)
+
+#### **2. Eventos Globales Centralizados**
+- `$App` gestiona todos los eventos: `alert:*`, `confirma`, `syncro`
+- Services notifican vía `this.App.trigger()`
+- Controllers escuchan y delegan a services
+
+#### **3. Storage Persistente**
+```typescript
+// BoxCollectionStorage para persistencia
+initializeCollections(): void {
+    const empresas = this.storage.getCollection('empresas')?.value;
+    if (empresas) this.Collections.empresas = new EmpresasCollection(empresas);
+}
+```
+
+#### **4. Navegación Router-less en Views**
+```typescript
+// Views reciben router por options
+if (this.router && typeof this.router.navigate === 'function') {
+    this.router.navigate('detalle/' + nit, { trigger: true });
+}
+```
+
+### ⚡ **Optimizaciones de Performance**
+
+#### **1. Lazy Loading de Colecciones**
+```typescript
+// Solo carga si no existen o están vacías
+if (!this.Collections.empresas || !this.Collections.empresas.length) {
+    await this.api.get('/habiles/listar');
+}
+```
+
+#### **2. DataTables Integration**
+```typescript
+init_table(): void {
+    this.tableModule = tableElement.DataTable({
+        paging: true,
+        pageLength: 10,
+        // Configuración optimizada
+    });
+}
+```
+
+#### **3. Loading States Centralizados**
+```typescript
+if (Loading) Loading.show();
+// ... operación
+if (Loading) Loading.hide();
+```
+
+### 🔄 **Comparación con Otros Módulos**
+
+| Característica | Habiles | Otros Módulos |
+|---------------|---------|---------------|
+| **Inyección** | Herencia + Explícita | Centralizada (CommonDeps) |
+| **Controllers** | Doble nivel (main + específicos) | Single level |
+| **Colecciones** | Compartidas + Storage | Independientes |
+| **Eventos** | 3 niveles (View→Controller→Service→App) | 2 niveles |
+| **Layouts** | Anidados con guards | Simple |
+| **Router** | Inyectado en views | Centralizado |
+
 ---
 
-# Patrón Vanilla JS + Inertia en Habiles
+## Beneficios del Patrón Descentralizado
+
+### ✅ **Ventajas sobre el patrón centralizado**
+- **Simplicidad**: Sin bootstrap ni Composition Root adicional
+- **Autonomía**: Cada módulo controla sus dependencias
+- **Evolución gradual**: Puedes refactorizar módulos individualmente
+- **Menos boilerplate**: No requiere archivos de configuración central
+- **Flexibilidad**: Cada módulo puede adaptar sus dependencias
+
+### 📦 **Componentes por módulo**
+- **index.ts**: `$App.startApp()` con opciones específicas del módulo
+- **Router**: Recibe `app` por constructor, crea controllers vía `app.startSubApplication()`
+- **Controller**: Hereda dependencias base (`api`, `App`, `logger`), inyecta al Service
+- **Service**: Recibe dependencias explícitas en constructor
+- **Views**: Reciben dependencias por `options` cuando necesitan acceso a API/modelos
+
+### 🔄 **Flujo de dependencias**
+```
+index.ts → $App.startApp() → Router → Controller → Service → Views
+    ↓           ↓              ↓        ↓         ↓
+   props    inyección       app     api/App    options
+```
 
 Este documento describe la arquitectura y los flujos aplicados en la página Habiles usando Vanilla JS, Backbone-like (Bone), y Inertia como capa de orquestación desde Laravel.
 
@@ -227,50 +536,7 @@ this.listenTo(listView, 'remove:habiles', this.empresaService.__removeHabil);
 - Escalable para nuevas rutas y funcionalidades.
 
 
-
-
-
-Sí. Te dejo una guía práctica y concreta para aplicar esas dos mejoras de forma incremental, alineada con tu stack actual.
-
-# Objetivo
-- Centralizar la creación de `api`, `logger`, `App`, `Region`.
-- Pasar dependencias por constructor a Routers, Controllers y Services.
-- Eliminar accesos globales como `$App`, `_`, `Empresa`.
-
-# 1) Composition Root (Bootstrap) centralizado
-Crea un único punto de arranque que construye e inyecta dependencias.
-
-```ts
-// core/bootstrap.ts
-import ApiService from '@/core/ApiService';
-import Logger from '@/common/Logger';
-import $App from '@/core/App';
-import { Region } from '@/common/Region';
-
-export interface Dependencies {
-  api: ApiService;
-  logger: Logger;
-  app: typeof $App;
-  mainRegion: Region;
-}
-
-export function createDeps(mainRegionEl: string, props: any): Dependencies {
-  const logger = new Logger();         // tipado y con niveles
-  const api = new ApiService(props);   // ya lo usas con props
-  const mainRegion = new Region({ el: mainRegionEl });
-
-  // Inicializa App con región y props sin exponerlo globalmente a la UI
-  $App.startApp(
-    // Nota: si tu startApp requiere Router, aquí solo inicializa estado base
-    class DummyRouter {},
-    { defaultRoute: '', mainRegion, props }
-  );
-
-  return { api, logger, app: $App, mainRegion };
-}
-```
-
-# 2) Inyección explícita en Router/Controller/Service
+# 1) Inyección explícita en Router/Controller/Service
 Define opciones tipadas y pásalas por constructor.
 
 ```ts
@@ -375,7 +641,7 @@ export default class RouterHabiles extends BackboneRouter {
 }
 ```
 
-# 3) Punto de entrada de página sin globales
+# 2) Punto de entrada de página sin globales
 El index de la página recibe `props`, compone dependencias y arranca.
 
 ```ts
@@ -400,10 +666,8 @@ const Habiles = {
 export default Habiles;
 ```
 
-# 4) Evitar `$App`, `_`, `Empresa` globales
+# 3) Evitar `$App` globales
 - `$App`: ya se inyecta como `app` y se usa vía `this.App`.
-- `_`: importa lodash/util concreto o elimina dependencia donde no sea necesaria.
-- `Empresa`: importa el modelo explícitamente en donde se use y pásalo como dependencia si quieres testear/aislar.
 
 Ejemplo en una View:
 ```ts
@@ -418,18 +682,3 @@ constructor(options: EmpresaEditarViewOptions) {
   this.modelUse = options.EmpresaModel;
 }
 ```
-
-# 5) Check-list rápido para migrar
-- Crear `bootstrap.ts` y `types.ts` (CommonDeps).
-- Actualizar [index.ts](cci:7://file:///home/elegro/proyectos/php/php8/www/comfaca-asamblea/laravel/resources/js/pages/Usuarios/index.ts:0:0-0:0) de cada página para usar `createDeps(...)` y pasar `region`.
-- Refactorizar `Router*` para recibir `deps: CommonDeps`.
-- Refactorizar `Controller` para recibir `region`, `api`, `logger`, `app`.
-- Refactorizar `Service` para recibir `api`, `logger`, `app` y eliminar globals.
-- Sustituir usos de `$App`, `_`, `Empresa` por importación/inyección.
-
-# Beneficios inmediatos
-- Menos acoplamiento y menos efectos colaterales de globales.
-- Tests de unidades más simples (mocks de `api`, `logger`, `app`, `region`).
-- Escalabilidad: incorporar nuevos dominios reutilizando el mismo bootstrap.
-
-Si quieres, te preparo un PR mínimo que agregue `bootstrap.ts`, `CommonDeps` y refactorice Habiles en 3 archivos clave: [index.ts](cci:7://file:///home/elegro/proyectos/php/php8/www/comfaca-asamblea/laravel/resources/js/pages/Usuarios/index.ts:0:0-0:0), `RouterHabiles.ts`, [EmpresasController.ts](cci:7://file:///home/elegro/proyectos/php/php8/www/comfaca-asamblea/laravel/resources/js/pages/Habiles/EmpresasController.ts:0:0-0:0)/[EmpresaService.ts](cci:7://file:///home/elegro/proyectos/php/php8/www/comfaca-asamblea/laravel/resources/js/pages/Habiles/EmpresaService.ts:0:0-0:0).

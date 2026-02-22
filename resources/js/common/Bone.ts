@@ -1,8 +1,4 @@
-// Importar Backbone para evitar errores de UMD global
-// @ts-nocheck
-import '@/core/Core';
 import ApiService from '@/services/ApiService';
-
 import type { AppInstance } from '@/types/types';
 
 class BackboneView extends (Backbone.View as any) {

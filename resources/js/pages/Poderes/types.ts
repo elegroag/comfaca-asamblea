@@ -1,36 +1,47 @@
 // Interfaces para las respuestas de la API
-export interface PoderDetalleResponse {
+export interface PoderResponse {
     success: boolean;
-    poder: any | false;
-    habil_apoderado?: any;
-    habil_poderdante?: any;
-    criterio_rechazos?: any;
+    poder?: any;
+    poderes?: any[];
     msj?: string;
 }
 
-export interface PoderesListarResponse {
+export interface PoderListarResponse {
     success: boolean;
     poderes?: any[];
     message?: string;
 }
 
-export interface BuscarPersonaResponse {
+export interface PoderDetalleResponse {
     success: boolean;
     poder?: any;
-    apoderado?: any;
-    poderdante?: any;
-    criterio_rechazos?: any;
+    rechazos?: any[];
     msj?: string;
 }
 
-export interface CriteriosRechazoResponse {
-    success: boolean;
-    criterios?: any[];
-    msj?: string;
+export interface PoderCreateRequest {
+    nombre: string;
+    identificacion: string;
+    tipo: string;
+    estado: string;
+    [key: string]: any;
 }
 
-export interface EmpresaResponse {
-    success: boolean;
-    msj?: string;
+export interface PoderUpdateRequest extends PoderCreateRequest {
+    id: string;
+}
+
+export interface Poder {
+    id: string;
+    nombre: string;
+    identificacion: string;
+    tipo: string;
+    estado: string;
+    [key: string]: any;
+}
+
+export interface PoderTransfer {
+    model?: Poder;
+    callback?: (response: any) => void;
     [key: string]: any;
 }

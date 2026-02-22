@@ -1,17 +1,13 @@
 import { BackboneView } from "@/common/Bone";
 import tmp_consenso_detalle from "../templates/tmp_consenso_detalle.hbs?raw";
 
-declare global {
-    var $: any;
-    var _: any;
-    var moment: any;
-    var $App: any;
-    var create_url: (path: string) => string;
-}
-
 interface ConsensoDetalleOptions {
     id?: string;
     model?: any;
+    App?: any;
+    api?: any;
+    logger?: any;
+    region?: any;
 }
 
 export default class ConsensoDetalle extends BackboneView {

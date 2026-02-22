@@ -1,11 +1,18 @@
 import { BackboneRouter } from "@/common/Bone";
 import CarteraController from "./CarteraController";
-import $App from "@/core/App";
+import type { AppInstance } from "@/types/types";
 
-class CarteraRouter extends BackboneRouter {
+interface RouterCarteraOptions {
+    app: AppInstance;
+    routes?: Record<string, string>;
+    [key: string]: any;
+}
+
+export default class CarteraRouter extends BackboneRouter {
     controller: CarteraController | null = null;
+    private app: AppInstance;
 
-    constructor(options = {}) {
+    constructor(options: RouterCarteraOptions) {
         super({
             routes: {
                 '': 'listar',
@@ -19,11 +26,15 @@ class CarteraRouter extends BackboneRouter {
             ...options,
         });
 
+        // Patrón descentralizado: inyección directa del app
+        this.app = options.app;
+        this.controller = null;
         this._bindRoutes();
     }
 
-    init() {
-        this.controller = $App.startSubApplication(CarteraController);
+    private init() {
+        // Patrón descentralizado: usar app.startSubApplication()
+        this.controller = this.app.startSubApplication(CarteraController);
     }
 
     error() {
@@ -48,7 +59,7 @@ class CarteraRouter extends BackboneRouter {
         this.init();
         console.log('CarteraRouter.editar() called', id);
         if (!id || id === undefined || id === void 0) {
-            $App.trigger('warning', 'El id de la cartera es requerido.');
+            this.app.trigger('warning', 'El id de la cartera es requerido.');
             this.navigate('listar', { trigger: true });
             return false;
         }
@@ -59,7 +70,7 @@ class CarteraRouter extends BackboneRouter {
         this.init();
         console.log('CarteraRouter.mostrar() called', id);
         if (!id || id === undefined || id === void 0) {
-            $App.trigger('warning', 'El id de la cartera es requerido.');
+            this.app.trigger('warning', 'El id de la cartera es requerido.');
             this.navigate('listar', { trigger: true });
             return false;
         }
@@ -72,5 +83,3 @@ class CarteraRouter extends BackboneRouter {
         this.controller?.cargueMasivoCartera();
     }
 }
-
-export default CarteraRouter;

@@ -1,27 +1,9 @@
-import './bootstrap';
-
 import { route as ziggyRoute } from "ziggy-js";
 import { InertiaProgress } from "@inertiajs/progress";
 import "./styles/global.css";
 import Logger from './common/Logger';
 import ApiService from './services/ApiService';
-
-// Tipos para el sistema de páginas
-interface PageComponent {
-    render?(props: any): string;
-    mount?(el: HTMLElement, props: any): void;
-    setup?: () => void;
-    default?: any;
-}
-
-interface PageData {
-    component: string;
-    props: any;
-    url: string;
-    version?: string;
-    meta?: Record<string, any>;
-    page?: any
-}
+import type { PageComponent, PageData } from './types/types';
 
 // Mapeo de páginas usando Vite (incluye ambos para compatibilidad)
 const pages = import.meta.glob("./pages/**/*.{ts,js}");
@@ -79,7 +61,7 @@ async function renderPage(page: PageData): Promise<void> {
 
     // Hook de montaje
     if (typeof component.mount === "function") {
-        component.mount(el, page.props);
+        component.mount(el, { ...page.props, api, logger });
     }
 }
 
@@ -112,23 +94,6 @@ async function boot(): Promise<void> {
         const page = customEvent.detail?.page;
         if (page) await renderPage(page);
     });
-}
-
-// Declaraciones globales para TypeScript
-declare global {
-    interface Window {
-        route: (name: string, params?: Record<string, any>, absolute?: boolean) => string;
-        Ziggy: any;
-        app: any;
-        $: JQueryStatic;
-        jQuery: JQueryStatic;
-        _: UnderscoreStatic;
-        Backbone: BackboneStatic;
-        Noty: any;
-        Swal: any;
-        bootstrap: any;
-        $App: any;
-    }
 }
 
 // Iniciar la aplicación

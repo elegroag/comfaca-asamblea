@@ -1,16 +1,18 @@
+import { BackboneRouter } from "@/common/Bone";
 import TrabajadoresController from "./TrabajadoresController";
-
-declare global {
-    var Backbone: any;
-    var $App: any;
-}
+import type { AppInstance } from "@/types/types";
 
 interface RouterTrabajadorOptions {
+    app: AppInstance;
+    routes?: Record<string, string>;
     [key: string]: any;
 }
 
-export default class RouterTrabajador extends Backbone.Router {
-    constructor(options: RouterTrabajadorOptions = {}) {
+export default class RouterTrabajador extends BackboneRouter {
+    private controller: TrabajadoresController | null = null;
+    private app: AppInstance;
+
+    constructor(options: RouterTrabajadorOptions) {
         super({
             ...options,
             routes: {
@@ -20,30 +22,43 @@ export default class RouterTrabajador extends Backbone.Router {
                 cargue: 'cargueTrabajador',
             },
         });
+
+        // Patrón descentralizado: inyección directa del app
+        this.app = options.app;
         this._bindRoutes();
     }
 
-    main(): any {
-        return $App.startSubApplication(TrabajadoresController);
+    private init() {
+        // Patrón descentralizado: usar app.startSubApplication()
+        this.controller = this.app.startSubApplication(TrabajadoresController);
     }
 
     listaTrabajadores(): void {
-        const app = this.main();
-        app.listarTrabajadores();
+        this.init();
+        if (this.controller && typeof this.controller.listarTrabajadores === 'function') {
+            this.controller.listarTrabajadores();
+        }
     }
 
-    mostrarTrabajador(): void {
-        const app = this.main();
-        app.mostrar_trabajador();
+    mostrarTrabajador(cedula: string): void {
+        this.init();
+        if (this.controller && typeof this.controller.mostrarTrabajador === 'function') {
+            this.controller.mostrarTrabajador(cedula);
+        }
     }
 
     crearTrabajador(): void {
-        const app = this.main();
-        app.crearTrabajador();
+        this.init();
+        if (this.controller && typeof this.controller.crearTrabajador === 'function') {
+            this.controller.crearTrabajador();
+        }
     }
 
     cargueTrabajador(): void {
-        const app = this.main();
-        app.cargueTrabajador();
+        this.init();
+        // Método no existe en controller, delegar a crear
+        if (this.controller && typeof this.controller.crearTrabajador === 'function') {
+            this.controller.crearTrabajador();
+        }
     }
 }

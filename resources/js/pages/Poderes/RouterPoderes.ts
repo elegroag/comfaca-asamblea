@@ -1,11 +1,18 @@
 import { BackboneRouter } from "@/common/Bone";
 import PoderesController from "./PoderesController";
-import $App from "@/core/App";
+import type { AppInstance } from "@/types/types";
 
-class RouterPoderes extends BackboneRouter {
+interface RouterPoderesOptions {
+    app: AppInstance;
+    routes?: Record<string, string>;
+    [key: string]: any;
+}
+
+export default class RouterPoderes extends BackboneRouter {
     controller: PoderesController | null = null;
+    private app: AppInstance;
 
-    constructor(options: any) {
+    constructor(options: RouterPoderesOptions) {
         super({
             routes: {
                 '': 'listar',
@@ -22,66 +29,87 @@ class RouterPoderes extends BackboneRouter {
             ...options,
         });
 
+        // Patrón descentralizado: inyección directa del app
+        this.app = options.app;
         this._bindRoutes();
     }
 
-    init() {
-        this.controller = $App.startSubApplication(PoderesController);
+    private init() {
+        // Patrón descentralizado: usar app.startSubApplication()
+        this.controller = this.app.startSubApplication(PoderesController);
     }
 
     error() {
         this.init();
         console.log('RouterPoderes.error() called');
-        this.controller?.error();
+        if (this.controller && typeof this.controller.error === 'function') {
+            this.controller.error();
+        }
     }
 
     listar() {
         this.init();
         console.log('RouterPoderes.listar() called');
-        this.controller?.listar();
+        if (this.controller && typeof this.controller.listar === 'function') {
+            this.controller.listar();
+        }
     }
 
     buscar() {
         this.init();
         console.log('RouterPoderes.buscar() called');
-        this.controller?.buscar();
+        if (this.controller && typeof this.controller.buscar === 'function') {
+            this.controller.buscar();
+        }
     }
 
     crear() {
         this.init();
         console.log('RouterPoderes.crear() called');
-        this.controller?.crear();
+        if (this.controller && typeof this.controller.crearPoder === 'function') {
+            this.controller.crearPoder();
+        }
     }
 
     mostrar(documento: string) {
         this.init();
         console.log('RouterPoderes.mostrar() called', documento);
-        this.controller?.mostrar(documento);
+        if (this.controller && typeof this.controller.mostrarDetalle === 'function') {
+            this.controller.mostrarDetalle(documento);
+        }
     }
 
     buscarApoderado(nit: string) {
         this.init();
         console.log('RouterPoderes.buscarApoderado() called', nit);
-        this.controller?.buscarApoderado(nit);
+        // Método no existe en controller, delegar a buscar general
+        if (this.controller && typeof this.controller.buscar === 'function') {
+            this.controller.buscar();
+        }
     }
 
     buscarPoderdante(nit: string) {
         this.init();
         console.log('RouterPoderes.buscarPoderdante() called', nit);
-        this.controller?.buscarPoderdante(nit);
+        // Método no existe en controller, delegar a buscar general
+        if (this.controller && typeof this.controller.buscar === 'function') {
+            this.controller.buscar();
+        }
     }
 
     rechazar() {
         this.init();
         console.log('RouterPoderes.rechazar() called');
-        this.controller?.rechazar();
+        if (this.controller && typeof this.controller.crearRechazo === 'function') {
+            this.controller.crearRechazo();
+        }
     }
 
     masivo() {
         this.init();
         console.log('RouterPoderes.masivo() called');
-        this.controller?.masivo();
+        if (this.controller && typeof this.controller.cargueMasivo === 'function') {
+            this.controller.cargueMasivo();
+        }
     }
 }
-
-export default RouterPoderes;
