@@ -1,7 +1,7 @@
 import { BackboneView } from "@/common/Bone";
 import DataTable from 'datatables.net-bs5';
 import RechazoRowView from "./RechazoRowView";
-import listar from "@/componentes/rechazos/templates/listar.hbs?raw";
+import listar from "@/componentes/rechazos/templates/listar_rechazos.hbs?raw";
 
 interface RechazoListarViewOptions {
     model?: any;

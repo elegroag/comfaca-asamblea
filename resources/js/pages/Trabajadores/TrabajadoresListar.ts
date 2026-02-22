@@ -1,4 +1,4 @@
-import LayoutView from "@/componentes/trabajadores/views/LayoutView";
+import LayoutView from "@/componentes/layouts/views/LayoutView";
 import TrabajadoresNav from "@/componentes/trabajadores/views/TrabajadoresNav";
 import TrabajadoresListarView from "@/componentes/trabajadores/views/TrabajadoresListarView";
 import TrabajadorService from "./TrabajadorService";

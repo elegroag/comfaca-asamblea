@@ -1,5 +1,5 @@
 import { BackboneView } from "@/common/Bone";
-import tmp_mostrar_mesa from "../templates/tmp_mostrar_mesa.hbs?raw";
+import tmp_mostrar_mesa from "@/componentes/mesas/templates/tmp_mostrar_mesa.hbs?raw";
 import MesasService from "@/pages/Mesas/MesasService";
 
 interface MesaMostrarOptions {

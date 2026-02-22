@@ -1,7 +1,7 @@
 import { BackboneView } from "@/common/Bone";
 import SubNavCartera from "./SubNavCartera";
 import CarteraService from "@/pages/Cartera/CarteraService";
-import tmp_cargar_cartera from "../templates/tmp_cargar_cartera.hbs?raw";
+import tmp_cargar_cartera from "@/componentes/cartera/templates/tmp_cargar_cartera.hbs?raw";
 
 interface CargueMasivoCarteraOptions {
     model?: any;

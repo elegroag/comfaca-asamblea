@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import MesasService from "@/pages/Mesas/MesasService";
-import tmp_mesas_crear from "../templates/tmp_mesas_crear.hbs?raw";
+import tmp_mesas_crear from "@/componentes/mesas/templates/tmp_mesas_crear.hbs?raw";
 
 interface MesasCrearOptions {
     model?: any;

@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import type { AppInstance } from '@/types/types';
-import row from "@/componentes/novedades/templates/row.hbs?raw";
+import row from "@/componentes/novedades/templates/tmp_row.hbs?raw";
 
 interface NovedadRowOptions {
     model?: any;

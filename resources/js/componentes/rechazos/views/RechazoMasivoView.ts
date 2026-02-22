@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import RechazoService from "@/pages/Rechazos/RechazoService";
-import masivo from "@/componentes/rechazos/templates/masivo.hbs?raw";
+import masivo from "@/componentes/rechazos/templates/cargar_rechazos.hbs?raw";
 
 interface RechazoMasivoViewOptions {
     app?: any;

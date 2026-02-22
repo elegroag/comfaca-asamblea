@@ -1,5 +1,5 @@
 import { BackboneView } from "@/common/Bone";
-import crear from "../templates/crear.hbs?raw";
+import crear from "@/componentes/consensos/templates/tmp_consenso_crear.hbs?raw";
 import ConsensoService from "@/pages/Consensos/ConsensoService";
 
 interface ConsensoCrearOptions {

@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import TrabajadorService from "@/pages/Trabajadores/TrabajadorService";
-import row from "@/componentes/trabajadores/templates/row.hbs?raw";
+import row from "@/componentes/trabajadores/templates/tmp_row_trabajador.hbs?raw";
 
 interface TrabajadorRowViewOptions {
     model?: any;

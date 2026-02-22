@@ -96,6 +96,25 @@ export default class RechazoService {
         }
     }
 
+    async __notifyPlataforma(model: any): Promise<void> {
+        try {
+            const response = await this.notifyPlataformaApi(model.toJSON());
+
+            if (response?.success) {
+                this.App.trigger('alert:success', { message: response.msj || 'Notificación enviada exitosamente' });
+            } else {
+                this.App.trigger('alert:error', { message: response?.msj || 'Error al enviar notificación' });
+            }
+        } catch (error: any) {
+            this.logger.error('Error al enviar notificación:', error);
+            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+        }
+    }
+
+    notifyPlataformaApi(data: any): Promise<ApiResponse> {
+        return this.api.post('rechazos/notifyPlataforma', data);
+    }
+
     /**
      * Eliminar rechazo
      */
@@ -254,6 +273,27 @@ export default class RechazoService {
      */
     private async exportarPdfApi(): Promise<ApiResponse> {
         return await this.api.get('/rechazos/exportar_pdf');
+    }
+
+    /**
+     * Buscar criterios para rechazos
+     */
+    async __buscarCriterios(): Promise<ApiResponse> {
+        try {
+            const response = await this.buscarCriteriosApi();
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al buscar criterios:', error);
+            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return { success: false, message: error.message };
+        }
+    }
+
+    /**
+     * API para buscar criterios
+     */
+    private async buscarCriteriosApi(): Promise<ApiResponse> {
+        return await this.api.get('/rechazos/buscarCriterios');
     }
 
     /**

@@ -1,7 +1,7 @@
 import { BackboneView } from "@/common/Bone";
 import RepresentanteService from "@/pages/Representantes/RepresentanteService";
 import RepresentanteRow from "./RepresentanteRow";
-import listar from "@/componentes/representantes/templates/listar.hbs?raw";
+import listar from "@/componentes/representantes/templates/tmp_listar.hbs?raw";
 import DataTable from "datatables.net-bs5";
 
 interface RepresentanteListarOptions {

@@ -1,5 +1,5 @@
 import { BackboneView } from "@/common/Bone";
-import tmp_cargar_usuarios from "../templates/tmp_cargar_usuarios.hbs?raw";
+import tmp_cargar_usuarios from "@/componentes/usuarios/templates/tmp_cargar_usuarios.hbs?raw";
 import UsuarioService from "@/pages/Usuarios/UsuarioService";
 import Loading from "@/common/Loading";
 

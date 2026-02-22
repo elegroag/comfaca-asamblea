@@ -1,7 +1,7 @@
 import { BackboneView } from "@/common/Bone";
 import Empresa from "@/models/Empresa";
 import EmpresaService from "@/pages/Habiles/EmpresaService";
-import tmp_cargar_habiles from "../templates/cargar_habiles?raw";
+import tmp_cargar_habiles from "@/componentes/habiles/templates/cargar_habiles.hbs?raw";
 
 interface EmpresaMasivoViewOptions {
     api?: any;

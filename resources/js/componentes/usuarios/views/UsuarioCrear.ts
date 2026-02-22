@@ -1,7 +1,7 @@
 import { BackboneView } from "@/common/Bone";
 import UsuarioService from "@/pages/Usuarios/UsuarioService";
 import SubNavUsuarios from "./SubNavUsuarios";
-import crear from "@/componentes/usuarios/templates/crear.hbs?raw";
+import crear from "@/componentes/usuarios/templates/tmp_crear_usuario.hbs?raw";
 
 interface UsuarioCrearOptions {
 	model?: any;

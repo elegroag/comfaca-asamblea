@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import TrabajadorService from "@/pages/Trabajadores/TrabajadorService";
-import crear from "@/componentes/trabajadores/templates/crear.hbs?raw";
+import crear from "@/componentes/trabajadores/templates/tmp_trabajador_crear.hbs?raw";
 
 interface TrabajadorCrearViewOptions {
 	App?: any;

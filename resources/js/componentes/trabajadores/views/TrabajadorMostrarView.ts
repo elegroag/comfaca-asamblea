@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import TrabajadorService from "@/pages/Trabajadores/TrabajadorService";
-import mostrar from "@/componentes/trabajadores/templates/mostrar.hbs?raw";
+import mostrar from "@/componentes/trabajadores/templates/tmp_mostrar_trabajadores.hbs?raw";
 
 interface TrabajadorMostrarViewOptions {
     model?: any;

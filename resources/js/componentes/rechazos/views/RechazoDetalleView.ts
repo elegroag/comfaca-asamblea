@@ -1,4 +1,4 @@
-import tmp_detalle_rechazo from '../templates/tmp_detalle_rechazo.hbs?raw';
+import tmp_detalle_rechazo from '../templates/detalle_rechazo.hbs?raw';
 import { ModelView } from "@/common/ModelView";
 
 interface RechazoDetalleViewOptions {

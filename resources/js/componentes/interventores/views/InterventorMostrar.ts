@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import InterventorService from "@/pages/Interventores/InterventorService";
-import mostrar from "@/componentes/interventores/templates/mostrar.hbs?raw";
+import mostrar from "@/componentes/interventores/templates/tmp_mostrar_interventores.hbs?raw";
 
 interface InterventorMostrarOptions {
     model?: any;

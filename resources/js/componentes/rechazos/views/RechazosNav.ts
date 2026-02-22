@@ -3,13 +3,14 @@ import RechazoService from "@/pages/Rechazos/RechazoService";
 import tmp_show_subnav from "@/componentes/rechazos/templates/show_subnav.hbs?raw";
 
 interface RechazosNavOptions {
-    dataToggle: any;
+    dataToggle?: any;
     app?: any;
     api?: any;
     logger?: any;
     storage?: any;
     region?: any;
     [key: string]: any;
+    model: any
 }
 
 export default class RechazosNav extends BackboneView {
@@ -33,6 +34,7 @@ export default class RechazosNav extends BackboneView {
         this.logger = options.logger;
         this.storage = options.storage;
         this.region = options.region;
+        this.model = options.model;
         this.rechazoService = new RechazoService({
             api: this.api,
             logger: this.logger,

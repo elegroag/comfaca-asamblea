@@ -1,5 +1,5 @@
 import { BackboneView } from "@/common/Bone";
-import tmp_crear_habiles from "../templates/crear_habiles?raw";
+import tmp_crear_habiles from "@/componentes/habiles/templates/crear_habiles.hbs?raw";
 import EmpresaService from "@/pages/Habiles/EmpresaService";
 
 interface EmpresaCrearViewOptions {

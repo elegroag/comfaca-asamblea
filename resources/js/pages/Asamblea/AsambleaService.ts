@@ -1,4 +1,4 @@
-import { CommonDeps, ServiceOptions, ApiResponse, FileUploadTransfer } from '@/types/CommonDeps';
+import { ServiceOptions, ApiResponse } from '@/types/CommonDeps';
 import { BoxCollectionStorage } from '@/componentes/useStorage';
 import AsambleasCollection from '@/collections/AsambleasCollection';
 import ConsensosCollection from '@/collections/ConsensosCollection';
@@ -19,6 +19,11 @@ export default class AsambleaService {
     private collections: AsambleaCollections;
 
     constructor(private readonly opts: AsambleaServiceOptions) {
+        this.collections = {
+            asambleas: new AsambleasCollection(),
+            participantes: new (this.opts.app as any).Collection(),
+            consensos: new ConsensosCollection(),
+        };
         this.storage = BoxCollectionStorage.getInstance();
         this.__initializeCollections();
     }

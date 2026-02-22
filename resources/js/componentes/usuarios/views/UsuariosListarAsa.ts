@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import UsuarioService from "@/pages/Usuarios/UsuarioService";
-import usuariosAsa from "@/componentes/usuarios/templates/usuarios-asa.hbs?raw";
+import usuariosAsa from "@/componentes/usuarios/templates/tmp_usuarios_asa.hbs?raw";
 
 interface UsuariosListarAsaOptions {
 	model?: any;

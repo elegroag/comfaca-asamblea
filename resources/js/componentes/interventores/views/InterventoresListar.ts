@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import InterventorService from "@/pages/Interventores/InterventorService";
-import listar from "@/componentes/interventores/templates/listar.hbs?raw";
+import listar from "@/componentes/interventores/templates/tmp_listar_interventores.hbs?raw";
 import DataTable from "datatables.net-bs5";
 
 interface InterventoresListarOptions {

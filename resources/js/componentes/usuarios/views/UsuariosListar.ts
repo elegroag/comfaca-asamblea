@@ -1,7 +1,7 @@
 import { BackboneView } from "@/common/Bone";
 import UsuarioService from "@/pages/Usuarios/UsuarioService";
 import SubNavUsuarios from "./SubNavUsuarios";
-import listar from "@/componentes/usuarios/templates/listar.hbs?raw";
+import listar from "@/componentes/usuarios/templates/tmp_listar_usuarios.hbs?raw";
 import DataTable from "datatables.net-bs5";
 
 interface UsuariosListarOptions {

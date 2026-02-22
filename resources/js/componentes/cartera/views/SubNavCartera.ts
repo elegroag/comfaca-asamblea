@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import Cartera from "@/models/Cartera";
-import tmp_sub_navbar from "../templates/tmp_sub_navbar.hbs?raw";
+import tmp_sub_navbar from "@/componentes/cartera/templates/tmp_sub_navbar.hbs?raw";
 import CarteraService from "@/pages/Cartera/CarteraService";
 
 

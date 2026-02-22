@@ -2,7 +2,7 @@ import { BackboneView } from "@/common/Bone";
 import SubNavMesas from "./SubNavMesas";
 import MesasService from "@/pages/Mesas/MesasService";
 import DataTable from 'datatables.net-bs5';
-import tmp_listar_mesas from "../templates/tmp_listar_mesas.hbs?raw";
+import tmp_listar_mesas from "@/componentes/mesas/templates/tmp_listar_mesas.hbs?raw";
 
 interface MesasListarOptions {
     collection?: any;

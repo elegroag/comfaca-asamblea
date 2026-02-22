@@ -2,7 +2,7 @@ import { BackboneView } from "@/common/Bone";
 import NovedadRow from "./NovedadRow";
 import NovedadesService from "@/pages/Novedades/NovedadesService";
 import DataTable from 'datatables.net-bs5';
-import listar from "@/componentes/novedades/templates/listar.hbs?raw";
+import listar from "@/componentes/novedades/templates/tmp_listar.hbs?raw";
 
 interface NovedadesListarOptions {
     collection?: any;

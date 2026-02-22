@@ -1,4 +1,4 @@
-import LayoutView from "@/componentes/rechazos/views/LayoutView";
+import LayoutView from "@/componentes/layouts/views/LayoutView";
 import RechazoMasivoView from "@/componentes/rechazos/views/RechazoMasivoView";
 import RechazosNav from "@/componentes/rechazos/views/RechazosNav";
 import RechazoService from "@/pages/Rechazos/RechazoService";

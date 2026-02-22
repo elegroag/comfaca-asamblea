@@ -45,7 +45,7 @@ const $App: AppInstance = {
 
         alertTypes.forEach((type) => {
             this.listenTo(this, `noty:${type}`, (message: string) => this.notify(type, message));
-            this.listenTo(this, `alert:${type}`, (transfer: AlertTransfer) => this.alert(type, transfer));
+            this.listenTo(this, `alert:${type}`, (transfer: string | AlertTransfer) => this.alert(type, transfer));
         });
 
         this.router = new RouterModule({ app: this });
@@ -58,8 +58,19 @@ const $App: AppInstance = {
         this.showNoty(type, message.toString(), type === 'error' ? 10000 : 6000);
     },
 
-    alert(type: string, transfer: AlertTransfer): void {
-        const { title = 'Notificación', message = 'Nota no hay respuesta de la solicitud', timer = 8200 } = transfer;
+    alert(type: string, transfer: string | AlertTransfer): void {
+        let title = 'Notificación';
+        let message = 'Nota no hay respuesta de la solicitud';
+        let timer = 8200;
+
+        if (typeof transfer === 'string') {
+            // Si es string, usarlo como mensaje
+            message = transfer;
+        } else {
+            // Si es objeto, extraer propiedades
+            ({ title = 'Notificación', message = 'Nota no hay respuesta de la solicitud', timer = 8200 } = transfer);
+        }
+
         this.showAlert(title, message, type, timer);
     },
 

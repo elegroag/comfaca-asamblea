@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import HabilesRowView from "./HabilesRowView";
-import tmp_listar_habiles from "../templates/listar_habiles?raw";
+import tmp_listar_habiles from "@/componentes/habiles/templates/listar_habiles.hbs?raw";
 import HabilesService from "@/pages/Habiles/EmpresaService";
 
 interface HabilesListarViewOptions {

@@ -23,7 +23,7 @@ export default class AsambleaController extends Controller {
     async asambleaActiva(): Promise<void> {
         try {
             await this.service.__findAll();
-            
+
             const view = new AsambleaActiva({
                 collection: (this.service as any).collections.asambleas,
                 App: this.App,
@@ -33,11 +33,11 @@ export default class AsambleaController extends Controller {
             });
 
             this.region.show(view);
-            
+
             // Conectar eventos con el servicio
             this.listenTo(view, 'activar:asamblea', this.service.__activarAsamblea.bind(this.service));
             this.listenTo(view, 'show:detalle', this.asambleaDetalle.bind(this));
-            
+
         } catch (error: any) {
             this.logger?.error('Error al mostrar asamblea activa:', error);
             this.App?.trigger('alert:error', error.message || 'Error al cargar asamblea activa');
@@ -50,7 +50,7 @@ export default class AsambleaController extends Controller {
     async listarAsambleas(): Promise<void> {
         try {
             await this.service.__findAll();
-            
+
             const view = new AsambleaListar({
                 collection: (this.service as any).collections.asambleas,
                 App: this.App,
@@ -60,13 +60,13 @@ export default class AsambleaController extends Controller {
             });
 
             this.region.show(view);
-            
+
             // Conectar eventos con el servicio
             this.listenTo(view, 'remove:asamblea', this.service.__deleteAsamblea.bind(this.service));
             this.listenTo(view, 'edit:asamblea', this.editarAsamblea.bind(this));
             this.listenTo(view, 'show:detalle', this.asambleaDetalle.bind(this));
             this.listenTo(view, 'export:lista', this.service.__exportLista.bind(this.service));
-            
+
         } catch (error: any) {
             this.logger?.error('Error al listar asambleas:', error);
             this.App?.trigger('alert:error', error.message || 'Error al cargar asambleas');
@@ -80,10 +80,10 @@ export default class AsambleaController extends Controller {
         try {
             // Asegurarse de que las asambleas estén cargadas
             await this.service.__findAll();
-            
+
             const asambleas = (this.service as any).collections.asambleas;
             const model = asambleas.get(id);
-            
+
             if (!model) {
                 this.App?.trigger('alert:error', 'Asamblea no encontrada');
                 return;
@@ -98,11 +98,11 @@ export default class AsambleaController extends Controller {
             });
 
             this.region.show(view);
-            
+
             // Conectar eventos con el servicio
             this.listenTo(view, 'save:asamblea', this.service.__saveAsamblea.bind(this.service));
             this.listenTo(view, 'activar:asamblea', this.service.__activarAsamblea.bind(this.service));
-            
+
         } catch (error: any) {
             this.logger?.error('Error al mostrar detalle:', error);
             this.App?.trigger('alert:error', error.message || 'Error al cargar asamblea');
@@ -139,7 +139,7 @@ export default class AsambleaController extends Controller {
         });
 
         this.region.show(view);
-        
+
         // Conectar eventos con el servicio
         this.listenTo(view, 'save:asamblea', this.service.__saveAsamblea.bind(this.service));
     }

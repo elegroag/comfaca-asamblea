@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import RechazoService from "@/pages/Rechazos/RechazoService";
-import crear from "@/componentes/rechazos/templates/crear.hbs?raw";
+import crear from "@/componentes/rechazos/templates/crear_rechazo.hbs?raw";
 import RechazoModel from "../models/RechazoModel";
 
 interface RechazoCrearViewOptions {

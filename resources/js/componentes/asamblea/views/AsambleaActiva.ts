@@ -1,7 +1,7 @@
 import { BackboneView } from "@/common/Bone";
 import ConsensoCrear from "./ConsensoCrear";
 import ConsensoDetalle from "./ConsensoDetalle";
-import activa from "@/componentes/asamblea/templates/activa.hbs?raw";
+import activa from "@/componentes/asamblea/templates/tmp_asamblea.hbs?raw";
 import AsambleaService from "@/pages/Asamblea/AsambleaService";
 
 interface AsambleaActivaOptions {

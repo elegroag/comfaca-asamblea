@@ -1,5 +1,5 @@
 import { ModelView } from "@/common/ModelView";
-import tmp_row_rechazo from "@/componentes/rechazos/templates/row.hbs?raw";
+import tmp_row_rechazo from "@/componentes/rechazos/templates/row_rechazo.hbs?raw";
 
 interface RechazoRowViewOptions {
     model?: any;

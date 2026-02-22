@@ -1,5 +1,5 @@
 import { BackboneView } from "@/common/Bone";
-import listar from "@/componentes/asamblea/templates/listar.hbs?raw";
+import listar from "@/componentes/asamblea/templates/tmp_list_asambleas.hbs?raw";
 import DataTable from "datatables.net-bs5";
 import AsambleaService from "@/pages/Asamblea/AsambleaService";
 

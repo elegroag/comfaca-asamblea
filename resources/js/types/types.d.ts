@@ -177,7 +177,7 @@ export interface AppInstance {
     startApp: (RouterModule: any, options: { defaultRoute: string, mainRegion: Region, props: { [key: string]: any } }) => void;
     startSubApplication: (app: any, collections?: any) => any;
     notify: (type: string, message: string) => void;
-    alert: (type: string, transfer: AlertTransfer) => void;
+    alert: (type: string, transfer: string | AlertTransfer) => void;
     confirmaApp: (transfer: ConfirmTransfer) => void;
     syncroRequest: (transfer: SyncroRequest) => void;
     ajaxKumbia: (transfer: any) => void;

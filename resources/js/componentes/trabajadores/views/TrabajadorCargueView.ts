@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import TrabajadorService from "@/pages/Trabajadores/TrabajadorService";
-import cargue from "@/componentes/trabajadores/templates/cargue.hbs?raw";
+import cargue from "@/componentes/trabajadores/templates/tmp_cargar_trabajadores.hbs?raw";
 
 interface TrabajadorCargueViewOptions {
 	App?: any;

@@ -1,5 +1,5 @@
 import { BackboneView } from "@/common/Bone";
-import subnav from "@/componentes/usuarios/templates/subnav.hbs?raw";
+import subnav from "@/componentes/trabajadores/templates/tmp_show_subnav.hbs?raw";
 
 interface SubNavUsuariosOptions {
     model?: any;

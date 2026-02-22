@@ -1,5 +1,5 @@
 import { BackboneView } from "@/common/Bone";
-import detalle from "@/componentes/asamblea/templates/detalle.hbs?raw";
+import detalle from "@/componentes/asamblea/templates/tmp_asamblea_detalle.hbs?raw";
 import AsambleaService from "@/pages/Asamblea/AsambleaService";
 
 interface AsambleaDetalleOptions {

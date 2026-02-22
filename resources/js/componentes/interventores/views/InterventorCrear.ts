@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import InterventorService from "@/pages/Interventores/InterventorService";
-import cargar from "@/componentes/interventores/templates/cargar.hbs?raw";
+import cargar from "@/componentes/interventores/templates/tmp_cargar_interventores.hbs?raw";
 
 interface InterventorCrearOptions {
     model?: any;

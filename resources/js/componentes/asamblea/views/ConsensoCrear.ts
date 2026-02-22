@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 
-import crear from "@/componentes/asamblea/templates/crear.hbs?raw";
+import crear from "@/componentes/asamblea/templates/tmp_nuevo_consenso.hbs?raw";
 import AsambleaService from "@/pages/Asamblea/AsambleaService";
 
 interface ConsensoCrearOptions {

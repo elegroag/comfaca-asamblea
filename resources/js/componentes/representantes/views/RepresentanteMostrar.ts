@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import RepresentanteService from "@/pages/Representantes/RepresentanteService";
-import mostrar from "@/componentes/representantes/templates/mostrar.hbs?raw";
+import mostrar from "@/componentes/representantes/templates/tmp_detalle.hbs?raw";
 
 interface RepresentanteMostrarOptions {
     model?: any;

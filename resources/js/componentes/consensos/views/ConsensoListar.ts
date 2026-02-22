@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import ConsensoService from "@/pages/Consensos/ConsensoService";
-import listar from "../templates/listar.hbs?raw";
+import listar from "@/componentes/listar.hbs?raw";
 import DataTable from "datatables.net-bs5";
 
 interface ConsensosListarOptions {

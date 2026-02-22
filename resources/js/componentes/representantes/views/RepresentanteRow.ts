@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import RepresentanteService from "@/pages/Representantes/RepresentanteService";
-import row from "@/componentes/representantes/templates/row.hbs?raw";
+import row from "@/componentes/representantes/templates/tmp_row.hbs?raw";
 
 interface RepresentanteRowOptions {
     model?: any;

@@ -1,7 +1,7 @@
 
 import { BackboneView } from "@/common/Bone";
 import Cartera from "@/models/Cartera";
-import tmp_detalle_cartera from "../templates/tmp_detalle_cartera.hbs?raw";
+import tmp_detalle_cartera from "@/componentes/cartera/templates/tmp_detalle_cartera.hbs?raw";
 import CarteraService from "@/pages/Cartera/CarteraService";
 
 interface CarteraDetalleOptions {

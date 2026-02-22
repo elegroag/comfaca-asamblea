@@ -1,5 +1,5 @@
 import { BackboneView } from "@/common/Bone";
-import tmp_show_subnav from "../templates/show_subnav.hbs?raw";
+import tmp_show_subnav from "@/componentes/trabajadores/templates/tmp_show_subnav.hbs?raw";
 
 interface TrabajadoresNavOptions {
     dataToggle: any;

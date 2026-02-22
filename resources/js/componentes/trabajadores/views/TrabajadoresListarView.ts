@@ -1,7 +1,7 @@
 import { BackboneView } from "@/common/Bone";
 import TrabajadorService from "@/pages/Trabajadores/TrabajadorService";
 import TrabajadorRowView from "./TrabajadorRowView";
-import listar from "@/componentes/trabajadores/templates/listar.hbs?raw";
+import listar from "@/componentes/trabajadores/templates/tmp_listar_trabajadores.hbs?raw";
 import DataTable from "datatables.net-bs5";
 
 interface TrabajadoresListarViewOptions {

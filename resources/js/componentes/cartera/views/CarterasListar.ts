@@ -5,7 +5,7 @@ import Cartera from "@/models/Cartera";
 import CarteraService from "@/pages/Cartera/CarteraService";
 import DataTable from 'datatables.net-bs5';
 
-import tmp_listar_cartera from "../templates/tmp_listar_cartera.hbs?raw";
+import tmp_listar_cartera from "@/componentes/cartera/templates/tmp_listar_cartera.hbs?raw";
 
 
 interface CarterasListarOptions {

@@ -1,5 +1,5 @@
 import { BackboneView } from "@/common/Bone";
-import tmp_mostrar_usuario from "../templates/tmp_mostrar_usuario.hbs?raw";
+import tmp_mostrar_usuario from "@/componentes/usuarios/templates/tmp_mostrar_usuario.hbs?raw";
 import AsaUsuario from "@/models/AsaUsuario";
 import Mesa from "@/models/Mesa";
 import UsuarioService from "@/pages/Usuarios/UsuarioService";

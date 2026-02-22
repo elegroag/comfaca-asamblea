@@ -1,5 +1,5 @@
 import { BackboneView } from "@/common/Bone";
-import tmp_edita_empresa from "../templates/edita_empresa?raw";
+import tmp_edita_empresa from "@/componentes/habiles/templates/edita_empresa.hbs?raw";
 import EmpresaService from "@/pages/Habiles/EmpresaService";
 
 interface EmpresaEditarViewOptions {

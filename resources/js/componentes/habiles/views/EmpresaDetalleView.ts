@@ -1,4 +1,4 @@
-import tmp_detalle_empresa from "../templates/detalle_empresa.hbs?raw";
+import tmp_detalle_empresa from "@/componentes/habiles/templates/detalle_empresa.hbs?raw";
 import { ModelView } from "@/common/ModelView";
 import EmpresaService from "@/pages/Habiles/EmpresaService";
 

@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import RepresentanteService from "@/pages/Representantes/RepresentanteService";
-import crear from "@/componentes/representantes/templates/crear.hbs?raw";
+import crear from "@/componentes/representantes/templates/tmp_crear.hbs?raw";
 
 interface RepresentanteCrearOptions {
     isNew: boolean;

@@ -1,5 +1,5 @@
 import { BackboneView } from "@/common/Bone";
-import tmp_listar_consensos from "../templates/tmp_listar_consensos.hbs?raw";
+import tmp_listar_consensos from "@/componentes/consensos/templates/tmp_listar_consensos.hbs?raw";
 import ConsensoService from "@/pages/Consensos/ConsensoService";
 
 interface ConsensosListarOptions {

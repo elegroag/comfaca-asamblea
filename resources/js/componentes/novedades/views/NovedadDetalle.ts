@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import type { AppInstance } from '@/types/types';
-import detalle from "@/componentes/novedades/templates/detalle.hbs?raw";
+import detalle from "@/componentes/novedades/templates/tmp_detalle.hbs?raw";
 
 interface NovedadDetalleOptions {
     model?: any;
