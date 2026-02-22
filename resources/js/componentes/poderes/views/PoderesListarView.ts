@@ -254,6 +254,9 @@ export default class PoderesListarView extends BackboneView {
                 region: this.region
             });
 
+            // Renderizar la vista
+            view.render();
+
             // Agregar al array y configurar eventos
             this.children.push(view);
 
@@ -262,8 +265,7 @@ export default class PoderesListarView extends BackboneView {
             });
         }
 
-        // Renderizar y retornar la vista
-        view.render();
+        // Retornar la vista (ya renderizada)
         return view;
     }
 
