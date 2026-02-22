@@ -2,6 +2,8 @@ import { BackboneView } from "@/common/Bone";
 import CarteraRowView from "./CarteraRowView";
 import SubNavCartera from "./SubNavCartera";
 import Cartera from "@/models/Cartera";
+import CarteraService from "@/pages/Cartera/CarteraService";
+import DataTable from 'datatables.net-bs5';
 
 import tmp_listar_cartera from "../templates/tmp_listar_cartera.hbs?raw";
 
@@ -25,7 +27,12 @@ class CarterasListar extends BackboneView {
     subNavView: any;
     children: any[];
     modelView: typeof CarteraRowView;
-    template: string;
+    template: any;
+    App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    carteraService: CarteraService;
 
     constructor(options: CarterasListarOptions) {
         super({ ...options, className: 'box', id: 'box_poderes' });
@@ -37,7 +44,17 @@ class CarterasListar extends BackboneView {
         this.subNavCartera = null;
         this.children = [];
         this.modelView = CarteraRowView;
-        this.template = tmp_listar_cartera;
+        this.template = _.template(tmp_listar_cartera);
+        this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+
+        this.carteraService = new CarteraService({
+            api: this.api,
+            logger: this.logger,
+            app: this.App
+        });
     }
 
     initialize(): void {
@@ -56,8 +73,7 @@ class CarterasListar extends BackboneView {
     }
 
     render(): CarterasListar {
-        const template = _.template(this.template);
-        this.$el.html(template());
+        this.$el.html(this.template());
 
         const filas = this.collection.map((cartera: Cartera) => {
             const view = this.renderModel(cartera);
@@ -76,7 +92,9 @@ class CarterasListar extends BackboneView {
         target.attr('disabled', 'true');
         const id = parseInt(target.attr('data-cid') || '0');
         this.remove();
-        $App.router.navigate('editar/' + id, { trigger: true });
+        if (this.App && this.App.router) {
+            this.App.router.navigate('editar/' + id, { trigger: true });
+        }
     }
 
     borrarCartera(e: Event): void {
@@ -86,73 +104,102 @@ class CarterasListar extends BackboneView {
         const id = parseInt(target.attr('data-cid') || '0');
         const model = this.collection.get(id);
 
-        $App.trigger('confirma', {
-            message: 'Confirma que desea borrar el registro de empresa en Cartera.',
-            callback: (success: boolean) => {
-                if (success) {
-                    this.trigger('remove:cartera', {
-                        model: model,
-                        callback: (response: any) => {
-                            if (response) {
-                                $App.trigger('alert:success', response.msj);
-                                this.removeModel(model);
-                                this.tableModule.row(target.parents('tr')).remove().draw();
-                            }
-                            target.removeAttr('disabled');
-                        },
-                    });
-                } else {
-                    target.removeAttr('disabled');
-                }
-            },
-        });
+        if (this.App && typeof this.App.trigger === 'function') {
+            this.App.trigger('confirma', {
+                message: 'Confirma que desea borrar el registro de empresa en Cartera.',
+                callback: (success: boolean) => {
+                    if (success) {
+                        this.trigger('remove:cartera', {
+                            model: model,
+                            callback: (response: any) => {
+                                if (response) {
+                                    if (this.App && typeof this.App.trigger === 'function') {
+                                        this.App.trigger('alert:success', response.msj);
+                                    }
+                                    this.removeModel(model);
+                                    this.tableModule.row(target.parents('tr')).remove().draw();
+                                }
+                                target.removeAttr('disabled');
+                            },
+                        });
+                    } else {
+                        target.removeAttr('disabled');
+                    }
+                },
+            });
+        }
     }
 
     exportData(e: Event): void {
         e.preventDefault();
-        $App.trigger('confirma', {
-            message: 'Se requiere de confirmar si desea exportar la lista.',
-            callback: (success: boolean) => {
-                if (success) {
-                    const url = create_url('cartera/exportar_lista');
-                    $App.trigger('syncro', {
-                        url,
-                        data: {},
-                        callback: (response: any) => {
-                            if (response?.success) {
-                                download_file(response);
-                            } else {
-                                $App.trigger('error', response?.msj || 'Error al exportar');
+        if (this.App && typeof this.App.trigger === 'function') {
+            this.App.trigger('confirma', {
+                message: 'Se requiere de confirmar si desea exportar la lista.',
+                callback: async (success: boolean) => {
+                    if (success) {
+                        try {
+                            // Delegar al servicio CarteraService
+                            await this.carteraService.__exportLista();
+                        } catch (error: any) {
+                            this.logger?.error('Error al exportar lista:', error);
+                            if (this.App && typeof this.App.trigger === 'function') {
+                                this.App.trigger('alert:error', {
+                                    message: error.message || 'Error al exportar lista'
+                                });
                             }
-                        },
-                    });
-                }
-            },
-        });
+                        }
+                    }
+                },
+            });
+        }
     }
 
     detalleCartera(e: Event): void {
         e.preventDefault();
         const target = $(e.currentTarget as HTMLElement);
         const id = target.attr('data-cid');
-        $App.router.navigate('mostrar/' + id, { trigger: true, replace: true });
+        if (this.App && this.App.router) {
+            this.App.router.navigate('mostrar/' + id, { trigger: true, replace: true });
+        }
     }
 
     initTable(): void {
-        this.tableModule = this.$el.find('#tb_data_cartera').DataTable({
+        // Destruir tabla existente si hay una
+        if (this.tableModule) {
+            this.tableModule.destroy();
+        }
+
+        this.tableModule = new DataTable(this.$el.find('#tb_data_cartera'), {
             paging: true,
             pageLength: 10,
             pagingType: 'full_numbers',
             info: true,
+            searching: true,
+            ordering: true,
+            autoWidth: false,
             columnDefs: [
-                { targets: 0 },
-                { targets: 1 },
-                { targets: 2 },
-                { targets: 3 },
-                { targets: 4 },
-                { targets: 5, orderable: false },
+                { targets: 0, width: '10%' },
+                { targets: 1, width: '15%' },
+                { targets: 2, width: '15%' },
+                { targets: 3, width: '15%' },
+                { targets: 4, width: '15%' },
+                { targets: 5, orderable: false, width: '15%' },
             ],
-            language: langDataTable,
+            language: {
+                lengthMenu: 'Mostrar _MENU_ registros',
+                zeroRecords: 'No se encontraron resultados',
+                info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+                infoEmpty: 'Mostrando 0 a 0 de 0 registros',
+                infoFiltered: '(filtrado de _MAX_ registros totales)',
+                search: 'Buscar:',
+                paginate: {
+                    first: 'Primero',
+                    last: 'Último',
+                    next: 'Siguiente',
+                    previous: 'Anterior'
+                }
+            },
+            destroy: true
         });
     }
 

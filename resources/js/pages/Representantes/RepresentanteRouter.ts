@@ -1,16 +1,18 @@
 import { BackboneRouter } from "@/common/Bone";
 import RepresentanteController from "./RepresentanteController";
-import { CommonDeps } from "@/types/CommonDeps";
+import type { AppInstance } from "@/types/types";
 
-interface RepresentanteRouterOptions extends Partial<CommonDeps> {
-    region?: any;
+interface RepresentanteRouterOptions {
+    app: AppInstance;
+    routes?: Record<string, string>;
+    [key: string]: any;
 }
 
 export default class RepresentanteRouter extends BackboneRouter {
     private controller: RepresentanteController | null = null;
-    private deps: CommonDeps;
+    private app: AppInstance;
 
-    constructor(options: RepresentanteRouterOptions = {}) {
+    constructor(options: RepresentanteRouterOptions) {
         super({
             ...options,
             routes: {
@@ -22,31 +24,39 @@ export default class RepresentanteRouter extends BackboneRouter {
             },
         });
 
-        // Guardar dependencias inyectadas
-        this.deps = options as CommonDeps;
-        this.controller = new RepresentanteController(this.deps);
+        // Patrón descentralizado: inyección directa del app
+        this.app = options.app;
         this._bindRoutes();
     }
 
+    private init() {
+        // Patrón descentralizado: usar app.startSubApplication()
+        this.controller = this.app.startSubApplication(RepresentanteController);
+    }
+
     listaRepresentantes(): void {
+        this.init();
         if (this.controller && typeof this.controller.listaRepresentantes === 'function') {
             this.controller.listaRepresentantes();
         }
     }
 
     crearRepresentante(): void {
+        this.init();
         if (this.controller && typeof this.controller.crearRepresentante === 'function') {
             this.controller.crearRepresentante();
         }
     }
 
     editaRepresentante(cedula: string): void {
+        this.init();
         if (this.controller && typeof this.controller.editaRepresentante === 'function') {
             this.controller.editaRepresentante(cedula);
         }
     }
 
     mostrarRepresentante(cedula: string): void {
+        this.init();
         if (this.controller && typeof this.controller.mostrarRepresentante === 'function') {
             this.controller.mostrarRepresentante(cedula);
         }

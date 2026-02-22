@@ -1,115 +1,139 @@
 import { BackboneView } from "@/common/Bone";
-
-declare global {
-	var $: any;
-	var _: any;
-	var $App: any;
-	var create_url: (path: string) => string;
-}
+import RecepcionService from "@/pages/Recepcion/RecepcionService";
 
 interface InscripcionCreateOptions {
-	model?: any;
-	App?: any;
-	[key: string]: any;
+    model?: any;
+    App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
+    [key: string]: any;
 }
 
 export default class InscripcionCreate extends BackboneView {
-	template!: string;
-	App: any;
+    template: any;
+    App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
+    recepcionService: RecepcionService;
 
-	constructor(options: InscripcionCreateOptions = {}) {
-		super(options);
-		this.App = options.App;
-	}
+    constructor(options: InscripcionCreateOptions) {
+        super(options);
+        this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.recepcionService = new RecepcionService({
+            api: this.api,
+            logger: this.logger,
+            app: this.App
+        });
+    }
 
-	initialize() {
-		this.template = $('#tmp_create_ingreso').html();
-	}
+    initialize() {
+        this.template = $('#tmp_create_ingreso').html();
+    }
 
-	events() {
-		return {
-			'click #bt_registrar_inscripcion': 'registrarInscripcion',
-			"click [name='crear_empresa']": 'crearEmpresa',
-		};
-	}
+    events() {
+        return {
+            'click #bt_registrar_inscripcion': 'registrarInscripcion',
+            "click [name='crear_empresa']": 'crearEmpresa',
+        };
+    }
 
-	render() {
-		let template = _.template(this.template);
-		this.$el.html(template());
-		return this;
-	}
+    render() {
+        let template = _.template(this.template);
+        this.$el.html(template());
+        return this;
+    }
 
-	crearEmpresa(e: JQuery.Event) {
-		let input = $(e.currentTarget);
-		if (input.is(':checked')) {
-			$('.sh-crear_empresa').fadeIn('slow');
-		} else {
-			$('.sh-crear_empresa').fadeOut('fast');
-		}
-	}
+    crearEmpresa(e: Event) {
+        let input = this.$(e.currentTarget);
+        if (input.is(':checked')) {
+            $('.sh-crear_empresa').fadeIn('slow');
+        } else {
+            $('.sh-crear_empresa').fadeOut('fast');
+        }
+    }
 
-	registrarInscripcion(e: JQuery.Event) {
-		e.preventDefault();
-		var target = $(e.currentTarget);
-		target.attr('disabled', true);
+    async registrarInscripcion(e: Event) {
+        e.preventDefault();
+        const target = this.$el.find(e.currentTarget);
+        target.attr('disabled', 'true');
 
-		$App.trigger('confirma', {
-			message: 'Se requiere de confirmar si desea realizar el ingreso.',
-			callback: (success: boolean) => {
-				if (success) {
-					const nit = this.getInput('nit');
-					const cedrep = this.getInput('cedrep');
-					const nombres = this.getInput('nombres');
-					const apellidos = this.getInput('apellidos');
-					const telefono = this.getInput('telefono');
-					const email = this.getInput('email');
-					const razsoc = this.getInput('razsoc');
-					const is_habil = this.getCheck('is_habil');
-					const omit_estado = this.getCheck('omit_estado');
-					const crear_empresa = this.getCheck('crear_empresa');
+        if (this.App && typeof this.App.trigger === 'function') {
+            this.App.trigger('confirma', {
+                message: 'Se requiere de confirmar si desea realizar el ingreso.',
+                callback: async (success: boolean) => {
+                    target.removeAttr('disabled');
 
-					let token = {
-						cedrep,
-						nombres,
-						nit,
-						apellidos,
-						telefono,
-						email,
-						razsoc,
-						is_habil,
-						omit_estado,
-						crear_empresa,
-					};
+                    if (success) {
+                        try {
+                            const nit = this.getInput('nit');
+                            const cedrep = this.getInput('cedrep');
+                            const nombres = this.getInput('nombres');
+                            const apellidos = this.getInput('apellidos');
+                            const telefono = this.getInput('telefono');
+                            const email = this.getInput('email');
+                            const razsoc = this.getInput('razsoc');
+                            const is_habil = this.getCheck('is_habil');
+                            const omit_estado = this.getCheck('omit_estado');
+                            const crear_empresa = this.getCheck('crear_empresa');
 
-					const url = create_url('recepcion/salvar_inscripcion');
-					$App.trigger('syncro', {
-						url,
-						data: token,
-						callback: (response: any) => {
-							target.removeAttr('disabled');
-							if (response) {
-								if (_.size(response.errors) > 0) {
-									$App.trigger('warning', response.errors.join('\n'));
-								} else {
-									$App.trigger('success', response.msj);
-								}
-							}
-						},
-					});
-				}
-			},
-		});
-	}
+                            const token = {
+                                cedrep,
+                                nombres,
+                                nit,
+                                apellidos,
+                                telefono,
+                                email,
+                                razsoc,
+                                is_habil,
+                                omit_estado,
+                                crear_empresa,
+                            };
 
-	getInput(selector: string): string {
-		return this.$el.find(`[name='${selector}']`).val();
-	}
+                            const response = await this.recepcionService.__salvarInscripcion(token);
 
-	setInput(selector: string, val: string | undefined) {
-		return this.$el.find(`[name='${selector}']`).val(val ?? '');
-	}
+                            if (response && response.success) {
+                                if (response.data.errors && response.data.errors.length > 0) {
+                                    if (this.App && typeof this.App.trigger === 'function') {
+                                        this.App.trigger('alert:warning', { message: response.data.errors.join('\n') });
+                                    }
+                                } else {
+                                    if (this.App && typeof this.App.trigger === 'function') {
+                                        this.App.trigger('alert:success', { message: response.msj || 'Inscripción guardada exitosamente' });
+                                    }
+                                }
+                            }
+                        } catch (error: any) {
+                            target.removeAttr('disabled');
+                            this.logger?.error('Error al guardar inscripción:', error);
+                            if (this.App && typeof this.App.trigger === 'function') {
+                                this.App.trigger('alert:error', { message: 'Ocurrió un error al guardar la inscripción' });
+                            }
+                        }
+                    }
+                },
+            });
+        } else {
+            target.removeAttr('disabled');
+        }
+    }
 
-	getCheck(selector: string): number {
-		return this.$el.find(`[name='${selector}']:checked`).length;
-	}
+    getInput(selector: string): string {
+        return this.$el.find(`[name='${selector}']`).val();
+    }
+
+    setInput(selector: string, val: string | undefined) {
+        return this.$el.find(`[name='${selector}']`).val(val ?? '');
+    }
+
+    getCheck(selector: string): number {
+        return this.$el.find(`[name='${selector}']:checked`).length;
+    }
 }

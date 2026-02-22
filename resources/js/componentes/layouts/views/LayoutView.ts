@@ -1,6 +1,6 @@
 
 import { Layout, LayoutOptions } from '@/common/Layout';
-import tmp_layout from '../templates/layout.hbs?raw';
+import tmp_layout from '../templates/layout_view.hbs?raw';
 
 export default class LayoutView extends Layout {
 

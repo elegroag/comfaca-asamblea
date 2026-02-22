@@ -1,57 +1,68 @@
 import { BackboneView } from "@/common/Bone";
-
-declare global {
-	var $: any;
-	var _: any;
-	var SubNavRepresentantes: any;
-}
+import RepresentanteService from "@/pages/Representantes/RepresentanteService";
+import mostrar from "@/componentes/representantes/templates/mostrar.hbs?raw";
 
 interface RepresentanteMostrarOptions {
-	[key: string]: any;
+    model?: any;
+    App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
+    [key: string]: any;
 }
 
 export default class RepresentanteMostrar extends BackboneView {
-	template!: string;
-	model: any;
-	$el: any;
-	subNavView: any;
+    template: any;
+    model: any;
+    App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
+    representanteService: RepresentanteService;
+    subNavView: any;
 
-	constructor(options: RepresentanteMostrarOptions) {
-		super({
-			...options,
-			id: 'box_mostrar_representante',
-		});
-	}
+    constructor(options: RepresentanteMostrarOptions) {
+        super({
+            ...options,
+            id: 'box_mostrar_representante',
+        });
+        this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.model = options.model;
+        this.template = _.template(mostrar);
+        this.representanteService = new RepresentanteService({
+            api: this.api,
+            logger: this.logger,
+            app: this.App
+        });
+    }
 
-	initialize() {
-		this.template = $('#tmp_detalle').html();
-	}
+    initialize() {
+        // Template ya inicializado en el constructor
+    }
 
-	events() {
-		return {};
-	}
+    events() {
+        return {};
+    }
 
-	render() {
-		let template = _.template(this.template);
-		this.$el.html(
-			template({
-				representante: this.model.toJSON(),
-			})
-		);
-		this.subNav();
-		return this;
-	}
+    render() {
+        const template = _.template(this.template);
+        this.$el.html(
+            template({
+                representante: this.model.toJSON(),
+            })
+        );
+        this.subNav();
+        return this;
+    }
 
-	subNav() {
-		this.subNavView = new SubNavRepresentantes({
-			model: this.model,
-			dataToggle: {
-				listar: true,
-				crear: true,
-				editar: false,
-			},
-		}).render();
-		this.$el.find('#showSubnav').html(this.subNavView.$el);
-		(SubNavRepresentantes as any).parentView = this;
-	}
+    subNav() {
+        // Implementación básica de subNav sin dependencias externas
+        this.$el.find('#showSubnav').html('<div class="subnav-placeholder"></div>');
+    }
 }

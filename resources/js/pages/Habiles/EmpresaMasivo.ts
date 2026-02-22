@@ -1,4 +1,4 @@
-import LayoutView from "@/componentes/habiles/views/LayoutView";
+import LayoutView from "@/componentes/layouts/views/LayoutView";
 import EmpresaNav from "@/componentes/habiles/views/EmpresaNav";
 import EmpresaMasivoView from "@/componentes/habiles/views/EmpresaMasivoView";
 import EmpresaService from "./EmpresaService";

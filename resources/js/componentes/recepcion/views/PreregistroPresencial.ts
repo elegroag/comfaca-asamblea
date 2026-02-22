@@ -1,26 +1,41 @@
 import { BackboneView } from "@/common/Bone";
-
+import RecepcionService from "@/pages/Recepcion/RecepcionService";
+import preregistro_presencial from "@/componentes/recepcion/templates/preregistro_presencial.hbs?raw";
 
 interface PreregistroPresencialOptions {
     model?: any;
     App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
 export default class PreregistroPresencial extends BackboneView {
-    template!: string;
+    template: any;
     App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
+    recepcionService: RecepcionService;
     estado: any;
 
-    constructor(options: PreregistroPresencialOptions = {}) {
+    constructor(options: PreregistroPresencialOptions) {
         super({ ...options, className: 'box', id: 'box_preregistro_presencial', tagName: 'div' });
         this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.template = _.template(preregistro_presencial);
         this.estado = void 0;
-    }
-
-    initialize() {
-        this.template = $('#tmp_cruzar_habil_preregistro_presencial').html();
-        this.estado = void 0;
+        this.recepcionService = new RecepcionService({
+            api: this.api,
+            logger: this.logger,
+            app: this.App
+        });
     }
 
     events() {
@@ -35,40 +50,54 @@ export default class PreregistroPresencial extends BackboneView {
         return this;
     }
 
-    crucePreregistro(e: JQuery.Event) {
+    async crucePreregistro(e: Event) {
         e.preventDefault();
-        var target = $(e.currentTarget);
-        target.attr('disabled', true);
+        const target = this.$el.find(e.currentTarget);
+        target.attr('disabled', 'true');
 
-        $App.trigger('confirma', {
-            message: 'Se requiere de confirmar si desea ejecutar el proceso.',
-            callback: (success: boolean) => {
-                if (success) {
-                    let url = create_url('recepcion/cruzarHabilPreregistroPresencial');
-                    loading.show();
-                    axios
-                        .get(url)
-                        .then((salida: any) => {
-                            loading.hide();
+        if (this.App && typeof this.App.trigger === 'function') {
+            this.App.trigger('confirma', {
+                message: 'Se requiere de confirmar si desea ejecutar el proceso.',
+                callback: async (success: boolean) => {
+                    target.removeAttr('disabled');
+
+                    if (success) {
+                        try {
+                            const response = await this.recepcionService.__cruzarHabilPreregistroPresencial();
+
+                            if (response && response.success) {
+                                if (this.App && typeof this.App.trigger === 'function') {
+                                    this.App.trigger('alert:success', {
+                                        title: 'Notificación!',
+                                        text: response.data.msj,
+                                        button: 'Continuar!'
+                                    });
+                                }
+                            } else {
+                                if (this.App && typeof this.App.trigger === 'function') {
+                                    this.App.trigger('alert:error', {
+                                        title: 'Error!',
+                                        text: 'Error al ejecutar el proceso',
+                                        button: 'Continuar!'
+                                    });
+                                }
+                            }
+                        } catch (error: any) {
                             target.removeAttr('disabled');
-                            if (salida.status == 200) {
-                                Swal.fire({
-                                    title: 'Notificación!',
-                                    text: salida.data.msj,
-                                    icon: 'success',
-                                    button: 'Continuar!',
+                            this.logger?.error('Error al cruzar preregistro:', error);
+                            if (this.App && typeof this.App.trigger === 'function') {
+                                this.App.trigger('alert:error', {
+                                    title: 'Error!',
+                                    text: 'Ocurrió un error al ejecutar el proceso',
+                                    button: 'Continuar!'
                                 });
                             }
-                        })
-                        .catch(function (err: any) {
-                            loading.hide();
-                            target.removeAttr('disabled');
-                            console.log(err);
-                        });
-                } else {
-                    target.removeAttr('disabled');
-                }
-            },
-        });
+                        }
+                    }
+                },
+            });
+        } else {
+            target.removeAttr('disabled');
+        }
     }
 }

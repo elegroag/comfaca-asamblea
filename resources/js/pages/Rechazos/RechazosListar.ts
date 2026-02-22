@@ -3,15 +3,6 @@ import RechazoListarView from "@/componentes/rechazos/views/RechazoListarView";
 import RechazosNav from "@/componentes/rechazos/views/RechazosNav";
 import RechazoService from "@/pages/Rechazos/RechazoService";
 
-declare global {
-	var _: any;
-	var Backbone: any;
-	var $: any;
-	var $App: any;
-	var create_url: (path: string) => string;
-	var loading: any;
-}
-
 interface RechazosListarOptions {
 	[key: string]: any;
 }

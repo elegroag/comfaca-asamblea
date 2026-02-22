@@ -1,26 +1,46 @@
 import { BackboneView } from "@/common/Bone";
-import tmp_listar_consensos from "../templates/tmp_listar_consensos.hbs?raw";
-
-declare global {
-    var $: any;
-    var _: any;
-    var $App: any;
-    var langDataTable: any;
-}
+import ConsensoService from "@/pages/Consensos/ConsensoService";
+import listar from "../templates/listar.hbs?raw";
+import DataTable from "datatables.net-bs5";
 
 interface ConsensosListarOptions {
     collection?: any;
     model?: any;
+    App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
+    [key: string]: any;
 }
 
 export default class ConsensosListar extends BackboneView {
-    template: string;
+    template: any;
+    App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
+    collection: any;
     tableModule: any;
+    consensoService: ConsensoService;
 
     constructor(options: ConsensosListarOptions = {}) {
         super({ ...options, className: 'box', id: 'box_consensos' });
-        this.template = tmp_listar_consensos;
+        this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.collection = options.collection;
+        this.model = options.model;
+        this.template = _.template(listar);
         this.tableModule = null;
+        this.consensoService = new ConsensoService({
+            api: this.api,
+            logger: this.logger,
+            app: this.App
+        });
     }
 
     initialize(): void {
@@ -37,30 +57,32 @@ export default class ConsensosListar extends BackboneView {
     editarConsenso(e: Event): void {
         e.preventDefault();
 
-        const consenso = $(e.currentTarget as HTMLElement).attr('data-code') as string;
+        const target = this.$el.find(e.currentTarget);
+        const consenso = target.attr('data-code');
 
         if (!consenso) {
             console.error('ID de consenso no encontrado');
             return;
         }
 
-        if ($App.router) {
-            $App.router.navigate('editar/' + consenso, { trigger: true, replace: true });
+        if (this.App && this.App.router) {
+            this.App.router.navigate('editar/' + consenso, { trigger: true, replace: true });
         }
     }
 
     detalleConsenso(e: Event): void {
         e.preventDefault();
 
-        const consenso = $(e.currentTarget as HTMLElement).attr('data-code') as string;
+        const target = this.$el.find(e.currentTarget);
+        const consenso = target.attr('data-code');
 
         if (!consenso) {
             console.error('ID de consenso no encontrado');
             return;
         }
 
-        if ($App.router) {
-            $App.router.navigate('consenso_detalle/' + consenso, { trigger: true, replace: true });
+        if (this.App && this.App.router) {
+            this.App.router.navigate('consenso_detalle/' + consenso, { trigger: true, replace: true });
         }
     }
 
@@ -77,15 +99,41 @@ export default class ConsensosListar extends BackboneView {
     initTable(): void {
         const tableElement = this.$el.find('#tb_data_consensos');
 
-        if (tableElement.length && typeof tableElement.DataTable === 'function') {
-            this.tableModule = tableElement.DataTable({
+        // Destruir tabla existente si hay una
+        if (tableElement.length && tableElement.DataTable) {
+            tableElement.DataTable().destroy();
+        }
+
+        if (tableElement.length) {
+            this.tableModule = new DataTable(tableElement, {
                 paging: true,
                 pageLength: 10,
                 pagingType: 'full_numbers',
                 info: true,
-                columnDefs: [{ targets: 0 }, { targets: 1 }, { targets: 2 }, { targets: 3 }, { targets: 4 }, { targets: 5, orderable: false }],
+                columnDefs: [
+                    { targets: 0, width: '5%' },
+                    { targets: 1, width: '30%' },
+                    { targets: 2, width: '15%' },
+                    { targets: 3, width: '15%' },
+                    { targets: 4, width: '15%' },
+                    { targets: 5, orderable: false, width: '10%' }
+                ],
                 order: [[1, 'desc']],
-                language: langDataTable,
+                language: {
+                    lengthMenu: 'Mostrar _MENU_ registros',
+                    zeroRecords: 'No se encontraron resultados',
+                    info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+                    infoEmpty: 'Mostrando 0 a 0 de 0 registros',
+                    infoFiltered: '(filtrado de _MAX_ registros totales)',
+                    search: 'Buscar:',
+                    paginate: {
+                        first: 'Primero',
+                        last: 'Último',
+                        next: 'Siguiente',
+                        previous: 'Anterior'
+                    }
+                },
+                destroy: true
             });
         }
     }

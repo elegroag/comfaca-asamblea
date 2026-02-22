@@ -1,13 +1,7 @@
 import LayoutView from "@/componentes/rechazos/views/LayoutView";
 import RechazoDetalleView from "@/componentes/rechazos/views/RechazoDetalleView";
 import RechazosNav from "@/componentes/rechazos/views/RechazosNav";
-import RechazoService from "@/componentes/rechazos/services/RechazoService";
-
-declare global {
-	var _: any;
-	var Backbone: any;
-	var $App: any;
-}
+import RechazoService from "./RechazoService";
 
 interface RechazoDetalleOptions {
 	[key: string]: any;

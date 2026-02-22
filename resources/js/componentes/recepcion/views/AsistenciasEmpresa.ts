@@ -25,9 +25,9 @@ export default class AsistenciasEmpresa extends BackboneView {
         this.poder = void 0;
     }
 
-    back_lista(event: JQuery.Event) {
+    back_lista(event: Event) {
         event.preventDefault();
-        $App.router.navigate('listar', { trigger: true, replace: true });
+        this.App.router.navigate('listar', { trigger: true, replace: true });
     }
 
     events() {

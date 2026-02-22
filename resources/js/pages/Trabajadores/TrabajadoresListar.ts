@@ -1,51 +1,67 @@
 import LayoutView from "@/componentes/trabajadores/views/LayoutView";
 import TrabajadoresNav from "@/componentes/trabajadores/views/TrabajadoresNav";
 import TrabajadoresListarView from "@/componentes/trabajadores/views/TrabajadoresListarView";
-import TrabajadorService from "@/componentes/trabajadores/services/TrabajadorService";
+import TrabajadorService from "./TrabajadorService";
+import { Controller } from "@/common/Controller";
+import { CommonDeps } from "@/types/CommonDeps";
 
-declare global {
-	var _: any;
-	var Backbone: any;
-	var $App: any;
-}
-
-interface TrabajadoresListarOptions {
+interface TrabajadoresListarOptions extends CommonDeps {
 	[key: string]: any;
 }
 
-export default class TrabajadoresListar {
-	layout: LayoutView;
-	region: any;
-	trabajadorService: TrabajadorService;
+export default class TrabajadoresListar extends Controller {
+	private trabajadorService: TrabajadorService;
 
-	constructor(options: TrabajadoresListarOptions = {}) {
-		_.extend(this, Backbone.Events);
-		_.extend(this, options);
-		this.trabajadorService = new TrabajadorService();
+	constructor(options: TrabajadoresListarOptions) {
+		super(options);
+		this.trabajadorService = new TrabajadorService({
+			api: options.api,
+			logger: options.logger,
+			app: options.app
+		});
 	}
 
 	listarTrabajadores(): void {
-		this.layout = new LayoutView();
-		this.region.show(this.layout);
-		this.layout.getRegion('subheader').show(
-			new TrabajadoresNav({
-				model: {
-					titulo: 'Listar trabajadores',
-					listar: false,
-					exportar: true,
-					crear: true,
-					editar: false,
-					masivo: true,
-				},
-			})
-		);
+		try {
+			const layout = new LayoutView();
+			this.region.show(layout);
 
-		const view = new TrabajadoresListarView({
-			collection: $App.Collections.trabajadores,
-		});
+			const subheaderRegion = layout.getRegion('subheader');
+			if (subheaderRegion) {
+				subheaderRegion.show(
+					new TrabajadoresNav({
+						model: {
+							titulo: 'Listar trabajadores',
+							listar: false,
+							exportar: false,
+							crear: false,
+							editar: false,
+							masivo: false,
+							dataToggle: 'dropdown'
+						},
+					})
+				);
+			}
 
-		this.listenTo(view, 'remove:trabajador', this.trabajadorService.removeTrabajador);
-		this.layout.getRegion('body').show(view);
+			const bodyRegion = layout.getRegion('body');
+			if (bodyRegion) {
+				const view = new TrabajadoresListarView({
+					collection: (this.App as any).Collections.trabajadores,
+					App: this.App,
+					api: this.api,
+					logger: this.logger,
+					region: this.region,
+				});
+				bodyRegion.show(view);
+
+				// Conectar eventos con el servicio
+				this.listenTo(view, 'remove:trabajador', this.trabajadorService.__removeTrabajador.bind(this.trabajadorService));
+			}
+
+		} catch (error: any) {
+			this.logger?.error('Error al listar trabajadores:', error);
+			this.App?.trigger('alert:error', error.message || 'Error al listar trabajadores');
+		}
 	}
 
 	destroy(): void {

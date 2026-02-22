@@ -1,5 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import SubNavCartera from "./SubNavCartera";
+import CarteraService from "@/pages/Cartera/CarteraService";
 import tmp_cargar_cartera from "../templates/tmp_cargar_cartera.hbs?raw";
 
 interface CargueMasivoCarteraOptions {
@@ -22,12 +23,26 @@ interface CargueResponse {
 
 class CargueMasivoCartera extends BackboneView {
     subNavCartera: SubNavCartera | null;
-    template: string;
+    template: any;
+    App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    carteraService: CarteraService;
 
     constructor(options?: CargueMasivoCarteraOptions) {
         super({ ...options, id: 'box_crear_carteras' });
         this.subNavCartera = null;
-        this.template = tmp_cargar_cartera;
+        this.template = _.template(tmp_cargar_cartera);
+        this.App = options?.App;
+        this.api = options?.api;
+        this.logger = options?.logger;
+        this.storage = options?.storage;
+        this.carteraService = new CarteraService({
+            api: this.api,
+            logger: this.logger,
+            app: this.App
+        });
     }
 
     get className(): string {
@@ -78,47 +93,28 @@ class CargueMasivoCartera extends BackboneView {
                     const form_data = new FormData();
                     form_data.append('file', archivo_cartera[0]);
 
-                    $.ajax({
-                        url: create_url('cartera/cargue_masivo'),
-                        type: 'POST',
-                        dataType: 'JSON',
-                        cache: false,
-                        data: form_data,
-                        contentType: false,
-                        processData: false,
-                        beforeSend: function (xhr: JQueryXHR) {
-                            loading.show();
-                        },
-                    } as any)
-                        .done((salida: CargueResponse) => {
-                            loading.hide();
+                    // Delegar al servicio pero manteniendo $.ajax para FormData
+                    this.carteraService.__uploadMasivo({
+                        formData: form_data,
+                        callback: (success: boolean, response: any) => {
                             target.removeAttr('disabled');
-                            if (salida) {
-                                if (salida.success) {
-                                    this.App?.trigger(
-                                        'success',
-                                        `Ya se completo el cargue de cartera.\n
-									Registrados: ${salida.creados}\n
-									Cantidad: ${salida.filas}\n
-									Fallos: ${salida.fallidos}\n
-									Inactivas: ${salida.inactivas}`
-                                    );
-                                } else {
-                                    this.App?.trigger('error', salida.msj);
-                                }
-                                this.setInput('archivo_cartera', '');
-                                this.setText('name_archivo', 'Seleccionar aquí...');
-                                this.$el.find('#remover_archivo').attr('disabled', 'true');
+                            if (success && response) {
+                                this.App?.trigger(
+                                    'success',
+                                    `Ya se completo el cargue de cartera.\n
+									Registrados: ${response.creados || 0}\n
+									Cantidad: ${response.filas || 0}\n
+									Fallos: ${response.fallidos || 0}\n
+									Inactivas: ${response.inactivas || 0}`
+                                );
+                            } else {
+                                this.App?.trigger('error', response?.msj || 'Error en el cargue');
                             }
-                        })
-                        .fail((err: any) => {
-                            loading.hide();
-                            target.removeAttr('disabled');
-                            this.App?.trigger('alert:error', err);
                             this.setInput('archivo_cartera', '');
                             this.setText('name_archivo', 'Seleccionar aquí...');
                             this.$el.find('#remover_archivo').attr('disabled', 'true');
-                        });
+                        }
+                    });
                 } else {
                     target.removeAttr('disabled');
                 }

@@ -1,24 +1,25 @@
-import { BackboneView } from "@/common/Bone";
+import { ModelView } from "@/common/ModelView";
+import tmp_row_rechazo from "@/componentes/rechazos/templates/row.hbs?raw";
 
 interface RechazoRowViewOptions {
-	model: any;
-	[key: string]: any;
+    model: any;
+    [key: string]: any;
 }
 
-export default class RechazoRowView extends BackboneView {
-	template: string;
-	model: any;
+export default class RechazoRowView extends ModelView {
+    template: string;
+    model: any;
 
-	constructor(options: RechazoRowViewOptions) {
-		super(options);
-		this.template = '#tmp_row_rechazo';
-	}
+    constructor(options: RechazoRowViewOptions) {
+        super(options);
+        this.template = tmp_row_rechazo;
+    }
 
-	get tagName(): string {
-		return 'tr';
-	}
+    get tagName(): string {
+        return 'tr';
+    }
 
-	initialize(options: RechazoRowViewOptions) {
-		this.listenTo(options.model, 'change', this.render);
-	}
+    initialize(options: RechazoRowViewOptions) {
+        this.listenTo(options.model, 'change', this.render);
+    }
 }

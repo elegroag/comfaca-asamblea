@@ -1,12 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import tmp_sub_navbar from "../templates/tmp_sub_navbar.hbs?raw";
 
-declare global {
-    var $: any;
-    var _: any;
-    var $App: any;
-}
-
 interface SubNavMesasOptions {
     model?: any;
     dataToggle: {
@@ -14,17 +8,33 @@ interface SubNavMesasOptions {
         crear: boolean;
         editar: boolean;
     };
+    App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
+    [key: string]: any;
 }
 
 export default class SubNavMesas extends BackboneView {
-    template: string;
+    template: any;
     dataToggle: SubNavMesasOptions['dataToggle'];
     static parentView: SubNavMesas | null = null;
+    App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
 
     constructor(options: SubNavMesasOptions) {
         super(options);
-        this.template = tmp_sub_navbar;
+        this.template = _.template(tmp_sub_navbar);
         this.dataToggle = options.dataToggle;
+        this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
     }
 
     get className(): string {
@@ -56,8 +66,8 @@ export default class SubNavMesas extends BackboneView {
             SubNavMesas.parentView.remove();
         }
 
-        if ($App.router) {
-            $App.router.navigate('crear', { trigger: true });
+        if (this.App && this.App.router) {
+            this.App.router.navigate('crear', { trigger: true });
         }
     }
 
@@ -68,8 +78,8 @@ export default class SubNavMesas extends BackboneView {
             SubNavMesas.parentView.remove();
         }
 
-        if ($App.router) {
-            $App.router.navigate('listar', { trigger: true });
+        if (this.App && this.App.router) {
+            this.App.router.navigate('listar', { trigger: true });
         }
     }
 
@@ -81,12 +91,12 @@ export default class SubNavMesas extends BackboneView {
         if (this.model && typeof this.model.get === 'function') {
             nit = this.model.get('nit');
         } else {
-            console.error('Modelo no disponible o sin método get');
+            this.logger?.error('Modelo no disponible o sin método get');
             return;
         }
 
         if (!nit) {
-            console.error('NIT no encontrado en el modelo');
+            this.logger?.error('NIT no encontrado en el modelo');
             return;
         }
 
@@ -94,8 +104,8 @@ export default class SubNavMesas extends BackboneView {
             SubNavMesas.parentView.remove();
         }
 
-        if ($App.router) {
-            $App.router.navigate('edita/' + nit, { trigger: true });
+        if (this.App && this.App.router) {
+            this.App.router.navigate('editar/' + nit, { trigger: true });
         }
     }
 }

@@ -1,25 +1,47 @@
 import { BackboneView } from "@/common/Bone";
+import RecepcionService from "@/pages/Recepcion/RecepcionService";
+import crear from "@/componentes/recepcion/templates/crear.hbs?raw";
+import ModalView from "./ModalView";
 
 interface AsistenciasCrearOptions {
     model?: any;
     collection?: any[];
     App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
 export default class AsistenciasCrear extends BackboneView {
-    template!: string;
+    template: any;
     App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
+    recepcionService: RecepcionService;
     votos: number;
     poderes: any[];
     empresas: any[];
 
-    constructor(options: AsistenciasCrearOptions = {}) {
+    constructor(options: AsistenciasCrearOptions) {
         super(options);
         this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.template = _.template(crear);
         this.votos = 0;
         this.poderes = [];
         this.empresas = [];
+        this.recepcionService = new RecepcionService({
+            api: this.api,
+            logger: this.logger,
+            app: this.App
+        });
     }
 
     events() {
@@ -61,18 +83,20 @@ export default class AsistenciasCrear extends BackboneView {
         return this;
     }
 
-    registrarIngreso(e: JQuery.Event) {
+    async registrarIngreso(e: Event) {
         e.preventDefault();
-        var target = $(e.currentTarget);
+        const target = this.$el.find(e.currentTarget as HTMLElement);
         const cedrep = this.model.get('cedrep');
         const apoderado = this.getCheck('check_apoderado');
         const nit_poder = this.getInput('crear_add_poder');
         const radicado = this.getInput('radicado');
         const has_poderes = nit_poder !== undefined && nit_poder !== '' ? 1 : -1;
 
-        if (cedrep == '') {
-            $App.trigger('warning', 'La identificación del representante es requerida para hacer el ingreso.');
-            target.attr('disabled', true);
+        if (cedrep === '') {
+            if (this.App && typeof this.App.trigger === 'function') {
+                this.App.trigger('warning', 'La identificación del representante es requerida para hacer el ingreso.');
+            }
+            target.attr('disabled', 'true');
             return false;
         }
 
@@ -85,46 +109,61 @@ export default class AsistenciasCrear extends BackboneView {
             radicado,
         };
 
-        $App.trigger('confirma', {
-            message: 'Se requiere de confirmar si desea realizar el ingreso.',
-            callback: (success: boolean) => {
-                if (success) {
-                    loading.show();
+        if (this.App && typeof this.App.trigger === 'function') {
+            this.App.trigger('confirma', {
+                message: 'Se requiere de confirmar si desea realizar el ingreso.',
+                callback: async (success: boolean) => {
+                    if (success) {
+                        try {
+                            const response = await (this.recepcionService as any).__crearIngreso(token);
 
-                    const url = create_url('habiles/crear_ingreso');
-                    $App.trigger('syncro', {
-                        url,
-                        data: token,
-                        callback: (response: any) => {
-                            loading.hide();
                             target.removeAttr('disabled');
-                            if (response.success) {
-                                if (_.size(response.errors) > 0) {
-                                    $App.trigger('warning', response.errors.join('\n'));
+
+                            if (response && response.success) {
+                                if (response.errors && response.errors.length > 0) {
+                                    if (this.App && typeof this.App.trigger === 'function') {
+                                        this.App.trigger('alert:warning', { message: response.errors.join('\n') });
+                                    }
                                 } else {
-                                    $App.trigger('success', response.msj);
+                                    if (this.App && typeof this.App.trigger === 'function') {
+                                        this.App.trigger('alert:success', { message: response.msj || 'Ingreso creado exitosamente' });
+                                    }
                                 }
 
-                                if (_.size(response.asistentes) > 0) {
-                                    _.each(response.asistentes, (asistente: any) => {
+                                if (response.asistentes && response.asistentes.length > 0) {
+                                    response.asistentes.forEach((asistente: any) => {
                                         this.trigger('add:asistencia', asistente);
                                     });
                                 }
 
                                 this.trigger('set:fichaIngreso', true);
-                                $App.router.navigate('ficha/' + cedrep, { trigger: true, replace: true });
+                                if (this.App && this.App.router) {
+                                    this.App.router.navigate('ficha/' + cedrep, { trigger: true, replace: true });
+                                }
                             } else {
-                                $App.trigger('alert:error', response.msj);
+                                if (this.App && typeof this.App.trigger === 'function') {
+                                    this.App.trigger('alert:error', { message: response.msj || 'Error al crear ingreso' });
+                                }
                             }
-                        },
-                    });
-                }
-            },
-        });
+                        } catch (error: any) {
+                            target.removeAttr('disabled');
+                            this.logger?.error('Error al crear ingreso:', error);
+                            if (this.App && typeof this.App.trigger === 'function') {
+                                this.App.trigger('alert:error', { message: 'Ocurrió un error al realizar el ingreso' });
+                            }
+                        }
+                    } else {
+                        target.removeAttr('disabled');
+                    }
+                },
+            });
+        } else {
+            target.removeAttr('disabled');
+        }
     }
 
-    checkDisponePoder(e: JQuery.Event) {
-        let _input = $(e.currentTarget);
+    checkDisponePoder(e: Event) {
+        let _input = this.$el.find(e.currentTarget);
         if (_input.is(':checked')) {
             this.$el.find('#content_buscar_empresa').fadeIn('slow');
         } else {
@@ -132,7 +171,7 @@ export default class AsistenciasCrear extends BackboneView {
         }
     }
 
-    buscarEmpresaPoder(e: JQuery.Event) {
+    buscarEmpresaPoder(e: Event) {
         e.preventDefault();
         const nit_poder = this.getInput('nit_poder');
         this.trigger('search:poder', {
@@ -159,7 +198,7 @@ export default class AsistenciasCrear extends BackboneView {
         });
     }
 
-    buscarEmpresaPoderKey(e: JQuery.Event) {
+    buscarEmpresaPoderKey(e: any) {
         const keycode = e.keyCode ? e.keyCode : e.which;
         if (keycode == 13) {
             const nit_poder = this.getInput('nit_poder');
@@ -180,7 +219,7 @@ export default class AsistenciasCrear extends BackboneView {
                                 },
                             }).render().$el;
                         } else {
-                            $App.trigger('alert:error', response.msj);
+                            $App.trigger('alert:error', { message: response.msj });
                         }
                     }
                 },
@@ -202,39 +241,54 @@ export default class AsistenciasCrear extends BackboneView {
         $('#num_votos_admitidos').text(votos);
     }
 
-    borrarPoderServer(e: JQuery.Event) {
+    async borrarPoderServer(e: Event) {
         e.preventDefault();
-        var target = this.$el.find(e.currentTarget);
+        const target = this.$el.find(e.currentTarget as HTMLElement);
         const token = {
             cedrep: parseInt(this.model.get('cedrep')),
-            nit: parseInt(target.attr('data-code')),
+            nit: parseInt(target.attr('data-code') || '0'),
         };
-        target.attr('disabled', true);
+        target.attr('disabled', 'true');
 
-        $App.trigger('confirma', {
-            message: 'Se requiere de confirmar si desea borrar el registro de poder.',
-            callback: (status: boolean) => {
-                if (status) {
-                    $App.trigger('syncro', {
-                        url: create_url('recepcion/revocarPoder'),
-                        data: token,
-                        callback: (response: any) => {
+        if (this.App && typeof this.App.trigger === 'function') {
+            this.App.trigger('confirma', {
+                message: 'Se requiere de confirmar si desea borrar el registro de poder.',
+                callback: async (status: boolean) => {
+                    if (status) {
+                        try {
+                            const response = await this.recepcionService.__revocarPoder(token);
+
                             target.removeAttr('disabled');
+
                             if (response) {
                                 if (response.success) {
-                                    $App.trigger('alert:success', response.msj);
-                                    Backbone.history.loadUrl();
+                                    if (this.App && typeof this.App.trigger === 'function') {
+                                        this.App.trigger('alert:success', { message: response.msj });
+                                    }
+                                    if (typeof Backbone.history !== 'undefined' && Backbone.history.loadUrl) {
+                                        Backbone.history.loadUrl();
+                                    }
                                 } else {
-                                    $App.trigger('alert:error', response.msj);
+                                    if (this.App && typeof this.App.trigger === 'function') {
+                                        this.App.trigger('alert:error', { message: response.msj || 'Error al revocar poder' });
+                                    }
                                 }
                             }
-                        },
-                    });
-                } else {
-                    target.removeAttr('disabled');
-                }
-            },
-        });
+                        } catch (error: any) {
+                            target.removeAttr('disabled');
+                            this.logger?.error('Error al revocar poder:', error);
+                            if (this.App && typeof this.App.trigger === 'function') {
+                                this.App.trigger('alert:error', { message: 'Ocurrió un error al revocar el poder' });
+                            }
+                        }
+                    } else {
+                        target.removeAttr('disabled');
+                    }
+                },
+            });
+        } else {
+            target.removeAttr('disabled');
+        }
     }
 
     getInput(selector: string): string {

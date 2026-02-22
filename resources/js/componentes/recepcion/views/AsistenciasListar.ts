@@ -1,191 +1,230 @@
 import { BackboneView } from "@/common/Bone";
-
-declare global {
-	var $: any;
-	var _: any;
-	var $App: any;
-	var create_url: (path: string) => string;
-	var axios: any;
-	var loading: any;
-	var Swal: any;
-	var download_file: (data: any) => void;
-	var langDataTable: any;
-	var Backbone: any;
-}
+import RecepcionService from "@/pages/Recepcion/RecepcionService";
+import DataTable from "datatables.net-bs5";
 
 interface AsistenciasListarOptions {
-	collection?: any;
-	App?: any;
-	[key: string]: any;
+    collection?: any;
+    App?: any;
+    [key: string]: any;
 }
 
 export default class AsistenciasListar extends BackboneView {
-	template!: string;
-	App: any;
+    template!: string;
+    App: any;
 
-	constructor(options: AsistenciasListarOptions = {}) {
-		super(options);
-		this.App = options.App;
-	}
+    constructor(options: AsistenciasListarOptions = {}) {
+        super(options);
+        this.App = options.App;
+        this.recepcionService = new RecepcionService({
+            api: options.api,
+            logger: options.logger,
+            app: options.App,
+        });
+    }
 
-	initialize() {
-		this.template = $('#tmp_listar_ingreso').html();
-		this.render();
-	}
+    initialize() {
+        this.template = $('#tmp_listar_ingreso').html();
+        this.render();
+    }
 
-	events() {
-		return {
-			'click #bt_export_data': 'export_data',
-			"click button[data-toggle='bt_registro_ingreso']": 'registroIngreso',
-			"click button[data-toggle='bt_borrar_ingreso']": 'borrarIngreso',
-			'click #bt_reporte_data': 'reporte_data',
-		};
-	}
+    events() {
+        return {
+            'click #bt_export_data': 'export_data',
+            "click button[data-toggle='bt_registro_ingreso']": 'registroIngreso',
+            "click button[data-toggle='bt_borrar_ingreso']": 'borrarIngreso',
+            'click #bt_reporte_data': 'reporte_data',
+        };
+    }
 
-	render() {
-		let _template = _.template(this.template);
-		this.$el.html(_template({ asistencias: this.collection.toJSON() }));
-		this.initTable();
-		return this;
-	}
+    render() {
+        let _template = _.template(this.template);
+        this.$el.html(_template({ asistencias: this.collection.toJSON() }));
+        this.initTable();
+        return this;
+    }
 
-	borrarIngreso(e: JQuery.Event) {
-		e.preventDefault();
-		var target = $(e.currentTarget);
-		target.attr('disabled', true);
+    async borrarIngreso(e: Event) {
+        e.preventDefault();
+        const target = this.$el.find(e.currentTarget);
+        target.attr('disabled', 'true');
 
-		$App.trigger('confirma', {
-			message: 'Se requiere de confirmar si desea remover la inscripción.',
-			callback: (success: boolean) => {
-				target.removeAttr('disabled');
+        if (this.App && typeof this.App.trigger === 'function') {
+            this.App.trigger('confirma', {
+                message: 'Se requiere de confirmar si desea remover la inscripción.',
+                callback: async (success: boolean) => {
+                    target.removeAttr('disabled');
 
-				if (success) {
-					const documento = target.attr('data-code');
-					const url = create_url('recepcion/remover_inscripcion/' + documento);
-					axios
-						.get(url)
-						.then((salida: any) => {
-							if (salida.status == 200) {
-								Backbone.history.loadUrl();
-								$App.trigger('alert:success', salida.data.msj);
-							}
-						})
-						.catch((err: any) => {
-							console.log(err);
-						});
-				}
-			},
-		});
-	}
+                    if (success) {
+                        try {
+                            const documento = target.attr('data-code');
+                            const response = await this.recepcionService.__removerInscripcion(documento);
 
-	registroIngreso(event: JQuery.Event) {
-		event.preventDefault();
-		let nit = $(event.currentTarget).attr('data-code');
-		$App.router.navigate('registro_empresa/' + nit, { trigger: true });
-	}
+                            if (response.status === 200) {
+                                if (typeof Backbone.history !== 'undefined' && Backbone.history.loadUrl) {
+                                    Backbone.history.loadUrl();
+                                }
+                                if (this.App && typeof this.App.trigger === 'function') {
+                                    this.App.trigger('alert:success', response.data.msj);
+                                }
+                            } else {
+                                if (this.App && typeof this.App.trigger === 'function') {
+                                    this.App.trigger('alert:error', response.data?.msj || 'Error al remover inscripción');
+                                }
+                            }
+                        } catch (error: any) {
+                            this.logger?.error('Error al remover inscripción:', error);
+                            if (this.App && typeof this.App.trigger === 'function') {
+                                this.App.trigger('alert:error', 'Ocurrió un error al remover la inscripción');
+                            }
+                        }
+                    }
+                },
+            });
+        } else {
+            target.removeAttr('disabled');
+        }
+    }
 
-	export_data(event: JQuery.Event) {
-		event.preventDefault();
-		$App.trigger('confirma', {
-			message: 'Se requiere de confirmar si desea exportar la lista.',
-			callback: (success: boolean) => {
-				if (success) {
-					loading.show();
-					let url = create_url('recepcion/exportar_lista');
-					axios
-						.get(url)
-						.then(function (response: any) {
-							loading.hide();
-							if (response.status == 200) {
-								if (response.data.status == 200) {
-									download_file(response.data);
-								} else {
-									Swal.fire({
-										title: 'Notificación!',
-										text: response.data.msj,
-										icon: 'warning',
-										button: 'Continuar!',
-									});
-								}
-							} else {
-								Swal.fire({
-									title: 'Notificación!',
-									text: 'Se detecta un error al exportar los datos. Comunicar a soporte técnico',
-									icon: 'warning',
-									button: 'Continuar!',
-									timer: 8000,
-								});
-							}
-						})
-						.catch(function (err: any) {
-							loading.hide();
-							console.log(err);
-						});
-				}
-			},
-		});
-	}
+    registroIngreso(event: Event) {
+        event.preventDefault();
+        let nit = this.$el.find(event.currentTarget).attr('data-code');
+        $App.router.navigate('registro_empresa/' + nit, { trigger: true });
+    }
 
-	reporte_data(event: JQuery.Event) {
-		event.preventDefault();
-		$App.trigger('confirma', {
-			message: 'Se requiere de confirmar si desea generar reporte.',
-			callback: (success: boolean) => {
-				if (success) {
-					loading.show();
-					let url = create_url('recepcion/reporte_quorum');
-					axios
-						.get(url)
-						.then(function (response: any) {
-							loading.hide();
-							if (response.status == 200) {
-								if (response.data.status == 200) {
-									download_file(response.data);
-								} else {
-									Swal.fire({
-										title: 'Notificación!',
-										text: response.data.msj,
-										icon: 'warning',
-										button: 'Continuar!',
-									});
-								}
-							} else {
-								Swal.fire({
-									title: 'Notificación!',
-									text: 'Se detecta un error al exportar los datos. Comunicar a soporte técnico',
-									icon: 'warning',
-									button: 'Continuar!',
-									timer: 8000,
-								});
-							}
-						})
-						.catch(function (err: any) {
-							loading.hide();
-							console.log(err);
-						});
-				}
-			},
-		});
-	}
+    async export_data(e: Event) {
+        e.preventDefault();
 
-	initTable() {
-		this.$el.find('#tb_data_asistencias').DataTable({
-			paging: true,
-			pageLength: 10,
-			pagingType: 'full_numbers',
-			info: true,
-			columns: [
-				{ data: 'empresa' },
-				{ data: 'nit' },
-				{ data: 'cedrep' },
-				{ data: 'hora' },
-				{ data: 'fecha' },
-				{ data: 'estado' },
-				{ data: 'votos' },
-				{ data: 'documento' },
-			],
-			order: [[7, 'desc']],
-			language: langDataTable,
-		});
-	}
+        if (this.App && typeof this.App.trigger === 'function') {
+            this.App.trigger('confirma', {
+                message: 'Se requiere de confirmar si desea exportar la lista.',
+                callback: async (success: boolean) => {
+                    if (success) {
+                        try {
+                            const response = await this.recepcionService.__exportarLista();
+
+                            if (response.status === 200) {
+                                if (response.data.status === 200) {
+                                    if (typeof download_file === 'function') {
+                                        download_file(response.data);
+                                    }
+                                } else {
+                                    if (this.App && typeof this.App.trigger === 'function') {
+                                        this.App.trigger('alert:warning', {
+                                            title: 'Notificación!',
+                                            text: response.data.msj,
+                                            button: 'Continuar!'
+                                        });
+                                    }
+                                }
+                            } else {
+                                if (this.App && typeof this.App.trigger === 'function') {
+                                    this.App.trigger('alert:warning', {
+                                        title: 'Notificación!',
+                                        text: 'Se detecta un error al exportar los datos. Comunicar a soporte técnico',
+                                        button: 'Continuar!',
+                                        timer: 8000
+                                    });
+                                }
+                            }
+                        } catch (error: any) {
+                            this.logger?.error('Error al exportar lista:', error);
+                            if (this.App && typeof this.App.trigger === 'function') {
+                                this.App.trigger('alert:error', 'Ocurrió un error al exportar los datos');
+                            }
+                        }
+                    }
+                },
+            });
+        }
+    }
+
+    reporte_data(e: Event) {
+        e.preventDefault();
+
+        if (this.App && typeof this.App.trigger === 'function') {
+            this.App.trigger('confirma', {
+                message: 'Se requiere de confirmar si desea generar reporte.',
+                callback: async (success: boolean) => {
+                    if (success) {
+                        try {
+                            const response = await this.recepcionService.__generarReporteQuorum();
+
+                            if (response.status === 200) {
+                                if (response.data.status === 200) {
+                                    if (typeof download_file === 'function') {
+                                        download_file(response.data);
+                                    }
+                                } else {
+                                    if (this.App && typeof this.App.trigger === 'function') {
+                                        this.App.trigger('alert:warning', {
+                                            title: 'Notificación!',
+                                            text: response.data.msj,
+                                            button: 'Continuar!'
+                                        });
+                                    }
+                                }
+                            } else {
+                                if (this.App && typeof this.App.trigger === 'function') {
+                                    this.App.trigger('alert:warning', {
+                                        title: 'Notificación!',
+                                        text: 'Se detecta un error al exportar los datos. Comunicar a soporte técnico',
+                                        button: 'Continuar!',
+                                        timer: 8000
+                                    });
+                                }
+                            }
+                        } catch (error: any) {
+                            this.logger?.error('Error al generar reporte:', error);
+                            if (this.App && typeof this.App.trigger === 'function') {
+                                this.App.trigger('alert:error', 'Ocurrió un error al generar el reporte');
+                            }
+                        }
+                    }
+                },
+            });
+        }
+    }
+
+    initTable() {
+        // Destruir tabla existente si hay una
+        if (this.tableModule) {
+            this.tableModule.destroy();
+        }
+
+        this.tableModule = new DataTable(this.$el.find('#tb_data_asistencias'), {
+            paging: true,
+            pageLength: 10,
+            pagingType: 'full_numbers',
+            info: true,
+            searching: true,
+            ordering: true,
+            autoWidth: false,
+            columns: [
+                { data: 'empresa' },
+                { data: 'nit' },
+                { data: 'cedrep' },
+                { data: 'hora' },
+                { data: 'fecha' },
+                { data: 'estado' },
+                { data: 'votos' },
+                { data: 'documento' },
+            ],
+            order: [[7, 'desc']],
+            language: {
+                lengthMenu: 'Mostrar _MENU_ registros',
+                zeroRecords: 'No se encontraron resultados',
+                info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+                infoEmpty: 'Mostrando 0 a 0 de 0 registros',
+                infoFiltered: '(filtrado de _MAX_ registros totales)',
+                search: 'Buscar:',
+                paginate: {
+                    first: 'Primero',
+                    last: 'Último',
+                    next: 'Siguiente',
+                    previous: 'Anterior'
+                }
+            },
+            destroy: true
+        });
+    }
 }

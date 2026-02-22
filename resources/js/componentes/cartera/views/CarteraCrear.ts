@@ -1,19 +1,17 @@
 import { BackboneView } from "@/common/Bone";
-import $App from "@/core/App";
-import { Testeo } from "@/core/Testeo";
 import Cartera from "@/models/Cartera";
 import SubNavCartera from "./SubNavCartera";
 import tmp_crear_cartera from "../templates/tmp_crear_cartera.hbs?raw";
-import { AppInstance } from "@/types/types";
 
 interface CarteraCrearOptions {
     model: Cartera;
     isNew: boolean;
-    App: AppInstance | null;
+    App: any;
     api: any;
     logger: any;
     storage: any;
     region: any;
+    [key: string]: any;
 }
 
 interface EmpresaResponse {
@@ -27,23 +25,29 @@ interface EmpresaResponse {
     msj?: string;
 }
 
-class CarteraCrear extends BackboneView {
+export default class CarteraCrear extends BackboneView {
     isNew: boolean;
     subNavCartera: SubNavCartera | null;
+    App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
 
     constructor(options: CarteraCrearOptions) {
-        super({ ...options, id: 'box_crear_carteras' });
+        super({
+            ...options,
+            id: 'box_crear_carteras',
+            className: 'box'
+        });
         this.isNew = options.isNew;
         this.subNavCartera = null;
-        this.template = tmp_crear_cartera;
-    }
-
-    get className(): string {
-        return 'box';
-    }
-
-    initialize(): void {
-        this.template = $('#tmp_crear_cartera').html();
+        this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.template = _.template(tmp_crear_cartera);
     }
 
     get events(): Record<string, (e: Event) => void> {
@@ -81,10 +85,12 @@ class CarteraCrear extends BackboneView {
     buscarEmpresa(e: Event): void {
         e.preventDefault();
         const nit = this.getInput('nit');
-        const error = Testeo.identi(nit, 'nit', 4, 20);
 
-        if (error) {
-            $App.trigger('alert:error', error);
+        // Validación básica sin dependencia externa
+        if (!nit || nit.length < 4 || nit.length > 20) {
+            if (this.App && typeof this.App.trigger === 'function') {
+                this.App.trigger('alert:error', { message: 'El NIT debe tener entre 4 y 20 dígitos' });
+            }
             return;
         }
 
@@ -99,9 +105,13 @@ class CarteraCrear extends BackboneView {
                         this.setInput('repleg', response.empresa!.repleg);
                     }
                     if (response.isValid === true) {
-                        $App.trigger('alert:info', response.msj);
+                        if (this.App && typeof this.App.trigger === 'function') {
+                            this.App.trigger('alert:info', response.msj);
+                        }
                     } else {
-                        $App.trigger('alert:warning', response.msj);
+                        if (this.App && typeof this.App.trigger === 'function') {
+                            this.App.trigger('alert:warning', response.msj);
+                        }
                     }
                     this.$el.find('#bt_registrar').removeAttr('disabled');
                 } else {
@@ -116,7 +126,9 @@ class CarteraCrear extends BackboneView {
     closeForm(e: Event): void {
         e.preventDefault();
         this.remove();
-        $App.router.navigate('listar', { trigger: true, replace: true });
+        if (this.App && this.App.router) {
+            this.App.router.navigate('listar', { trigger: true, replace: true });
+        }
     }
 
     guardarRegistro(e: Event): void {
@@ -231,4 +243,3 @@ class CarteraCrear extends BackboneView {
     }
 }
 
-export default CarteraCrear;

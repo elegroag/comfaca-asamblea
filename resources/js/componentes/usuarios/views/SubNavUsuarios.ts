@@ -1,11 +1,5 @@
 import { BackboneView } from "@/common/Bone";
-import tmp_sub_navbar from "../templates/tmp_sub_navbar.hbs?raw";
-
-declare global {
-	var $: any;
-	var _: any;
-	var $App: any;
-}
+import subnav from "@/componentes/usuarios/templates/subnav.hbs?raw";
 
 interface SubNavUsuariosOptions {
 	model?: any;
@@ -13,18 +7,34 @@ interface SubNavUsuariosOptions {
 		listar: boolean;
 		crear: boolean;
 		editar: boolean;
+		exportar?: boolean;
+		masivo?: boolean;
 	};
+	App?: any;
+	api?: any;
+	logger?: any;
+	storage?: any;
+	region?: any;
+	[key: string]: any;
 }
 
 export default class SubNavUsuarios extends BackboneView {
-	template: string;
+	template: any;
 	dataToggle: SubNavUsuariosOptions['dataToggle'];
 	static parentView: SubNavUsuarios | null = null;
+	static App: any;
 
 	constructor(options: SubNavUsuariosOptions) {
 		super(options);
-		this.template = tmp_sub_navbar;
+		this.App = options.App;
+		this.api = options.api;
+		this.logger = options.logger;
+		this.storage = options.storage;
+		this.region = options.region;
+		this.model = options.model;
+		this.template = _.template(subnav);
 		this.dataToggle = options.dataToggle;
+		SubNavUsuarios.App = options.App; // Static reference
 	}
 
 	get className(): string {
@@ -56,8 +66,8 @@ export default class SubNavUsuarios extends BackboneView {
 			SubNavUsuarios.parentView.remove();
 		}
 
-		if ($App.router) {
-			$App.router.navigate('crear', { trigger: true });
+		if (SubNavUsuarios.App && SubNavUsuarios.App.router) {
+			SubNavUsuarios.App.router.navigate('crear', { trigger: true });
 		}
 	}
 
@@ -68,8 +78,8 @@ export default class SubNavUsuarios extends BackboneView {
 			SubNavUsuarios.parentView.remove();
 		}
 
-		if ($App.router) {
-			$App.router.navigate('listar', { trigger: true });
+		if (SubNavUsuarios.App && SubNavUsuarios.App.router) {
+			SubNavUsuarios.App.router.navigate('listar', { trigger: true });
 		}
 	}
 
@@ -94,8 +104,8 @@ export default class SubNavUsuarios extends BackboneView {
 			SubNavUsuarios.parentView.remove();
 		}
 
-		if ($App.router) {
-			$App.router.navigate('edita/' + nit, { trigger: true });
+		if (SubNavUsuarios.App && SubNavUsuarios.App.router) {
+			SubNavUsuarios.App.router.navigate('edita/' + nit, { trigger: true });
 		}
 	}
 }

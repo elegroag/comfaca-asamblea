@@ -1,10 +1,18 @@
 import LoginController from "./LoginController";
 import { BackboneRouter } from "@/common/Bone";
-import $App from "@/core/App";
+import type { AppInstance } from "@/types/types";
+
+interface RouterLoginOptions {
+    app: AppInstance;
+    routes?: Record<string, string>;
+    [key: string]: any;
+}
 
 class RouterLogin extends BackboneRouter {
-    controller: LoginController;
-    constructor(options = {}) {
+    private controller: LoginController | null = null;
+    private app: AppInstance;
+
+    constructor(options: RouterLoginOptions) {
         super({
             routes: {
                 '': 'login',
@@ -13,15 +21,22 @@ class RouterLogin extends BackboneRouter {
             ...options,
         });
 
-        this.controller = $App.startSubApplication(LoginController, this);
+        // Patrón descentralizado: inyección directa del app
+        this.app = options.app;
         this._bindRoutes();
     }
 
-    login() {
-        console.log('RouterLogin.login() called');
-        this.controller.login();
+    private init() {
+        // Patrón descentralizado: usar app.startSubApplication()
+        this.controller = this.app.startSubApplication(LoginController);
     }
 
+    login() {
+        this.init();
+        if (this.controller && typeof this.controller.login === 'function') {
+            this.controller.login();
+        }
+    }
 }
 
 export default RouterLogin;

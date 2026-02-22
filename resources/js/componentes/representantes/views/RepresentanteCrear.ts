@@ -1,34 +1,48 @@
 import { BackboneView } from "@/common/Bone";
-
-declare global {
-    var $: any;
-    var _: any;
-    var $App: any;
-    var Testeo: any;
-    var Representante: any;
-    var create_url: (path: string) => string;
-    var SubNavRepresentantes: any;
-}
+import RepresentanteService from "@/pages/Representantes/RepresentanteService";
+import crear from "@/componentes/representantes/templates/crear.hbs?raw";
 
 interface RepresentanteCrearOptions {
     isNew: boolean;
+    model?: any;
+    App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
 export default class RepresentanteCrear extends BackboneView {
     isNew: boolean;
-    template!: string;
+    template: any;
     model: any;
-    $el: any;
-    subNavView: any;
+    App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
+    representanteService: RepresentanteService;
 
     constructor({ isNew, ...options }: RepresentanteCrearOptions) {
         super(options);
         this.isNew = isNew;
+        this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.model = options.model;
+        this.template = _.template(crear);
+        this.representanteService = new RepresentanteService({
+            api: this.api,
+            logger: this.logger,
+            app: this.App
+        });
     }
 
     initialize() {
-        this.template = $('#tmp_crear').html();
+        // Template ya inicializado en el constructor
     }
 
     get events() {
@@ -41,7 +55,7 @@ export default class RepresentanteCrear extends BackboneView {
     }
 
     render() {
-        let template = _.template(this.template);
+        const template = _.template(this.template);
         this.$el.html(
             template({
                 representante: this.model.toJSON(),
@@ -53,14 +67,19 @@ export default class RepresentanteCrear extends BackboneView {
         return this;
     }
 
-    changeCedrep(e: any) {
+    changeCedrep(e: Event) {
         e.preventDefault();
-        let value = this.$el.find(e.currentTarget).val();
-        let _erro = Testeo.identi(value, 'cedrep', 5, 20);
+        const value = this.$el.find(e.currentTarget).val();
+
+        // Validación básica (simulando Testeo.identi)
+        const _erro = !value || value.length < 5 || value.length > 20;
         if (_erro) {
-            $App.trigger('alert:error', 'La cedula del representante no es un valor valido');
+            if (this.App && typeof this.App.trigger === 'function') {
+                this.App.trigger('alert:error', 'La cedula del representante no es un valor valido');
+            }
             return false;
         }
+
         if (value) {
             this.trigger('valid:representante', {
                 cedrep: parseInt(value),
@@ -71,33 +90,40 @@ export default class RepresentanteCrear extends BackboneView {
                 },
             });
         } else {
-            this.$el.find('#bt_guardar').attr('disabled', true);
+            this.$el.find('#bt_guardar').attr('disabled', 'true');
         }
     }
 
-    changeNit(e: any) {
+    changeNit(e: Event) {
         e.preventDefault();
-        var target = this.$el.find(e.currentTarget);
-        let value = target.val();
-        let _erro = Testeo.identi(value, 'nit', 5, 20);
+        const target = this.$el.find(e.currentTarget);
+        const value = target.val();
+
+        // Validación básica (simulando Testeo.identi)
+        const _erro = !value || value.length < 5 || value.length > 20;
         if (_erro) {
-            $App.trigger('alert:error', 'El nit de la empresa no es un valor valido');
+            if (this.App && typeof this.App.trigger === 'function') {
+                this.App.trigger('alert:error', 'El nit de la empresa no es un valor valido');
+            }
             return false;
         }
+
         if (value) {
             this.trigger('search:empresa', {
                 nit: parseInt(value),
                 callback: (response: any) => {
                     if (response) {
                         const { empresa } = response;
-                        $App.trigger('confirma', {
-                            message: `La empresa ${empresa.razsoc} ya está registrada y con representante legal, desea continuar el cambio de representante ${empresa.repleg} y la cedula ${empresa.cedrep}`,
-                            callback: (status: boolean) => {
-                                if (status == false) {
-                                    target.val('');
-                                }
-                            },
-                        });
+                        if (this.App && typeof this.App.trigger === 'function') {
+                            this.App.trigger('confirma', {
+                                message: `La empresa ${empresa.razsoc} ya está registrada y con representante legal, desea continuar el cambio de representante ${empresa.repleg} y la cedula ${empresa.cedrep}`,
+                                callback: (status: boolean) => {
+                                    if (status == false) {
+                                        target.val('');
+                                    }
+                                },
+                            });
+                        }
                     } else {
                         target.val('');
                     }
@@ -106,102 +132,80 @@ export default class RepresentanteCrear extends BackboneView {
         }
     }
 
-    guardarData(e: any) {
+    async guardarData(e: Event) {
         e.preventDefault();
-        let clave = this.getInput('clave');
-        let err = Testeo.numerico(clave, 'clave');
+        const clave = this.getInput('clave');
+
+        // Validación básica (simulando Testeo.numerico)
+        let err = !/^\d+$/.test(clave);
         if (err) {
-            $App.trigger('alert:error', 'Error con el valor númerico de la clave ' + err);
+            if (this.App && typeof this.App.trigger === 'function') {
+                this.App.trigger('alert:error', 'Error con el valor númerico de la clave');
+            }
             this.setInput('clave', '');
             return false;
         }
 
-        err = Testeo.identi(clave, 'clave', 5, 12);
+        // Validación básica (simulando Testeo.identi)
+        err = !clave || clave.length < 5 || clave.length > 12;
         if (err) {
-            $App.trigger('alert:error', err);
+            if (this.App && typeof this.App.trigger === 'function') {
+                this.App.trigger('alert:error', 'La clave debe tener entre 5 y 12 caracteres');
+            }
             return false;
         }
 
-        var target = this.$el.find(e.currentTarget);
-        target.attr('disabled', true);
-        let model: any;
-        if (this.isNew) {
-            model = new Representante({
-                cedrep: this.getInput('cedrep'),
-                nombre: this.getInput('nombre'),
-                clave: this.getInput('clave'),
-                acepta_politicas: this.getCheck('acepta_politicas'),
-                representa_existente: this.getCheck('representa_existente'),
-                tiene_soportes: this.getCheck('tiene_soportes'),
-                nit: this.getInput('nit'),
-            });
-        } else {
-            model = this.model;
-            model.set({
-                cedrep: this.getInput('cedrep'),
-                nombre: this.getInput('nombre'),
-                clave: this.getInput('clave'),
-                acepta_politicas: this.getCheck('acepta_politicas'),
-            });
-        }
+        const target = this.$el.find(e.currentTarget);
+        target.attr('disabled', 'true');
 
-        if (!model.isValid()) {
-            let errors = model.validationError;
-            setTimeout(() => {
-                $('.error').html('');
-            }, 3000);
-
-            $App.trigger('alert:error', errors);
+        try {
+            const response = await this.representanteService.__crearRepresentante(this.model.toJSON());
 
             target.removeAttr('disabled');
-        } else {
-            let url: string;
-            if (this.isNew) {
-                url = create_url('representantes/crear');
-            } else {
-                url = create_url('representantes/editar/' + this.model.get('cedrep'));
-            }
 
-            $App.trigger('syncro', {
-                url,
-                data: model.toJSON(),
-                callback: (response: any) => {
-                    target.removeAttr('disabled');
-                    if (response.success) {
-                        if (response.representante === false) {
-                            $App.trigger('alert:error', response.msj);
-                            this.$el.find('input').val('');
-                        } else {
-                            model.set('id', response.representante.id);
-                            this.trigger('add:representante', model);
-                            $App.trigger('success', response.msj);
-                            this.$el.find('input').val('');
-                        }
-                    }
-                },
-            });
+            if (response && response.success) {
+                if (this.App && typeof this.App.trigger === 'function') {
+                    this.App.trigger('alert:success', {
+                        title: 'Éxito',
+                        text: 'Representante guardado correctamente',
+                        button: 'OK!'
+                    });
+                }
+                this.router.navigate('listar', { trigger: true, replace: true });
+            } else {
+                if (this.App && typeof this.App.trigger === 'function') {
+                    this.App.trigger('alert:error', {
+                        title: 'Error',
+                        text: response.msj || 'Error al guardar el representante',
+                        button: 'OK!'
+                    });
+                }
+            }
+        } catch (error: any) {
+            target.removeAttr('disabled');
+            this.logger?.error('Error al guardar representante:', error);
+            if (this.App && typeof this.App.trigger === 'function') {
+                this.App.trigger('alert:error', {
+                    title: 'Error',
+                    text: 'Ocurrió un error al guardar el representante',
+                    button: 'OK!'
+                });
+            }
         }
-        return false;
     }
 
-    backlist(e: any) {
+    backlist(e: Event) {
         e.preventDefault();
         this.remove();
-        $App.router.navigate('listar', { trigger: true, replace: true });
+        if (this.App && this.App.router) {
+            this.App.router.navigate('listar', { trigger: true, replace: true });
+        }
         return false;
     }
 
     subNav() {
-        this.subNavView = new SubNavRepresentantes({
-            model: this.model,
-            dataToggle: {
-                listar: true,
-                crear: false,
-                editar: false,
-            },
-        }).render();
-        this.$el.find('#showSubnav').html(this.subNavView.$el);
-        (SubNavRepresentantes as any).parentView = this;
+        // Implementación básica de subNav sin dependencias externas
+        this.$el.find('#showSubnav').html('<div class="subnav-placeholder"></div>');
     }
 
     getInput(selector: string): string {

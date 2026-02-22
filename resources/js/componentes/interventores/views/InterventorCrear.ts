@@ -1,36 +1,47 @@
 import { BackboneView } from "@/common/Bone";
-import type { AppInstance } from '@/types/types';
-import { Utils } from "@/core/Utils";
-import cargarInterventores from "@/componentes/interventores/templates/cargarInterventores.hbs?raw";
-
-declare global {
-	var $: any;
-	var _: any;
-	var $App: any;
-	var loading: any;
-	var create_url: (path: string) => string;
-	var Swal: any;
-}
+import InterventorService from "@/pages/Interventores/InterventorService";
+import cargar from "@/componentes/interventores/templates/cargar.hbs?raw";
 
 interface InterventorCrearOptions {
 	model?: any;
-	App?: AppInstance;
+	App?: any;
+	api?: any;
+	logger?: any;
+	storage?: any;
+	region?: any;
 	[key: string]: any;
 }
 
 export default class InterventorCrear extends BackboneView {
-	App: AppInstance;
+	template: any;
+	App: any;
+	api: any;
+	logger: any;
+	storage: any;
+	region: any;
+	interventorService: InterventorService;
 
 	constructor(options: InterventorCrearOptions = {}) {
 		super(options);
-		this.App = options.App || options.AppInstance;
+		this.App = options.App;
+		this.api = options.api;
+		this.logger = options.logger;
+		this.storage = options.storage;
+		this.region = options.region;
+		this.model = options.model;
+		this.template = _.template(cargar);
+		this.interventorService = new InterventorService({
+			api: this.api,
+			logger: this.logger,
+			app: this.App
+		});
 	}
 
 	get events() {
 		return {
-			'click #btn_back_list': 'backlist',
-			"click [data-toggle-file='searchfile']": 'searchFile',
-			'click #bt_hacer_cargue': 'hacerCargue',
+			'click #btn_back_list': this.backlist,
+			"click [data-toggle-file='searchfile']": this.searchFile,
+			'click #bt_hacer_cargue': this.hacerCargue,
 		};
 	}
 
@@ -45,81 +56,82 @@ export default class InterventorCrear extends BackboneView {
 	/**
 	 * Hacer cargue masivo
 	 */
-	hacerCargue(e: Event): void {
+	async hacerCargue(e: Event): Promise<void> {
 		e.preventDefault();
 
-		const target = $(e.currentTarget);
-		target.attr('disabled', true);
+		const target = this.$el.find(e.currentTarget);
+		target.attr('disabled', 'true');
 
-		const _cruzar_poderes = $("[name='cruzar_poderes']:checked").length;
-		const archivo_interventores = document.getElementById('archivo_interventores')?.files;
+		const cruzarPoderes = this.$el.find("[name='cruzar_poderes']:checked").length;
+		const archivoInterventores = (document.getElementById('archivo_interventores') as HTMLInputElement)?.files;
 
-		if (!archivo_interventores || archivo_interventores.length === 0) {
+		if (!archivoInterventores || archivoInterventores.length === 0) {
 			target.removeAttr('disabled');
 			return;
 		}
 
-		const form_data = new FormData();
-		form_data.append('file', archivo_interventores[0]);
-		form_data.append('cruzar_poderes', _cruzar_poderes.toString());
+		const formData = new FormData();
+		formData.append('file', archivoInterventores[0]);
+		formData.append('cruzar_poderes', cruzarPoderes.toString());
 
-		// Mostrar loading
-		if (loading && typeof loading.show === 'function') {
-			loading.show();
-		}
+		try {
+			// Mostrar loading (simulado con trigger)
+			if (this.App && typeof this.App.trigger === 'function') {
+				this.App.trigger('loading:show');
+			}
 
-		$.ajax({
-			url: Utils.getURL('interventores/cargue_masivo'),
-			method: 'POST',
-			dataType: 'JSON',
-			cache: false,
-			data: form_data,
-			contentType: false,
-			processData: false,
-			beforeSend: (xhr: any) => {
-				if (loading && typeof loading.show === 'function') {
-					loading.show();
-				}
-			},
-		})
-			.done((salida: any) => {
-				if (loading && typeof loading.hide === 'function') {
-					loading.hide();
-				}
+			const response = await this.interventorService.__uploadMasivo(formData);
 
-				if (salida) {
-					if (Swal && typeof Swal.fire === 'function') {
-						Swal.fire({
-							title: 'Notificación!',
-							text: `Ya se completo el cargue de los habiles.\nRegistrados: ${salida.creados || 0}\nCantidad: ${salida.filas || 0}\nFallos: ${salida.fallidos || 0}`,
-							button: 'Continuar!',
-						});
-					}
+			if (this.App && typeof this.App.trigger === 'function') {
+				this.App.trigger('loading:hide');
+			}
 
-					// Resetear formulario
-					this.$el.find('#archivo_interventores').val('');
-					this.$el.find('#name_archivo').text('Seleccionar aquí...');
-					this.$el.find('#remover_archivo').attr('disabled', true);
-				}
-			})
-			.fail((err: any) => {
-				if (loading && typeof loading.hide === 'function') {
-					loading.hide();
-				}
-
-				if (Swal && typeof Swal.fire === 'function') {
-					Swal.fire({
-						title: 'Error!',
-						text: err.responseText || 'Error en el cargue',
-						button: 'Continuar!',
+			if (response && response.success) {
+				if (this.App && typeof this.App.trigger === 'function') {
+					this.App.trigger('alert:success', {
+						title: 'Notificación!',
+						text: `Ya se completo el cargue de los interventores.\nRegistrados: ${response.creados || 0}\nCantidad: ${response.filas || 0}\nFallos: ${response.fallidos || 0}`,
+						button: 'Continuar!'
 					});
 				}
 
 				// Resetear formulario
 				this.$el.find('#archivo_interventores').val('');
 				this.$el.find('#name_archivo').text('Seleccionar aquí...');
-				this.$el.find('#remover_archivo').attr('disabled', true);
-			});
+				this.$el.find('#remover_archivo').attr('disabled', 'true');
+			} else {
+				if (this.App && typeof this.App.trigger === 'function') {
+					this.App.trigger('alert:error', {
+						title: 'Error!',
+						text: response.msj || 'Error en el cargue',
+						button: 'Continuar!'
+					});
+				}
+
+				// Resetear formulario
+				this.$el.find('#archivo_interventores').val('');
+				this.$el.find('#name_archivo').text('Seleccionar aquí...');
+				this.$el.find('#remover_archivo').attr('disabled', 'true');
+			}
+		} catch (error: any) {
+			if (this.App && typeof this.App.trigger === 'function') {
+				this.App.trigger('loading:hide');
+				this.App.trigger('alert:error', {
+					title: 'Error!',
+					text: error.message || 'Error de conexión',
+					button: 'Continuar!'
+				});
+			}
+
+			this.logger?.error('Error en cargue masivo:', error);
+
+			// Resetear formulario
+			this.$el.find('#archivo_interventores').val('');
+			this.$el.find('#name_archivo').text('Seleccionar aquí...');
+			this.$el.find('#remover_archivo').attr('disabled', 'true');
+		} finally {
+			target.removeAttr('disabled');
+		}
 	}
 
 	/**
@@ -129,13 +141,13 @@ export default class InterventorCrear extends BackboneView {
 		e.preventDefault();
 		this.remove();
 
-		if ($App.router) {
-			$App.router.navigate('listar', { trigger: true, replace: true });
+		if (this.App && this.App.router) {
+			this.App.router.navigate('listar', { trigger: true, replace: true });
 		}
 	}
 
 	render(): this {
-		const template = _.template($('#tmp_cargar_interventores').html());
+		const template = _.template(this.template);
 		this.$el.html(template());
 		return this;
 	}

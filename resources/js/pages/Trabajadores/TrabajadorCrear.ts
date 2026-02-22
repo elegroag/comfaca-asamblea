@@ -2,61 +2,82 @@ import LayoutView from "@/componentes/trabajadores/views/LayoutView";
 import TrabajadoresNav from "@/componentes/trabajadores/views/TrabajadoresNav";
 import TrabajadorCrearView from "@/componentes/trabajadores/views/TrabajadorCrearView";
 import Trabajador from "@/componentes/trabajadores/models/Trabajador";
-import TrabajadorService from "@/componentes/trabajadores/services/TrabajadorService";
+import TrabajadorService from "./TrabajadorService";
+import { Controller } from "@/common/Controller";
+import { CommonDeps } from "@/types/CommonDeps";
 
-declare global {
-	var _: any;
-	var Backbone: any;
-	var $App: any;
+interface TrabajadorCrearOptions extends CommonDeps {
+    [key: string]: any;
 }
 
-interface TrabajadorCrearOptions {
-	[key: string]: any;
-}
+export default class TrabajadorCrear extends Controller {
+    private trabajadorService: TrabajadorService;
 
-export default class TrabajadorCrear {
-	layout: LayoutView;
-	region: any;
-	trabajadorService: TrabajadorService;
+    constructor(options: TrabajadorCrearOptions) {
+        super(options);
+        this.trabajadorService = new TrabajadorService({
+            api: options.api,
+            logger: options.logger,
+            app: options.app
+        });
+    }
 
-	constructor(options: TrabajadorCrearOptions = {}) {
-		_.extend(this, Backbone.Events);
-		_.extend(this, options);
-		this.trabajadorService = new TrabajadorService();
+    /**
+     * Crear trabajador
+     */
+    crearTrabajador(): void {
+        try {
+            const layout = new LayoutView();
+            this.region.show(layout);
 
-		this.listenTo(this, 'add:trabajador', this.trabajadorService.__addTrabajador);
-		this.listenTo(this, 'set:trabajador', this.trabajadorService.__setTrabajador);
-	}
+            const subheaderRegion = layout.getRegion('subheader');
+            if (subheaderRegion) {
+                subheaderRegion.show(
+                    new TrabajadoresNav({
+                        model: {
+                            titulo: 'Crear trabajador',
+                            listar: false,
+                            exportar: false,
+                            crear: false,
+                            editar: false,
+                            masivo: false,
+                            dataToggle: 'dropdown'
+                        },
+                        api: this.api,
+                        logger: this.logger,
+                        app: this.App
+                    })
+                );
+            }
 
-	crearTrabajador(): void {
-		this.layout = new LayoutView();
-		this.region.show(this.layout);
-		this.layout.getRegion('subheader').show(
-			new TrabajadoresNav({
-				model: {
-					titulo: 'Crear trabajador',
-					listar: false,
-					exportar: false,
-					crear: false,
-					editar: false,
-					masivo: false,
-				},
-			})
-		);
+            const bodyRegion = layout.getRegion('body');
+            if (bodyRegion) {
+                const view = new TrabajadorCrearView({
+                    model: new Trabajador({ isNew: true }),
+                    collection: (this.App as any).Collections.trabajadores,
+                    App: this.App,
+                    api: this.api,
+                    logger: this.logger,
+                    region: this.region,
+                });
 
-		const view = new TrabajadorCrearView({
-			model: new Trabajador({ isNew: true }),
-			collection: $App.Collections.trabajadores,
-		});
+                bodyRegion.show(view);
 
-		this.listenTo(view, 'remove:trabajador', this.trabajadorService.__removeTrabajador);
-		this.listenTo(view, 'form:save', this.trabajadorService.__saveTrabajador);
-		this.layout.getRegion('body').show(view);
-		(TrabajadoresNav as any).parentView = view;
-	}
+                // Conectar eventos con el servicio
+                this.listenTo(view, 'remove:trabajador', this.trabajadorService.__removeTrabajador.bind(this.trabajadorService));
+                this.listenTo(view, 'form:save', this.trabajadorService.__saveTrabajador.bind(this.trabajadorService));
 
-	destroy(): void {
-		this.region.remove();
-		this.stopListening();
-	}
+                (TrabajadoresNav as any).parentView = view;
+            }
+
+        } catch (error: any) {
+            this.logger?.error('Error al crear trabajador:', error);
+            this.App?.trigger('alert:error', error.message || 'Error al crear trabajador');
+        }
+    }
+
+    destroy(): void {
+        this.region.remove();
+        this.stopListening();
+    }
 }

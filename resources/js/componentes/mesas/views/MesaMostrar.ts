@@ -1,47 +1,47 @@
 import { BackboneView } from "@/common/Bone";
 import tmp_mostrar_mesa from "../templates/tmp_mostrar_mesa.hbs?raw";
 
-declare global {
-    var $: any;
-    var _: any;
-    var create_url: (path: string) => string;
-    var axios: {
-        get: (url: string) => Promise<any>;
-        post: (url: string, data: any) => Promise<any>;
-    };
-    var _model: {
-        mesa: any;
-    };
-    var $App: any;
-    // Variables globales que parecen ser usadas
-    var mesa_select_codigo: any;
-}
-
 interface MesaMostrarOptions {
     model?: any;
     mesas_disponibles?: any;
     asa_usuario?: any;
+    App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
+    [key: string]: any;
 }
 
 export default class MesaMostrar extends BackboneView {
-    template: string;
+    template: any;
     asamblea: any;
     mesa: any;
     mesas_disponibles?: any;
     asa_usuario?: any;
+    App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
 
-    constructor(options: MesaMostrarOptions = {}) {
+    constructor(options: MesaMostrarOptions) {
         super({
             ...options,
             id: 'box_mostrar_mesa',
             className: 'box',
         });
 
-        this.template = tmp_mostrar_mesa;
+        this.template = _.template(tmp_mostrar_mesa);
         this.asamblea = null;
-        this.mesa = null;
+        this.mesa = options.model;
         this.mesas_disponibles = options.mesas_disponibles;
         this.asa_usuario = options.asa_usuario;
+        this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
     }
 
     initialize(): void {
@@ -121,21 +121,34 @@ export default class MesaMostrar extends BackboneView {
             const mesaEstadoElement = this.$el.find('#mesa_estado');
 
             if (mesaCodigoElement.length && mesaEstadoElement.length) {
-                mesa = new _model.mesa({
-                    codigo: mesaCodigoElement.val(),
-                    cedtra_responsable: user.cedtra,
-                    estado: mesaEstadoElement.val(),
-                });
+                // Crear mesa con datos básicos - sin dependencia global _model
+                mesa = {
+                    get: (key: string) => {
+                        const data: any = {
+                            codigo: mesaCodigoElement.val(),
+                            cedtra_responsable: user.cedtra,
+                            estado: mesaEstadoElement.val(),
+                            id: Date.now().toString() // ID temporal
+                        };
+                        return data[key];
+                    },
+                    toJSON: () => ({
+                        codigo: mesaCodigoElement.val(),
+                        cedtra_responsable: user.cedtra,
+                        estado: mesaEstadoElement.val(),
+                        id: Date.now().toString()
+                    })
+                };
                 create_mesa = 1;
             } else {
-                console.error('Elementos del formulario no encontrados');
+                this.logger?.error('Elementos del formulario no encontrados');
                 target.removeAttr('disabled');
                 return;
             }
         }
 
         if (!mesa || typeof mesa.get !== 'function') {
-            console.error('Mesa no válida o sin método get');
+            this.logger?.error('Mesa no válida o sin método get');
             target.removeAttr('disabled');
             return;
         }

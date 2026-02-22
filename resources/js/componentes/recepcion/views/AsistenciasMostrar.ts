@@ -1,165 +1,155 @@
 import { BackboneView } from "@/common/Bone";
-
-declare global {
-	var $: any;
-	var _: any;
-	var $App: any;
-	var create_url: (path: string) => string;
-	var RouterRecepcion: any;
-	var Poder: any;
-	var EmpresasCollection: any;
-	var Empresa: any;
-	var RechazoEmpresaView: any;
-}
+import EmpresasCollection from "@/collections/EmpresasCollection";
+import Poder from "@/models/Poder";
+import Empresa from "@/models/Empresa";
+import RechazoEmpresaView from "./RechazoEmpresaView";
+import RouterRecepcion from "@/pages/Recepcion/RouterRecepcion";
+import RecepcionService from "@/pages/Recepcion/RecepcionService";
+import mostrar from "@/componentes/recepcion/templates/mostrar.hbs?raw";
 
 interface AsistenciasMostrarOptions {
-	model?: any;
-	collection?: any[];
-	App?: any;
-	[key: string]: any;
+    model?: any;
+    collection?: any[];
+    App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
+    [key: string]: any;
 }
 
 export default class AsistenciasMostrar extends BackboneView {
-	template!: string;
-	App: any;
-	tieneIncripcion: boolean | null;
-	modalView: any;
-	empresas: any[];
+    template: any;
+    App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
+    recepcionService: RecepcionService;
+    tieneIncripcion: boolean | null;
+    modalView: any;
+    empresas: any[];
 
-	constructor(options: AsistenciasMostrarOptions = {}) {
-		super(options);
-		this.App = options.App;
-		this.tieneIncripcion = null;
-		this.modalView = null;
-	}
+    constructor(options: AsistenciasMostrarOptions) {
+        super(options);
+        this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.template = _.template(mostrar);
+        this.tieneIncripcion = null;
+        this.modalView = null;
+        this.empresas = [];
+        this.recepcionService = new RecepcionService({
+            api: this.api,
+            logger: this.logger,
+            app: this.App
+        });
+    }
 
-	initialize() {
-		this.template = $('#tmp_mostrar_datos').html();
-	}
+    async fichaIngreso(e: Event) {
+        e.preventDefault();
+        const cedrep = this.model.get('cedrep');
 
-	fichaIngreso(e: JQuery.Event) {
-		e.preventDefault();
-		const cedrep = this.model.get('cedrep');
-		$App.trigger('confirma', {
-			message: '¡Confirmar la acción de registro de ingreso a la Asamblea!',
-			callback: (success: boolean) => {
-				if (success) {
-					$App.trigger('syncro', {
-						url: create_url('recepcion/crearAsistencia'),
-						data: {
-							cedrep: cedrep,
-						},
-						callback: (response: any) => {
-							if (response.success) {
-								this.trigger('add:representante', this.model);
-								$App.trigger('success', response.msj);
-								$App.router.navigate('ficha/' + cedrep, { trigger: true });
-							} else {
-								$App.trigger('warning', response.msj);
-							}
-						},
-					});
-				}
-			},
-		});
-		return false;
-	}
+        if (this.App && typeof this.App.trigger === 'function') {
+            this.App.trigger('confirma', {
+                message: '¡Confirmar la acción de registro de ingreso a la Asamblea!',
+                callback: async (success: boolean) => {
+                    if (success) {
+                        try {
+                            const response = await this.recepcionService.__crearAsistencia({ cedrep });
 
-	crearIngreso(e: JQuery.Event) {
-		e.preventDefault();
-		var cedrep = this.model.get('cedrep');
-		RouterRecepcion.setRepresentante(this.model.toJSON());
-		$App.router.navigate('validacion/' + cedrep, { trigger: true });
-		return false;
-	}
+                            if (response.success) {
+                                this.trigger('add:representante', this.model);
+                                if (this.App && typeof this.App.trigger === 'function') {
+                                    this.App.trigger('alert:success', { message: response.msj });
+                                }
+                                if (this.App && this.App.router) {
+                                    this.App.router.navigate('ficha/' + cedrep, { trigger: true });
+                                }
+                            } else {
+                                if (this.App && typeof this.App.trigger === 'function') {
+                                    this.App.trigger('alert:warning', { message: response.msj });
+                                }
+                            }
+                        } catch (error: any) {
+                            this.logger?.error('Error al crear asistencia:', error);
+                            if (this.App && typeof this.App.trigger === 'function') {
+                                this.App.trigger('alert:error', { message: 'Ocurrió un error al crear la asistencia' });
+                            }
+                        }
+                    }
+                },
+            });
+        }
+        return false;
+    }
 
-	events() {
-		return {
-			'click #bt_ficha_ingreso': 'fichaIngreso',
-			'click #bt_crear_ingreso': 'crearIngreso',
-			"click [data-toggle='bt_rechazo']": 'mostrarRechazo',
-		};
-	}
+    crearIngreso(e: Event) {
+        e.preventDefault();
+        const cedrep = this.model.get('cedrep');
+        if (this.App && typeof this.App.trigger === 'function') {
+            this.App.trigger('set:representante', this.model.toJSON());
+            this.App.trigger('navigate', 'validacion/' + cedrep);
+        }
+        return false;
+    }
 
-	render() {
-		const _template = _.template(this.template);
-		const { empresas, asistencias, poder, poderes } = this.collection[0];
+    events() {
+        return {
+            'click #bt_ficha_ingreso': 'fichaIngreso',
+            'click #bt_crear_ingreso': 'crearIngreso',
+            "click [data-toggle='bt_rechazo']": 'mostrarRechazo',
+        };
+    }
 
-		const habiles = _.filter(empresas.toJSON(), (empresa: any) => {
-			return empresa.estado == 'A' || empresa.estado == 'P' ? empresa : null;
-		});
+    render() {
+        const _template = _.template(this.template);
+        const { empresas, asistencias, poder, poderes } = this.collection[0];
 
-		this.empresas = _.sortBy(empresas.toJSON(), 'inscripcion_estado');
+        const habiles = _.filter(empresas.toJSON(), (empresa: any) => {
+            return empresa.estado == 'A' || empresa.estado == 'P' ? empresa : null;
+        });
 
-		const inscripciones = _.where(this.empresas, { tiene_incripcion: 1 });
+        this.empresas = _.sortBy(empresas.toJSON(), 'inscripcion_estado');
 
-		this.tieneIncripcion = _.size(inscripciones) > 0 && _.size(habiles) > 0 ? true : false;
+        const inscripciones = _.where(this.empresas, { tiene_incripcion: 1 });
 
-		this.$el.html(
-			_template({
-				representante: this.model.toJSON(),
-				empresas: this.empresas,
-				tiene_incripcion: this.tieneIncripcion,
-				poder: poder instanceof Poder ? poder.toJSON() : poder,
-				poderes: poderes instanceof EmpresasCollection ? poderes.toJSON() : poderes,
-			})
-		);
-		return this;
-	}
+        this.tieneIncripcion = _.size(inscripciones) > 0 && _.size(habiles) > 0 ? true : false;
 
-	mostrarRechazo(e: JQuery.Event) {
-		e.preventDefault();
-		const nit = this.$el.find(e.currentTarget).attr('data-cid');
-		const cedrep = this.model.get('cedrep');
+        this.$el.html(
+            _template({
+                representante: this.model.toJSON(),
+                empresas: this.empresas,
+                tiene_incripcion: this.tieneIncripcion,
+                poder: poder instanceof Poder ? poder.toJSON() : poder,
+                poderes: poderes instanceof EmpresasCollection ? poderes.toJSON() : poderes,
+            })
+        );
+        return this;
+    }
 
-		$App.trigger('syncro', {
-			url: create_url('recepcion/rechazo'),
-			data: {
-				cedrep,
-				nit,
-			},
-			callback: (response: any) => {
-				if (response) {
-					const empresa = new Empresa(response.empresa);
-					this.modalView = new RechazoEmpresaView({ model: empresa, collection: response.rechazos });
-					$App.trigger('show:modal', 'Detalle Rechazo Emprea', this.modalView, { bootstrapSize: 'modal-md' });
-				} else {
-				}
-			},
-		});
-	}
-}
+    async mostrarRechazo(e: Event) {
+        e.preventDefault();
+        const nit = this.$el.find(e.currentTarget).attr('data-cid');
+        const cedrep = this.model.get('cedrep');
 
-class RechazoEmpresaView extends BackboneView {
-	template!: string;
+        try {
+            const response = await this.recepcionService.__obtenerRechazo({ cedrep, nit });
 
-	constructor(options: any) {
-		super(options);
-	}
-
-	initialize(options: any) {
-		this.template = $('#tmp_rechazo_detalle').html();
-	}
-
-	events() {
-		return {
-			'click #bt_close': 'closeModal',
-		};
-	}
-
-	render() {
-		const _template = _.template(this.template);
-		this.$el.html(
-			_template({
-				empresa: this.model.toJSON(),
-				rechazos: this.collection,
-			})
-		);
-		return this;
-	}
-
-	closeModal(e: JQuery.Event) {
-		e.preventDefault();
-		$App.trigger('hide:modal', this);
-	}
+            if (response && response.success) {
+                const empresa = new Empresa(response.data.empresa);
+                this.modalView = new RechazoEmpresaView({ model: empresa, collection: response.data.rechazos });
+                if (this.App && typeof this.App.trigger === 'function') {
+                    this.App.trigger('show:modal', 'Detalle Rechazo Empresa', this.modalView, { bootstrapSize: 'modal-md' });
+                }
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al obtener rechazo:', error);
+            if (this.App && typeof this.App.trigger === 'function') {
+                this.App.trigger('alert:error', { message: 'Ocurrió un error al obtener el rechazo' });
+            }
+        }
+    }
 }

@@ -1,26 +1,46 @@
 import { BackboneView } from "@/common/Bone";
-
-declare global {
-    var _: any;
-    var RechazosNav: any;
-    var Empresa: any;
-}
+import RechazosNav from "./RechazosNav";
+import RechazoService from "@/pages/Rechazos/RechazoService";
+import editar from "@/componentes/rechazos/templates/editar.hbs?raw";
 
 interface RechazoEditarViewOptions {
+    model?: any;
+    App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
 export default class RechazoEditarView extends BackboneView {
     model: any;
-    template!: string;
-    $el: any;
+    template: any;
+    App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
+    rechazoService: RechazoService;
 
     constructor(options: RechazoEditarViewOptions) {
         super(options);
+        this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.model = options.model;
+        this.template = _.template(editar);
+        this.rechazoService = new RechazoService({
+            api: this.api,
+            logger: this.logger,
+            app: this.App
+        });
     }
 
     initialize() {
-        this.template = $('#tmp_edita_empresa').html();
+        // Template ya inicializado en el constructor
     }
 
     get events() {
@@ -28,15 +48,15 @@ export default class RechazoEditarView extends BackboneView {
     }
 
     render() {
-        let _template = _.template(this.template);
-        let model = this.serealizeData();
+        const _template = _.template(this.template);
+        const model = this.serealizeData();
         this.$el.html(_template(model));
         this.subNav();
         return this;
     }
 
     subNav() {
-        let subnav = new RechazosNav({
+        const subnav = new RechazosNav({
             model: this.model,
             dataToggle: {
                 listar: true,
@@ -52,16 +72,16 @@ export default class RechazoEditarView extends BackboneView {
     }
 
     serealizeData(): any {
-        var data = this.model ? this.model.toJSON() : {};
+        const data = this.model ? this.model.toJSON() : {};
         return data;
     }
 
-    editaRegistro(e: any) {
+    async editaRegistro(e: Event) {
         e.preventDefault();
-        let target = $(e.currentTarget);
+        const target = this.$el.find(e.currentTarget);
         target.attr('disabled', 'true');
 
-        const model = new Empresa({
+        const modelData = {
             nit: parseInt(this.getInput('nit')),
             cedrep: parseInt(this.getInput('cedrep')),
             repleg: this.getInput('repleg'),
@@ -70,15 +90,43 @@ export default class RechazoEditarView extends BackboneView {
             razsoc: this.getInput('razsoc'),
             crear_pre_registro: this.getCheck('crear_pre_registro'),
             cruzar_cartera: this.getCheck('cruzar_cartera'),
-        });
+        };
 
-        this.trigger('form:edit', {
-            model: model,
-            callback: (success: any) => {
-                target.removeAttr('disabled');
-                this.trigger('item:edit', model);
-            },
-        });
+        try {
+            const response = await this.rechazoService.__actualizarRechazo(modelData);
+
+            target.removeAttr('disabled');
+
+            if (response && response.success) {
+                this.trigger('item:edit', modelData);
+
+                if (this.App && typeof this.App.trigger === 'function') {
+                    this.App.trigger('alert:success', {
+                        title: 'Éxito',
+                        text: 'Rechazo actualizado correctamente',
+                        button: 'OK!'
+                    });
+                }
+            } else {
+                if (this.App && typeof this.App.trigger === 'function') {
+                    this.App.trigger('alert:error', {
+                        title: 'Error',
+                        text: response.msj || 'Error al actualizar el rechazo',
+                        button: 'OK!'
+                    });
+                }
+            }
+        } catch (error: any) {
+            target.removeAttr('disabled');
+            this.logger?.error('Error al actualizar rechazo:', error);
+            if (this.App && typeof this.App.trigger === 'function') {
+                this.App.trigger('alert:error', {
+                    title: 'Error',
+                    text: 'Ocurrió un error al actualizar el rechazo',
+                    button: 'OK!'
+                });
+            }
+        }
     }
 
     getInput(selector: string): string {

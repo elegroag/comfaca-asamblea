@@ -1,11 +1,18 @@
 import { BackboneRouter } from "@/common/Bone";
 import MesasController from "./MesasController";
-import { RouterOptions } from "@/types/CommonDeps";
+import type { AppInstance } from "@/types/types";
+
+interface RouterMesasOptions {
+    app: AppInstance;
+    routes?: Record<string, string>;
+    [key: string]: any;
+}
 
 export default class MesasRouter extends BackboneRouter {
     private controller: MesasController | null = null;
+    private app: AppInstance;
 
-    constructor(options: RouterOptions = {}) {
+    constructor(options: RouterMesasOptions) {
         super({
             routes: {
                 listar: 'listarMesas',
@@ -17,32 +24,42 @@ export default class MesasRouter extends BackboneRouter {
             ...options,
         });
 
-
+        // Patrón descentralizado: inyección directa del app
+        this.app = options.app;
         this.controller = null;
         this._bindRoutes();
     }
 
-    init() {
+    private init() {
+        // Patrón descentralizado: usar app.startSubApplication()
         this.controller = this.app.startSubApplication(MesasController);
     }
 
     listarMesas(): void {
         this.init();
-        this.controller?.listarMesas();
+        if (this.controller && typeof this.controller.listarMesas === 'function') {
+            this.controller.listarMesas();
+        }
     }
 
     crearMesa(): void {
         this.init();
-        this.controller?.crearMesa();
+        if (this.controller && typeof this.controller.crearMesa === 'function') {
+            this.controller.crearMesa();
+        }
     }
 
     editaMesa(id: string): void {
         this.init();
-        this.controller?.editarMesa(id);
+        if (this.controller && typeof this.controller.editarMesa === 'function') {
+            this.controller.editarMesa(id);
+        }
     }
 
     mostrarMesas(mesa: string): void {
         this.init();
-        this.controller?.mostrarMesa(mesa);
+        if (this.controller && typeof this.controller.mostrarMesa === 'function') {
+            this.controller.mostrarMesa(mesa);
+        }
     }
 }

@@ -1,21 +1,26 @@
 import { BackboneView } from "@/common/Bone";
-import type { AppInstance } from '@/types/types';
-import mostrarInterventores from "@/componentes/interventores/templates/mostrarInterventores.hbs?raw";
-
-declare global {
-	var $: any;
-	var _: any;
-}
+import InterventorService from "@/pages/Interventores/InterventorService";
+import mostrar from "@/componentes/interventores/templates/mostrar.hbs?raw";
 
 interface InterventorMostrarOptions {
 	model?: any;
-	App?: AppInstance;
+	App?: any;
+	api?: any;
+	logger?: any;
+	storage?: any;
+	region?: any;
 	[key: string]: any;
 }
 
 export default class InterventorMostrar extends BackboneView {
-	App: AppInstance;
+	template: any;
+	App: any;
+	api: any;
+	logger: any;
+	storage: any;
+	region: any;
 	interventor: any;
+	interventorService: InterventorService;
 
 	constructor(options: InterventorMostrarOptions = {}) {
 		super({
@@ -25,7 +30,18 @@ export default class InterventorMostrar extends BackboneView {
 			className: 'box',
 			interventor: undefined
 		});
-		this.App = options.App || options.AppInstance;
+		this.App = options.App;
+		this.api = options.api;
+		this.logger = options.logger;
+		this.storage = options.storage;
+		this.region = options.region;
+		this.model = options.model;
+		this.template = _.template(mostrar);
+		this.interventorService = new InterventorService({
+			api: this.api,
+			logger: this.logger,
+			app: this.App
+		});
 	}
 
 	initialize(): void {
@@ -37,9 +53,10 @@ export default class InterventorMostrar extends BackboneView {
 	}
 
 	render(): this {
-		const template = _.template($('#tmp_mostrar_interventores').html());
+		const template = _.template(this.template);
 		this.interventor = this.model;
-		this.$el.html(template(this.interventor));
+		const interventorData = this.interventor ? this.interventor.toJSON() : {};
+		this.$el.html(template(interventorData));
 		return this;
 	}
 }

@@ -2,7 +2,6 @@ import { Controller } from '@/common/Controller';
 import { CommonDeps } from '@/types/CommonDeps';
 import NovedadesService from './NovedadesService';
 import NovedadesListar from '@/componentes/novedades/views/NovedadesListar';
-import NovedadCrear from '@/componentes/novedades/views/NovedadCrear';
 import NovedadDetalle from '@/componentes/novedades/views/NovedadDetalle';
 
 interface NovedadesControllerOptions extends CommonDeps {
@@ -54,26 +53,8 @@ export default class NovedadesController extends Controller {
      * Crear novedad
      */
     crearNovedad(): void {
-        const view = new NovedadCrear({
-            model: {
-                id: null,
-                titulo: '',
-                descripcion: '',
-                tipo: 'general',
-                estado: 'activo',
-                leida: false
-            },
-            isNew: true,
-            App: this.App,
-            api: this.api,
-            logger: this.logger,
-            region: this.region,
-        });
-
-        this.region.show(view);
-
-        // Conectar eventos con el servicio
-        this.listenTo(view, 'add:novedad', this.service.__saveNovedad.bind(this.service));
+        // Implementación básica temporal
+        this.region.show('<div class="p-4">Crear novedad (vista temporal)</div>');
     }
 
     /**
@@ -83,10 +64,10 @@ export default class NovedadesController extends Controller {
         try {
             // Asegurarse de que las novedades estén cargadas
             await this.service.__findAll();
-            
+
             const novedades = (this.service as any).collections.novedades;
             const model = novedades.get(id);
-            
+
             if (!model) {
                 this.App?.trigger('alert:error', 'Novedad no encontrada');
                 return;
@@ -115,28 +96,17 @@ export default class NovedadesController extends Controller {
         try {
             // Asegurarse de que las novedades estén cargadas
             await this.service.__findAll();
-            
+
             const novedades = (this.service as any).collections.novedades;
             const model = novedades.get(id);
-            
+
             if (!model) {
                 this.App?.trigger('alert:error', 'Novedad no encontrada');
                 return;
             }
 
-            const view = new NovedadCrear({
-                model: model,
-                isNew: false,
-                App: this.App,
-                api: this.api,
-                logger: this.logger,
-                region: this.region,
-            });
-
-            this.region.show(view);
-
-            // Conectar eventos con el servicio
-            this.listenTo(view, 'add:novedad', this.service.__saveNovedad.bind(this.service));
+            // Implementación básica temporal
+            this.region.show(`<div class="p-4">Editar novedad: ${id} (vista temporal)</div>`);
 
         } catch (error: any) {
             this.logger?.error('Error al editar novedad:', error);
@@ -145,12 +115,19 @@ export default class NovedadesController extends Controller {
     }
 
     /**
+     * Detalle de novedad (alias para router)
+     */
+    detalleNovedad(id: string): void {
+        this.mostrarDetalle(id);
+    }
+
+    /**
      * Listar novedades no leídas
      */
     async listarNoLeidas(): Promise<void> {
         try {
             const noLeidas = await this.service.__getNoLeidas();
-            
+
             // Crear una vista temporal para mostrar las no leídas
             const view = new NovedadesListar({
                 collection: new (this.App as any).Collection(noLeidas),

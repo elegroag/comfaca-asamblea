@@ -1,19 +1,17 @@
 import { BackboneView } from "@/common/Bone";
-
-declare global {
-	var _: any;
-}
+import tmp_detalle_rechazo from '../templates/tmp_detalle_rechazo.hbs?raw';
+import { ModelView } from "@/common/ModelView";
 
 interface RechazoDetalleViewOptions {
-	[key: string]: any;
+    [key: string]: any;
 }
 
-export default class RechazoDetalleView extends BackboneView {
-	subNavView: any;
-	template!: any;
+export default class RechazoDetalleView extends ModelView {
+    subNavView: any;
+    template!: any;
 
-	constructor(options: RechazoDetalleViewOptions) {
-		super(options);
-		this.template = _.template($('#tmp_detalle_rechazo').html());
-	}
+    constructor(options: RechazoDetalleViewOptions) {
+        super(options);
+        this.template = _.template(tmp_detalle_rechazo);
+    }
 }

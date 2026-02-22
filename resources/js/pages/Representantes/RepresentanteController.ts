@@ -1,7 +1,7 @@
 import { Controller } from '@/common/Controller';
 import { CommonDeps } from '@/types/CommonDeps';
 import RepresentanteService from './RepresentanteService';
-import RepresentantesListar from '@/componentes/representantes/views/RepresentantesListar';
+import RepresentantesListar from '@/componentes/representantes/views/RepresentanteListar';
 import RepresentanteCrear from '@/componentes/representantes/views/RepresentanteCrear';
 import RepresentanteMostrar from '@/componentes/representantes/views/RepresentanteMostrar';
 
@@ -83,10 +83,10 @@ export default class RepresentanteController extends Controller {
         try {
             // Asegurarse de que los representantes estén cargados
             await this.service.__findAll();
-            
+
             const representantes = (this.service as any).collections.representantes;
             const model = representantes.get(id);
-            
+
             if (!model) {
                 this.App?.trigger('alert:error', 'Representante no encontrado');
                 return;
@@ -115,10 +115,10 @@ export default class RepresentanteController extends Controller {
         try {
             // Asegurarse de que los representantes estén cargados
             await this.service.__findAll();
-            
+
             const representantes = (this.service as any).collections.representantes;
             const model = representantes.get(id);
-            
+
             if (!model) {
                 this.App?.trigger('alert:error', 'Representante no encontrado');
                 return;
@@ -142,6 +142,13 @@ export default class RepresentanteController extends Controller {
             this.logger?.error('Error al editar representante:', error);
             this.App?.trigger('alert:error', error.message || 'Error al cargar representante');
         }
+    }
+
+    /**
+     * Editar representante (alias para router)
+     */
+    editaRepresentante(cedula: string): void {
+        this.editarRepresentante(cedula);
     }
 
     /**
@@ -178,7 +185,7 @@ export default class RepresentanteController extends Controller {
     async buscarRepresentantes(criterio: string): Promise<void> {
         try {
             const representantes = await this.service.__buscarRepresentantes(criterio);
-            
+
             // Crear una vista temporal para mostrar los resultados
             const view = new RepresentantesListar({
                 collection: new (this.App as any).Collection(representantes),

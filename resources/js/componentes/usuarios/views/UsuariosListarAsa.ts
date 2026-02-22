@@ -1,25 +1,42 @@
 import { BackboneView } from "@/common/Bone";
-import tmp_usuarios_asa from "../templates/tmp_usuarios_asa.hbs?raw";
-
-declare global {
-	var $: any;
-	var _: any;
-	var Swal: any;
-	var $App: any;
-	var create_url: (path: string) => string;
-}
+import UsuarioService from "@/pages/Usuarios/UsuarioService";
+import usuariosAsa from "@/componentes/usuarios/templates/usuarios-asa.hbs?raw";
 
 interface UsuariosListarAsaOptions {
 	model?: any;
 	collection?: any;
+	App?: any;
+	api?: any;
+	logger?: any;
+	storage?: any;
+	region?: any;
+	[key: string]: any;
 }
 
 export default class UsuariosListarAsa extends BackboneView {
-	template: string;
+	template: any;
+	App: any;
+	api: any;
+	logger: any;
+	storage: any;
+	region: any;
+	usuarioService: UsuarioService;
 
 	constructor(options: UsuariosListarAsaOptions = {}) {
 		super({ ...options, className: 'box', id: 'box_usuarios' });
-		this.template = tmp_usuarios_asa;
+		this.App = options.App;
+		this.api = options.api;
+		this.logger = options.logger;
+		this.storage = options.storage;
+		this.region = options.region;
+		this.model = options.model;
+		this.collection = options.collection;
+		this.template = _.template(usuariosAsa);
+		this.usuarioService = new UsuarioService({
+			api: this.api,
+			logger: this.logger,
+			app: this.App
+		});
 	}
 
 	initialize(): void {
@@ -31,7 +48,7 @@ export default class UsuariosListarAsa extends BackboneView {
 		const modelData = this.model ? this.model.toJSON() : {};
 		const collectionData = this.collection ? this.collection.toJSON() : [];
 
-		$(this.el).html(template({
+		this.$el.html(template({
 			asamblea: modelData,
 			usuarios: collectionData,
 		}));
@@ -46,13 +63,13 @@ export default class UsuariosListarAsa extends BackboneView {
 		};
 	}
 
-	remove_usuario(e: Event): void {
+	async remove_usuario(e: Event): Promise<void> {
 		e.preventDefault();
 
-		const target = this.$el.find(e.currentTarget as HTMLElement);
+		const target = this.$el.find(e.currentTarget);
 		target.attr('disabled', 'true');
 
-		const id = $(e.currentTarget as HTMLElement).attr('data-code') as string;
+		const id = target.attr('data-code') as string;
 
 		if (!id) {
 			console.error('ID de usuario no encontrado');
@@ -60,40 +77,43 @@ export default class UsuariosListarAsa extends BackboneView {
 			return;
 		}
 
-		if ($App && typeof $App.trigger === 'function') {
-			$App.trigger('confirma', {
+		if (this.App && typeof this.App.trigger === 'function') {
+			this.App.trigger('confirma', {
 				message: 'Se requiere de confirmar para borrar el registro seleccionado.',
-				callback: (status: boolean) => {
+				callback: async (status: boolean) => {
 					if (status) {
-						const url = create_url('admin/remover_usuario/' + id);
+						try {
+							const response = await this.usuarioService.__removeUsuario(id);
+							target.removeAttr('disabled');
 
-						$App.trigger('syncro', {
-							url,
-							data: {},
-							callback: (response: any) => {
-								target.removeAttr('disabled');
-
-								if (!response.usuario) {
-									Swal.fire({
-										title: 'Notificación!',
-										text: response.errors || 'Error al eliminar usuario',
-										icon: 'error',
-										confirmButtonText: 'Continuar!',
-									});
-								} else {
-									Swal.fire({
-										title: 'Notificación!',
-										text: 'La operación se completó con éxito',
-										icon: 'success',
-										confirmButtonText: 'Continuar!',
-									});
-								}
+							if (!response || !response.success) {
+								this.App.trigger('alert:error', {
+									title: 'Notificación!',
+									text: response?.msj || 'Error al eliminar usuario',
+									icon: 'error',
+									button: 'Continuar!'
+								});
+							} else {
+								this.App.trigger('alert:success', {
+									title: 'Notificación!',
+									text: 'La operación se completó con éxito',
+									icon: 'success',
+									button: 'Continuar!'
+								});
 
 								setTimeout(() => {
 									window.location.reload();
 								}, 1000);
-							},
-						});
+							}
+						} catch (error: any) {
+							target.removeAttr('disabled');
+							this.logger?.error('Error al eliminar usuario:', error);
+							this.App.trigger('alert:error', {
+								title: 'Error!',
+								text: error.message || 'Error de conexión',
+								button: 'Continuar!'
+							});
+						}
 					} else {
 						target.removeAttr('disabled');
 					}
@@ -107,15 +127,16 @@ export default class UsuariosListarAsa extends BackboneView {
 	detalle_poder(e: Event): void {
 		e.preventDefault();
 
-		const documento = $(e.currentTarget as HTMLElement).attr('data-code') as string;
+		const target = this.$el.find(e.currentTarget);
+		const documento = target.attr('data-code') as string;
 
 		if (!documento) {
 			console.error('Documento no encontrado');
 			return;
 		}
 
-		if ($App.router) {
-			$App.router.navigate('mostrar/' + documento, { trigger: true, replace: true });
+		if (this.App && this.App.router) {
+			this.App.router.navigate('mostrar/' + documento, { trigger: true, replace: true });
 		}
 	}
 }

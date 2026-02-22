@@ -1,4 +1,5 @@
 import { BackboneView } from "@/common/Bone";
+import tmp_ficha_ingreso from '@/templates/recepcion/ficha_ingreso.hbs?raw';
 
 interface AsistenciasFichaOptions {
     model?: any;
@@ -26,7 +27,7 @@ export default class AsistenciasFicha extends BackboneView {
         this.poder = void 0;
         this.votos = void 0;
         this.empresas = void 0;
-        this.template = $('#tmp_ficha_ingreso').html();
+        this.template = tmp_ficha_ingreso;
     }
 
     render() {
@@ -55,7 +56,7 @@ export default class AsistenciasFicha extends BackboneView {
         };
     }
 
-    imprimirFicha(e: JQuery.Event) {
+    imprimirFicha(e: Event) {
         e.preventDefault();
         const cedrep = this.model.get('cedrep');
         const anchor = document.createElement('a');
@@ -64,9 +65,9 @@ export default class AsistenciasFicha extends BackboneView {
         anchor.click();
     }
 
-    ingresoPoderManual(e: JQuery.Event) {
+    ingresoPoderManual(e: Event) {
         e.preventDefault();
-        $(e.target).attr('disabled', true);
+        this.$el.find(e.target).attr('disabled', true);
         const cedrep = this.model.get('cedrep');
         const nit_poder = this.poder.nit2;
         const documento_poder = this.poder.documento;
@@ -86,7 +87,7 @@ export default class AsistenciasFicha extends BackboneView {
                         url,
                         data: token,
                         callback: (response: any) => {
-                            $(e.target).removeAttr('disabled');
+                            this.$el.find(e.target).removeAttr('disabled');
                             if (response.success) {
                                 $App.trigger('success', 'El registro se completo con éxito.');
                                 Backbone.history.loadUrl();

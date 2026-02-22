@@ -1,121 +1,115 @@
 import { BackboneView } from "@/common/Bone";
 import tmp_cargar_usuarios from "../templates/tmp_cargar_usuarios.hbs?raw";
-
-declare global {
-	var $: any;
-	var _: any;
-	var Swal: any;
-	var create_url: (path: string) => string;
-	var loading: {
-		show: () => void;
-		hide: () => void;
-	};
-}
+import UsuarioService from "@/pages/Usuarios/UsuarioService";
+import Loading from "@/common/Loading";
 
 interface UsuariosCargueOptions {
-	model?: any;
-	collection?: any;
+    model?: any;
+    collection?: any;
+    api?: any;
+    logger?: any;
+    app?: any;
 }
 
 export default class UsuariosCargue extends BackboneView {
-	template: string;
+    template: string;
+    api: any;
+    logger: any;
+    app: any;
+    usuarioService: UsuarioService;
 
-	constructor(options: UsuariosCargueOptions = {}) {
-		super({ ...options, className: 'box', id: 'box_cargue_usuarios' });
-		this.template = tmp_cargar_usuarios;
-	}
+    constructor(options: UsuariosCargueOptions = {}) {
+        super({ ...options, className: 'box', id: 'box_cargue_usuarios' });
+        this.template = tmp_cargar_usuarios;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.app = options.app;
 
-	initialize(): void {
-		// Template ya está asignado en el constructor
-	}
+        // Inicializar el servicio con las dependencias
+        this.usuarioService = new UsuarioService({
+            api: this.api,
+            logger: this.logger,
+            app: this.app
+        });
+    }
 
-	render(): this {
-		const template = _.template(this.template);
-		this.$el.html(template());
-		return this;
-	}
+    initialize(): void {
+        // Template ya está asignado en el constructor
+    }
 
-	get events(): Record<string, (e: Event) => void> {
-		return {
-			"click [data-toggle-file='searchfile']": this.searchFile,
-			'click #remover_archivo': this.removerArchivo,
-			'click #bt_hacer_cargue': this.hacerCargue,
-		};
-	}
+    render(): this {
+        const template = _.template(this.template);
+        this.$el.html(template());
+        return this;
+    }
 
-	hacerCargue(e: Event): void {
-		e.preventDefault();
+    get events(): Record<string, (e: Event) => void> {
+        return {
+            "click [data-toggle-file='searchfile']": this.searchFile,
+            'click #remover_archivo': this.removerArchivo,
+            'click #bt_hacer_cargue': this.hacerCargue,
+        };
+    }
 
-		const target = $(e.currentTarget as HTMLElement);
-		target.attr('disabled', 'true');
+    async hacerCargue(e: Event): Promise<void> {
+        e.preventDefault();
 
-		const archivoUploadElement = document.getElementById('archivo_usuarios') as HTMLInputElement;
-		const archivoUpload = archivoUploadElement?.files;
+        const target = $(e.currentTarget as HTMLElement);
+        target.attr('disabled', 'true');
 
-		if (!archivoUpload || archivoUpload.length === 0) {
-			target.removeAttr('disabled');
-			return;
-		}
+        const archivoUploadElement = document.getElementById('archivo_usuarios') as HTMLInputElement;
+        const archivoUpload = archivoUploadElement?.files;
 
-		const formData = new FormData();
-		formData.append('file', archivoUpload[0]);
+        if (!archivoUpload || archivoUpload.length === 0) {
+            target.removeAttr('disabled');
+            return;
+        }
 
-		const url = create_url('usuarios/cargueMasivo');
+        try {
+            Loading.show();
 
-		$.ajax({
-			url: url,
-			method: 'POST',
-			dataType: 'JSON',
-			cache: false,
-			data: formData,
-			contentType: false,
-			processData: false,
-			beforeSend: (xhr: any) => {
-				loading.show();
-			},
-		})
-			.done((salida: any) => {
-				loading.hide();
+            // Delegar al service para el cargue masivo
+            const resultado = await this.usuarioService.cargarUsuariosApi(archivoUpload[0]);
 
-				if (salida) {
-					Swal.fire({
-						title: 'Notificación!',
-						text: `Ya se completó el cargue de los usuarios.\nRegistrados: ${salida.creados || 0}\nCantidad: ${salida.filas || 0}\nFallos: ${salida.fallidos || 0}`,
-						confirmButtonText: 'Continuar!',
-					});
+            Loading.hide();
 
-					this.$el.find('#archivo_habiles').val('');
-					this.$el.find('#name_archivo').text('Seleccionar aquí...');
-					this.$el.find('#remover_archivo').attr('disabled', 'true');
-				}
-			})
-			.fail((err: any) => {
-				loading.hide();
-				Swal.fire({
-					title: 'Error!',
-					text: err.responseText || 'Ocurrió un error durante el cargue',
-					confirmButtonText: 'Continuar!',
-				});
+            if (resultado) {
+                Swal.fire({
+                    title: 'Notificación!',
+                    text: `Ya se completó el cargue de los usuarios.\nRegistrados: ${resultado.creados || 0}\nCantidad: ${resultado.filas || 0}\nFallos: ${resultado.fallidos || 0}`,
+                    confirmButtonText: 'Continuar!',
+                });
 
-				this.$el.find('#archivo_habiles').val('');
-				this.$el.find('#name_archivo').text('Seleccionar aquí...');
-				this.$el.find('#remover_archivo').attr('disabled', 'true');
-			})
-			.always(() => {
-				target.removeAttr('disabled');
-			});
-	}
+                this.$el.find('#archivo_habiles').val('');
+                this.$el.find('#name_archivo').text('Seleccionar aquí...');
+                this.$el.find('#remover_archivo').attr('disabled', 'true');
+            }
+        } catch (error: any) {
+            Loading.hide();
+            Swal.fire({
+                title: 'Error!',
+                text: error.message || 'Ocurrió un error durante el cargue',
+                confirmButtonText: 'Continuar!',
+            });
 
-	removerArchivo(e: Event): void {
-		e.preventDefault();
-		this.$el.find('#archivo_habiles').val('');
-		this.$el.find('#name_archivo').text('Seleccionar aquí...');
-		this.$el.find('#remover_archivo').attr('disabled', 'true');
-		this.$el.find('#bt_hacer_cargue').attr('disabled', 'true');
-	}
+            this.$el.find('#archivo_habiles').val('');
+            this.$el.find('#name_archivo').text('Seleccionar aquí...');
+            this.$el.find('#remover_archivo').attr('disabled', 'true');
+        } finally {
+            target.removeAttr('disabled');
+        }
+    }
 
-	searchFile(e: Event): void {
-		e.preventDefault();
-		this.$el.find("[name='archivo_habiles']").trigger('click');
-	}
+    removerArchivo(e: Event): void {
+        e.preventDefault();
+        this.$el.find('#archivo_habiles').val('');
+        this.$el.find('#name_archivo').text('Seleccionar aquí...');
+        this.$el.find('#remover_archivo').attr('disabled', 'true');
+        this.$el.find('#bt_hacer_cargue').attr('disabled', 'true');
+    }
+
+    searchFile(e: Event): void {
+        e.preventDefault();
+        this.$el.find("[name='archivo_habiles']").trigger('click');
+    }
 }

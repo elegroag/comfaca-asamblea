@@ -1,5 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import EmpresaRowView from "./EmpresaRowView";
+import DataTable from 'datatables.net-bs5';
 
 interface EmpresaListarViewOptions {
     router?: { navigate: (fragment: string, options?: any) => void };
@@ -98,29 +99,48 @@ export default class EmpresaListarView extends BackboneView {
     }
 
     init_table(): void {
-        const tableElement = this.$el.find('#tb_data_habiles');
-        if (tableElement.length && typeof tableElement.DataTable === 'function') {
-            this.tableModule = tableElement.DataTable({
-                paging: true,
-                pageLength: 10,
-                pagingType: 'full_numbers',
-                info: true,
-                columnDefs: [
-                    { targets: 0, width: '5%' },
-                    { targets: 1, width: '20%' },
-                    { targets: 2, width: '10%' },
-                    { targets: 3, width: '25%' },
-                    { targets: 4, width: '10%' },
-                    { targets: 5, width: '25%' },
-                    { targets: 6, searchable: false, width: '10%' },
-                ],
-                lengthMenu: [
-                    [10, 25, 50, -1],
-                    [10, 25, 50, 'All'],
-                ],
-                language: langDataTable,
-            });
+        // Destruir tabla existente si hay una
+        if (this.tableModule) {
+            this.tableModule.destroy();
         }
+
+        this.tableModule = new DataTable(this.$el.find('#tb_data_habiles'), {
+            paging: true,
+            pageLength: 10,
+            pagingType: 'full_numbers',
+            info: true,
+            searching: true,
+            ordering: true,
+            autoWidth: false,
+            columnDefs: [
+                { targets: 0, width: '5%' },
+                { targets: 1, width: '20%' },
+                { targets: 2, width: '10%' },
+                { targets: 3, width: '25%' },
+                { targets: 4, width: '10%' },
+                { targets: 5, width: '25%' },
+                { targets: 6, searchable: false, width: '10%' },
+            ],
+            lengthMenu: [
+                [10, 25, 50, -1],
+                [10, 25, 50, 'All'],
+            ],
+            language: {
+                lengthMenu: 'Mostrar _MENU_ registros',
+                zeroRecords: 'No se encontraron resultados',
+                info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+                infoEmpty: 'Mostrando 0 a 0 de 0 registros',
+                infoFiltered: '(filtrado de _MAX_ registros totales)',
+                search: 'Buscar:',
+                paginate: {
+                    first: 'Primero',
+                    last: 'Último',
+                    next: 'Siguiente',
+                    previous: 'Anterior'
+                }
+            },
+            destroy: true
+        });
     }
 
     addModel(model: any): void {

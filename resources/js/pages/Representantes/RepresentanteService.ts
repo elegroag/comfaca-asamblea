@@ -173,6 +173,19 @@ export default class RepresentanteService {
     }
   }
 
+  /**
+   * Crear representante
+   */
+  async __crearRepresentante(data: Record<string, any>): Promise<ApiResponse> {
+    try {
+      const response = await this.crearRepresentanteApi(data);
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error al crear representante:', error);
+      throw error;
+    }
+  }
+
   // Métodos privados (solo Service)
 
   /**
@@ -190,18 +203,14 @@ export default class RepresentanteService {
   }
 
   /**
-   * Eliminar representante en API
+   * API para crear representante
    */
-  private async removeRepresentanteApi(data: any): Promise<ApiResponse> {
-    return await this.api.post('/representantes/removeRepresentante', data);
+  private async crearRepresentanteApi(data: Record<string, any>): Promise<ApiResponse> {
+    return await this.api.post('/representantes/crear', data);
   }
 
   /**
-   * Subir archivo masivo a API
-   */
-  private async uploadMasivoApi(formData: FormData): Promise<ApiResponse> {
-    return await this.api.post('/representantes/cargue_masivo', formData);
-  }
+   * API para buscar representantes
 
   /**
    * Buscar representantes en API

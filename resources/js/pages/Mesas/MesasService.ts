@@ -17,6 +17,9 @@ export default class MesasService {
 
     constructor(private readonly opts: MesasServiceOptions) {
         this.storage = BoxCollectionStorage.getInstance();
+        this.collections = {
+            mesas: new MesasCollection()
+        };
         this.__initializeCollections();
     }
 
@@ -176,6 +179,20 @@ export default class MesasService {
     }
 
     /**
+     * Validar poder previamente
+     */
+    async __validarPoder(data: Record<string, string>): Promise<ApiResponse> {
+        try {
+            const response = await this.validarPoderApi(data);
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al validar poder:', error);
+            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            throw error;
+        }
+    }
+
+    /**
      * Buscar mesas por criterio
      */
     async __buscarMesas(criterio: string): Promise<any[]> {
@@ -195,6 +212,14 @@ export default class MesasService {
      */
     private async findAllApi(): Promise<ApiResponse> {
         return await this.api.get('/mesas/listar');
+    }
+
+    /**
+     * Validar poder en API
+     */
+    private async validarPoderApi(data: Record<string, string>): Promise<ApiResponse> {
+        // Enviar datos directamente como JSON
+        return await this.api.post('/poderes/validacion_previa', data);
     }
 
     /**

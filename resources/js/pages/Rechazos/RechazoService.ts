@@ -1,6 +1,6 @@
 import { CommonDeps, ServiceOptions, ApiResponse } from '@/types/CommonDeps';
 import { BoxCollectionStorage } from '@/componentes/useStorage';
-import type { RechazoModel } from '@/componentes/rechazos/models/RechazoModel';
+import RechazoModel from '@/componentes/rechazos/models/RechazoModel';
 
 export interface RechazoServiceOptions extends ServiceOptions {
     // Opciones adicionales específicas del servicio si se necesitan
@@ -167,6 +167,123 @@ export default class RechazoService {
      * Subir archivo masivo a API
      */
     private async uploadMasivoApi(formData: FormData): Promise<ApiResponse> {
-        return await this.api.post('/rechazos/cargue_masivo', formData);
+        return await this.api.upload('/rechazos/uploadMasivo', formData);
+    }
+
+    /**
+     * Crear rechazo en API
+     */
+    async __crearRechazo(data: Record<string, any>): Promise<ApiResponse> {
+        try {
+            const response = await this.saveRechazoApi(data);
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al crear rechazo:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Actualizar rechazo en API
+     */
+    async __actualizarRechazo(data: Record<string, any>): Promise<ApiResponse> {
+        try {
+            const response = await this.updateRechazoApi(data);
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al actualizar rechazo:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * API para actualizar rechazo
+     */
+    private async updateRechazoApi(data: Record<string, any>): Promise<ApiResponse> {
+        return await this.api.post('/rechazos/updateRechazo', data);
+    }
+
+    /**
+     * Cargar rechazos masivamente en API
+     */
+    async __cargarMasivo(formData: FormData): Promise<ApiResponse> {
+        try {
+            const response = await this.uploadMasivoApi(formData);
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al cargar rechazos masivo:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Exportar lista de rechazos en API
+     */
+    async __exportarLista(): Promise<ApiResponse> {
+        try {
+            const response = await this.exportarListaApi();
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al exportar lista:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * API para exportar lista
+     */
+    private async exportarListaApi(): Promise<ApiResponse> {
+        return await this.api.get('/rechazos/exportar_lista');
+    }
+
+    /**
+     * Exportar PDF de rechazos en API
+     */
+    async __exportarPdf(): Promise<ApiResponse> {
+        try {
+            const response = await this.exportarPdfApi();
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al exportar PDF:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * API para exportar PDF
+     */
+    private async exportarPdfApi(): Promise<ApiResponse> {
+        return await this.api.get('/rechazos/exportar_pdf');
+    }
+
+    /**
+     * Descargar archivo
+     */
+    download_file(response: any): void {
+        try {
+            // Crear un blob con los datos de respuesta
+            const blob = new Blob([response.data], {
+                type: response.type || 'application/octet-stream'
+            });
+
+            // Crear URL temporal
+            const url = window.URL.createObjectURL(blob);
+
+            // Crear enlace temporal y hacer clic
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = response.filename || 'archivo';
+            document.body.appendChild(link);
+            link.click();
+
+            // Limpiar
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+            this.logger?.info('Archivo descargado exitosamente');
+        } catch (error: any) {
+            this.logger?.error('Error al descargar archivo:', error);
+            throw error;
+        }
     }
 }

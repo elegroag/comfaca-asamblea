@@ -1,9 +1,9 @@
 import { Controller } from '@/common/Controller';
 import { CommonDeps } from '@/types/CommonDeps';
 import InterventorService from './InterventorService';
-import InterventorMostrarView from '@/componentes/interventores/views/InterventorMostrarView';
-import InterventorCrearView from '@/componentes/interventores/views/InterventorCrearView';
-import InterventoresListView from '@/componentes/interventores/views/InterventoresListView';
+import InterventorMostrar from '@/componentes/interventores/views/InterventorMostrar';
+import InterventorCrear from '@/componentes/interventores/views/InterventorCrear';
+import InterventoresListar from '@/componentes/interventores/views/InterventoresListar';
 
 interface InterventorControllerOptions extends CommonDeps {
     [key: string]: any;
@@ -28,7 +28,7 @@ export default class InterventorController extends Controller {
         try {
             await this.service.__findAll();
 
-            const view = new InterventoresListView({
+            const view = new InterventoresListar({
                 collection: (this.service as any).collections.interventores,
                 App: this.App,
                 api: this.api,
@@ -53,7 +53,7 @@ export default class InterventorController extends Controller {
      * Crear interventor
      */
     crearInterventor(): void {
-        const view = new InterventorCrearView({
+        const view = new InterventorCrear({
             model: {
                 id: null,
                 nombre: '',
@@ -82,16 +82,16 @@ export default class InterventorController extends Controller {
         try {
             // Asegurarse de que los interventores estén cargados
             await this.service.__findAll();
-            
+
             const interventores = (this.service as any).collections.interventores;
             const model = interventores.get(id);
-            
+
             if (!model) {
                 this.App?.trigger('alert:error', 'Interventor no encontrado');
                 return;
             }
 
-            const view = new InterventorMostrarView({
+            const view = new InterventorMostrar({
                 model: model,
                 App: this.App,
                 api: this.api,
@@ -114,16 +114,16 @@ export default class InterventorController extends Controller {
         try {
             // Asegurarse de que los interventores estén cargados
             await this.service.__findAll();
-            
+
             const interventores = (this.service as any).collections.interventores;
             const model = interventores.get(id);
-            
+
             if (!model) {
                 this.App?.trigger('alert:error', 'Interventor no encontrado');
                 return;
             }
 
-            const view = new InterventorCrearView({
+            const view = new InterventorCrear({
                 model: model,
                 isNew: false,
                 App: this.App,

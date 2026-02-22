@@ -190,6 +190,10 @@ export default class AsambleaService {
         }
     }
 
+    __crearConsenso(consenso: any): Promise<ApiResponse> {
+        return this.api.post('/consenso/crear', consenso);
+    }
+
     // Métodos privados (solo Service)
 
     /**

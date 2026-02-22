@@ -1,32 +1,55 @@
 import { BackboneView } from "@/common/Bone";
-
-declare global {
-	var $: any;
-	var _: any;
-}
+import TrabajadorService from "@/pages/Trabajadores/TrabajadorService";
+import mostrar from "@/componentes/trabajadores/templates/mostrar.hbs?raw";
 
 interface TrabajadorMostrarViewOptions {
-	[key: string]: any;
+    model?: any;
+    App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
+    [key: string]: any;
 }
 
 export default class TrabajadorMostrarView extends BackboneView {
-	model: any;
-	trabajador: any;
-	el: any;
+    model: any;
+    trabajador: any;
+    App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
+    trabajadorService: TrabajadorService;
 
-	constructor(options: TrabajadorMostrarViewOptions) {
-		super({ ...options, id: 'box_mostrar_trabajadores', className: 'box', trabajador: undefined });
-	}
+    constructor(options: TrabajadorMostrarViewOptions) {
+        super({
+            ...options,
+            id: 'box_mostrar_trabajadores',
+            className: 'box',
+            trabajador: undefined
+        });
+        this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.model = options.model;
+        this.trabajadorService = new TrabajadorService({
+            api: this.api,
+            logger: this.logger,
+            app: this.App
+        });
+    }
 
-	initialize() {
-		this.render();
-	}
+    initialize() {
+        this.render();
+    }
 
-	render() {
-		var scope = this;
-		let template = _.template($('#tmp_mostrar_trabajadores').html());
-		scope.trabajador = scope.model;
-		$(scope.el).html(template(scope.trabajador));
-		return scope;
-	}
+    render() {
+        const template = _.template(mostrar);
+        this.trabajador = this.model;
+        this.$el.html(template(this.trabajador));
+        return this;
+    }
 }

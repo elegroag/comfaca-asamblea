@@ -1,105 +1,137 @@
 import { BackboneView } from "@/common/Bone";
-import type { AppInstance } from '@/types/types';
-import { Utils } from "@/core/Utils";
-import tmp_detalle_consenso from "@/componentes/asamblea/templates/detalleConsenso.hbs?raw";
-
+import detalle from "@/componentes/asamblea/templates/detalle.hbs?raw";
+import AsambleaService from "@/pages/Asamblea/AsambleaService";
 
 interface ConsensoDetalleOptions {
     model?: any;
-    App: AppInstance | null;
+    App?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
 export default class ConsensoDetalle extends BackboneView {
+    template: any;
+    App: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
+    asambleaService: AsambleaService;
 
-    constructor(options: ConsensoDetalleOptions) {
+    constructor(options: ConsensoDetalleOptions = {}) {
         super({ ...options, className: 'box', id: 'box_detalle_consenso' });
+        this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.model = options.model;
+        this.template = _.template(detalle);
+        this.asambleaService = new AsambleaService({
+            api: this.api,
+            logger: this.logger,
+            app: this.App
+        });
     }
 
     initialize(): void {
-        this.template = tmp_detalle_consenso;
+        // Template ya asignado en el constructor
     }
 
     render(): this {
-        const _template = _.template(this.template);
-        this.$el.html(_template({ consenso: this.model.toJSON() }));
+        const template = _.template(this.template);
+        const consensoData = this.model ? this.model.toJSON() : {};
+        this.$el.html(template({ consenso: consensoData }));
         this.$el.find('#estado_consenso').bootstrapSwitch();
         return this;
     }
 
     get events() {
         return {
-            'click #bt_borrar_consenso': 'borrarConsenso',
-            'click #bt_edit_consenso': 'edit_consenso',
-            'switchChange.bootstrapSwitch #estado_consenso': 'changeEstadoConsenso',
+            'click #bt_borrar_consenso': this.borrarConsenso,
+            'click #bt_edit_consenso': this.edit_consenso,
+            'switchChange.bootstrapSwitch #estado_consenso': this.changeEstadoConsenso,
         };
     }
 
     /**
      * Cambiar estado del consenso
      */
-    changeEstadoConsenso(e: Event): void {
-        const $input = this.$el.find(e.currentTarget);
+    async changeEstadoConsenso(e: Event): Promise<void> {
+        const target = this.$el.find(e.currentTarget);
 
-        if ($input.is(':checked')) {
+        if (target.is(':checked')) {
             if (this.model.get('estado') == 'A') return;
 
-            this.App?.trigger('confirma', {
-                message: 'Se requiere de confirmar si desea activar el consenso.',
-                callback: (continuar: boolean) => {
-                    if (continuar) {
-                        this.App?.trigger('syncro', {
-                            url: Utils.getURL('admin/consenso_activar/' + this.model.get('id') + '/A'),
-                            data: {},
-                            callback: (response: any) => {
-                                if (response) {
-                                    if (response.success) {
-                                        this.model.set('estado', 'A');
-                                        this.$el.find('#show_estado_text').text('ACTIVO');
-                                        this.App?.trigger('alert:success', response.msj);
-
-                                        // Actualizar tabla de consensos
-                                        this.updateConsensosTable(response.consensos);
-                                    } else {
-                                        this.App?.trigger('alert:error', response.msj);
-                                    }
-                                }
-                            },
-                        });
-                    } else {
-                        this.$el.find('#estado_consenso').trigger('click');
-                    }
-                },
-            });
-        } else {
-            if (this.model.get('estado') == 'A') {
-                this.App?.trigger('confirma', {
-                    message: 'Se requiere de confirmar si desea inactivar el consenso.',
-                    callback: (continuar: boolean) => {
+            if (this.App && typeof this.App.trigger === 'function') {
+                this.App.trigger('confirma', {
+                    message: 'Se requiere de confirmar si desea activar el consenso.',
+                    callback: async (continuar: boolean) => {
                         if (continuar) {
-                            this.App?.trigger('syncro', {
-                                url: Utils.getURL('admin/consenso_activar/' + this.model.get('id') + '/I'),
-                                data: {},
-                                callback: (response: any) => {
-                                    if (response) {
-                                        if (response.success) {
-                                            this.model.set('estado', 'I');
-                                            this.$el.find('#show_estado_text').text('INACTIVO');
-                                            this.App?.trigger('alert:success', response.msj);
+                            try {
+                                const response = await this.asambleaService.__activarConsenso(this.model.get('id'), 'A');
 
-                                            // Actualizar tabla de consensos
-                                            this.updateConsensosTable(response.consensos);
-                                        } else {
-                                            this.App?.trigger('alert:error', response.msj);
-                                        }
-                                    }
-                                },
-                            });
+                                if (response && response.success) {
+                                    this.model.set('estado', 'A');
+                                    this.$el.find('#show_estado_text').text('ACTIVO');
+                                    this.App.trigger('alert:success', response.msj);
+
+                                    // Actualizar tabla de consensos
+                                    this.updateConsensosTable(response.consensos);
+                                } else {
+                                    this.App.trigger('alert:error', response.msj || 'Error al activar consenso');
+                                }
+                            } catch (error: any) {
+                                this.logger?.error('Error al activar consenso:', error);
+                                this.App.trigger('alert:error', {
+                                    title: 'Error',
+                                    text: error.message || 'Error de conexión',
+                                    button: 'OK!'
+                                });
+                            }
                         } else {
                             this.$el.find('#estado_consenso').trigger('click');
                         }
                     },
                 });
+            }
+        } else {
+            if (this.model.get('estado') == 'A') {
+                if (this.App && typeof this.App.trigger === 'function') {
+                    this.App.trigger('confirma', {
+                        message: 'Se requiere de confirmar si desea inactivar el consenso.',
+                        callback: async (continuar: boolean) => {
+                            if (continuar) {
+                                try {
+                                    const response = await this.asambleaService.__activarConsenso(this.model.get('id'), 'I');
+
+                                    if (response && response.success) {
+                                        this.model.set('estado', 'I');
+                                        this.$el.find('#show_estado_text').text('INACTIVO');
+                                        this.App.trigger('alert:success', response.msj);
+
+                                        // Actualizar tabla de consensos
+                                        this.updateConsensosTable(response.consensos);
+                                    } else {
+                                        this.App.trigger('alert:error', response.msj || 'Error al inactivar consenso');
+                                    }
+                                } catch (error: any) {
+                                    this.logger?.error('Error al inactivar consenso:', error);
+                                    this.App.trigger('alert:error', {
+                                        title: 'Error',
+                                        text: error.message || 'Error de conexión',
+                                        button: 'OK!'
+                                    });
+                                }
+                            } else {
+                                this.$el.find('#estado_consenso').trigger('click');
+                            }
+                        },
+                    });
+                }
             }
         }
     }
@@ -109,45 +141,59 @@ export default class ConsensoDetalle extends BackboneView {
      */
     edit_consenso(e: Event): void {
         e.preventDefault();
-        console.log('ConsensoDetalle.edit_consenso() called');
+        this.logger?.info('ConsensoDetalle.edit_consenso() called');
         // Implementar lógica de edición
     }
 
     /**
      * Borrar consenso
      */
-    borrarConsenso(e: Event): void {
+    async borrarConsenso(e: Event): Promise<void> {
         e.preventDefault();
 
-        const close = $('#notice_modal').find('.close');
-        this.App?.trigger('confirma', {
-            message: 'Se requiere de confirmar si desea borrar el consenso. Con todos los datos que le relacionen.',
-            callback: (status: boolean) => {
-                if (status) {
-                    this.App?.trigger('syncro', {
-                        url: Utils.getURL('admin/borrar_consenso/' + this.model.get('id')),
-                        data: {},
-                        callback: (response: any) => {
-                            if (response) {
-                                if (response.success) {
-                                    this.trigger('set:consensos', response.consensos);
-                                    this.$el.find('#num_consensos').text(_.size($App.Collections.consensos));
+        const close = this.$el.find('#notice_modal').find('.close');
 
-                                    // Actualizar tabla de consensos
-                                    this.updateConsensosTable($App.Collections.consensos.toJSON());
+        if (this.App && typeof this.App.trigger === 'function') {
+            this.App.trigger('confirma', {
+                message: 'Se requiere de confirmar si desea borrar el consenso. Con todos los datos que le relacionen.',
+                callback: async (status: boolean) => {
+                    if (status) {
+                        try {
+                            const response = await this.asambleaService.__borrarConsenso(this.model.get('id'));
 
-                                    this.App?.trigger('alert:success', response.msj);
-                                    close.trigger('click');
-                                } else {
-                                    this.App?.trigger('alert:error', response.msj);
-                                    close.trigger('click');
+                            if (response && response.success) {
+                                this.trigger('set:consensos', response.consensos);
+
+                                // Actualizar contador
+                                if (this.App && this.App.Collections && this.App.Collections.consensos) {
+                                    const consensosCount = this.App.Collections.consensos.length || 0;
+                                    this.$el.find('#num_consensos').text(consensosCount.toString());
                                 }
+
+                                // Actualizar tabla de consensos
+                                if (this.App && this.App.Collections && this.App.Collections.consensos) {
+                                    this.updateConsensosTable(this.App.Collections.consensos.toJSON());
+                                }
+
+                                this.App.trigger('alert:success', response.msj);
+                                close.trigger('click');
+                            } else {
+                                this.App.trigger('alert:error', response.msj || 'Error al borrar consenso');
+                                close.trigger('click');
                             }
-                        },
-                    });
-                }
-            },
-        });
+                        } catch (error: any) {
+                            this.logger?.error('Error al borrar consenso:', error);
+                            this.App.trigger('alert:error', {
+                                title: 'Error',
+                                text: error.message || 'Error de conexión',
+                                button: 'OK!'
+                            });
+                            close.trigger('click');
+                        }
+                    }
+                },
+            });
+        }
     }
 
     /**

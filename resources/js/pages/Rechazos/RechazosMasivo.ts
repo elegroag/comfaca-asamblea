@@ -3,12 +3,6 @@ import RechazoMasivoView from "@/componentes/rechazos/views/RechazoMasivoView";
 import RechazosNav from "@/componentes/rechazos/views/RechazosNav";
 import RechazoService from "@/pages/Rechazos/RechazoService";
 
-declare global {
-	var _: any;
-	var Backbone: any;
-	var $App: any;
-}
-
 interface RechazosMasivoOptions {
 	[key: string]: any;
 }

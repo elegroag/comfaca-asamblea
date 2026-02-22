@@ -14,7 +14,6 @@
         "@types/loader-utils": "^2.0.6",
         "@types/node": "^20.19.33",
         "@types/underscore": "^1.13.0",
-        "axios": "^1.13.5",
         "daisyui": "^5.5.18",
         "eslint": "^9.39.2",
         "eslint-plugin-async-await": "^0.0.0",

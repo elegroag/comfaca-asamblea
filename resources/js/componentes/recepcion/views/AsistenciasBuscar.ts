@@ -66,7 +66,7 @@ export default class AsistenciasBuscar extends BackboneView {
         };
     }
 
-    usarScanner(e: JQuery.Event) {
+    usarScanner(e: Event) {
         e.preventDefault();
         this.$el.find(e.currentTarget).attr('disabled', true);
         window.location.href = create_url('recepcion/buscando#buscar');
@@ -77,12 +77,12 @@ export default class AsistenciasBuscar extends BackboneView {
         return false;
     }
 
-    keyBuscarCedrep(e: JQuery.Event) {
+    keyBuscarCedrep(e: any) {
         const code = e.keyCode || e.which;
         if (code == 13) this.$el.find('#bt_buscar_asistente').trigger('click');
     }
 
-    buscarAsistente(e: JQuery.Event) {
+    buscarAsistente(e: Event) {
         e.preventDefault();
         var target = this.$el.find(e.currentTarget);
         const stCedrep = this.getInput('cedrep');

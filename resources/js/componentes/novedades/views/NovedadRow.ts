@@ -1,24 +1,33 @@
 import { BackboneView } from "@/common/Bone";
 import type { AppInstance } from '@/types/types';
-
-declare global {
-    var _: any;
-}
+import row from "@/componentes/novedades/templates/row.hbs?raw";
 
 interface NovedadRowOptions {
     model?: any;
     App?: AppInstance;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
 export default class NovedadRow extends BackboneView {
     App: AppInstance;
-    template: string;
+    template: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
 
-    constructor(options: NovedadRowOptions = {}) {
+    constructor(options: NovedadRowOptions) {
         super(options);
         this.App = options.App || options.AppInstance;
-        this.template = '#tmp_row';
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.template = _.template(row);
     }
 
     get tagName() {

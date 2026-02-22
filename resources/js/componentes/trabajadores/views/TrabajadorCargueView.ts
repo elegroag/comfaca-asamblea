@@ -1,27 +1,41 @@
 import { BackboneView } from "@/common/Bone";
-
-declare global {
-	var $: any;
-	var _: any;
-	var create_url: (path: string) => string;
-	var loading: any;
-	var Swal: any;
-}
+import TrabajadorService from "@/pages/Trabajadores/TrabajadorService";
+import cargue from "@/componentes/trabajadores/templates/cargue.hbs?raw";
 
 interface TrabajadorCargueViewOptions {
+	App?: any;
+	api?: any;
+	logger?: any;
+	storage?: any;
+	region?: any;
 	[key: string]: any;
 }
 
 export default class TrabajadorCargueView extends BackboneView {
-	template!: any;
-	$el: any;
+	template: any;
+	App: any;
+	api: any;
+	logger: any;
+	storage: any;
+	region: any;
+	trabajadorService: TrabajadorService;
 
 	constructor(options: TrabajadorCargueViewOptions) {
 		super({
 			...options,
 			className: 'box',
 		});
-		this.template = _.template($('#tmp_cargar_trabajadores').html());
+		this.App = options.App;
+		this.api = options.api;
+		this.logger = options.logger;
+		this.storage = options.storage;
+		this.region = options.region;
+		this.template = _.template(cargue);
+		this.trabajadorService = new TrabajadorService({
+			api: this.api,
+			logger: this.logger,
+			app: this.App
+		});
 	}
 
 	/**
@@ -35,77 +49,85 @@ export default class TrabajadorCargueView extends BackboneView {
 		};
 	}
 
-	removerArchivo(e: any) {
+	removerArchivo(e: Event) {
 		e.preventDefault();
 		this.$el.find('#archivo_cargue').val('');
 		this.$el.find('#name_archivo').text('Seleccionar aquí...');
-		this.$el.find('#remover_archivo').attr('disabled', true);
-		this.$el.find('#bt_hacer_cargue').attr('disabled', true);
+		this.$el.find('#remover_archivo').attr('disabled', 'true');
+		this.$el.find('#bt_hacer_cargue').attr('disabled', 'true');
 	}
 
-	hacerCargue(e: any) {
+	async hacerCargue(e: Event) {
 		e.preventDefault();
-		const scope = this;
-		const target = $(e.currentTarget);
-		target.attr('disabled', true);
-		const _cruzar_data = $("[name='cruzar_data']:checked").length;
-		const archivo_cargue = (document.getElementById('archivo_cargue') as HTMLInputElement).files;
+		const target = this.$el.find(e.currentTarget);
+		target.attr('disabled', 'true');
 
-		if (archivo_cargue!.length == 0) {
+		const cruzarData = this.$el.find("[name='cruzar_data']:checked").length;
+		const archivoCargue = (document.getElementById('archivo_cargue') as HTMLInputElement).files;
+
+		if (!archivoCargue || archivoCargue.length === 0) {
 			target.removeAttr('disabled');
 			return false;
 		}
 
-		const form_data = new FormData();
-		form_data.append('file', archivo_cargue![0]);
-		form_data.append('cruzar', _cruzar_data);
+		const formData = new FormData();
+		formData.append('file', archivoCargue[0]);
+		formData.append('cruzar', cruzarData.toString());
 
-		$.ajax({
-			url: create_url('trabajadores/cargue_masivo'),
-			method: 'POST',
-			dataType: 'JSON',
-			cache: false,
-			data: form_data,
-			contentType: false,
-			processData: false,
-			beforeSend: (xhr: any) => {
-				loading.show();
-			},
-		})
-			.done((salida: any) => {
-				loading.hide();
-				if (salida) {
-					Swal.fire({
+		try {
+			// Mostrar loading (simulado con trigger)
+			if (this.App && typeof this.App.trigger === 'function') {
+				this.App.trigger('loading:show');
+			}
+
+			const response = await this.trabajadorService.__uploadMasivo(formData);
+
+			if (this.App && typeof this.App.trigger === 'function') {
+				this.App.trigger('loading:hide');
+			}
+
+			if (response && response.success) {
+				if (this.App && typeof this.App.trigger === 'function') {
+					this.App.trigger('alert:success', {
 						title: 'Notificación!',
-						text:
-							'Ya se completo el cargue de los rechazos.\nRegistrados: ' +
-							salida.creados +
-							'\nCantidad: ' +
-							salida.filas +
-							'\nFallos: ' +
-							salida.fallidos +
-							'',
-						button: 'Continuar!',
+						text: `Ya se completo el cargue de los trabajadores.\nRegistrados: ${response.creados}\nCantidad: ${response.filas}\nFallos: ${response.fallidos}`,
+						button: 'Continuar!'
 					});
-					scope.$el.find('#archivo_cargue').val('');
-					scope.$el.find('#name_archivo').text('Seleccionar aquí...');
-					scope.$el.find('#remover_archivo').attr('disabled', true);
 				}
-			})
-			.fail((err: any) => {
-				loading.hide();
-				Swal.fire({
+				this.limpiarFormulario();
+			} else {
+				if (this.App && typeof this.App.trigger === 'function') {
+					this.App.trigger('alert:error', {
+						title: 'Error!',
+						text: response.msj || 'Error en el cargue masivo',
+						button: 'Continuar!'
+					});
+				}
+				this.limpiarFormulario();
+			}
+		} catch (error: any) {
+			if (this.App && typeof this.App.trigger === 'function') {
+				this.App.trigger('loading:hide');
+				this.App.trigger('alert:error', {
 					title: 'Error!',
-					text: err.resposeText,
-					button: 'Continuar!',
+					text: error.message || 'Error de conexión',
+					button: 'Continuar!'
 				});
-				scope.$el.find('#archivo_cargue').val('');
-				scope.$el.find('#name_archivo').text('Seleccionar aquí...');
-				scope.$el.find('#remover_archivo').attr('disabled', true);
-			});
+			}
+			this.logger?.error('Error en cargue masivo:', error);
+			this.limpiarFormulario();
+		} finally {
+			target.removeAttr('disabled');
+		}
 	}
 
-	searchFile(e: any) {
+	private limpiarFormulario() {
+		this.$el.find('#archivo_cargue').val('');
+		this.$el.find('#name_archivo').text('Seleccionar aquí...');
+		this.$el.find('#remover_archivo').attr('disabled', 'true');
+	}
+
+	searchFile(e: Event) {
 		e.preventDefault();
 		this.$el.find("[name='archivo_cargue']").trigger('click');
 	}

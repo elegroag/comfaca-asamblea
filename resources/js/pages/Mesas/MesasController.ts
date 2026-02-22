@@ -2,7 +2,7 @@ import { Controller } from '@/common/Controller';
 import { CommonDeps } from '@/types/CommonDeps';
 import MesasService from './MesasService';
 import MesasListar from '@/componentes/mesas/views/MesasListar';
-import MesaCrear from '@/componentes/mesas/views/MesaCrear';
+import MesasCrear from '@/componentes/mesas/views/MesasCrear';
 import MesaMostrar from '@/componentes/mesas/views/MesaMostrar';
 
 interface MesasControllerOptions extends CommonDeps {
@@ -55,7 +55,7 @@ export default class MesasController extends Controller {
      * Crear mesa
      */
     crearMesa(): void {
-        const view = new MesaCrear({
+        const view = new MesasCrear({
             model: {
                 id: null,
                 nombre: '',
@@ -83,10 +83,10 @@ export default class MesasController extends Controller {
         try {
             // Asegurarse de que las mesas estén cargadas
             await this.service.__findAll();
-            
+
             const mesas = (this.service as any).collections.mesas;
             const model = mesas.get(id);
-            
+
             if (!model) {
                 this.App?.trigger('alert:error', 'Mesa no encontrada');
                 return;
@@ -115,16 +115,16 @@ export default class MesasController extends Controller {
         try {
             // Asegurarse de que las mesas estén cargadas
             await this.service.__findAll();
-            
+
             const mesas = (this.service as any).collections.mesas;
             const model = mesas.get(id);
-            
+
             if (!model) {
                 this.App?.trigger('alert:error', 'Mesa no encontrada');
                 return;
             }
 
-            const view = new MesaCrear({
+            const view = new MesasCrear({
                 model: model,
                 isNew: false,
                 App: this.App,

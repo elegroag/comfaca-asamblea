@@ -126,24 +126,28 @@ export default class TrabajadorService {
   }
 
   /**
-   * Cargue masivo de trabajadores
+   * Cargar trabajadores masivamente en API
    */
-  async __uploadMasivo({ formData, callback }: any): Promise<void> {
+  async __uploadMasivo(formData: FormData): Promise<ApiResponse> {
     try {
       const response = await this.uploadMasivoApi(formData);
-
-      if (response?.success) {
-        this.App.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
-        await this.__findAll(); // Recargar datos
-        callback(true, response);
-      } else {
-        this.App.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
-        callback(false);
-      }
+      return response;
     } catch (error: any) {
       this.logger.error('Error en cargue masivo:', error);
-      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
-      callback(false);
+      throw error;
+    }
+  }
+
+  /**
+   * Crear trabajador
+   */
+  async __crearTrabajador(data: Record<string, any>): Promise<ApiResponse> {
+    try {
+      const response = await this.crearTrabajadorApi(data);
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error al crear trabajador:', error);
+      throw error;
     }
   }
 
@@ -161,6 +165,13 @@ export default class TrabajadorService {
    */
   private async saveTrabajadorApi(data: any): Promise<ApiResponse> {
     return await this.api.post('/trabajadores/saveTrabajador', data);
+  }
+
+  /**
+   * API para crear trabajador
+   */
+  private async crearTrabajadorApi(data: Record<string, any>): Promise<ApiResponse> {
+    return await this.api.post('/trabajadores/crear', data);
   }
 
   /**

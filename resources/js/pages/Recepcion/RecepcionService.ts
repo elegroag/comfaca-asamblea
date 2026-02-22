@@ -293,4 +293,144 @@ export default class RecepcionService {
   private async registrarEmpresaApi(data: any): Promise<ApiResponse> {
     return await this.api.post('/recepcion/registrarEmpresa', data);
   }
+
+  /**
+   * Crear ingreso en API
+   */
+  async __crearIngreso(data: Record<string, any>): Promise<ApiResponse> {
+    try {
+      const response = await this.crearIngresoApi(data);
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error al crear ingreso:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * API para crear ingreso
+   */
+  private async crearIngresoApi(data: Record<string, any>): Promise<ApiResponse> {
+    return await this.api.post('/habiles/crear_ingreso', data);
+  }
+
+  /**
+   * Revocar poder en API
+   */
+  async __revocarPoder(data: Record<string, any>): Promise<ApiResponse> {
+    try {
+      const response = await this.revocarPoderApi(data);
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error al revocar poder:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * API para revocar poder
+   */
+  private async revocarPoderApi(data: Record<string, any>): Promise<ApiResponse> {
+    return await this.api.post('/recepcion/revocarPoder', data);
+  }
+
+  /**
+   * Crear asistencia en API
+   */
+  async __crearAsistencia(data: Record<string, any>): Promise<ApiResponse> {
+    try {
+      const response = await this.crearAsistenciaApi(data);
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error al crear asistencia:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * API para crear asistencia
+   */
+  private async crearAsistenciaApi(data: Record<string, any>): Promise<ApiResponse> {
+    return await this.api.post('/recepcion/crearAsistencia', data);
+  }
+
+  /**
+   * Obtener rechazo en API
+   */
+  async __obtenerRechazo(data: Record<string, any>): Promise<ApiResponse> {
+    try {
+      const response = await this.obtenerRechazoApi(data);
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error al obtener rechazo:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * API para obtener rechazo
+   */
+  private async obtenerRechazoApi(data: Record<string, any>): Promise<ApiResponse> {
+    return await this.api.post('/recepcion/rechazo', data);
+  }
+
+  /**
+   * Salvar inscripción en API
+   */
+  async __salvarInscripcion(data: Record<string, any>): Promise<ApiResponse> {
+    try {
+      const response = await this.salvarInscripcionApi(data);
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error al salvar inscripción:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * API para salvar inscripción
+   */
+  private async salvarInscripcionApi(data: Record<string, any>): Promise<ApiResponse> {
+    return await this.api.post('/recepcion/salvar_inscripcion', data);
+  }
+
+  /**
+   * Cruzar habil preregistro presencial en API
+   */
+  async __cruzarHabilPreregistroPresencial(): Promise<ApiResponse> {
+    try {
+      const response = await this.cruzarHabilPreregistroPresencialApi();
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error al cruzar habil preregistro presencial:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * API para cruzar habil preregistro presencial
+   */
+  private async cruzarHabilPreregistroPresencialApi(): Promise<ApiResponse> {
+    return await this.api.get('/recepcion/cruzarHabilPreregistroPresencial');
+  }
+
+  /**
+   * Buscar representante en API
+   */
+  async __buscarRepresentante(data: Record<string, any>): Promise<ApiResponse> {
+    try {
+      const response = await this.buscarRepresentanteApi(data);
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error al buscar representante:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * API para buscar representante
+   */
+  private async buscarRepresentanteApi(data: Record<string, any>): Promise<ApiResponse> {
+    return await this.api.post('/recepcion/buscar', data);
+  }
 }

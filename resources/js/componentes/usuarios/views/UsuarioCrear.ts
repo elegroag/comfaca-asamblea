@@ -1,34 +1,49 @@
 import { BackboneView } from "@/common/Bone";
+import UsuarioService from "@/pages/Usuarios/UsuarioService";
 import SubNavUsuarios from "./SubNavUsuarios";
-import tmp_crear_usuario from "../templates/tmp_crear_usuario.hbs?raw";
-
-declare global {
-	var $: any;
-	var _: any;
-	var moment: any;
-	var $App: any;
-	var create_url: (path: string) => string;
-	var Usuario: any;
-}
+import crear from "@/componentes/usuarios/templates/crear.hbs?raw";
 
 interface UsuarioCrearOptions {
 	model?: any;
 	isNew?: boolean;
 	isAsamblea?: boolean;
+	App?: any;
+	api?: any;
+	logger?: any;
+	storage?: any;
+	region?: any;
+	[key: string]: any;
 }
 
 export default class UsuarioCrear extends BackboneView {
-	template: string;
+	template: any;
 	isNew: boolean;
 	isAsamblea: boolean;
 	subNavUsuarios: SubNavUsuarios | null;
+	App: any;
+	api: any;
+	logger: any;
+	storage: any;
+	region: any;
+	usuarioService: UsuarioService;
 
 	constructor(options: UsuarioCrearOptions = {}) {
 		super(options);
-		this.template = tmp_crear_usuario;
+		this.App = options.App;
+		this.api = options.api;
+		this.logger = options.logger;
+		this.storage = options.storage;
+		this.region = options.region;
+		this.model = options.model;
+		this.template = _.template(crear);
 		this.isNew = options.isNew !== false; // true por defecto
 		this.isAsamblea = options.isAsamblea || false;
 		this.subNavUsuarios = null;
+		this.usuarioService = new UsuarioService({
+			api: this.api,
+			logger: this.logger,
+			app: this.App
+		});
 	}
 
 	initialize(): void {
@@ -49,26 +64,28 @@ export default class UsuarioCrear extends BackboneView {
 		this.el.innerHTML = template({ ...modelData, isNew: this.isNew });
 
 		// Establecer fecha actual si existe el campo
-		this.$el.find("[name='fecha']").val(moment().format('DD-MM-YYYY'));
+		const today = new Date();
+		const formattedDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+		this.$el.find("[name='fecha']").val(formattedDate);
 
 		this.subNav();
 		return this;
 	}
 
 	changePassword(e: Event): void {
-		const target = this.$el.find(e.currentTarget as HTMLElement);
+		const target = this.$el.find(e.currentTarget);
 
 		if (target.length && target.is(':checked')) {
-			$('#showChangeClave').fadeIn();
+			this.$el.find('#showChangeClave').fadeIn();
 		} else {
-			$('#showChangeClave').fadeOut();
+			this.$el.find('#showChangeClave').fadeOut();
 		}
 	}
 
-	guardaUsuario(e: Event): boolean {
+	async guardaUsuario(e: Event): Promise<boolean> {
 		e.preventDefault();
 
-		const target = this.$el.find(e.currentTarget as HTMLElement);
+		const target = this.$el.find(e.currentTarget);
 		target.attr('disabled', 'true');
 
 		// Validación para usuarios existentes
@@ -78,41 +95,40 @@ export default class UsuarioCrear extends BackboneView {
 
 			if (confirmaClave !== clave) {
 				target.removeAttr('disabled');
-				if ($App && typeof $App.trigger === 'function') {
-					$App.trigger('alert:error', 'La clave no es válida, no se puede confirmar el valor.');
+				if (this.App && typeof this.App.trigger === 'function') {
+					this.App.trigger('alert:error', 'La clave no es válida, no se puede confirmar el valor.');
 				}
 				return false;
 			}
 		}
 
-		const model = new Usuario({
+		const usuarioData: Record<string, any> = {
 			cedtra: this.getInput('cedtra'),
 			nombre: this.getInput('nombre'),
 			clave: this.getInput('clave'),
 			usuario: this.getInput('usuario'),
-		});
+			confirmarClave: this.getInput('confirmarClave'),
+		};
 
-		if (!model.isValid()) {
-			const errors = model.validationError;
-
-			setTimeout(() => {
-				$('.error').html('');
-			}, 3000);
-
-			if ($App && typeof $App.trigger === 'function') {
-				$App.trigger('alert:error', errors);
-			}
-
+		// Validación básica
+		if (!usuarioData.cedtra || !usuarioData.nombre || !usuarioData.usuario) {
 			target.removeAttr('disabled');
-		} else {
-			let url: string;
+			if (this.App && typeof this.App.trigger === 'function') {
+				this.App.trigger('alert:error', 'Los campos cédula, nombre y usuario son requeridos');
+			}
+			return false;
+		}
+
+		try {
+			let response;
 
 			if (this.isNew) {
-				url = create_url('usuarios/createUsuarioSisu');
+				response = await this.usuarioService.__crearUsuario(usuarioData);
 			} else {
 				if (this.model && typeof this.model.get === 'function') {
-					url = create_url('usuarios/createUsuarioSisu/' + this.model.get('usuario'));
-					model.set('confirma_clave', this.getInput('confirma_clave'));
+					const usuarioId = this.model.get('usuario');
+					usuarioData.confirma_clave = this.getInput('confirma_clave');
+					response = await this.usuarioService.__actualizarUsuario(usuarioId, usuarioData);
 				} else {
 					console.error('Modelo no disponible para obtener usuario');
 					target.removeAttr('disabled');
@@ -120,28 +136,34 @@ export default class UsuarioCrear extends BackboneView {
 				}
 			}
 
-			if ($App && typeof $App.trigger === 'function') {
-				$App.trigger('syncro', {
-					url,
-					data: model.toJSON(),
-					callback: (response: any) => {
-						target.removeAttr('disabled');
+			target.removeAttr('disabled');
 
-						if (response && response.success) {
-							if (response.usuario_sisu === false) {
-								$App.trigger('alert:error', response.msj);
-								this.$el.find('input').val('');
-							} else {
-								this.trigger('add:usuario_sisu', model);
-								$App.trigger('success', response.msj);
-								this.$el.find('input').val('');
+			if (response && response.success) {
+				if (response.usuario_sisu === false) {
+					this.App.trigger('alert:error', response.msj);
+					this.$el.find('input').val('');
+				} else {
+					this.trigger('add:usuario_sisu', usuarioData);
+					this.App.trigger('alert:success', response.msj);
+					this.$el.find('input').val('');
 
-								if (!this.isNew && $App.router) {
-									$App.router.navigate('listar', { trigger: true, replace: true });
-								}
-							}
-						}
-					},
+					if (!this.isNew && this.App && this.App.router) {
+						this.App.router.navigate('listar', { trigger: true, replace: true });
+					}
+				}
+			} else {
+				if (this.App && typeof this.App.trigger === 'function') {
+					this.App.trigger('alert:error', response?.msj || 'Error al guardar el usuario');
+				}
+			}
+		} catch (error: any) {
+			target.removeAttr('disabled');
+			this.logger?.error('Error al guardar usuario:', error);
+			if (this.App && typeof this.App.trigger === 'function') {
+				this.App.trigger('alert:error', {
+					title: 'Error',
+					text: error.message || 'Error de conexión',
+					button: 'OK!'
 				});
 			}
 		}
@@ -153,8 +175,8 @@ export default class UsuarioCrear extends BackboneView {
 		e.preventDefault();
 		this.remove();
 
-		if ($App.router) {
-			$App.router.navigate('listar', { trigger: true, replace: true });
+		if (this.App && this.App.router) {
+			this.App.router.navigate('listar', { trigger: true, replace: true });
 		}
 
 		return false;
@@ -163,6 +185,11 @@ export default class UsuarioCrear extends BackboneView {
 	subNav(): void {
 		this.subNavUsuarios = new SubNavUsuarios({
 			model: this.model,
+			App: this.App,
+			api: this.api,
+			logger: this.logger,
+			storage: this.storage,
+			region: this.region,
 			dataToggle: {
 				listar: true,
 				exportar: false,
