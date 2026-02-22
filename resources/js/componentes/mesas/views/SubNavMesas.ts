@@ -8,21 +8,22 @@ interface SubNavMesasOptions {
         crear: boolean;
         editar: boolean;
     };
-    App?: any;
     api?: any;
     logger?: any;
+    app?: any;
     storage?: any;
     region?: any;
+    parentView?: any;
     [key: string]: any;
 }
 
 export default class SubNavMesas extends BackboneView {
     template: any;
     dataToggle: SubNavMesasOptions['dataToggle'];
-    static parentView: SubNavMesas | null = null;
-    App: any;
+    parentView: any;
     api: any;
     logger: any;
+    app: any;
     storage: any;
     region: any;
 
@@ -30,9 +31,10 @@ export default class SubNavMesas extends BackboneView {
         super(options);
         this.template = _.template(tmp_sub_navbar);
         this.dataToggle = options.dataToggle;
-        this.App = options.App;
+        this.parentView = options.parentView;
         this.api = options.api;
         this.logger = options.logger;
+        this.app = options.app;
         this.storage = options.storage;
         this.region = options.region;
     }
@@ -62,24 +64,24 @@ export default class SubNavMesas extends BackboneView {
     nuevoRegistro(e: Event): void {
         e.preventDefault();
 
-        if (SubNavMesas.parentView) {
-            SubNavMesas.parentView.remove();
+        if (this.parentView) {
+            this.parentView.remove();
         }
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('crear', { trigger: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('crear', { trigger: true });
         }
     }
 
     listarData(e: Event): void {
         e.preventDefault();
 
-        if (SubNavMesas.parentView) {
-            SubNavMesas.parentView.remove();
+        if (this.parentView) {
+            this.parentView.remove();
         }
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('listar', { trigger: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('listar', { trigger: true });
         }
     }
 
@@ -100,12 +102,12 @@ export default class SubNavMesas extends BackboneView {
             return;
         }
 
-        if (SubNavMesas.parentView) {
-            SubNavMesas.parentView.remove();
+        if (this.parentView) {
+            this.parentView.remove();
         }
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('editar/' + nit, { trigger: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('editar/' + nit, { trigger: true });
         }
     }
 }

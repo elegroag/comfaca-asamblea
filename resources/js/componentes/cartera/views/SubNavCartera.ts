@@ -1,8 +1,20 @@
 import { BackboneView } from "@/common/Bone";
 import Cartera from "@/models/Cartera";
 import tmp_sub_navbar from "../templates/tmp_sub_navbar.hbs?raw";
-import { AppInstance } from "@/types/types";
+import CarteraService from "@/pages/Cartera/CarteraService";
 
+
+interface SubNavCarteraOptions {
+    model?: Cartera;
+    dataToggle: DataToggle;
+    api?: any;
+    logger?: any;
+    app?: any;
+    storage?: any;
+    region?: any;
+    parentView?: BackboneView;
+    router?: any;
+}
 
 interface DataToggle {
     listar: boolean;
@@ -15,12 +27,33 @@ interface DataToggle {
 class SubNavCartera extends BackboneView {
     template: string;
     dataToggle: DataToggle;
-    static parentView: BackboneView | undefined;
+    api: any;
+    logger: any;
+    app: any;
+    storage: any;
+    region: any;
+    parentView: BackboneView | undefined;
+    router: any;
+    carteraService: CarteraService;
 
-    constructor(options: any) {
+    constructor(options: SubNavCarteraOptions) {
         super(options);
+        this.api = options.api;
+        this.logger = options.logger;
+        this.app = options.app;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.parentView = options.parentView;
+        this.router = options.router;
         this.template = tmp_sub_navbar;
         this.dataToggle = options.dataToggle;
+
+        // Inicializar el servicio con las dependencias
+        this.carteraService = new CarteraService({
+            api: this.api,
+            logger: this.logger,
+            app: this.app
+        });
     }
 
     get className(): string {
@@ -48,27 +81,48 @@ class SubNavCartera extends BackboneView {
 
     nuevoRegistro(e: Event): void {
         e.preventDefault();
-        if (SubNavCartera.parentView) SubNavCartera.parentView.remove();
-        this.router.navigate('crear', { trigger: true });
+        if (this.parentView) this.parentView.remove();
+        if (this.router) {
+            this.router.navigate('crear', { trigger: true });
+        } else {
+            this.logger?.error('Router no disponible en SubNavCartera');
+        }
     }
 
     listarData(e: Event): void {
         e.preventDefault();
-        if (SubNavCartera.parentView) SubNavCartera.parentView.remove();
-        this.router.navigate('listar', { trigger: true, replace: true });
+        if (this.parentView) this.parentView.remove();
+        if (this.router) {
+            this.router.navigate('listar', { trigger: true, replace: true });
+        } else {
+            this.logger?.error('Router no disponible en SubNavCartera');
+        }
     }
 
     editaRegistro(e: Event): void {
         e.preventDefault();
+        if (!this.model) {
+            this.logger?.error('Modelo no disponible en SubNavCartera');
+            return;
+        }
+
         const nit = this.model.get('nit');
-        if (SubNavCartera.parentView) SubNavCartera.parentView.remove();
-        this.router.navigate('editar/' + nit, { trigger: true });
+        if (this.parentView) this.parentView.remove();
+        if (this.router) {
+            this.router.navigate('editar/' + nit, { trigger: true });
+        } else {
+            this.logger?.error('Router no disponible en SubNavCartera');
+        }
     }
 
     masivoRegistro(e: Event): void {
         e.preventDefault();
-        if (SubNavCartera.parentView) SubNavCartera.parentView.remove();
-        this.router.navigate('cargue', { trigger: true });
+        if (this.parentView) this.parentView.remove();
+        if (this.router) {
+            this.router.navigate('cargue', { trigger: true });
+        } else {
+            this.logger?.error('Router no disponible en SubNavCartera');
+        }
     }
 }
 

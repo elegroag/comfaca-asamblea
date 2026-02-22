@@ -4,16 +4,16 @@ import row from "@/componentes/novedades/templates/row.hbs?raw";
 
 interface NovedadRowOptions {
     model?: any;
-    App?: AppInstance;
     api?: any;
     logger?: any;
+    app?: any;
     storage?: any;
     region?: any;
     [key: string]: any;
 }
 
 export default class NovedadRow extends BackboneView {
-    App: AppInstance;
+    app: AppInstance;
     template: any;
     api: any;
     logger: any;
@@ -22,7 +22,7 @@ export default class NovedadRow extends BackboneView {
 
     constructor(options: NovedadRowOptions) {
         super(options);
-        this.App = options.App || options.AppInstance;
+        this.app = options.app || options.AppInstance;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;

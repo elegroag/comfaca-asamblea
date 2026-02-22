@@ -1,26 +1,54 @@
 import { BackboneView } from "@/common/Bone";
 import tmp_show_subnav from '../templates/show_subnav.hbs?raw';
+import EmpresaService from "@/pages/Habiles/EmpresaService";
 
 interface EmpresaNavOptions {
     dataToggle?: string;
     model?: any;
     collection?: any;
     api?: any;
-    App?: { trigger: (event: string, payload: any) => void } | any;
-    router?: { navigate: (fragment: string, options?: any) => void } | any;
+    logger?: any;
+    app?: any;
+    storage?: any;
+    region?: any;
+    router?: { navigate: (fragment: string, options?: any) => void };
+    parentView?: any;
 }
 
 export default class EmpresaNav extends BackboneView {
+    dataToggle: string;
+    model?: any;
+    collection?: any;
+    api: any;
+    logger: any;
+    app: any;
+    storage: any;
+    region: any;
+    router?: { navigate: (fragment: string, options?: any) => void };
+    parentView?: any;
+    empresaService: EmpresaService;
 
     constructor(options: EmpresaNavOptions = {}) {
         super(options);
         this.template = _.template(tmp_show_subnav);
-        this.dataToggle = options.dataToggle;
+        this.dataToggle = options.dataToggle || '';
+        this.model = options.model;
+        this.collection = options.collection;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.app = options.app;
+        this.storage = options.storage;
+        this.region = options.region;
         this.router = options.router;
-        this.App = options.App;
-    }
+        this.parentView = options.parentView;
 
-    static parentView: any;
+        // Inicializar el servicio con las dependencias
+        this.empresaService = new EmpresaService({
+            api: this.api,
+            App: this.app,
+            logger: this.logger
+        });
+    }
 
     get className(): string {
         return 'col';
@@ -43,7 +71,7 @@ export default class EmpresaNav extends BackboneView {
 
     nuevoRegistro(e: Event): void {
         e.preventDefault();
-        if (EmpresaNav.parentView) EmpresaNav.parentView.remove();
+        if (this.parentView) this.parentView.remove();
         if (this.router && typeof this.router.navigate === 'function') {
             this.router.navigate('crear', { trigger: true });
         }
@@ -51,7 +79,7 @@ export default class EmpresaNav extends BackboneView {
 
     masivoRegistro(e: Event): void {
         e.preventDefault();
-        if (EmpresaNav.parentView) EmpresaNav.parentView.remove();
+        if (this.parentView) this.parentView.remove();
         if (this.router && typeof this.router.navigate === 'function') {
             this.router.navigate('masivo', { trigger: true });
         }
@@ -59,7 +87,7 @@ export default class EmpresaNav extends BackboneView {
 
     listarData(e: Event): void {
         e.preventDefault();
-        if (EmpresaNav.parentView) EmpresaNav.parentView.remove();
+        if (this.parentView) this.parentView.remove();
         if (this.router && typeof this.router.navigate === 'function') {
             this.router.navigate('listar', { trigger: true });
         }
@@ -68,7 +96,7 @@ export default class EmpresaNav extends BackboneView {
     editaRegistro(e: Event): void {
         e.preventDefault();
         const nit = this.model?.get('nit');
-        if (EmpresaNav.parentView) EmpresaNav.parentView.remove();
+        if (this.parentView) this.parentView.remove();
         if (this.router && nit && typeof this.router.navigate === 'function') {
             this.router.navigate('edita/' + nit, { trigger: true });
         }
@@ -84,31 +112,47 @@ export default class EmpresaNav extends BackboneView {
     }
 
     // Nuevas acciones: confirman con App y delegan al controller/service vía eventos
-    exportData(e: Event): void {
+    async exportData(e: Event): Promise<void> {
         e.preventDefault();
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
-                message: 'Se requiere de confirmar si desea exportar la lista.',
-                callback: (status: boolean) => {
-                    if (status && typeof this.trigger === 'function') {
-                        this.trigger('export:lista');
-                    }
-                },
+        try {
+            // Confirmación con SweetAlert
+            const result = await Swal.fire({
+                title: 'Confirmar',
+                text: 'Se requiere de confirmar si desea exportar la lista.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, exportar',
+                cancelButtonText: 'Cancelar'
             });
+
+            if (result.isConfirmed && typeof this.trigger === 'function') {
+                this.trigger('export:lista');
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al exportar lista:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error al exportar' });
         }
     }
 
-    informeData(e: Event): void {
+    async informeData(e: Event): Promise<void> {
         e.preventDefault();
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
-                message: 'Se requiere de confirmar si desea generar el informe.',
-                callback: (status: boolean) => {
-                    if (status && typeof this.trigger === 'function') {
-                        this.trigger('export:informe');
-                    }
-                },
+        try {
+            // Confirmación con SweetAlert
+            const result = await Swal.fire({
+                title: 'Confirmar',
+                text: 'Se requiere de confirmar si desea generar el informe.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, generar',
+                cancelButtonText: 'Cancelar'
             });
+
+            if (result.isConfirmed && typeof this.trigger === 'function') {
+                this.trigger('export:informe');
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al generar informe:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error al generar informe' });
         }
     }
 }

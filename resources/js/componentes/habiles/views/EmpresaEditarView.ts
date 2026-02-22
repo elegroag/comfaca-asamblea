@@ -1,18 +1,28 @@
 import { BackboneView } from "@/common/Bone";
 import tmp_edita_empresa from "../templates/edita_empresa?raw";
+import EmpresaService from "@/pages/Habiles/EmpresaService";
 
 interface EmpresaEditarViewOptions {
     model?: any;
     collection?: any;
     router?: any;
     api?: any;
-    App?: any;
+    logger?: any;
+    app?: any;
+    storage?: any;
+    region?: any;
     EmpresaModel: new (attrs?: any, options?: any) => any;
 }
 
 export default class EmpresaEditarView extends BackboneView {
     modelUse: any;
     template: any;
+    api: any;
+    logger: any;
+    app: any;
+    storage: any;
+    region: any;
+    empresaService: EmpresaService;
 
     constructor(options: EmpresaEditarViewOptions) {
         super({
@@ -20,7 +30,19 @@ export default class EmpresaEditarView extends BackboneView {
             className: 'box',
         });
         this.modelUse = options.EmpresaModel;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.app = options.app;
+        this.storage = options.storage;
+        this.region = options.region;
         this.template = _.template(tmp_edita_empresa);
+
+        // Inicializar el servicio con las dependencias
+        this.empresaService = new EmpresaService({
+            api: this.api,
+            App: this.app,
+            logger: this.logger
+        });
     }
 
     /**
@@ -30,38 +52,45 @@ export default class EmpresaEditarView extends BackboneView {
         return { 'click #bt_edita_registro': this.editaRegistro };
     }
 
-    editaRegistro(e: Event): void {
+    async editaRegistro(e: Event): Promise<void> {
         e.preventDefault();
         const target = $(e.currentTarget as HTMLElement);
         target.attr('disabled', 'true');
 
-        const model = new this.modelUse({
-            nit: parseInt(this.getInput('nit') || '0'),
-            cedrep: parseInt(this.getInput('cedrep') || '0'),
-            repleg: this.getInput('repleg'),
-            telefono: this.getInput('telefono'),
-            email: this.getInput('email'),
-            razsoc: this.getInput('razsoc'),
-            crear_pre_registro: this.getCheck('crear_pre_registro'),
-            cruzar_cartera: this.getCheck('cruzar_cartera'),
-        });
+        try {
+            const model = new this.modelUse({
+                nit: parseInt(this.getInput('nit') || '0'),
+                cedrep: parseInt(this.getInput('cedrep') || '0'),
+                repleg: this.getInput('repleg'),
+                telefono: this.getInput('telefono'),
+                email: this.getInput('email'),
+                razsoc: this.getInput('razsoc'),
+                crear_pre_registro: this.getCheck('crear_pre_registro'),
+                cruzar_cartera: this.getCheck('cruzar_cartera'),
+            });
 
-        if (typeof this.trigger === 'function') {
-            this.trigger('form:edit', {
+            // Delegar al service para editar
+            this.empresaService.__saveEmpresa({
                 model: model,
                 callback: (success: boolean, response?: any) => {
+                    target.removeAttr('disabled');
                     if (success === true) {
-                        target.removeAttr('disabled');
                         if (response?.data) {
                             this.trigger('set:empresas', response.data);
                         }
                         this.trigger('notify', model.get('nit'));
                         this.trigger('item:edit', model);
+
+                        this.app?.trigger('alert:success', { message: 'Empresa actualizada exitosamente' });
                     } else {
-                        target.removeAttr('disabled');
+                        this.app?.trigger('alert:error', { message: response?.msj || 'Error al actualizar empresa' });
                     }
-                },
+                }
             });
+        } catch (error: any) {
+            target.removeAttr('disabled');
+            this.logger?.error('Error al editar empresa:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
         }
     }
 

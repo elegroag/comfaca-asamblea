@@ -1,12 +1,43 @@
 import { BackboneView } from "@/common/Bone";
 import RechazarDetallePoder from "./RechazarDetallePoder";
-import { Utils } from "@/core/Utils";
 import detallePoder from "@/componentes/poderes/templates/detallePoder.hbs?raw";
+import PoderesService from "@/pages/Poderes/PoderService";
+
+interface PoderDetalleOptions {
+    model?: any;
+    api?: any;
+    logger?: any;
+    app?: any;
+    storage?: any;
+    region?: any;
+    [key: string]: any;
+}
 
 export default class PoderDetalle extends BackboneView {
+    criterios_rechazos: any;
+    habil_apoderado: any;
+    habil_poderdante: any;
+    api: any;
+    logger: any;
+    app: any;
+    storage: any;
+    region: any;
+    poderesService: PoderesService;
 
-    constructor(options: any) {
+    constructor(options: PoderDetalleOptions) {
         super(options);
+        this.api = options.api;
+        this.logger = options.logger;
+        this.app = options.app;
+        this.storage = options.storage;
+        this.region = options.region;
+
+        // Inicializar el servicio
+        this.poderesService = new PoderesService({
+            api: this.api,
+            logger: this.logger,
+            app: this.app
+        });
     }
 
     initialize() {
@@ -25,7 +56,9 @@ export default class PoderDetalle extends BackboneView {
     backList(e: Event) {
         e.preventDefault();
         this.remove();
-        this.router.navigate('listar', { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('listar', { trigger: true, replace: true });
+        }
         return false;
     }
 
@@ -34,27 +67,26 @@ export default class PoderDetalle extends BackboneView {
         if ($input.is(':checked')) {
             if (this.model.get('estado') == 'A') return false;
 
-            this.App?.trigger('confirma', {
+            this.app?.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea activar el poder.',
-                callback: (continuar: boolean) => {
+                callback: async (continuar: boolean) => {
                     if (continuar) {
-                        this.App?.trigger('syncro', {
-                            url: Utils.getURL('poderes/empresa_activar/' + this.model.get('documento')),
-                            data: {},
-                            callback: (salida: any) => {
-                                if (salida) {
-                                    if (salida.success) {
-                                        this.model.set('estado', 'A');
-                                        this.$el.find('#show_criterio_rechazo').text('No Aplicado');
-                                        this.$el.find('#show_estado_text').text('ACTIVO');
+                        try {
+                            const documento = this.model.get('documento');
+                            const response = await this.poderesService.__activarPoder(documento);
 
-                                        this.App?.trigger('alert:success', salida.msj);
-                                    } else {
-                                        this.App?.trigger('alert:error', salida.err);
-                                    }
-                                }
-                            },
-                        });
+                            if (response?.success) {
+                                this.model.set('estado', 'A');
+                                this.$el.find('#show_criterio_rechazo').text('No Aplicado');
+                                this.$el.find('#show_estado_text').text('ACTIVO');
+                                this.app?.trigger('alert:success', response.msj);
+                            } else {
+                                this.app?.trigger('alert:error', (response as any)?.err || 'Error al activar el poder');
+                            }
+                        } catch (error: any) {
+                            this.logger?.error('Error al activar poder:', error);
+                            this.app?.trigger('alert:error', 'Error de conexión');
+                        }
                     } else {
                         this.$el.find("[id='estado_poder']").trigger('click');
                     }
@@ -63,7 +95,7 @@ export default class PoderDetalle extends BackboneView {
         } else {
             if (this.model.get('estado') == 'A') {
                 let view = new RechazarDetallePoder({ model: this.model, collection: this.criterios_rechazos });
-                this.App?.trigger('show:modal', 'Rechazar Poder Detalle', view, { bootstrapSize: 'modal-lg' });
+                this.app?.trigger('show:modal', 'Rechazar Poder Detalle', view, { bootstrapSize: 'modal-lg' });
                 this.listenTo(view, 'change:criterio', this.__changeCriterio);
             }
         }
@@ -92,11 +124,11 @@ export default class PoderDetalle extends BackboneView {
     __changeCriterio(model: any, motivo: any) {
         let criterioRechazo = model.get('criterio_rechazo');
         if (criterioRechazo) {
-            $('#show_motivo_rechazo').html(motivo);
-            $('#show_estado_text').text('RECHAZADO');
+            this.$el.find('#show_motivo_rechazo').html(motivo);
+            this.$el.find('#show_estado_text').text('RECHAZADO');
         } else {
-            $('#show_motivo_rechazo').html('No Aplicado');
-            $('#show_estado_text').text('ACTIVO');
+            this.$el.find('#show_motivo_rechazo').html('No Aplicado');
+            this.$el.find('#show_estado_text').text('ACTIVO');
         }
     }
 }

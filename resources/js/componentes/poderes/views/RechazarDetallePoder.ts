@@ -1,5 +1,3 @@
-'use strict';
-
 import { BackboneView } from "@/common/Bone";
 import { Utils } from "@/core/Utils";
 import type { AppInstance } from '@/types/types';

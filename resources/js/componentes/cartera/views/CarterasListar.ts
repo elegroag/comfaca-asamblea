@@ -11,9 +11,9 @@ import tmp_listar_cartera from "../templates/tmp_listar_cartera.hbs?raw";
 interface CarterasListarOptions {
     collection?: any;
     model?: any;
-    App?: any;
     api?: any;
     logger?: any;
+    app?: any;
     storage?: any;
     region?: any;
 }
@@ -28,9 +28,9 @@ class CarterasListar extends BackboneView {
     children: any[];
     modelView: typeof CarteraRowView;
     template: any;
-    App: any;
     api: any;
     logger: any;
+    app: any;
     storage: any;
     carteraService: CarteraService;
 
@@ -45,15 +45,15 @@ class CarterasListar extends BackboneView {
         this.children = [];
         this.modelView = CarteraRowView;
         this.template = _.template(tmp_listar_cartera);
-        this.App = options.App;
         this.api = options.api;
         this.logger = options.logger;
+        this.app = options.app;
         this.storage = options.storage;
 
         this.carteraService = new CarteraService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -92,8 +92,8 @@ class CarterasListar extends BackboneView {
         target.attr('disabled', 'true');
         const id = parseInt(target.attr('data-cid') || '0');
         this.remove();
-        if (this.App && this.App.router) {
-            this.App.router.navigate('editar/' + id, { trigger: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('editar/' + id, { trigger: true });
         }
     }
 
@@ -104,8 +104,8 @@ class CarterasListar extends BackboneView {
         const id = parseInt(target.attr('data-cid') || '0');
         const model = this.collection.get(id);
 
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: 'Confirma que desea borrar el registro de empresa en Cartera.',
                 callback: (success: boolean) => {
                     if (success) {
@@ -113,8 +113,8 @@ class CarterasListar extends BackboneView {
                             model: model,
                             callback: (response: any) => {
                                 if (response) {
-                                    if (this.App && typeof this.App.trigger === 'function') {
-                                        this.App.trigger('alert:success', response.msj);
+                                    if (this.app && typeof this.app.trigger === 'function') {
+                                        this.app.trigger('alert:success', response.msj);
                                     }
                                     this.removeModel(model);
                                     this.tableModule.row(target.parents('tr')).remove().draw();
@@ -132,8 +132,8 @@ class CarterasListar extends BackboneView {
 
     exportData(e: Event): void {
         e.preventDefault();
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea exportar la lista.',
                 callback: async (success: boolean) => {
                     if (success) {
@@ -142,8 +142,8 @@ class CarterasListar extends BackboneView {
                             await this.carteraService.__exportLista();
                         } catch (error: any) {
                             this.logger?.error('Error al exportar lista:', error);
-                            if (this.App && typeof this.App.trigger === 'function') {
-                                this.App.trigger('alert:error', {
+                            if (this.app && typeof this.app.trigger === 'function') {
+                                this.app.trigger('alert:error', {
                                     message: error.message || 'Error al exportar lista'
                                 });
                             }
@@ -158,8 +158,8 @@ class CarterasListar extends BackboneView {
         e.preventDefault();
         const target = $(e.currentTarget as HTMLElement);
         const id = target.attr('data-cid');
-        if (this.App && this.App.router) {
-            this.App.router.navigate('mostrar/' + id, { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('mostrar/' + id, { trigger: true, replace: true });
         }
     }
 
@@ -213,7 +213,14 @@ class CarterasListar extends BackboneView {
         }
 
         if (!view) {
-            view = new this.modelView({ model: model });
+            view = new this.modelView({
+                model: model,
+                api: this.api,
+                logger: this.logger,
+                app: this.app,
+                storage: this.storage,
+                region: this.region
+            });
             this.children.push(view);
         }
 

@@ -6,16 +6,16 @@ import listar from "@/componentes/novedades/templates/listar.hbs?raw";
 
 interface NovedadesListarOptions {
     collection?: any;
-    App?: any;
     api?: any;
     logger?: any;
+    app?: any;
     storage?: any;
     region?: any;
     [key: string]: any;
 }
 
 export default class NovedadesListar extends BackboneView {
-    App: any;
+    app: any;
     subNavView: any;
     children: any;
     tableModule: any;
@@ -29,7 +29,7 @@ export default class NovedadesListar extends BackboneView {
 
     constructor(options: NovedadesListarOptions) {
         super(options);
-        this.App = options.App || options.AppInstance;
+        this.app = options.app || options.AppInstance;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -42,7 +42,7 @@ export default class NovedadesListar extends BackboneView {
         this.novedadesService = new NovedadesService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -76,8 +76,8 @@ export default class NovedadesListar extends BackboneView {
     procesarAll(e: Event): void {
         e.preventDefault();
 
-        if (this.App) {
-            this.App.trigger('confirma', {
+        if (this.app) {
+            this.app.trigger('confirma', {
                 message: 'Confirma que desea procesar el registro',
                 callback: (status: boolean) => {
                     if (status) {
@@ -86,13 +86,12 @@ export default class NovedadesListar extends BackboneView {
                             callback: (response: any) => {
                                 if (response) {
                                     if (response.success) {
-                                        this.App.trigger('alert:success', response.msj);
+                                        this.app.trigger('alert:success', response.msj);
 
-                                        if (typeof download_file === 'function') {
-                                            download_file(response);
-                                        }
+                                        // Delegar descarga al service
+                                        this.novedadesService.__downloadFile(response);
                                     } else {
-                                        this.App.trigger('alert:error', response.msj);
+                                        this.app.trigger('alert:error', response.msj);
                                     }
                                 }
                             },
@@ -109,8 +108,8 @@ export default class NovedadesListar extends BackboneView {
     updateAll(e: Event): void {
         e.preventDefault();
 
-        if (this.App) {
-            this.App.trigger('confirma', {
+        if (this.app) {
+            this.app.trigger('confirma', {
                 message: 'Confirma que desea procesar la actualización de datos de empresas',
                 callback: (status: boolean) => {
                     if (status) {
@@ -119,13 +118,12 @@ export default class NovedadesListar extends BackboneView {
                             callback: (response: any) => {
                                 if (response) {
                                     if (response.success) {
-                                        this.App.trigger('alert:success', response.msj);
+                                        this.app.trigger('alert:success', response.msj);
 
-                                        if (typeof download_file === 'function') {
-                                            download_file(response);
-                                        }
+                                        // Delegar descarga al service
+                                        this.novedadesService.__downloadFile(response);
                                     } else {
-                                        this.App.trigger('alert:error', response.msj);
+                                        this.app.trigger('alert:error', response.msj);
                                     }
                                 }
                             },
@@ -146,8 +144,8 @@ export default class NovedadesListar extends BackboneView {
         const id = target.attr('data-code');
         const model = this.collection.get(parseInt(id || '0'));
 
-        if (this.App) {
-            this.App.trigger('confirma', {
+        if (this.app) {
+            this.app.trigger('confirma', {
                 message: 'Confirma que desea procesar el registro',
                 callback: (status: boolean) => {
                     if (status) {
@@ -156,13 +154,12 @@ export default class NovedadesListar extends BackboneView {
                             callback: (response: any) => {
                                 if (response) {
                                     if (response.success) {
-                                        this.App.trigger('alert:success', response.msj);
+                                        this.app.trigger('alert:success', response.msj);
 
-                                        if (typeof download_file === 'function') {
-                                            download_file(response);
-                                        }
+                                        // Delegar descarga al service
+                                        this.novedadesService.__downloadFile(response);
                                     } else {
-                                        this.App.trigger('alert:error', response.msj);
+                                        this.app.trigger('alert:error', response.msj);
                                     }
                                 }
                             },
@@ -210,8 +207,8 @@ export default class NovedadesListar extends BackboneView {
         const id = target.attr('data-code');
         const model = this.collection.get(parseInt(id || '0'));
 
-        if (this.App) {
-            this.App.trigger('confirma', {
+        if (this.app) {
+            this.app.trigger('confirma', {
                 message: 'Confirma que desea borra la novedad',
                 callback: (status: boolean) => {
                     if (status) {
@@ -219,7 +216,7 @@ export default class NovedadesListar extends BackboneView {
                             model: model,
                             callback: (response: any) => {
                                 if (response) {
-                                    this.App.trigger('alert:success', response.msj);
+                                    this.app.trigger('alert:success', response.msj);
                                     this.collection.remove(model);
 
                                     if (this.tableModule) {

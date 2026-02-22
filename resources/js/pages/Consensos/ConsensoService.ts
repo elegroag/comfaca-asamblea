@@ -13,7 +13,9 @@ export interface ConsensoCollections {
 
 export default class ConsensoService {
     private storage: BoxCollectionStorage;
-    private collections: ConsensoCollections;
+    private collections: ConsensoCollections = {
+        consensos: new ConsensosCollection()
+    } as ConsensoCollections;
 
     constructor(private readonly opts: ConsensoServiceOptions) {
         this.storage = BoxCollectionStorage.getInstance();
@@ -73,6 +75,26 @@ export default class ConsensoService {
     __addConsensos(consenso: any): void {
         const _consenso = consenso instanceof Consenso ? consenso : new Consenso(consenso);
         this.collections.consensos.add(_consenso, { merge: true });
+    }
+
+    /**
+     * Buscar consenso por ID
+     */
+    async __findById(id: string): Promise<ApiResponse> {
+        try {
+            const response = await this.findByIdApi(id);
+
+            if (response?.success) {
+                return response;
+            } else {
+                this.App.trigger('alert:error', { message: response?.msj || 'Error al buscar consenso' });
+                return { success: false, message: response?.msj || 'Error al buscar consenso' };
+            }
+        } catch (error: any) {
+            this.logger.error('Error al buscar consenso por ID:', error);
+            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return { success: false, message: error.message || 'Error de conexión' };
+        }
     }
 
     /**
@@ -182,6 +204,13 @@ export default class ConsensoService {
      */
     private async findAllApi(): Promise<ApiResponse> {
         return await this.api.get('/consensos/listar');
+    }
+
+    /**
+     * Buscar consenso por ID desde API
+     */
+    private async findByIdApi(id: string): Promise<ApiResponse> {
+        return await this.api.get(`/consensos/findById/${id}`);
     }
 
     /**

@@ -2,15 +2,16 @@ import { BackboneView } from "@/common/Bone";
 import Cartera from "@/models/Cartera";
 import SubNavCartera from "./SubNavCartera";
 import tmp_crear_cartera from "../templates/tmp_crear_cartera.hbs?raw";
+import CarteraService from "@/pages/Cartera/CarteraService";
 
 interface CarteraCrearOptions {
     model: Cartera;
     isNew: boolean;
-    App: any;
-    api: any;
-    logger: any;
-    storage: any;
-    region: any;
+    api?: any;
+    logger?: any;
+    app?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
@@ -28,11 +29,12 @@ interface EmpresaResponse {
 export default class CarteraCrear extends BackboneView {
     isNew: boolean;
     subNavCartera: SubNavCartera | null;
-    App: any;
     api: any;
     logger: any;
+    app: any;
     storage: any;
     region: any;
+    carteraService: CarteraService;
 
     constructor(options: CarteraCrearOptions) {
         super({
@@ -42,12 +44,19 @@ export default class CarteraCrear extends BackboneView {
         });
         this.isNew = options.isNew;
         this.subNavCartera = null;
-        this.App = options.App;
         this.api = options.api;
         this.logger = options.logger;
+        this.app = options.app;
         this.storage = options.storage;
         this.region = options.region;
         this.template = _.template(tmp_crear_cartera);
+
+        // Inicializar el servicio con las dependencias
+        this.carteraService = new CarteraService({
+            api: this.api,
+            logger: this.logger,
+            app: this.app
+        });
     }
 
     get events(): Record<string, (e: Event) => void> {
@@ -88,8 +97,8 @@ export default class CarteraCrear extends BackboneView {
 
         // Validación básica sin dependencia externa
         if (!nit || nit.length < 4 || nit.length > 20) {
-            if (this.App && typeof this.App.trigger === 'function') {
-                this.App.trigger('alert:error', { message: 'El NIT debe tener entre 4 y 20 dígitos' });
+            if (this.app && typeof this.app.trigger === 'function') {
+                this.app.trigger('alert:error', { message: 'El NIT debe tener entre 4 y 20 dígitos' });
             }
             return;
         }
@@ -105,12 +114,12 @@ export default class CarteraCrear extends BackboneView {
                         this.setInput('repleg', response.empresa!.repleg);
                     }
                     if (response.isValid === true) {
-                        if (this.App && typeof this.App.trigger === 'function') {
-                            this.App.trigger('alert:info', response.msj);
+                        if (this.app && typeof this.app.trigger === 'function') {
+                            this.app.trigger('alert:info', response.msj);
                         }
                     } else {
-                        if (this.App && typeof this.App.trigger === 'function') {
-                            this.App.trigger('alert:warning', response.msj);
+                        if (this.app && typeof this.app.trigger === 'function') {
+                            this.app.trigger('alert:warning', response.msj);
                         }
                     }
                     this.$el.find('#bt_registrar').removeAttr('disabled');
@@ -126,82 +135,85 @@ export default class CarteraCrear extends BackboneView {
     closeForm(e: Event): void {
         e.preventDefault();
         this.remove();
-        if (this.App && this.App.router) {
-            this.App.router.navigate('listar', { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('listar', { trigger: true, replace: true });
         }
     }
 
-    guardarRegistro(e: Event): void {
+    async guardarRegistro(e: Event): Promise<void> {
         e.preventDefault();
         const target = $(e.currentTarget as HTMLElement);
         target.attr('disabled', 'true');
 
-        const cruzar_habiles = this.getCheck('cruzar_habiles');
-        const nit = this.getInput('nit');
-        const concepto = this.getInput('concepto');
-        const codigo = this.getInput('codigo');
-        const razsoc = this.getInput('razsoc');
-        const repleg = this.getInput('repleg');
-        const cedrep = this.getInput('cedrep');
+        try {
+            const cruzar_habiles = this.getCheck('cruzar_habiles');
+            const nit = this.getInput('nit');
+            const concepto = this.getInput('concepto');
+            const codigo = this.getInput('codigo');
+            const razsoc = this.getInput('razsoc');
+            const repleg = this.getInput('repleg');
+            const cedrep = this.getInput('cedrep');
 
-        this.model.set({
-            nit,
-            concepto,
-            codigo,
-            razsoc,
-            repleg,
-            cedrep,
-            cruzar_habiles: cruzar_habiles,
-        });
+            this.model.set({
+                nit,
+                concepto,
+                codigo,
+                razsoc,
+                repleg,
+                cedrep,
+                cruzar_habiles: cruzar_habiles,
+            });
 
-        if (!this.model.isValid()) {
-            const errors = this.model.validationError;
-            $App.trigger('alert:error', errors.join(', '));
-            target.removeAttr('disabled');
-            return;
-        }
+            if (!this.model.isValid()) {
+                const errors = this.model.validationError;
+                this.app?.trigger('alert:error', errors.join(', '));
+                return;
+            }
 
-        $App.trigger('confirma', {
-            message: 'Confirma la acción de guardar el registro de cartera',
-            callback: (status: boolean) => {
-                if (status) {
-                    const url = this.isNew
-                        ? create_url('cartera/crearCartera')
-                        : create_url('cartera/actualizaCartera/' + this.model.get('id'));
+            // Confirmación con SweetAlert
+            const result = await Swal.fire({
+                title: 'Confirmar',
+                text: 'Confirma la acción de guardar el registro de cartera',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, guardar',
+                cancelButtonText: 'Cancelar'
+            });
 
-                    $App.trigger('syncro', {
-                        url,
-                        data: this.model.toJSON(),
-                        callback: (response: any) => {
-                            target.removeAttr('disabled');
-                            if (response?.success) {
-                                if (Object.keys(response).includes('cartera')) {
-                                    _.each(response.cartera, (value: any, key: string) => this.model.set(key, value));
-                                    this.trigger('add:cartera', this.model);
-                                    this.remove();
-                                    $App.router.navigate('listar', { trigger: true, replace: true });
-                                }
-                                if (response.isValid === true) {
-                                    $App.trigger('success', response.msj);
-                                } else {
-                                    $App.trigger('error', response.msj);
-                                }
-                            } else {
-                                $App.trigger('error', response?.msj || 'Error al guardar');
-                                this.setInput('nit', '');
-                                this.setInput('concepto', '');
-                                this.setInput('codigo', '');
-                                this.setInput('razsoc', '');
-                                this.setInput('repleg', '');
-                                this.setInput('cedrep', '');
-                            }
-                        },
-                    });
+            if (result.isConfirmed) {
+                // Delegar al service para guardar
+                const response = await this.carteraService.__saveCartera(this.model.toJSON() as any);
+
+                if (response?.success) {
+                    if (Object.keys(response as any).includes('cartera')) {
+                        _.each((response as any).cartera, (value: any, key: string) => this.model.set(key, value));
+                        this.trigger('add:cartera', this.model);
+                        this.remove();
+                        if (this.app?.router) {
+                            this.app.router.navigate('listar', { trigger: true, replace: true });
+                        }
+                    }
+                    if ((response as any).isValid === true) {
+                        this.app?.trigger('success', (response as any).msj);
+                    } else {
+                        this.app?.trigger('error', (response as any).msj);
+                    }
                 } else {
-                    target.removeAttr('disabled');
+                    this.app?.trigger('error', (response as any)?.msj || 'Error al guardar');
+                    this.setInput('nit', '');
+                    this.setInput('concepto', '');
+                    this.setInput('codigo', '');
+                    this.setInput('razsoc', '');
+                    this.setInput('repleg', '');
+                    this.setInput('cedrep', '');
                 }
-            },
-        });
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al guardar cartera:', error);
+            this.app?.trigger('error', error.message || 'Error de conexión');
+        } finally {
+            target.removeAttr('disabled');
+        }
     }
 
     searchFile(e: Event): void {

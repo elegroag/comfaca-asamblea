@@ -2,13 +2,14 @@ import { BackboneView } from "@/common/Bone";
 import ConsensoCrear from "./ConsensoCrear";
 import ConsensoDetalle from "./ConsensoDetalle";
 import activa from "@/componentes/asamblea/templates/activa.hbs?raw";
+import AsambleaService from "@/pages/Asamblea/AsambleaService";
 
 interface AsambleaActivaOptions {
     model?: any;
     collection?: any;
-    App?: any;
     api?: any;
     logger?: any;
+    app?: any;
     storage?: any;
     region?: any;
     [key: string]: any;
@@ -16,20 +17,21 @@ interface AsambleaActivaOptions {
 
 export default class AsambleaActiva extends BackboneView {
     template: any;
-    App: any;
     api: any;
     logger: any;
+    app: any;
     storage: any;
     region: any;
     consensos: any;
     asambleas: any;
     modal: any;
+    asambleaService: AsambleaService;
 
     constructor(options: AsambleaActivaOptions = {}) {
         super(options);
-        this.App = options.App;
         this.api = options.api;
         this.logger = options.logger;
+        this.app = options.app;
         this.storage = options.storage;
         this.region = options.region;
         this.model = options.model;
@@ -38,6 +40,13 @@ export default class AsambleaActiva extends BackboneView {
         this.consensos = undefined;
         this.asambleas = undefined;
         this.modal = undefined;
+
+        // Inicializar el servicio con las dependencias
+        this.asambleaService = new AsambleaService({
+            api: this.api,
+            logger: this.logger,
+            app: this.app
+        });
     }
 
     initialize(): void {
@@ -78,7 +87,7 @@ export default class AsambleaActiva extends BackboneView {
         this.modal.find('#mdl_set_footer').css('display', 'none');
 
         const view = new ConsensoCrear({
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             storage: this.storage,
@@ -112,7 +121,7 @@ export default class AsambleaActiva extends BackboneView {
 
         const view = new ConsensoDetalle({
             model: consenso,
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             storage: this.storage,
@@ -137,8 +146,8 @@ export default class AsambleaActiva extends BackboneView {
         e.preventDefault();
         this.remove();
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('listar_asambleas', { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('listar_asambleas', { trigger: true, replace: true });
         }
     }
 }

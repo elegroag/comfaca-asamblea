@@ -5,9 +5,9 @@ import tmp_cargar_cartera from "../templates/tmp_cargar_cartera.hbs?raw";
 
 interface CargueMasivoCarteraOptions {
     model?: any;
-    App?: any;
     api?: any;
     logger?: any;
+    app?: any;
     storage?: any;
     region?: any;
 }
@@ -24,9 +24,9 @@ interface CargueResponse {
 class CargueMasivoCartera extends BackboneView {
     subNavCartera: SubNavCartera | null;
     template: any;
-    App: any;
     api: any;
     logger: any;
+    app: any;
     storage: any;
     carteraService: CarteraService;
 
@@ -34,14 +34,14 @@ class CargueMasivoCartera extends BackboneView {
         super({ ...options, id: 'box_crear_carteras' });
         this.subNavCartera = null;
         this.template = _.template(tmp_cargar_cartera);
-        this.App = options?.App;
         this.api = options?.api;
         this.logger = options?.logger;
+        this.app = options?.app;
         this.storage = options?.storage;
         this.carteraService = new CarteraService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -68,58 +68,66 @@ class CargueMasivoCartera extends BackboneView {
         return this;
     }
 
-    hacerCargue(e: Event): void {
+    async hacerCargue(e: Event): Promise<void> {
         e.preventDefault();
         const target = $(e.currentTarget as HTMLElement);
         target.attr('disabled', 'true');
 
-        this.App?.trigger('confirma', {
-            message: 'Confirma que desea hacer el cargue masivo de cartera',
-            callback: (status: boolean) => {
-                if (status) {
-                    const archivoInput = document.getElementById('archivo_cartera') as HTMLInputElement;
-                    const archivo_cartera = archivoInput?.files;
+        try {
+            // Confirmación con SweetAlert
+            const result = await Swal.fire({
+                title: 'Confirmar',
+                text: 'Confirma que desea hacer el cargue masivo de cartera',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, cargar',
+                cancelButtonText: 'Cancelar'
+            });
 
-                    if (!archivo_cartera || archivo_cartera.length === 0) {
-                        this.setText('name_archivo', 'Seleccionar aquí...');
-                        this.App?.trigger(
-                            'alert:warning',
-                            'Se requiere de seleccionar un archivo valido para hacer el cargue'
-                        );
-                        target.removeAttr('disabled');
-                        return;
-                    }
+            if (result.isConfirmed) {
+                const archivoInput = document.getElementById('archivo_cartera') as HTMLInputElement;
+                const archivo_cartera = archivoInput?.files;
 
-                    const form_data = new FormData();
-                    form_data.append('file', archivo_cartera[0]);
-
-                    // Delegar al servicio pero manteniendo $.ajax para FormData
-                    this.carteraService.__uploadMasivo({
-                        formData: form_data,
-                        callback: (success: boolean, response: any) => {
-                            target.removeAttr('disabled');
-                            if (success && response) {
-                                this.App?.trigger(
-                                    'success',
-                                    `Ya se completo el cargue de cartera.\n
-									Registrados: ${response.creados || 0}\n
-									Cantidad: ${response.filas || 0}\n
-									Fallos: ${response.fallidos || 0}\n
-									Inactivas: ${response.inactivas || 0}`
-                                );
-                            } else {
-                                this.App?.trigger('error', response?.msj || 'Error en el cargue');
-                            }
-                            this.setInput('archivo_cartera', '');
-                            this.setText('name_archivo', 'Seleccionar aquí...');
-                            this.$el.find('#remover_archivo').attr('disabled', 'true');
-                        }
-                    });
-                } else {
-                    target.removeAttr('disabled');
+                if (!archivo_cartera || archivo_cartera.length === 0) {
+                    this.setText('name_archivo', 'Seleccionar aquí...');
+                    this.app?.trigger(
+                        'alert:warning',
+                        'Se requiere de seleccionar un archivo valido para hacer el cargue'
+                    );
+                    return;
                 }
-            },
-        });
+
+                const form_data = new FormData();
+                form_data.append('file', archivo_cartera[0]);
+
+                // Delegar al servicio pero manteniendo el callback existente
+                this.carteraService.__uploadMasivo({
+                    formData: form_data,
+                    callback: (success: boolean, response: any) => {
+                        if (success && response) {
+                            this.app?.trigger(
+                                'success',
+                                `Ya se completo el cargue de cartera.\n
+								Registrados: ${response.creados || 0}\n
+								Cantidad: ${response.filas || 0}\n
+								Fallos: ${response.fallidos || 0}\n
+								Inactivas: ${response.inactivas || 0}`
+                            );
+                        } else {
+                            this.app?.trigger('error', response?.msj || 'Error en el cargue');
+                        }
+                        this.setInput('archivo_cartera', '');
+                        this.setText('name_archivo', 'Seleccionar aquí...');
+                        this.$el.find('#remover_archivo').attr('disabled', 'true');
+                    }
+                });
+            }
+        } catch (error: any) {
+            this.logger?.error('Error en cargue masivo:', error);
+            this.app?.trigger('error', error.message || 'Error de conexión');
+        } finally {
+            target.removeAttr('disabled');
+        }
     }
 
     removerArchivo(e: Event): void {
@@ -145,9 +153,13 @@ class CargueMasivoCartera extends BackboneView {
                 masivo: false,
                 exportar: false,
             },
+            api: this.api,
+            logger: this.logger,
+            app: this.app,
+            parentView: this,
+            router: this.app?.router
         }).render();
         this.$el.find('#showSubnav').html((this.subNavCartera as any).$el);
-        (SubNavCartera as any).parentView = this;
     }
 
     getInput(selector: string): string {

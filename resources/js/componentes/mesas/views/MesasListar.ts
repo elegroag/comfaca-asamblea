@@ -7,9 +7,9 @@ import tmp_listar_mesas from "../templates/tmp_listar_mesas.hbs?raw";
 interface MesasListarOptions {
     collection?: any;
     model?: any;
-    App?: any;
     api?: any;
     logger?: any;
+    app?: any;
     storage?: any;
     region?: any;
     [key: string]: any;
@@ -18,26 +18,27 @@ interface MesasListarOptions {
 export default class MesasListar extends BackboneView {
     template: any;
     subNavMesas: SubNavMesas | null;
-    App: any;
     api: any;
     logger: any;
+    app: any;
     storage: any;
     region: any;
     mesasService: MesasService;
+    tableModule: any;
 
     constructor(options: MesasListarOptions) {
         super({ ...options, className: 'box', id: 'box_usuarios' });
         this.template = _.template(tmp_listar_mesas);
         this.subNavMesas = null;
-        this.App = options.App;
         this.api = options.api;
         this.logger = options.logger;
+        this.app = options.app;
         this.storage = options.storage;
         this.region = options.region;
         this.mesasService = new MesasService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -65,8 +66,8 @@ export default class MesasListar extends BackboneView {
             return;
         }
 
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar para borrar el registro seleccionado.',
                 callback: async (status: boolean) => {
                     if (status) {
@@ -77,8 +78,8 @@ export default class MesasListar extends BackboneView {
                             target.removeAttr('disabled');
 
                             if (response?.success) {
-                                if (this.App && typeof this.App.trigger === 'function') {
-                                    this.App.trigger('alert:success', {
+                                if (this.app && typeof this.app.trigger === 'function') {
+                                    this.app.trigger('alert:success', {
                                         message: 'La operación se completó con éxito'
                                     });
                                 }
@@ -87,8 +88,8 @@ export default class MesasListar extends BackboneView {
                                     window.location.reload();
                                 }, 1000);
                             } else {
-                                if (this.App && typeof this.App.trigger === 'function') {
-                                    this.App.trigger('alert:error', {
+                                if (this.app && typeof this.app.trigger === 'function') {
+                                    this.app.trigger('alert:error', {
                                         message: response?.msj || 'Error al eliminar mesa'
                                     });
                                 }
@@ -96,8 +97,8 @@ export default class MesasListar extends BackboneView {
                         } catch (error: any) {
                             target.removeAttr('disabled');
                             this.logger?.error('Error al eliminar mesa:', error);
-                            if (this.App && typeof this.App.trigger === 'function') {
-                                this.App.trigger('alert:error', {
+                            if (this.app && typeof this.app.trigger === 'function') {
+                                this.app.trigger('alert:error', {
                                     message: 'Ocurrió un error al eliminar la mesa'
                                 });
                             }
@@ -122,8 +123,8 @@ export default class MesasListar extends BackboneView {
             return;
         }
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('mostrar/' + mesa, { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('mostrar/' + mesa, { trigger: true, replace: true });
         }
     }
 
@@ -180,7 +181,7 @@ export default class MesasListar extends BackboneView {
     subNav(): void {
         this.subNavMesas = new SubNavMesas({
             model: this.model,
-            App: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             storage: this.storage,
@@ -197,7 +198,9 @@ export default class MesasListar extends BackboneView {
             subnavElement.html(this.subNavMesas.render().$el);
         }
 
-        // Establecer referencia a la vista padre
-        (SubNavMesas as any).parentView = this;
+        // Establecer referencia a la vista padre de forma segura
+        if (this.subNavMesas) {
+            (this.subNavMesas as any).parentView = this;
+        }
     }
 }

@@ -1,9 +1,14 @@
 import { BackboneView } from "@/common/Bone";
 import tmp_crear_habiles from "../templates/crear_habiles?raw";
+import EmpresaService from "@/pages/Habiles/EmpresaService";
 
 interface EmpresaCrearViewOptions {
     EmpresaModel: new (attrs?: any, options?: any) => any;
-    App: { trigger: (event: string, payload: any) => void } | any;
+    api?: any;
+    logger?: any;
+    app?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
@@ -11,7 +16,12 @@ interface EmpresaCrearViewOptions {
 export default class EmpresaCrearView extends BackboneView {
     modelUse: any;
     template: any;
-    App: { trigger: (event: string, payload: any) => void } | any;
+    api: any;
+    logger: any;
+    app: any;
+    storage: any;
+    region: any;
+    empresaService: EmpresaService;
 
     constructor(options: EmpresaCrearViewOptions) {
         super({
@@ -19,8 +29,19 @@ export default class EmpresaCrearView extends BackboneView {
             className: 'box',
         });
         this.modelUse = options.EmpresaModel;
-        this.App = options.App;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.app = options.app;
+        this.storage = options.storage;
+        this.region = options.region;
         this.template = _.template(tmp_crear_habiles);
+
+        // Inicializar el servicio con las dependencias
+        this.empresaService = new EmpresaService({
+            api: this.api,
+            App: this.app,
+            logger: this.logger
+        });
     }
 
     /**
@@ -34,7 +55,7 @@ export default class EmpresaCrearView extends BackboneView {
         };
     }
 
-    guardarDatos(e: Event): boolean {
+    async guardarDatos(e: Event): Promise<boolean> {
         e.preventDefault();
         const target = this.$el.find(e.currentTarget as HTMLElement);
         target.attr('disabled', 'true');
@@ -52,15 +73,14 @@ export default class EmpresaCrearView extends BackboneView {
         });
 
         if (!nit || nit.trim() === '') {
-            if (this.App && typeof this.App.trigger === 'function') {
-                this.App.trigger('alert:error', { message: 'El nit de la empresa es un valor requerido' });
-            }
+            this.app?.trigger('alert:error', { message: 'El nit de la empresa es un valor requerido' });
             target.removeAttr('disabled');
             return false;
         }
 
-        if (typeof this.trigger === 'function') {
-            this.trigger('form:save', {
+        try {
+            // Delegar al service para guardar
+            this.empresaService.__saveEmpresa({
                 model: model,
                 callback: (success: boolean, data?: any) => {
                     target.removeAttr('disabled');
@@ -75,9 +95,17 @@ export default class EmpresaCrearView extends BackboneView {
                         this.$el.find('input').val('');
                         this.setInput('razsoc', 'razón social');
                         this.setInput('repleg', 'representante legal');
+
+                        this.app?.trigger('alert:success', { message: 'Empresa guardada exitosamente' });
+                    } else {
+                        this.app?.trigger('alert:error', { message: data?.msj || 'Error al guardar empresa' });
                     }
-                },
+                }
             });
+        } catch (error: any) {
+            target.removeAttr('disabled');
+            this.logger?.error('Error al guardar empresa:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
         }
 
         return false;

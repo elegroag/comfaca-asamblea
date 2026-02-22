@@ -2,6 +2,8 @@ import { BackboneView } from "@/common/Bone";
 import tmp_mostrar_usuario from "../templates/tmp_mostrar_usuario.hbs?raw";
 import AsaUsuario from "@/models/AsaUsuario";
 import Mesa from "@/models/Mesa";
+import UsuarioService from "@/pages/Usuarios/UsuarioService";
+import Loading from "@/common/Loading";
 
 
 interface UsuarioMostrarOptions {
@@ -9,6 +11,9 @@ interface UsuarioMostrarOptions {
     collection?: any[];
     usuarios_disponibles?: any;
     asa_usuario?: any;
+    api?: any;
+    logger?: any;
+    app?: any;
 }
 
 export default class UsuarioMostrar extends BackboneView {
@@ -18,6 +23,10 @@ export default class UsuarioMostrar extends BackboneView {
     mesa: any;
     mesas_disponibles: any;
     roles: any;
+    api: any;
+    logger: any;
+    app: any;
+    usuarioService: UsuarioService;
 
     constructor(options: UsuarioMostrarOptions = {}) {
         super({
@@ -32,6 +41,16 @@ export default class UsuarioMostrar extends BackboneView {
         this.mesa = null;
         this.mesas_disponibles = options.usuarios_disponibles || null;
         this.roles = null;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.app = options.app;
+
+        // Inicializar el servicio con las dependencias
+        this.usuarioService = new UsuarioService({
+            api: this.api,
+            logger: this.logger,
+            app: this.app
+        });
     }
 
     initialize(): void {
@@ -90,180 +109,183 @@ export default class UsuarioMostrar extends BackboneView {
         }
     }
 
-    vincularMesa(e: Event): void {
+    async vincularMesa(e: Event): Promise<void> {
         e.preventDefault();
 
         const target = $(e.currentTarget as HTMLElement);
         target.attr('disabled', 'true');
 
-        const user = this.model ? this.model.toJSON() : {};
-        const $input = this.$el.find("[id='check_buscar_mesa']");
-        let create_mesa = -1;
-        let mesa: any;
+        try {
+            const user = this.model ? this.model.toJSON() : {};
+            const $input = this.$el.find("[id='check_buscar_mesa']");
+            let create_mesa = -1;
+            let mesa: any;
 
-        if ($input.length && $input.is(':checked')) {
-            const mesaSelectCodigo = this.getInput('mesa_select_codigo');
+            if ($input.length && $input.is(':checked')) {
+                const mesaSelectCodigo = this.getInput('mesa_select_codigo');
 
-            if (this.mesas_disponibles && typeof this.mesas_disponibles.get === 'function') {
-                mesa = this.mesas_disponibles.get({
-                    id: parseInt(mesaSelectCodigo) || 0,
-                });
+                if (this.mesas_disponibles && typeof this.mesas_disponibles.get === 'function') {
+                    mesa = this.mesas_disponibles.get({
+                        id: parseInt(mesaSelectCodigo) || 0,
+                    });
+                } else {
+                    throw new Error('Mesas disponibles no disponible');
+                }
             } else {
-                console.error('Mesas disponibles no disponible');
-                target.removeAttr('disabled');
-                return;
+                mesa = new Mesa({
+                    codigo: this.getInput('mesa_codigo'),
+                    cedtra_responsable: user.cedtra,
+                    estado: this.getInput('mesa_estado'),
+                });
+                create_mesa = 1;
             }
-        } else {
-            mesa = new Mesa({
-                codigo: this.getInput('mesa_codigo'),
-                cedtra_responsable: user.cedtra,
+
+            if (!mesa || typeof mesa.get !== 'function') {
+                throw new Error('Mesa no válida o sin método get');
+            }
+
+            const data = {
+                cedtra: this.asa_usuario?.get('cedtra'),
                 estado: this.getInput('mesa_estado'),
-            });
-            create_mesa = 1;
-        }
+                create_mesa: create_mesa,
+                mesa_id: mesa.get('id'),
+                mesa_codigo: mesa.get('codigo'),
+            };
 
-        if (!mesa || typeof mesa.get !== 'function') {
-            console.error('Mesa no válida o sin método get');
+            Loading.show();
+
+            // Delegar al service para la vinculación
+            await this.usuarioService.vincularMesaApi(data);
+
+            Loading.hide();
+
+        } catch (error: any) {
+            Loading.hide();
+            this.logger?.error('Error al vincular mesa:', error);
+        } finally {
             target.removeAttr('disabled');
-            return;
-        }
-
-        const url = create_url('admin/vincular_mesa');
-        const token = {
-            cedtra: this.asa_usuario?.get('cedtra'),
-            estado: this.getInput('mesa_estado'),
-            create_mesa: create_mesa,
-            mesa_id: mesa.get('id'),
-            mesa_codigo: mesa.get('codigo'),
-        };
-
-        if ($App && typeof $App.trigger === 'function') {
-            $App.trigger('syncro', {
-                url,
-                data: token,
-                callback: (response: any) => {
-                    target.removeAttr('disabled');
-                    if (response) {
-                        $App.trigger('success', response.msj);
-                    }
-                },
-            });
         }
     }
 
-    vincularAsamblea(e: Event): void {
+    async vincularAsamblea(e: Event): Promise<void> {
         e.preventDefault();
 
         const target = $(e.currentTarget as HTMLElement);
         target.attr('disabled', 'true');
 
-        const user = this.model ? this.model.toJSON() : {};
-        const $input = this.$el.find("[id='check_buscar_mesa']");
-        let create_mesa = -1;
-        let mesa: any;
+        try {
+            const user = this.model ? this.model.toJSON() : {};
+            const $input = this.$el.find("[id='check_buscar_mesa']");
+            let create_mesa = -1;
+            let mesa: any;
 
-        if ($input.length && $input.is(':checked')) {
-            const mesaSelectCodigo = this.getInput('mesa_select_codigo');
+            if ($input.length && $input.is(':checked')) {
+                const mesaSelectCodigo = this.getInput('mesa_select_codigo');
 
-            if (this.mesas_disponibles && typeof this.mesas_disponibles.get === 'function') {
-                mesa = this.mesas_disponibles.get({
-                    id: parseInt(mesaSelectCodigo) || 0,
-                });
+                if (this.mesas_disponibles && typeof this.mesas_disponibles.get === 'function') {
+                    mesa = this.mesas_disponibles.get({
+                        id: parseInt(mesaSelectCodigo) || 0,
+                    });
+                } else {
+                    throw new Error('Mesas disponibles no disponible');
+                }
             } else {
-                console.error('Mesas disponibles no disponible');
-                target.removeAttr('disabled');
-                return;
-            }
-        } else {
-            const mesaCodigo = this.getInput('mesa_codigo');
+                const mesaCodigo = this.getInput('mesa_codigo');
 
-            if (Testeo && typeof Testeo.vacio === 'function') {
-                const _erro = Testeo.vacio(mesaCodigo, 'mesa_codigo');
-                if (_erro) {
+                if (Testeo && typeof Testeo.vacio === 'function') {
+                    const _erro = Testeo.vacio(mesaCodigo, 'mesa_codigo');
+                    if (_erro) {
+                        Swal.fire({
+                            title: 'Alerta!',
+                            text: 'Se requiere de nombrar la mesa para poder realizar la vinculación.',
+                            confirmButtonText: 'Continuar!',
+                        });
+                        return;
+                    }
+                }
+
+                mesa = new Mesa({
+                    codigo: mesaCodigo,
+                    cedtra_responsable: user.cedtra,
+                    estado: this.getInput('mesa_estado'),
+                });
+
+                create_mesa = 1;
+            }
+
+            if (!mesa || typeof mesa.get !== 'function') {
+                throw new Error('Mesa no válida o sin método get');
+            }
+
+            // Confirmación con Swal
+            const result = await Swal.fire({
+                title: 'Confirmar',
+                text: 'Se requiere de confirmar el registro de la vinculación del usuario.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, vincular',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (result.isConfirmed) {
+                const asaUsuario = new AsaUsuario({
+                    cedtra: user.cedtra,
+                    create_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    asamblea_id: this.asamblea?.get('id'),
+                    rol: this.getInput('userrol'),
+                });
+
+                const data = {
+                    cedtra: asaUsuario.get('cedtra'),
+                    estado: 'A',
+                    create_at: asaUsuario.get('create_at'),
+                    asamblea_id: asaUsuario.get('asamblea_id'),
+                    rol: asaUsuario.get('rol'),
+                    create_mesa: create_mesa,
+                    mesa_id: mesa.get('id'),
+                    mesa_codigo: mesa.get('codigo'),
+                };
+
+                Loading.show();
+
+                // Delegar al service para la vinculación
+                const response = await this.usuarioService.vincularAsambleaApi(data);
+
+                Loading.hide();
+
+                if (response && (response as any).asa_usuario && (response as any).mesa) {
                     Swal.fire({
-                        title: 'Alerta!',
-                        text: 'Se requiere de nombrar la mesa para poder realizar la vinculación.',
+                        title: 'Notificación!',
+                        text: 'La operación se ha completado con éxito',
+                        icon: 'success',
                         confirmButtonText: 'Continuar!',
                     });
-                    target.removeAttr('disabled');
-                    return;
+
+                    setTimeout(() => {
+                        this.remove();
+                        if (this.app?.router) {
+                            this.app.router.navigate('listar', { trigger: true, replace: true });
+                        }
+                    }, 2000);
+                } else {
+                    Swal.fire({
+                        title: 'Notificación!',
+                        text: (response as any).errors || 'Error en la operación',
+                        confirmButtonText: 'Continuar!',
+                    });
                 }
             }
 
-            mesa = new Mesa({
-                codigo: mesaCodigo,
-                cedtra_responsable: user.cedtra,
-                estado: this.getInput('mesa_estado'),
+        } catch (error: any) {
+            Loading.hide();
+            this.logger?.error('Error al vincular asamblea:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: error.message || 'Ocurrió un error durante la vinculación',
+                confirmButtonText: 'Continuar!',
             });
-
-            create_mesa = 1;
-        }
-
-        if (!mesa || typeof mesa.get !== 'function') {
-            console.error('Mesa no válida o sin método get');
+        } finally {
             target.removeAttr('disabled');
-            return;
-        }
-
-        if ($App && typeof $App.trigger === 'function') {
-            $App.trigger('confirma', {
-                message: 'Se requiere de confirmar el registro de la vinculación del usuario.',
-                callback: (status: boolean) => {
-                    if (status) {
-                        const asaUsuario = new AsaUsuario({
-                            cedtra: user.cedtra,
-                            create_at: moment().format('YYYY-MM-DD HH:mm:ss'),
-                            asamblea_id: this.asamblea?.get('id'),
-                            rol: this.getInput('userrol'),
-                        });
-
-                        const token = {
-                            cedtra: asaUsuario.get('cedtra'),
-                            estado: 'A',
-                            create_at: asaUsuario.get('create_at'),
-                            asamblea_id: asaUsuario.get('asamblea_id'),
-                            rol: asaUsuario.get('rol'),
-                            create_mesa: create_mesa,
-                            mesa_id: mesa.get('id'),
-                            mesa_codigo: mesa.get('codigo'),
-                        };
-
-                        const url = create_url('admin/asa_usuario_create');
-                        $App.trigger('syncro', {
-                            url,
-                            data: token,
-                            callback: (response: any) => {
-                                target.removeAttr('disabled');
-                                if (response) {
-                                    if (response.asa_usuario && response.mesa) {
-                                        Swal.fire({
-                                            title: 'Notificación!',
-                                            text: 'La operación se ha completado con éxito',
-                                            icon: 'success',
-                                            confirmButtonText: 'Continuar!',
-                                        });
-                                    } else {
-                                        Swal.fire({
-                                            title: 'Notificación!',
-                                            text: response.errors || 'Error en la operación',
-                                            confirmButtonText: 'Continuar!',
-                                        });
-                                    }
-
-                                    setTimeout(() => {
-                                        this.remove();
-                                        if ($App.router) {
-                                            $App.router.navigate('listar', { trigger: true, replace: true });
-                                        }
-                                    }, 2000);
-                                }
-                            },
-                        });
-                    } else {
-                        target.removeAttr('disabled');
-                    }
-                },
-            });
         }
     }
 

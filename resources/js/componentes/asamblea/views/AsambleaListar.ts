@@ -1,12 +1,13 @@
 import { BackboneView } from "@/common/Bone";
 import listar from "@/componentes/asamblea/templates/listar.hbs?raw";
 import DataTable from "datatables.net-bs5";
+import AsambleaService from "@/pages/Asamblea/AsambleaService";
 
 interface AsambleaListarOptions {
     collection?: any;
-    App?: any;
     api?: any;
     logger?: any;
+    app?: any;
     storage?: any;
     region?: any;
     [key: string]: any;
@@ -14,22 +15,30 @@ interface AsambleaListarOptions {
 
 export default class AsambleaListar extends BackboneView {
     template: any;
-    App: any;
     api: any;
     logger: any;
+    app: any;
     storage: any;
     region: any;
     collection: any;
+    asambleaService: AsambleaService;
 
     constructor(options: AsambleaListarOptions = {}) {
         super(options);
-        this.App = options.App;
         this.api = options.api;
         this.logger = options.logger;
+        this.app = options.app;
         this.storage = options.storage;
         this.region = options.region;
         this.collection = options.collection;
         this.template = _.template(listar);
+
+        // Inicializar el servicio con las dependencias
+        this.asambleaService = new AsambleaService({
+            api: this.api,
+            logger: this.logger,
+            app: this.app
+        });
     }
 
     initialize(): void {
@@ -65,12 +74,12 @@ export default class AsambleaListar extends BackboneView {
         const id = target.attr('data-code');
 
         if (!id) {
-            console.error('ID de asamblea no encontrado');
+            this.logger?.error('ID de asamblea no encontrado');
             return;
         }
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('asamblea_detalle/' + id, { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('asamblea_detalle/' + id, { trigger: true, replace: true });
         }
     }
 
@@ -81,8 +90,8 @@ export default class AsambleaListar extends BackboneView {
         e.preventDefault();
         this.remove();
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('asamblea', { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('asamblea', { trigger: true, replace: true });
         }
     }
 

@@ -1,9 +1,15 @@
 import { BackboneView } from "@/common/Bone";
 import EmpresaRowView from "./EmpresaRowView";
 import DataTable from 'datatables.net-bs5';
+import EmpresaService from "@/pages/Habiles/EmpresaService";
 
 interface EmpresaListarViewOptions {
     router?: { navigate: (fragment: string, options?: any) => void };
+    api?: any;
+    logger?: any;
+    app?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
@@ -13,6 +19,12 @@ export default class EmpresaListarView extends BackboneView {
     children: any[];
     modelView: typeof EmpresaRowView;
     template: any;
+    api: any;
+    logger: any;
+    app: any;
+    storage: any;
+    region: any;
+    empresaService: EmpresaService;
     private router?: { navigate: (fragment: string, options?: any) => void };
 
     constructor(options: EmpresaListarViewOptions = {}) {
@@ -23,8 +35,20 @@ export default class EmpresaListarView extends BackboneView {
         this.modelView = EmpresaRowView;
         this.children = new Array();
         this.tableModule = null;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.app = options.app;
+        this.storage = options.storage;
+        this.region = options.region;
         this.template = _.template(document.getElementById('tmp_listar_empresas')?.innerHTML || '');
         this.router = options.router;
+
+        // Inicializar el servicio con las dependencias
+        this.empresaService = new EmpresaService({
+            api: this.api,
+            App: this.app,
+            logger: this.logger
+        });
     }
 
     initialize(): void {
@@ -83,19 +107,26 @@ export default class EmpresaListarView extends BackboneView {
         const nit = target.attr('data-cid') as string;
         const model = this.collection.get(parseInt(nit));
 
-        if (typeof this.trigger === 'function') {
-            this.trigger('remove:empresa', {
-                model: model,
-                callback: (response: any) => {
-                    if (response) {
-                        this.collection.remove(model);
-                        if (this.tableModule) {
-                            this.tableModule.row(target.parents('tr')).remove().draw();
-                        }
-                    }
-                },
-            });
+        if (!model) {
+            this.logger?.error('Modelo no encontrado para eliminar');
+            return;
         }
+
+        // Delegar al service para eliminar
+        this.empresaService.__removeEmpresa({
+            model: model,
+            callback: (success: boolean, response?: any) => {
+                if (success && response) {
+                    this.collection.remove(model);
+                    if (this.tableModule) {
+                        this.tableModule.row(target.parents('tr')).remove().draw();
+                    }
+                    this.app?.trigger('alert:success', { message: 'Empresa eliminada exitosamente' });
+                } else {
+                    this.app?.trigger('alert:error', { message: response?.msj || 'Error al eliminar empresa' });
+                }
+            }
+        });
     }
 
     init_table(): void {

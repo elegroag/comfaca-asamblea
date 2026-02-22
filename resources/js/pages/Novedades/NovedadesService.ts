@@ -217,6 +217,46 @@ export default class NovedadesService {
    * Obtener novedades no leídas desde API
    */
   private async getNoLeidasApi(): Promise<ApiResponse> {
-    return await this.api.get('/novedades/noLeidas');
+    return await this.api.get('/novedades/getNoLeidas');
+  }
+
+  /**
+   * Descargar archivo de respuesta
+   */
+  __downloadFile(response: any): void {
+    try {
+      if (!response || !response.file) {
+        this.logger?.error('No hay archivo para descargar');
+        return;
+      }
+
+      // Crear un blob con los datos del archivo
+      const blob = new Blob([response.file], {
+        type: response.contentType || 'application/octet-stream'
+      });
+
+      // Crear URL temporal
+      const url = window.URL.createObjectURL(blob);
+
+      // Crear elemento de descarga
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = response.filename || 'archivo.descarga';
+
+      // Simular click
+      document.body.appendChild(link);
+      link.click();
+
+      // Limpiar
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      this.logger?.info('Archivo descargado exitosamente');
+    } catch (error: any) {
+      this.logger?.error('Error al descargar archivo:', error);
+      this.App?.trigger('alert:error', {
+        message: 'Error al descargar el archivo'
+      });
+    }
   }
 }

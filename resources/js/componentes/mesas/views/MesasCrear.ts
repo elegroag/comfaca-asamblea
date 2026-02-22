@@ -5,9 +5,9 @@ import tmp_mesas_crear from "../templates/tmp_mesas_crear.hbs?raw";
 interface MesasCrearOptions {
     model?: any;
     isNew?: boolean;
-    App?: any;
     api?: any;
     logger?: any;
+    app?: any;
     storage?: any;
     region?: any;
     [key: string]: any;
@@ -16,9 +16,9 @@ interface MesasCrearOptions {
 export default class MesasCrear extends BackboneView {
     template: any;
     isNew: boolean;
-    App: any;
     api: any;
     logger: any;
+    app: any;
     storage: any;
     region: any;
     mesasService: MesasService;
@@ -27,15 +27,15 @@ export default class MesasCrear extends BackboneView {
         super({ ...options, id: 'box_crear_mesas' });
         this.template = _.template(tmp_mesas_crear);
         this.isNew = options.isNew !== false; // true por defecto
-        this.App = options.App;
         this.api = options.api;
         this.logger = options.logger;
+        this.app = options.app;
         this.storage = options.storage;
         this.region = options.region;
         this.mesasService = new MesasService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -66,64 +66,67 @@ export default class MesasCrear extends BackboneView {
         };
     }
 
-    crearUsuario(e: Event): boolean {
+    async crearUsuario(e: Event): Promise<boolean> {
         e.preventDefault();
 
         const target = $(e.currentTarget as HTMLElement);
         target.attr('disabled', 'true');
 
-        const apoderado_nit = $("[name='apoderado_nit']").val() as string;
-        const apoderado_cedula = $("[name='apoderado_cedula']").val() as string;
-        const poderdante_nit = $("[name='poderdante_nit']").val() as string;
-        const poderdante_cedula = $("[name='poderdante_cedula']").val() as string;
-        const radicado = $("[name='radicado']").val() as string;
+        try {
+            const apoderado_nit = $("[name='apoderado_nit']").val() as string;
+            const apoderado_cedula = $("[name='apoderado_cedula']").val() as string;
+            const poderdante_nit = $("[name='poderdante_nit']").val() as string;
+            const poderdante_cedula = $("[name='poderdante_cedula']").val() as string;
+            const radicado = $("[name='radicado']").val() as string;
 
-        // Crear modelo básico sin dependencia global _model
-        const model = {
-            get: (key: string) => {
-                const data: any = {
+            // Crear modelo básico sin dependencia global _model
+            const model = {
+                get: (key: string) => {
+                    const data: any = {
+                        nit1: apoderado_nit,
+                        cedrep1: apoderado_cedula,
+                        nit2: poderdante_nit,
+                        cedrep2: poderdante_cedula,
+                        radicado: radicado,
+                    };
+                    return data[key];
+                },
+                isValid: () => {
+                    // Validación básica
+                    return apoderado_nit && poderdante_nit && apoderado_cedula && poderdante_cedula && radicado;
+                },
+                validationError: null,
+                toJSON: () => ({
                     nit1: apoderado_nit,
                     cedrep1: apoderado_cedula,
                     nit2: poderdante_nit,
                     cedrep2: poderdante_cedula,
                     radicado: radicado,
-                };
-                return data[key];
-            },
-            isValid: () => {
-                // Validación básica
-                return apoderado_nit && poderdante_nit && apoderado_cedula && poderdante_cedula && radicado;
-            },
-            validationError: null,
-            toJSON: () => ({
-                nit1: apoderado_nit,
-                cedrep1: apoderado_cedula,
-                nit2: poderdante_nit,
-                cedrep2: poderdante_cedula,
-                radicado: radicado,
-            })
-        };
+                })
+            };
 
-        if (apoderado_nit === poderdante_nit) {
-            if (this.App && typeof this.App.trigger === 'function') {
-                this.App.trigger('alert:error', {
-                    message: 'La empresa poderdante no puede ser la misma empresa apoderada.'
-                });
+            if (apoderado_nit === poderdante_nit) {
+                if (this.app && typeof this.app.trigger === 'function') {
+                    this.app.trigger('alert:error', {
+                        message: 'La empresa poderdante no puede ser la misma empresa apoderada.'
+                    });
+                }
+                target.removeAttr('disabled');
+                return false;
             }
-            target.removeAttr('disabled');
-            return false;
-        }
 
-        if (!model.isValid()) {
-            const errors = model.validationError;
-            this.logger?.error('Errores de validación:', errors);
+            if (!model.isValid()) {
+                const errors = model.validationError;
+                this.logger?.error('Errores de validación:', errors);
 
-            setTimeout(() => {
-                $('.error').html('');
-            }, 3000);
+                setTimeout(() => {
+                    $('.error').html('');
+                }, 3000);
 
-            target.removeAttr('disabled');
-        } else {
+                target.removeAttr('disabled');
+                return false;
+            }
+
             // Enviar datos directamente como JSON
             const data = {
                 nit1: apoderado_nit,
@@ -133,48 +136,56 @@ export default class MesasCrear extends BackboneView {
                 radicado: radicado
             };
 
+            // Mostrar loading usando trigger
+            if (this.app && typeof this.app.trigger === 'function') {
+                this.app.trigger('loading:show');
+            }
+
             // Delegar al servicio MesasService con datos JSON
-            this.mesasService.__validarPoder(data)
-                .then((response: any) => {
-                    loading.hide();
-                    target.removeAttr('disabled');
+            const response = await this.mesasService.__validarPoder(data);
 
-                    if (response?.success) {
-                        if (response.data.poder === false) {
-                            this.$el.find('input').val('');
-                            if (this.App && typeof this.App.trigger === 'function') {
-                                this.App.trigger('alert:error', { message: response.data.errors });
-                            }
-                        } else {
-                            // Crear modelo básico sin dependencia global _model
-                            const poderModel = {
-                                get: (key: string) => response.data.poder[key],
-                                toJSON: () => response.data.poder
-                            };
+            if (this.app && typeof this.app.trigger === 'function') {
+                this.app.trigger('loading:hide');
+            }
 
-                            if (this.App && this.App.router) {
-                                this.App.router.set_poderes(poderModel);
-                            }
+            target.removeAttr('disabled');
 
-                            if (this.App && typeof this.App.trigger === 'function') {
-                                this.App.trigger('alert:success', { message: response.data.msj });
-                            }
-                            this.$el.find('input').val('');
-                        }
-                    } else {
-                        if (this.App && typeof this.App.trigger === 'function') {
-                            this.App.trigger('alert:error', { message: response?.msj || 'Error en validación' });
-                        }
+            if (response?.success) {
+                if ((response as any).data.poder === false) {
+                    this.$el.find('input').val('');
+                    if (this.app && typeof this.app.trigger === 'function') {
+                        this.app.trigger('alert:error', { message: (response as any).data.errors });
                     }
-                })
-                .catch((err: any) => {
-                    loading.hide();
-                    target.removeAttr('disabled');
-                    this.logger?.error('Error en validación previa:', err);
-                    if (this.App && typeof this.App.trigger === 'function') {
-                        this.App.trigger('alert:error', { message: 'Ocurrió un error al procesar la solicitud' });
+                } else {
+                    // Crear modelo básico sin dependencia global _model
+                    const poderModel = {
+                        get: (key: string) => (response as any).data.poder[key],
+                        toJSON: () => (response as any).data.poder
+                    };
+
+                    if (this.app && this.app.router) {
+                        this.app.router.set_poderes(poderModel);
                     }
-                });
+
+                    if (this.app && typeof this.app.trigger === 'function') {
+                        this.app.trigger('alert:success', { message: (response as any).data.msj });
+                    }
+                    this.$el.find('input').val('');
+                }
+            } else {
+                if (this.app && typeof this.app.trigger === 'function') {
+                    this.app.trigger('alert:error', { message: response?.msj || 'Error en validación' });
+                }
+            }
+        } catch (error: any) {
+            if (this.app && typeof this.app.trigger === 'function') {
+                this.app.trigger('loading:hide');
+            }
+            target.removeAttr('disabled');
+            this.logger?.error('Error en validación previa:', error);
+            if (this.app && typeof this.app.trigger === 'function') {
+                this.app.trigger('alert:error', { message: 'Ocurrió un error al procesar la solicitud' });
+            }
         }
 
         return false;
@@ -184,8 +195,8 @@ export default class MesasCrear extends BackboneView {
         e.preventDefault();
         this.remove();
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('listar', { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('listar', { trigger: true, replace: true });
         }
 
         return false;

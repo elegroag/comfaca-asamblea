@@ -287,4 +287,67 @@ export default class PoderService {
   private async exportListaApi(): Promise<ApiResponse> {
     return await this.api.get('/poderes/exportar_lista');
   }
+
+  /**
+   * Validación previa de poder
+   */
+  async __validarPoder(data: Record<string, string>): Promise<ApiResponse> {
+    try {
+      const response = await this.validarPoderApi(data);
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error en validación previa:', error);
+      this.App?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      throw error;
+    }
+  }
+
+  /**
+   * API para validación previa
+   */
+  private async validarPoderApi(data: Record<string, string>): Promise<ApiResponse> {
+    return await this.api.post('/poderes/validacion_previa', data);
+  }
+
+  /**
+   * Buscar empresa por NIT
+   */
+  async __buscarEmpresa(nit: string): Promise<ApiResponse> {
+    try {
+      const response = await this.buscarEmpresaApi(nit);
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error al buscar empresa:', error);
+      this.App?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      throw error;
+    }
+  }
+
+  /**
+   * API para buscar empresa
+   */
+  private async buscarEmpresaApi(nit: string): Promise<ApiResponse> {
+    return await this.api.get(`/poderes/buscar_empresa/${nit}`);
+  }
+
+  /**
+   * Registrar rechazo de poder
+   */
+  async __registrarRechazo(data: Record<string, any>): Promise<ApiResponse> {
+    try {
+      const response = await this.registrarRechazoApi(data);
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error al registrar rechazo:', error);
+      this.App?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      throw error;
+    }
+  }
+
+  /**
+   * API para registrar rechazo
+   */
+  private async registrarRechazoApi(data: Record<string, any>): Promise<ApiResponse> {
+    return await this.api.post('/poderes/registraRechazoPoder', data);
+  }
 }

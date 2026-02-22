@@ -4,29 +4,39 @@ import detalle from "@/componentes/novedades/templates/detalle.hbs?raw";
 
 interface NovedadDetalleOptions {
     model?: any;
-    App?: AppInstance;
     api?: any;
     logger?: any;
+    app?: any;
     storage?: any;
     region?: any;
     [key: string]: any;
 }
 
 export default class NovedadDetalle extends BackboneView {
-    App: AppInstance;
+    app: AppInstance;
     template: any;
     api: any;
     logger: any;
     storage: any;
     region: any;
+    novedadesService: any;
 
     constructor(options: NovedadDetalleOptions) {
         super(options);
-        this.App = options.App || options.AppInstance;
+        this.app = options.app || options.AppInstance;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
         this.region = options.region;
+
+        // Importar y crear el servicio dinámicamente para evitar dependencia circular
+        import('@/pages/Novedades/NovedadesService').then(({ default: NovedadesService }) => {
+            this.novedadesService = new NovedadesService({
+                api: this.api,
+                logger: this.logger,
+                app: this.app
+            });
+        });
     }
 
     initialize(): void {
@@ -47,8 +57,8 @@ export default class NovedadDetalle extends BackboneView {
         e.preventDefault();
         this.remove();
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('listar', { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('listar', { trigger: true, replace: true });
         }
     }
 
@@ -64,8 +74,8 @@ export default class NovedadDetalle extends BackboneView {
     procesarNovedad(e: Event): void {
         e.preventDefault();
 
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: 'Confirma que desea procesar el registro',
                 callback: (status: boolean) => {
                     if (status) {
@@ -74,16 +84,17 @@ export default class NovedadDetalle extends BackboneView {
                             callback: (response: any) => {
                                 if (response) {
                                     if (response.success) {
-                                        if (this.App && typeof this.App.trigger === 'function') {
-                                            this.App.trigger('alert:success', response.msj);
+                                        if (this.app && typeof this.app.trigger === 'function') {
+                                            this.app.trigger('alert:success', response.msj);
                                         }
 
-                                        if (typeof download_file === 'function') {
-                                            download_file(response);
+                                        // Delegar descarga al service
+                                        if (this.novedadesService) {
+                                            this.novedadesService.__downloadFile(response);
                                         }
                                     } else {
-                                        if (this.App && typeof this.App.trigger === 'function') {
-                                            this.App.trigger('alert:error', response.msj);
+                                        if (this.app && typeof this.app.trigger === 'function') {
+                                            this.app.trigger('alert:error', response.msj);
                                         }
                                     }
                                 }

@@ -1,12 +1,13 @@
 import { BackboneView } from "@/common/Bone";
 import tmp_consenso_detalle from "../templates/tmp_consenso_detalle.hbs?raw";
+import ConsensoService from "@/pages/Consensos/ConsensoService";
 
 interface ConsensoDetalleOptions {
     id?: string;
     model?: any;
-    App?: any;
     api?: any;
     logger?: any;
+    app?: any;
     region?: any;
 }
 
@@ -14,12 +15,28 @@ export default class ConsensoDetalle extends BackboneView {
     template: string;
     id?: string;
     consenso: any;
+    api: any;
+    logger: any;
+    app: any;
+    region: any;
+    consensoService: ConsensoService;
 
     constructor(options: ConsensoDetalleOptions = {}) {
         super({ ...options, className: 'box', id: 'box_detalle_consenso' });
         this.template = tmp_consenso_detalle;
         this.id = options.id;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.app = options.app;
+        this.region = options.region;
         this.consenso = null;
+
+        // Inicializar el servicio con las dependencias
+        this.consensoService = new ConsensoService({
+            api: this.api,
+            logger: this.logger,
+            app: this.app
+        });
     }
 
     initialize(): void {
@@ -48,24 +65,22 @@ export default class ConsensoDetalle extends BackboneView {
         return this;
     }
 
-    loadConsensoData(): void {
+    async loadConsensoData(): Promise<void> {
         if (!this.id) return;
 
-        const url = create_url('admin/consenso_detalle/' + this.id);
+        try {
+            // Delegar al service para cargar datos
+            const response = await this.consensoService.__findById(this.id);
 
-        if ($App && typeof $App.trigger === 'function') {
-            $App.trigger('syncro', {
-                url,
-                data: {},
-                callback: (response: any) => {
-                    if (response && response.success && response.consenso) {
-                        this.consenso = response.consenso;
-                        this.renderConsenso();
-                    } else {
-                        this.$el.html('<div class="alert alert-error">Error al cargar los datos del consenso</div>');
-                    }
-                },
-            });
+            if (response?.success && (response as any).data) {
+                this.consenso = (response as any).data;
+                this.renderConsenso();
+            } else {
+                this.$el.html('<div class="alert alert-error">Error al cargar los datos del consenso</div>');
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al cargar datos del consenso:', error);
+            this.$el.html('<div class="alert alert-error">Error al cargar los datos del consenso</div>');
         }
     }
 
@@ -86,58 +101,74 @@ export default class ConsensoDetalle extends BackboneView {
         e.preventDefault();
 
         if (!this.id) {
-            console.error('ID de consenso no disponible para editar');
+            this.logger?.error('ID de consenso no disponible para editar');
             return false;
         }
 
-        if ($App.router) {
-            $App.router.navigate('editar/' + this.id, { trigger: true, replace: true });
+        if (this.app?.router) {
+            this.app.router.navigate('editar/' + this.id, { trigger: true, replace: true });
         }
 
         return false;
     }
 
-    eliminarConsenso(e: Event): boolean {
+    async eliminarConsenso(e: Event): Promise<boolean> {
         e.preventDefault();
 
         if (!this.id) {
-            console.error('ID de consenso no disponible para eliminar');
+            this.logger?.error('ID de consenso no disponible para eliminar');
             return false;
         }
 
-        if ($App && typeof $App.trigger === 'function') {
-            $App.trigger('confirma', {
-                message: '¿Está seguro de que desea eliminar este consenso? Esta acción no se puede deshacer.',
-                callback: (status: boolean) => {
-                    if (status) {
-                        this.performDelete();
-                    }
-                },
+        try {
+            // Confirmación con SweetAlert
+            const result = await Swal.fire({
+                title: '¿Está seguro?',
+                text: '¿Está seguro de que desea eliminar este consenso? Esta acción no se puede deshacer.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6'
+            });
+
+            if (result.isConfirmed) {
+                await this.performDelete();
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al eliminar consenso:', error);
+            this.app?.trigger('alert:error', {
+                title: 'Error',
+                text: error.message || 'Error al eliminar consenso',
+                button: 'OK!'
             });
         }
 
         return false;
     }
 
-    performDelete(): void {
+    async performDelete(): Promise<void> {
         if (!this.id) return;
 
-        const url = create_url('admin/eliminar_consenso/' + this.id);
+        try {
+            // Delegar al service para eliminar
+            const response = await this.consensoService.__removeConsenso({ id: this.id });
 
-        if ($App && typeof $App.trigger === 'function') {
-            $App.trigger('syncro', {
-                url,
-                data: {},
-                callback: (response: any) => {
-                    if (response && response.success) {
-                        $App.trigger('success', response.msj || 'Consenso eliminado exitosamente');
-                        if ($App.router) {
-                            $App.router.navigate('listar', { trigger: true, replace: true });
-                        }
-                    } else {
-                        $App.trigger('alert:error', response.msj || 'Error al eliminar consenso');
-                    }
-                },
+            if (response?.success) {
+                this.app?.trigger('success', (response as any).msj || 'Consenso eliminado exitosamente');
+                if (this.app?.router) {
+                    this.app.router.navigate('listar', { trigger: true, replace: true });
+                }
+            } else {
+                this.app?.trigger('alert:error', (response as any)?.msj || 'Error al eliminar consenso');
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al eliminar consenso:', error);
+            this.app?.trigger('alert:error', {
+                title: 'Error',
+                text: error.message || 'Error al eliminar consenso',
+                button: 'OK!'
             });
         }
     }
@@ -146,8 +177,8 @@ export default class ConsensoDetalle extends BackboneView {
         e.preventDefault();
         this.remove();
 
-        if ($App.router) {
-            $App.router.navigate('listar', { trigger: true, replace: true });
+        if (this.app?.router) {
+            this.app.router.navigate('listar', { trigger: true, replace: true });
         }
 
         return false;

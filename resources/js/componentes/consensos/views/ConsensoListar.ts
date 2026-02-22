@@ -6,9 +6,9 @@ import DataTable from "datatables.net-bs5";
 interface ConsensosListarOptions {
     collection?: any;
     model?: any;
-    App?: any;
     api?: any;
     logger?: any;
+    app?: any;
     storage?: any;
     region?: any;
     [key: string]: any;
@@ -16,9 +16,9 @@ interface ConsensosListarOptions {
 
 export default class ConsensosListar extends BackboneView {
     template: any;
-    App: any;
     api: any;
     logger: any;
+    app: any;
     storage: any;
     region: any;
     collection: any;
@@ -27,9 +27,9 @@ export default class ConsensosListar extends BackboneView {
 
     constructor(options: ConsensosListarOptions = {}) {
         super({ ...options, className: 'box', id: 'box_consensos' });
-        this.App = options.App;
         this.api = options.api;
         this.logger = options.logger;
+        this.app = options.app;
         this.storage = options.storage;
         this.region = options.region;
         this.collection = options.collection;
@@ -39,7 +39,7 @@ export default class ConsensosListar extends BackboneView {
         this.consensoService = new ConsensoService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -61,12 +61,12 @@ export default class ConsensosListar extends BackboneView {
         const consenso = target.attr('data-code');
 
         if (!consenso) {
-            console.error('ID de consenso no encontrado');
+            this.logger?.error('ID de consenso no encontrado');
             return;
         }
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('editar/' + consenso, { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('editar/' + consenso, { trigger: true, replace: true });
         }
     }
 
@@ -77,12 +77,12 @@ export default class ConsensosListar extends BackboneView {
         const consenso = target.attr('data-code');
 
         if (!consenso) {
-            console.error('ID de consenso no encontrado');
+            this.logger?.error('ID de consenso no encontrado');
             return;
         }
 
-        if (this.App && this.App.router) {
-            this.App.router.navigate('consenso_detalle/' + consenso, { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('consenso_detalle/' + consenso, { trigger: true, replace: true });
         }
     }
 

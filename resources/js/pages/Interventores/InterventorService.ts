@@ -163,4 +163,32 @@ export default class InterventorService {
   private async buscarInterventoresApi(criterio: string): Promise<ApiResponse> {
     return await this.api.get(`/interventores/buscar?criterio=${encodeURIComponent(criterio)}`);
   }
+
+  /**
+   * Cargue masivo de interventores
+   */
+  async __uploadMasivo(formData: FormData): Promise<ApiResponse> {
+    try {
+      const response = await this.uploadMasivoApi(formData);
+
+      if (response?.success) {
+        this.App?.trigger('alert:success', { message: response.msj || 'Cargue masivo completado exitosamente' });
+      } else {
+        this.App?.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
+      }
+
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error en cargue masivo:', error);
+      this.App?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      return { success: false, message: error.message || 'Error de conexión' };
+    }
+  }
+
+  /**
+   * API para cargue masivo
+   */
+  private async uploadMasivoApi(formData: FormData): Promise<ApiResponse> {
+    return await this.api.post('/interventores/uploadMasivo', formData);
+  }
 }

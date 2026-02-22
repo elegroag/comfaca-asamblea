@@ -160,6 +160,63 @@ export default class UsuarioService {
     }
 
     /**
+     * Vincular usuario con asamblea
+     */
+    async __vincularAsamblea(data: any): Promise<ApiResponse> {
+        try {
+            this.logger?.info('Vinculando usuario con asamblea', data);
+
+            const response = await this.api.post('/admin/asa_usuario_create', data);
+
+            if (response?.success) {
+                this.App.trigger('alert:success', { message: (response as any).msj || 'Vinculación exitosa' });
+                return response;
+            } else {
+                this.App.trigger('alert:error', { message: (response as any).msj || 'Error en la vinculación' });
+                throw new Error((response as any).msj || 'Error en la vinculación');
+            }
+        } catch (error: any) {
+            this.logger.error('Error al vincular usuario con asamblea:', error);
+            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            throw error;
+        }
+    }
+
+    /**
+     * Vincular usuario con mesa
+     */
+    async __vincularMesa(data: any): Promise<ApiResponse> {
+        try {
+            this.logger?.info('Vinculando usuario con mesa', data);
+
+            const response = await this.api.post('/admin/vincular_mesa', data);
+
+            if (response?.success) {
+                this.App.trigger('alert:success', { message: (response as any).msj || 'Vinculación exitosa' });
+                return response;
+            } else {
+                this.App.trigger('alert:error', { message: (response as any).msj || 'Error en la vinculación' });
+                throw new Error((response as any).msj || 'Error en la vinculación');
+            }
+        } catch (error: any) {
+            this.logger.error('Error al vincular usuario con mesa:', error);
+            this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            throw error;
+        }
+    }
+
+    /**
+     * Métodos API para vinculación
+     */
+    async vincularAsambleaApi(data: any): Promise<ApiResponse> {
+        return await this.__vincularAsamblea(data);
+    }
+
+    async vincularMesaApi(data: any): Promise<ApiResponse> {
+        return await this.__vincularMesa(data);
+    }
+
+    /**
      * Buscar usuarios por criterio
      */
     async __buscarUsuarios(criterio: string): Promise<any[]> {

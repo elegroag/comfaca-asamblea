@@ -1,14 +1,41 @@
-'use strict';
-
 import { BackboneView } from "@/common/Bone";
-import { Utils } from "@/core/Utils";
 import Poder from "@/models/Poder";
 import crearRechazoPoder from '@/componentes/poderes/templates/crearRechazoPoder.hbs?raw';
+import PoderesService from "@/pages/Poderes/PoderService";
+
+interface RechazaPoderOptions {
+    collection?: any;
+    api?: any;
+    logger?: any;
+    app?: any;
+    storage?: any;
+    region?: any;
+    [key: string]: any;
+}
 
 export default class RechazaPoder extends BackboneView {
+    modal: any;
+    api: any;
+    logger: any;
+    app: any;
+    storage: any;
+    region: any;
+    poderesService: PoderesService;
 
-    constructor(options: any) {
+    constructor(options: RechazaPoderOptions) {
         super(options);
+        this.api = options.api;
+        this.logger = options.logger;
+        this.app = options.app;
+        this.storage = options.storage;
+        this.region = options.region;
+
+        // Inicializar el servicio
+        this.poderesService = new PoderesService({
+            api: this.api,
+            logger: this.logger,
+            app: this.app
+        });
     }
 
     initialize() {
@@ -30,17 +57,14 @@ export default class RechazaPoder extends BackboneView {
     render() {
         let template = _.template(crearRechazoPoder);
         this.$el.html(template({ criterios_rechazos: this.collection.toJSON() }));
-        this.$el.find("[name='fecha']").val(moment().format('DD-MM-YYYY'));
-
-        /*   this.$el.find('#criterio_rechazo').selectpicker({
-              header: 'Seleccionar criterio',
-              size: 'auto',
-              showIcon: false,
-              width: '100%',
-              liveSearch: true,
-              style: 'btn btn-primary',
-              liveSearchStyle: 'contains',
-          }); */
+        // Establecer fecha actual sin dependencia global moment
+        const today = new Date();
+        const formattedDate = today.toLocaleDateString('es-CO', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }).replace(/\//g, '-');
+        this.$el.find("[name='fecha']").val(formattedDate);
         return this;
     }
 
@@ -76,31 +100,31 @@ export default class RechazaPoder extends BackboneView {
         const poderdante_nit = this.getInput('poderdante_nit');
 
         if (apoderado_nit == poderdante_nit) {
-            this.App?.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
+            this.app?.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
             return false;
         }
 
         if (apoderado_nit !== '') {
-            this.App?.trigger('syncro', {
-                url: Utils.getURL('poderes/buscar_empresa/' + apoderado_nit),
-                data: {},
-                callback: (response: any) => {
-                    if (response) {
-                        if (!response.success) {
-                            this.App?.trigger('alert:error', response.msj);
-                        } else {
-                            const empresa = response.empresa;
-                            this.setInput('apoderado_cedula', empresa.cedrep);
-                            this.setInput('razsoc_apoderado', empresa.razsoc);
-                            this.setInput('repleg_apoderado', empresa.repleg);
-                        }
+            // Delegar al servicio para buscar empresa
+            this.poderesService.__buscarEmpresa(apoderado_nit).then((response: any) => {
+                if (response) {
+                    if (!response.success) {
+                        this.app?.trigger('alert:error', response.msj);
                     } else {
-                        this.App?.trigger(
-                            'alert:error',
-                            'Se ha generado un error interno. Se requiere de reportar al área de TICS'
-                        );
+                        const empresa = response.empresa;
+                        this.setInput('apoderado_cedula', empresa.cedrep);
+                        this.setInput('razsoc_apoderado', empresa.razsoc);
+                        this.setInput('repleg_apoderado', empresa.repleg);
                     }
-                },
+                } else {
+                    this.app?.trigger(
+                        'alert:error',
+                        'Se ha generado un error interno. Se requiere de reportar al área de TICS'
+                    );
+                }
+            }).catch((error: any) => {
+                this.logger?.error('Error al buscar empresa:', error);
+                this.app?.trigger('alert:error', 'Error de conexión');
             });
         } else {
             this.setInput('apoderado_cedula', '');
@@ -115,31 +139,31 @@ export default class RechazaPoder extends BackboneView {
         const poderdante_nit = this.getInput('poderdante_nit');
 
         if (poderdante_nit == apoderado_nit) {
-            this.$App.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
+            this.app?.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
             return false;
         }
 
         if (poderdante_nit !== '') {
-            this.App?.trigger('syncro', {
-                url: Utils.getURL('poderes/buscar_empresa/' + poderdante_nit),
-                data: {},
-                callback: (response: any) => {
-                    if (response) {
-                        if (!response.success) {
-                            this.App?.trigger('alert:error', response.msj);
-                        } else {
-                            const empresa = response.empresa;
-                            this.setInput('poderdante_cedula', empresa.cedrep);
-                            this.setInput('razsoc_poderdante', empresa.razsoc);
-                            this.setInput('repleg_poderdante', empresa.repleg);
-                        }
+            // Delegar al servicio para buscar empresa
+            this.poderesService.__buscarEmpresa(poderdante_nit).then((response: any) => {
+                if (response) {
+                    if (!response.success) {
+                        this.app?.trigger('alert:error', response.msj);
                     } else {
-                        this.App?.trigger(
-                            'alert:error',
-                            'Se ha generado un error interno. Se requiere de reportar al área de TICS'
-                        );
+                        const empresa = response.empresa;
+                        this.setInput('poderdante_cedula', empresa.cedrep);
+                        this.setInput('razsoc_poderdante', empresa.razsoc);
+                        this.setInput('repleg_poderdante', empresa.repleg);
                     }
-                },
+                } else {
+                    this.app?.trigger(
+                        'alert:error',
+                        'Se ha generado un error interno. Se requiere de reportar al área de TICS'
+                    );
+                }
+            }).catch((error: any) => {
+                this.logger?.error('Error al buscar empresa:', error);
+                this.app?.trigger('alert:error', 'Error de conexión');
             });
         } else {
             this.setInput('poderdante_cedula', '');
@@ -173,7 +197,7 @@ export default class RechazaPoder extends BackboneView {
         });
 
         if (apoderado_nit == '' && poderdante_nit == '') {
-            this.App?.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
+            this.app?.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
             target.removeAttr('disabled');
             return false;
         }
@@ -181,49 +205,70 @@ export default class RechazaPoder extends BackboneView {
         model.setForRechazo(true);
 
         if (!model.isValid()) {
-            this.App?.trigger('alert:error', model.validationError);
-            setTimeout(() => $('.error').html(''), 3000);
+            this.app?.trigger('alert:error', model.validationError);
+            setTimeout(() => this.$el.find('.error').html(''), 3000);
             target.removeAttr('disabled');
-            this.setInput('fecha', moment().format('DD-MM-YYYY'));
+            // Establecer fecha actual sin dependencia global moment
+            const today = new Date();
+            const formattedDate = today.toLocaleDateString('es-CO', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            }).replace(/\//g, '-');
+            this.setInput('fecha', formattedDate);
             return false;
         }
 
-        this.App?.trigger('syncro', {
-            url: Utils.getURL('poderes/registraRechazoPoder'),
-            data: model.toJSON(),
-            callback: (response: any) => {
-                target.removeAttr('disabled');
-                if (response) {
-                    if (!response.poder) {
-                        Swal.fire(<SweetAlertOptions>{
-                            title: 'Notificación Error!',
-                            text: response.errors,
-                            icon: 'error',
-                            button: 'Continuar!',
-                        });
-                    } else {
-                        this.App?.trigger('success', response.msj);
-
-                        _.each(response.poder, (value, key) => model.set(key, value));
-                        this.trigger('add:poder', model);
-
-                        this.$el.find('input').val('');
-                        this.setText('razsoc_apoderado', 'Razón social');
-                        this.setText('razsoc_poderdante', 'Razón social');
-                        this.setText('repleg_apoderado', 'Representante legal');
-                        this.setText('repleg_poderdante', 'Representante legal');
-                        this.setInput('fecha', moment().format('DD-MM-YYYY'));
-
-                        this.router.navigate('mostrar/' + model.get('documento'), { trigger: true, replace: true });
-                    }
+        // Delegar al servicio para registrar rechazo
+        this.poderesService.__registrarRechazo(model.toJSON()).then((response: any) => {
+            target.removeAttr('disabled');
+            if (response) {
+                if (!response.poder) {
+                    this.app?.trigger('alert:error', response.errors || 'Error al registrar rechazo');
                 } else {
+                    this.app?.trigger('success', response.msj);
+
+                    _.each(response.poder, (value: any, key: string) => model.set(key, value));
+                    this.trigger('add:poder', model);
+
+                    this.$el.find('input').val('');
                     this.setText('razsoc_apoderado', 'Razón social');
                     this.setText('razsoc_poderdante', 'Razón social');
                     this.setText('repleg_apoderado', 'Representante legal');
                     this.setText('repleg_poderdante', 'Representante legal');
-                    this.setInput('fecha', moment().format('DD-MM-YYYY'));
+
+                    // Establecer fecha actual
+                    const today = new Date();
+                    const formattedDate = today.toLocaleDateString('es-CO', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    }).replace(/\//g, '-');
+                    this.setInput('fecha', formattedDate);
+
+                    if (this.app && this.app.router) {
+                        this.app.router.navigate('mostrar/' + model.get('documento'), { trigger: true, replace: true });
+                    }
                 }
-            },
+            } else {
+                this.setText('razsoc_apoderado', 'Razón social');
+                this.setText('razsoc_poderdante', 'Razón social');
+                this.setText('repleg_apoderado', 'Representante legal');
+                this.setText('repleg_poderdante', 'Representante legal');
+
+                // Establecer fecha actual
+                const today = new Date();
+                const formattedDate = today.toLocaleDateString('es-CO', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                }).replace(/\//g, '-');
+                this.setInput('fecha', formattedDate);
+            }
+        }).catch((error: any) => {
+            target.removeAttr('disabled');
+            this.logger?.error('Error al registrar rechazo:', error);
+            this.app?.trigger('alert:error', 'Error de conexión');
         });
 
         return false;
@@ -232,7 +277,9 @@ export default class RechazaPoder extends BackboneView {
     backList(e: Event) {
         e.preventDefault();
         this.remove();
-        this.router.navigate('listar', { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('listar', { trigger: true, replace: true });
+        }
         return false;
     }
 

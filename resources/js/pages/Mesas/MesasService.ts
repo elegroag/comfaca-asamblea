@@ -256,4 +256,40 @@ export default class MesasService {
     private async buscarMesasApi(criterio: string): Promise<ApiResponse> {
         return await this.api.get(`/mesas/buscar?criterio=${encodeURIComponent(criterio)}`);
     }
+
+    /**
+     * Vincular mesa a usuario
+     */
+    async __vincularMesa(data: { mesa: any; usuario: any; create_mesa: number }): Promise<ApiResponse> {
+        try {
+            const response = await this.vincularMesaApi(data);
+
+            if (response?.success) {
+                this.App?.trigger('alert:success', { message: response.msj || 'Mesa vinculada exitosamente' });
+            } else {
+                this.App?.trigger('alert:error', { message: response?.msj || 'Error al vincular mesa' });
+            }
+
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al vincular mesa:', error);
+            this.App?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return { success: false, message: error.message || 'Error de conexión' };
+        }
+    }
+
+    /**
+     * API para vincular mesa
+     */
+    private async vincularMesaApi(data: { mesa: any; usuario: any; create_mesa: number }): Promise<ApiResponse> {
+        const payload = {
+            cedtra: data.usuario.get('cedtra'),
+            estado: data.mesa.get('estado'),
+            create_mesa: data.create_mesa,
+            mesa_id: data.mesa.get('id'),
+            mesa_codigo: data.mesa.get('codigo')
+        };
+
+        return await this.api.post('/admin/vincular_mesa', payload);
+    }
 }

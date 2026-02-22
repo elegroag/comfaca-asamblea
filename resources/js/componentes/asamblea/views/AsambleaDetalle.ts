@@ -1,11 +1,12 @@
 import { BackboneView } from "@/common/Bone";
 import detalle from "@/componentes/asamblea/templates/detalle.hbs?raw";
+import AsambleaService from "@/pages/Asamblea/AsambleaService";
 
 interface AsambleaDetalleOptions {
     model?: any;
-    App?: any;
     api?: any;
     logger?: any;
+    app?: any;
     storage?: any;
     region?: any;
     [key: string]: any;
@@ -13,21 +14,29 @@ interface AsambleaDetalleOptions {
 
 export default class AsambleaDetalle extends BackboneView {
     template: any;
-    App: any;
     api: any;
     logger: any;
+    app: any;
     storage: any;
     region: any;
+    asambleaService: AsambleaService;
 
     constructor(options: AsambleaDetalleOptions = {}) {
         super(options);
-        this.App = options.App;
         this.api = options.api;
         this.logger = options.logger;
+        this.app = options.app;
         this.storage = options.storage;
         this.region = options.region;
         this.model = options.model;
         this.template = _.template(detalle);
+
+        // Inicializar el servicio con las dependencias
+        this.asambleaService = new AsambleaService({
+            api: this.api,
+            logger: this.logger,
+            app: this.app
+        });
     }
 
     initialize(): void {
@@ -52,8 +61,8 @@ export default class AsambleaDetalle extends BackboneView {
      */
     back(): void {
         this.remove();
-        if (this.App && this.App.router) {
-            this.App.router.navigate('listar_asambleas', { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('listar_asambleas', { trigger: true, replace: true });
         }
     }
 }
