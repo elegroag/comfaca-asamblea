@@ -48,7 +48,7 @@ export default class EmpresasController extends Controller {
             if (!this.Collections.empresas || !this.Collections.empresas.length || this.Collections.empresas.length === 0) {
                 try {
                     if (!this.api) {
-                        this.App?.trigger('error', 'API no disponible');
+                        this.app?.trigger('error', 'API no disponible');
                         return;
                     }
 
@@ -59,11 +59,11 @@ export default class EmpresasController extends Controller {
                         this.empresaService.__setEmpresas((response as any).empresas);
                         controller.listaEmpresas();
                     } else {
-                        this.App?.trigger('error', (response as any).msj || response.message || 'Error al listar empresas');
+                        this.app?.trigger('error', (response as any).msj || response.message || 'Error al listar empresas');
                     }
                 } catch (error: any) {
                     this.logger.error('Error al listar empresas:', error);
-                    this.App?.trigger('error', error.message || 'Error de conexión al listar empresas');
+                    this.app?.trigger('error', error.message || 'Error de conexión al listar empresas');
                 }
             } else {
                 if (Loading) Loading.show();
@@ -74,7 +74,7 @@ export default class EmpresasController extends Controller {
             }
         } catch (err: any) {
             this.logger.error('Error al listar empresas:', err);
-            if (this.App?.trigger) {
+            if (this.app?.trigger) {
                 this.app.trigger('error', 'Error de conexión al listar empresas');
             }
         }
@@ -112,7 +112,7 @@ export default class EmpresasController extends Controller {
             if (!this.Collections.empresas || !this.Collections.empresas.length || this.Collections.empresas.length <= 1) {
                 try {
                     if (!this.api) {
-                        this.App?.trigger('error', 'API no disponible');
+                        this.app?.trigger('error', 'API no disponible');
                         return;
                     }
 
@@ -123,11 +123,11 @@ export default class EmpresasController extends Controller {
                         const model = this.Collections.empresas.get(nit);
                         auth.editaEmpresa(model);
                     } else {
-                        this.App?.trigger('alert:error', { message: response.message || 'Error al obtener datos de la empresa' });
+                        this.app?.trigger('alert:error', { message: response.message || 'Error al obtener datos de la empresa' });
                     }
                 } catch (error: any) {
                     this.logger.error('Error al editar empresa:', error);
-                    this.App?.trigger('alert:error', { message: error.message || 'Error de conexión al editar empresa' });
+                    this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al editar empresa' });
                 }
             } else {
                 const model = this.Collections.empresas.get(nit);
@@ -135,7 +135,7 @@ export default class EmpresasController extends Controller {
             }
         } catch (err: any) {
             this.logger.error('Error al editar empresa:', err);
-            if (this.App?.trigger) {
+            if (this.app?.trigger) {
                 this.app.trigger('alert:error', { message: 'Error de conexión al editar empresa' });
             }
         }
@@ -153,7 +153,7 @@ export default class EmpresasController extends Controller {
             if (!this.Collections.empresas || !this.Collections.empresas.length || this.Collections.empresas.length === 0) {
                 try {
                     if (!this.api) {
-                        this.App?.trigger('alert:error', { message: 'API no disponible' });
+                        this.app?.trigger('alert:error', { message: 'API no disponible' });
                         return;
                     }
 
@@ -164,11 +164,11 @@ export default class EmpresasController extends Controller {
                         const model = this.Collections.empresas.get(nit);
                         auth.detalleEmpresa(model);
                     } else {
-                        this.App?.trigger('alert:error', { message: response.message || 'Error al obtener detalles de la empresa' });
+                        this.app?.trigger('alert:error', { message: response.message || 'Error al obtener detalles de la empresa' });
                     }
                 } catch (error: any) {
                     this.logger.error('Error al mostrar detalle de empresa:', error);
-                    this.App?.trigger('alert:error', { message: error.message || 'Error de conexión al mostrar detalles de la empresa' });
+                    this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al mostrar detalles de la empresa' });
                 }
             } else {
                 const model = this.Collections.empresas.get(nit);
@@ -176,7 +176,7 @@ export default class EmpresasController extends Controller {
             }
         } catch (err: any) {
             this.logger.error('Error al mostrar detalle de empresa:', err);
-            if (this.App?.trigger) {
+            if (this.app?.trigger) {
                 this.app.trigger('alert:error', { message: 'Error de conexión al mostrar detalles de la empresa' });
             }
         }
@@ -196,7 +196,7 @@ export default class EmpresasController extends Controller {
 
                 try {
                     if (!this.api) {
-                        this.App?.trigger('alert:error', { message: 'API no disponible' });
+                        this.app?.trigger('alert:error', { message: 'API no disponible' });
                         return;
                     }
 
@@ -210,12 +210,12 @@ export default class EmpresasController extends Controller {
                         this.empresaService.__setHabiles((response as any).empresas);
                         auth.listarHabiles();
                     } else {
-                        this.App?.trigger('alert:error', { message: (response as any).msj || response.message || 'Error al listar habiles' });
+                        this.app?.trigger('alert:error', { message: (response as any).msj || response.message || 'Error al listar habiles' });
                     }
                 } catch (error: any) {
                     this.logger.error('Error al listar habiles:', error);
                     if (Loading) Loading.hide();
-                    this.App?.trigger('alert:error', { message: error.message || 'Error de conexión al listar habiles' });
+                    this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar habiles' });
                 }
             } else {
                 auth.listarHabiles();
@@ -223,7 +223,7 @@ export default class EmpresasController extends Controller {
         } catch (err: any) {
             this.logger.error('Error al listar habiles:', err);
             if (Loading) Loading.hide();
-            if (this.App?.trigger) {
+            if (this.app?.trigger) {
                 this.app.trigger('alert:error', { message: 'Error de conexión al listar habiles' });
             }
         }

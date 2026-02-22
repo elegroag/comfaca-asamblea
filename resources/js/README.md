@@ -112,7 +112,7 @@ export default class RouterHabiles extends BackboneRouter {
 ```typescript
 export default class EmpresasController extends Controller {
     constructor(options: any) {
-        super(options);  // Hereda: this.api, this.App, this.logger
+        super(options);  // Hereda: this.api, this.app, this.logger
         
         this.empresaService = new EmpresaService({
             api: this.api,      // Inyección directa
@@ -263,7 +263,7 @@ this.trigger('remove:empresa', { model, callback });
 this.listenTo(listView, 'remove:empresa', this.empresaService.__removeEmpresa);
 
 // Nivel 3: Service → App (global)
-this.App?.trigger('alert:success', { message: response.msj });
+this.app?.trigger('alert:success', { message: response.msj });
 ```
 
 #### **4. Layouts Anidados con Guards**
@@ -471,7 +471,7 @@ Este documento describe la arquitectura y los flujos aplicados en la página Hab
   - La vista emite: `form:save`, `form:edit`, `remove:habiles`, `notify`, etc.
   - El controller hace `listenTo(view, 'form:save', service.__saveEmpresa)`.
 - Service → App/UI
-  - Notificaciones: `this.App?.trigger('alert:success'|'alert:error', { message })`.
+  - Notificaciones: `this.app?.trigger('alert:success'|'alert:error', { message })`.
   - Mutaciones de colecciones: `Collections.empresas.add(...)`, `Collections.habiles.remove(...)`.
 
 ## Acceso a API
@@ -568,7 +568,7 @@ export default class EmpresaService {
 
   private get api() { return this.opts.api; }
   private get logger() { return this.opts.logger; }
-  private get App() { return this.opts.app; }
+  private get app() { return this.opts.app; }
 
   async findAllApi(): Promise<void> {
     try {
@@ -667,7 +667,7 @@ export default Habiles;
 ```
 
 # 3) Evitar `$App` globales
-- `$App`: ya se inyecta como `app` y se usa vía `this.App`.
+- `$App`: ya se inyecta como `app` y se usa vía `this.app`.
 
 Ejemplo en una View:
 ```ts

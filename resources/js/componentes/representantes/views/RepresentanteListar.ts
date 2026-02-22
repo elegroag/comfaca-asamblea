@@ -31,7 +31,7 @@ export default class RepresentanteListar extends BackboneView {
 
     constructor(options: RepresentanteListarOptions) {
         super({ ...options, className: 'box', id: 'box_representantes' });
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -42,7 +42,7 @@ export default class RepresentanteListar extends BackboneView {
         this.representanteService = new RepresentanteService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -82,7 +82,7 @@ export default class RepresentanteListar extends BackboneView {
         e.preventDefault();
         const target = this.$el.find(e.currentTarget);
         const cedrep = target.attr('data-code');
-        if (this.App && this.app.router) {
+        if (this.app && this.app.router) {
             this.app.router.navigate('mostrar/' + cedrep, { trigger: true, replace: true });
         }
     }
@@ -91,7 +91,7 @@ export default class RepresentanteListar extends BackboneView {
         e.preventDefault();
         const target = this.$el.find(e.currentTarget);
         const cedrep = target.attr('data-code');
-        if (this.App && this.app.router) {
+        if (this.app && this.app.router) {
             this.app.router.navigate('editar/' + cedrep, { trigger: true, replace: true });
         }
     }
@@ -102,7 +102,7 @@ export default class RepresentanteListar extends BackboneView {
         const cedrep = target.attr('data-code');
 
         const model = this.collection.get(parseInt(cedrep));
-        if (this.App && typeof this.app.trigger === 'function') {
+        if (this.app && typeof this.app.trigger === 'function') {
             this.app.trigger('confirma', {
                 message: '¡Confirma que desea borrar el registro!',
                 callback: (status: boolean) => {

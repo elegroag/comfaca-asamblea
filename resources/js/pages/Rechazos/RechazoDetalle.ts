@@ -24,13 +24,13 @@ export default class RechazoDetalle extends Controller {
         this.api = options.api;
         this.logger = options.logger;
         this.router = options.router;
-        this.App = options.app;
+        this.app = options.app;
         _.extend(this, options);
 
         this.rechazoService = new RechazoService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
         this.listenTo(this, 'set:rechazos', this.rechazoService.setRechazos);
         this.listenTo(this, 'add:rechazos', this.rechazoService.addRechazos);
@@ -74,7 +74,7 @@ export default class RechazoDetalle extends Controller {
             (RechazosNav as any).parentView = view;
         } catch (error: any) {
             this.logger?.error('Error en showDetalle:', error);
-            this.App?.trigger('alert:error', error.message);
+            this.app?.trigger('alert:error', error.message);
         }
     }
 

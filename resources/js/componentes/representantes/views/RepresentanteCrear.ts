@@ -27,7 +27,7 @@ export default class RepresentanteCrear extends BackboneView {
     constructor({ isNew, ...options }: RepresentanteCrearOptions) {
         super(options);
         this.isNew = isNew;
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -37,7 +37,7 @@ export default class RepresentanteCrear extends BackboneView {
         this.representanteService = new RepresentanteService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -74,7 +74,7 @@ export default class RepresentanteCrear extends BackboneView {
         // Validación básica (simulando Testeo.identi)
         const _erro = !value || value.length < 5 || value.length > 20;
         if (_erro) {
-            if (this.App && typeof this.app.trigger === 'function') {
+            if (this.app && typeof this.app.trigger === 'function') {
                 this.app.trigger('alert:error', 'La cedula del representante no es un valor valido');
             }
             return false;
@@ -102,7 +102,7 @@ export default class RepresentanteCrear extends BackboneView {
         // Validación básica (simulando Testeo.identi)
         const _erro = !value || value.length < 5 || value.length > 20;
         if (_erro) {
-            if (this.App && typeof this.app.trigger === 'function') {
+            if (this.app && typeof this.app.trigger === 'function') {
                 this.app.trigger('alert:error', 'El nit de la empresa no es un valor valido');
             }
             return false;
@@ -114,7 +114,7 @@ export default class RepresentanteCrear extends BackboneView {
                 callback: (response: any) => {
                     if (response) {
                         const { empresa } = response;
-                        if (this.App && typeof this.app.trigger === 'function') {
+                        if (this.app && typeof this.app.trigger === 'function') {
                             this.app.trigger('confirma', {
                                 message: `La empresa ${empresa.razsoc} ya está registrada y con representante legal, desea continuar el cambio de representante ${empresa.repleg} y la cedula ${empresa.cedrep}`,
                                 callback: (status: boolean) => {
@@ -139,7 +139,7 @@ export default class RepresentanteCrear extends BackboneView {
         // Validación básica (simulando Testeo.numerico)
         let err = !/^\d+$/.test(clave);
         if (err) {
-            if (this.App && typeof this.app.trigger === 'function') {
+            if (this.app && typeof this.app.trigger === 'function') {
                 this.app.trigger('alert:error', 'Error con el valor númerico de la clave');
             }
             this.setInput('clave', '');
@@ -149,7 +149,7 @@ export default class RepresentanteCrear extends BackboneView {
         // Validación básica (simulando Testeo.identi)
         err = !clave || clave.length < 5 || clave.length > 12;
         if (err) {
-            if (this.App && typeof this.app.trigger === 'function') {
+            if (this.app && typeof this.app.trigger === 'function') {
                 this.app.trigger('alert:error', 'La clave debe tener entre 5 y 12 caracteres');
             }
             return false;
@@ -164,7 +164,7 @@ export default class RepresentanteCrear extends BackboneView {
             target.removeAttr('disabled');
 
             if (response && response.success) {
-                if (this.App && typeof this.app.trigger === 'function') {
+                if (this.app && typeof this.app.trigger === 'function') {
                     this.app.trigger('alert:success', {
                         title: 'Éxito',
                         text: 'Representante guardado correctamente',
@@ -173,7 +173,7 @@ export default class RepresentanteCrear extends BackboneView {
                 }
                 this.router.navigate('listar', { trigger: true, replace: true });
             } else {
-                if (this.App && typeof this.app.trigger === 'function') {
+                if (this.app && typeof this.app.trigger === 'function') {
                     this.app.trigger('alert:error', {
                         title: 'Error',
                         text: response.msj || 'Error al guardar el representante',
@@ -184,7 +184,7 @@ export default class RepresentanteCrear extends BackboneView {
         } catch (error: any) {
             target.removeAttr('disabled');
             this.logger?.error('Error al guardar representante:', error);
-            if (this.App && typeof this.app.trigger === 'function') {
+            if (this.app && typeof this.app.trigger === 'function') {
                 this.app.trigger('alert:error', {
                     title: 'Error',
                     text: 'Ocurrió un error al guardar el representante',
@@ -197,7 +197,7 @@ export default class RepresentanteCrear extends BackboneView {
     backlist(e: Event) {
         e.preventDefault();
         this.remove();
-        if (this.App && this.app.router) {
+        if (this.app && this.app.router) {
             this.app.router.navigate('listar', { trigger: true, replace: true });
         }
         return false;

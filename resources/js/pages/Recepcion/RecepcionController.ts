@@ -28,7 +28,7 @@ export default class RecepcionController extends Controller {
             this.region.show('<div class="p-4">Lista de recepción</div>');
         } catch (error: any) {
             this.logger?.error('Error al listar recepción:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar recepción');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar recepción');
         }
     }
 
@@ -41,7 +41,7 @@ export default class RecepcionController extends Controller {
             this.region.show(`<div class="p-4">Mostrando asistente: ${cedrep}</div>`);
         } catch (error: any) {
             this.logger?.error('Error al mostrar asistente:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar asistente');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar asistente');
         }
     }
 
@@ -54,7 +54,7 @@ export default class RecepcionController extends Controller {
             this.region.show(`<div class="p-4">Validando asistente: ${cedrep}</div>`);
         } catch (error: any) {
             this.logger?.error('Error al mostrar validación:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar validación');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar validación');
         }
     }
 
@@ -67,7 +67,7 @@ export default class RecepcionController extends Controller {
             this.region.show('<div class="p-4">Buscar asistencia</div>');
         } catch (error: any) {
             this.logger?.error('Error al buscar asistencia:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al buscar asistencia');
+            this.app?.trigger('alert:error', error.message || 'Error al buscar asistencia');
         }
     }
 
@@ -80,7 +80,7 @@ export default class RecepcionController extends Controller {
             this.region.show('<div class="p-4">Lista de rechazados</div>');
         } catch (error: any) {
             this.logger?.error('Error al listar rechazados:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar rechazados');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar rechazados');
         }
     }
 
@@ -93,7 +93,7 @@ export default class RecepcionController extends Controller {
             this.region.show(`<div class="p-4">Ficha de asistente: ${cedrep}</div>`);
         } catch (error: any) {
             this.logger?.error('Error al mostrar ficha:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar ficha');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar ficha');
         }
     }
 
@@ -101,7 +101,7 @@ export default class RecepcionController extends Controller {
      * Mostrar error
      */
     mostrarError(): void {
-        this.App?.trigger('alert:error', 'Error en la aplicación de Recepción');
+        this.app?.trigger('alert:error', 'Error en la aplicación de Recepción');
     }
 
     /**
@@ -113,7 +113,7 @@ export default class RecepcionController extends Controller {
             this.region.show(`<div class="p-4">Registro de empresa: ${nit}</div>`);
         } catch (error: any) {
             this.logger?.error('Error al registrar empresa:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al registrar empresa');
+            this.app?.trigger('alert:error', error.message || 'Error al registrar empresa');
         }
     }
 
@@ -134,7 +134,7 @@ export default class RecepcionController extends Controller {
             this.region.show('<div class="p-4">Lista de inscritos</div>');
         } catch (error: any) {
             this.logger?.error('Error al listar inscritos:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar inscritos');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar inscritos');
         }
     }
 
@@ -147,7 +147,7 @@ export default class RecepcionController extends Controller {
             this.region.show('<div class="p-4">Registros pendientes</div>');
         } catch (error: any) {
             this.logger?.error('Error al listar pendientes:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar pendientes');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar pendientes');
         }
     }
 
@@ -155,7 +155,7 @@ export default class RecepcionController extends Controller {
      * Manejar errores
      */
     error(): void {
-        this.App?.trigger('alert:error', 'Error en la aplicación de Recepción');
+        this.app?.trigger('alert:error', 'Error en la aplicación de Recepción');
     }
 
     /**

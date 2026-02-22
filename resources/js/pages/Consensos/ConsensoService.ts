@@ -18,13 +18,14 @@ export default class ConsensoService {
     } as ConsensoCollections;
 
     constructor(private readonly opts: ConsensoServiceOptions) {
+        _.extend(this, opts);
         this.storage = BoxCollectionStorage.getInstance();
         this.__initializeCollections();
     }
 
     private get api() { return this.opts.api; }
     private get logger() { return this.opts.logger; }
-    private get App() { return this.opts.app; }
+    private get app() { return this.opts.app; }
 
     /**
      * Inicializar las colecciones necesarias usando BoxCollectionStorage

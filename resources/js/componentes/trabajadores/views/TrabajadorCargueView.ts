@@ -25,7 +25,7 @@ export default class TrabajadorCargueView extends BackboneView {
 			...options,
 			className: 'box',
 		});
-		this.App = options.App;
+		this.app = options.app;
 		this.api = options.api;
 		this.logger = options.logger;
 		this.storage = options.storage;
@@ -34,7 +34,7 @@ export default class TrabajadorCargueView extends BackboneView {
 		this.trabajadorService = new TrabajadorService({
 			api: this.api,
 			logger: this.logger,
-			app: this.App
+			app: this.app
 		});
 	}
 
@@ -76,18 +76,18 @@ export default class TrabajadorCargueView extends BackboneView {
 
 		try {
 			// Mostrar loading (simulado con trigger)
-			if (this.App && typeof this.app.trigger === 'function') {
+			if (this.app && typeof this.app.trigger === 'function') {
 				this.app.trigger('loading:show');
 			}
 
 			const response = await this.trabajadorService.__uploadMasivo(formData);
 
-			if (this.App && typeof this.app.trigger === 'function') {
+			if (this.app && typeof this.app.trigger === 'function') {
 				this.app.trigger('loading:hide');
 			}
 
 			if (response && response.success) {
-				if (this.App && typeof this.app.trigger === 'function') {
+				if (this.app && typeof this.app.trigger === 'function') {
 					this.app.trigger('alert:success', {
 						title: 'Notificación!',
 						text: `Ya se completo el cargue de los trabajadores.\nRegistrados: ${response.creados}\nCantidad: ${response.filas}\nFallos: ${response.fallidos}`,
@@ -96,7 +96,7 @@ export default class TrabajadorCargueView extends BackboneView {
 				}
 				this.limpiarFormulario();
 			} else {
-				if (this.App && typeof this.app.trigger === 'function') {
+				if (this.app && typeof this.app.trigger === 'function') {
 					this.app.trigger('alert:error', {
 						title: 'Error!',
 						text: response.msj || 'Error en el cargue masivo',
@@ -106,7 +106,7 @@ export default class TrabajadorCargueView extends BackboneView {
 				this.limpiarFormulario();
 			}
 		} catch (error: any) {
-			if (this.App && typeof this.app.trigger === 'function') {
+			if (this.app && typeof this.app.trigger === 'function') {
 				this.app.trigger('loading:hide');
 				this.app.trigger('alert:error', {
 					title: 'Error!',

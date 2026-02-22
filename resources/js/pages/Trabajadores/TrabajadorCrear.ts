@@ -45,7 +45,7 @@ export default class TrabajadorCrear extends Controller {
                         },
                         api: this.api,
                         logger: this.logger,
-                        app: this.App
+                        app: this.app
                     })
                 );
             }
@@ -54,7 +54,7 @@ export default class TrabajadorCrear extends Controller {
             if (bodyRegion) {
                 const view = new TrabajadorCrearView({
                     model: new Trabajador({ isNew: true }),
-                    collection: (this.App as any).Collections.trabajadores,
+                    collection: (this.app as any).Collections.trabajadores,
                     app: this.app,
                     api: this.api,
                     logger: this.logger,
@@ -72,7 +72,7 @@ export default class TrabajadorCrear extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al crear trabajador:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al crear trabajador');
+            this.app?.trigger('alert:error', error.message || 'Error al crear trabajador');
         }
     }
 

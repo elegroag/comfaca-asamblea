@@ -26,7 +26,7 @@ export default class SubNavRepresentantes extends BackboneView {
 
     constructor(options: SubNavRepresentantesOptions) {
         super(options);
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -35,7 +35,7 @@ export default class SubNavRepresentantes extends BackboneView {
         this.model = options.model;
         this.template = _.template(subnav);
         // Guardar referencia estática para métodos estáticos
-        SubNavRepresentantes.App = options.App;
+        SubNavRepresentantes.app = options.app;
     }
 
     get className(): string {
@@ -63,7 +63,7 @@ export default class SubNavRepresentantes extends BackboneView {
     nuevoRegistro(e: Event) {
         e.preventDefault();
         if (SubNavRepresentantes.parentView) SubNavRepresentantes.parentView.remove();
-        if (SubNavRepresentantes.App && SubNavRepresentantes.App.router) {
+        if (SubNavRepresentantes.app && SubNavRepresentantes.App.router) {
             SubNavRepresentantes.App.router.navigate('crear', { trigger: true });
         }
     }
@@ -71,7 +71,7 @@ export default class SubNavRepresentantes extends BackboneView {
     listarData(e: Event) {
         e.preventDefault();
         if (SubNavRepresentantes.parentView) SubNavRepresentantes.parentView.remove();
-        if (SubNavRepresentantes.App && SubNavRepresentantes.App.router) {
+        if (SubNavRepresentantes.app && SubNavRepresentantes.App.router) {
             SubNavRepresentantes.App.router.navigate('listar', { trigger: true, replace: true });
         }
     }
@@ -80,7 +80,7 @@ export default class SubNavRepresentantes extends BackboneView {
         e.preventDefault();
         const nit = this.model.get('nit');
         if (SubNavRepresentantes.parentView) SubNavRepresentantes.parentView.remove();
-        if (SubNavRepresentantes.App && SubNavRepresentantes.App.router) {
+        if (SubNavRepresentantes.app && SubNavRepresentantes.App.router) {
             SubNavRepresentantes.App.router.navigate('edita/' + nit, { trigger: true });
         }
     }

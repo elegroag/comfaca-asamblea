@@ -60,7 +60,7 @@ export default class EmpresasListar extends Controller {
             collection: this.empresaService.Collections.empresas || [],
             router: this.router as any,
             api: this.api,
-            App: this.App
+            App: this.app
         });
 
         if (typeof this.listenTo === 'function') {

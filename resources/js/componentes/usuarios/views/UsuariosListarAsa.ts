@@ -24,7 +24,7 @@ export default class UsuariosListarAsa extends BackboneView {
 
 	constructor(options: UsuariosListarAsaOptions = {}) {
 		super({ ...options, className: 'box', id: 'box_usuarios' });
-		this.App = options.App;
+		this.app = options.app;
 		this.api = options.api;
 		this.logger = options.logger;
 		this.storage = options.storage;
@@ -35,7 +35,7 @@ export default class UsuariosListarAsa extends BackboneView {
 		this.usuarioService = new UsuarioService({
 			api: this.api,
 			logger: this.logger,
-			app: this.App
+			app: this.app
 		});
 	}
 
@@ -77,7 +77,7 @@ export default class UsuariosListarAsa extends BackboneView {
 			return;
 		}
 
-		if (this.App && typeof this.app.trigger === 'function') {
+		if (this.app && typeof this.app.trigger === 'function') {
 			this.app.trigger('confirma', {
 				message: 'Se requiere de confirmar para borrar el registro seleccionado.',
 				callback: async (status: boolean) => {
@@ -135,7 +135,7 @@ export default class UsuariosListarAsa extends BackboneView {
 			return;
 		}
 
-		if (this.App && this.app.router) {
+		if (this.app && this.app.router) {
 			this.app.router.navigate('mostrar/' + documento, { trigger: true, replace: true });
 		}
 	}

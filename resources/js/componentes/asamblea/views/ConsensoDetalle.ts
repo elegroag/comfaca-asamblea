@@ -23,7 +23,7 @@ export default class ConsensoDetalle extends BackboneView {
 
     constructor(options: ConsensoDetalleOptions = {}) {
         super({ ...options, className: 'box', id: 'box_detalle_consenso' });
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -33,7 +33,7 @@ export default class ConsensoDetalle extends BackboneView {
         this.asambleaService = new AsambleaService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -66,7 +66,7 @@ export default class ConsensoDetalle extends BackboneView {
         if (target.is(':checked')) {
             if (this.model.get('estado') == 'A') return;
 
-            if (this.App && typeof this.app.trigger === 'function') {
+            if (this.app && typeof this.app.trigger === 'function') {
                 this.app.trigger('confirma', {
                     message: 'Se requiere de confirmar si desea activar el consenso.',
                     callback: async (continuar: boolean) => {
@@ -100,7 +100,7 @@ export default class ConsensoDetalle extends BackboneView {
             }
         } else {
             if (this.model.get('estado') == 'A') {
-                if (this.App && typeof this.app.trigger === 'function') {
+                if (this.app && typeof this.app.trigger === 'function') {
                     this.app.trigger('confirma', {
                         message: 'Se requiere de confirmar si desea inactivar el consenso.',
                         callback: async (continuar: boolean) => {
@@ -153,7 +153,7 @@ export default class ConsensoDetalle extends BackboneView {
 
         const close = this.$el.find('#notice_modal').find('.close');
 
-        if (this.App && typeof this.app.trigger === 'function') {
+        if (this.app && typeof this.app.trigger === 'function') {
             this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea borrar el consenso. Con todos los datos que le relacionen.',
                 callback: async (status: boolean) => {
@@ -165,13 +165,13 @@ export default class ConsensoDetalle extends BackboneView {
                                 this.trigger('set:consensos', response.consensos);
 
                                 // Actualizar contador
-                                if (this.App && this.app.Collections && this.app.Collections.consensos) {
+                                if (this.app && this.app.Collections && this.app.Collections.consensos) {
                                     const consensosCount = this.app.Collections.consensos.length || 0;
                                     this.$el.find('#num_consensos').text(consensosCount.toString());
                                 }
 
                                 // Actualizar tabla de consensos
-                                if (this.App && this.app.Collections && this.app.Collections.consensos) {
+                                if (this.app && this.app.Collections && this.app.Collections.consensos) {
                                     this.updateConsensosTable(this.app.Collections.consensos.toJSON());
                                 }
 

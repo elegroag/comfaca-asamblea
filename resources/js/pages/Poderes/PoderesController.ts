@@ -54,7 +54,7 @@ export default class PoderesController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al listar poderes:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar poderes');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar poderes');
         }
     }
 
@@ -95,7 +95,7 @@ export default class PoderesController extends Controller {
             const model = poderes.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Poder no encontrado');
+                this.app?.trigger('alert:error', 'Poder no encontrado');
                 return;
             }
 
@@ -115,7 +115,7 @@ export default class PoderesController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al editar poder:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar poder');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar poder');
         }
     }
 
@@ -131,7 +131,7 @@ export default class PoderesController extends Controller {
             const model = poderes.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Poder no encontrado');
+                this.app?.trigger('alert:error', 'Poder no encontrado');
                 return;
             }
 
@@ -147,7 +147,7 @@ export default class PoderesController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al mostrar detalle:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar poder');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar poder');
         }
     }
 
@@ -200,7 +200,7 @@ export default class PoderesController extends Controller {
      * Manejar errores
      */
     error(): void {
-        this.App?.trigger('alert:error', 'Error en la aplicación de Poderes');
+        this.app?.trigger('alert:error', 'Error en la aplicación de Poderes');
     }
 
     /**

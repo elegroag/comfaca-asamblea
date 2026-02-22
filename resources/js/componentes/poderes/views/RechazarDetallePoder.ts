@@ -7,7 +7,7 @@ export default class RechazarDetallePoder extends BackboneView {
     app: AppInstance;
     constructor(options: any) {
         super({ ...options, id: 'box_rechazo_poder' });
-        this.App = options.App;
+        this.app = options.app;
     }
 
     get events() {

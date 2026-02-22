@@ -47,7 +47,7 @@ export default class MesasController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al listar mesas:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar mesas');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar mesas');
         }
     }
 
@@ -88,7 +88,7 @@ export default class MesasController extends Controller {
             const model = mesas.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Mesa no encontrada');
+                this.app?.trigger('alert:error', 'Mesa no encontrada');
                 return;
             }
 
@@ -104,7 +104,7 @@ export default class MesasController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al mostrar mesa:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar mesa');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar mesa');
         }
     }
 
@@ -120,7 +120,7 @@ export default class MesasController extends Controller {
             const model = mesas.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Mesa no encontrada');
+                this.app?.trigger('alert:error', 'Mesa no encontrada');
                 return;
             }
 
@@ -140,7 +140,7 @@ export default class MesasController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al editar mesa:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar mesa');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar mesa');
         }
     }
 
@@ -148,7 +148,7 @@ export default class MesasController extends Controller {
      * Manejar errores
      */
     error(): void {
-        this.App?.trigger('alert:error', 'Error en la aplicación de Mesas');
+        this.app?.trigger('alert:error', 'Error en la aplicación de Mesas');
     }
 
     /**

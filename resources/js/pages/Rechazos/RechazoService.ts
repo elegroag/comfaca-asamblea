@@ -23,7 +23,7 @@ export default class RechazoService {
 
     private get api() { return this.opts.api; }
     private get logger() { return this.opts.logger; }
-    private get App() { return this.opts.app; }
+    private get app() { return this.opts.app; }
 
     /**
      * Inicializar las colecciones necesarias usando BoxCollectionStorage
@@ -33,7 +33,7 @@ export default class RechazoService {
         const rechazosStorage = this.storage.getCollection('rechazos')?.value;
 
         // Crear colecciones Backbone si no existen
-        this.collections.rechazos = rechazosStorage || new (this.App as any).Collection();
+        this.collections.rechazos = rechazosStorage || new (this.app as any).Collection();
 
         // Guardar colecciones en storage si no existen
         if (!rechazosStorage) {

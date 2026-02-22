@@ -24,7 +24,7 @@ export default class ConsensoCrear extends BackboneView {
 
     constructor(options: ConsensoCrearOptions = {}) {
         super({ ...options, className: 'box', id: 'box_nuevo_consenso' });
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -34,7 +34,7 @@ export default class ConsensoCrear extends BackboneView {
         this.asambleaService = new AsambleaService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -58,7 +58,7 @@ export default class ConsensoCrear extends BackboneView {
 
         const close = this.$el.find('#notice_modal').find('.close');
 
-        if (this.App && typeof this.app.trigger === 'function') {
+        if (this.app && typeof this.app.trigger === 'function') {
             this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea registrar el consenso.',
                 callback: async (status: boolean) => {
@@ -83,12 +83,12 @@ export default class ConsensoCrear extends BackboneView {
 
                             if (response && response.success) {
                                 // Actualizar consensos en el router
-                                if (this.App && this.app.router && typeof this.app.router.set_consensos === 'function') {
+                                if (this.app && this.app.router && typeof this.app.router.set_consensos === 'function') {
                                     this.app.router.set_consensos(response.data);
                                 }
 
                                 // Actualizar contador
-                                if (this.App && this.app.router && this.app.router.consensos) {
+                                if (this.app && this.app.router && this.app.router.consensos) {
                                     const consensosCount = this.app.router.consensos.length || 0;
                                     this.$el.find('#num_consensos').text(consensosCount.toString());
                                 }

@@ -1,12 +1,13 @@
 import { BackboneView } from "@/common/Bone";
 import type { AppInstance } from '@/types/types';
 import detalle from "@/componentes/novedades/templates/tmp_detalle.hbs?raw";
+import ApiService from "@/services/ApiService";
 
 interface NovedadDetalleOptions {
     model?: any;
-    api?: any;
+    api: ApiService;
     logger?: any;
-    app?: any;
+    app: AppInstance;
     storage?: any;
     region?: any;
     [key: string]: any;
@@ -15,7 +16,7 @@ interface NovedadDetalleOptions {
 export default class NovedadDetalle extends BackboneView {
     app: AppInstance;
     template: any;
-    api: any;
+    api: ApiService;
     logger: any;
     storage: any;
     region: any;
@@ -23,7 +24,7 @@ export default class NovedadDetalle extends BackboneView {
 
     constructor(options: NovedadDetalleOptions) {
         super(options);
-        this.app = options.app || options.AppInstance;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;

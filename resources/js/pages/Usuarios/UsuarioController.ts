@@ -62,7 +62,7 @@ export default class UsuarioController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al listar usuarios:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar usuarios');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar usuarios');
         }
     }
 
@@ -140,7 +140,7 @@ export default class UsuarioController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al listar usuarios:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar usuarios');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar usuarios');
         }
     }
 
@@ -156,7 +156,7 @@ export default class UsuarioController extends Controller {
             const model = usuarios.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Usuario no encontrado');
+                this.app?.trigger('alert:error', 'Usuario no encontrado');
                 return;
             }
 
@@ -172,7 +172,7 @@ export default class UsuarioController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al mostrar usuario:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar usuario');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar usuario');
         }
     }
 
@@ -188,7 +188,7 @@ export default class UsuarioController extends Controller {
             const model = usuarios.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Usuario no encontrado');
+                this.app?.trigger('alert:error', 'Usuario no encontrado');
                 return;
             }
 
@@ -208,7 +208,7 @@ export default class UsuarioController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al editar usuario:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar usuario');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar usuario');
         }
     }
 
@@ -241,7 +241,7 @@ export default class UsuarioController extends Controller {
             const model = usuarios.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Usuario no encontrado');
+                this.app?.trigger('alert:error', 'Usuario no encontrado');
                 return;
             }
 
@@ -261,7 +261,7 @@ export default class UsuarioController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al editar usuario SISU:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar usuario');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar usuario');
         }
     }
 
@@ -269,7 +269,7 @@ export default class UsuarioController extends Controller {
      * Manejar errores
      */
     error(): void {
-        this.App?.trigger('alert:error', 'Error en la aplicación de Usuarios');
+        this.app?.trigger('alert:error', 'Error en la aplicación de Usuarios');
     }
 
     /**

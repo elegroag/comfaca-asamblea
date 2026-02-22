@@ -27,7 +27,7 @@ export default class CarteraService {
 
     private get api() { return this.opts.api; }
     private get logger() { return this.opts.logger; }
-    private get App() { return this.opts.app; }
+    private get app() { return this.opts.app; }
 
     /**
      * Inicializar las colecciones necesarias usando BoxCollectionStorage
@@ -43,7 +43,7 @@ export default class CarteraService {
         this.collections.empresas = (empresasStorage as EmpresasCollection) || new EmpresasCollection();
         this.collections.carteras = (carterasStorage as CarterasCollection) || new CarterasCollection();
         this.collections.representantes = (representantesStorage as RepresentantesCollection) || new RepresentantesCollection();
-        this.collections.poderes = poderesStorage || new (this.App as any).Collection();
+        this.collections.poderes = poderesStorage || new (this.app as any).Collection();
 
         // Guardar colecciones en storage si no existen
         if (!empresasStorage) {

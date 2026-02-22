@@ -30,7 +30,7 @@ export default class AsambleaService {
 
     private get api() { return this.opts.api; }
     private get logger() { return this.opts.logger; }
-    private get App() { return this.opts.app; }
+    private get app() { return this.opts.app; }
 
     /**
      * Inicializar las colecciones necesarias usando BoxCollectionStorage
@@ -43,7 +43,7 @@ export default class AsambleaService {
 
         // Crear colecciones Backbone si no existen
         this.collections.asambleas = (asambleasStorage as AsambleasCollection) || new AsambleasCollection();
-        this.collections.participantes = participantesStorage || new (this.App as any).Collection();
+        this.collections.participantes = participantesStorage || new (this.app as any).Collection();
         this.collections.consensos = (consensosStorage as ConsensosCollection) || new ConsensosCollection();
 
         // Guardar colecciones en storage si no existen

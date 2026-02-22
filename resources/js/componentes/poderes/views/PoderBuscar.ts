@@ -44,7 +44,7 @@ export default class PoderBuscar extends BackboneView {
             if (_erro) _errors.push(_erro);
         }
         if (items == 0) {
-            this.App?.trigger('alert:error', 'El sistema requiere de uno de los criterio de busqueda.');
+            this.app?.trigger('alert:error', 'El sistema requiere de uno de los criterio de busqueda.');
             return false;
         }
 
@@ -60,13 +60,13 @@ export default class PoderBuscar extends BackboneView {
             poderdante_nit: poderdante_nit,
             poderdante_id: poderdante_identificacion,
         };
-        this.App?.trigger('syncro', {
+        this.app?.trigger('syncro', {
             url: Utils.getURL('poderes/buscar'),
             data: token,
             callback: (response: any) => {
                 if (response) {
                     if (!response.poder) {
-                        this.App?.trigger('warning', response.msj);
+                        this.app?.trigger('warning', response.msj);
                     } else {
                         var _id = response.poder.documento;
                         this.remove();

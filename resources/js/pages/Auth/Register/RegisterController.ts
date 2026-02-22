@@ -9,7 +9,7 @@ export default class RegisterController extends Controller {
         super(options);
 
         // Escuchar eventos de navegación
-        this.listenTo(this.App, 'navigate:login', this.navigateToLogin);
+        this.listenTo(this.app, 'navigate:login', this.navigateToLogin);
     }
 
     // Iniciar vista de registro

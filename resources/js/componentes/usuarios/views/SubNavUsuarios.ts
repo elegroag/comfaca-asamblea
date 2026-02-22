@@ -26,7 +26,7 @@ export default class SubNavUsuarios extends BackboneView {
 
     constructor(options: SubNavUsuariosOptions) {
         super(options);
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -34,7 +34,7 @@ export default class SubNavUsuarios extends BackboneView {
         this.model = options.model;
         this.template = _.template(subnav);
         this.dataToggle = options.dataToggle;
-        this.App = options.App; // Static reference
+        this.app = options.app; // Static reference
     }
 
     get className(): string {
@@ -66,7 +66,7 @@ export default class SubNavUsuarios extends BackboneView {
             this.parentView.remove();
         }
 
-        if (this.App && this.app.router) {
+        if (this.app && this.app.router) {
             this.app.router.navigate('crear', { trigger: true });
         }
     }
@@ -78,7 +78,7 @@ export default class SubNavUsuarios extends BackboneView {
             this.parentView.remove();
         }
 
-        if (this.App && this.app.router) {
+        if (this.app && this.app.router) {
             this.app.router.navigate('listar', { trigger: true });
         }
     }
@@ -104,7 +104,7 @@ export default class SubNavUsuarios extends BackboneView {
             this.parentView.remove();
         }
 
-        if (this.App && this.app.router) {
+        if (this.app && this.app.router) {
             this.app.router.navigate('edita/' + nit, { trigger: true });
         }
     }

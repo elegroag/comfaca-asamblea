@@ -22,7 +22,7 @@ export default class RepresentanteService {
 
   private get api() { return this.opts.api; }
   private get logger() { return this.opts.logger; }
-  private get App() { return this.opts.app; }
+  private get app() { return this.opts.app; }
 
   /**
    * Inicializar las colecciones necesarias usando BoxCollectionStorage

@@ -46,8 +46,8 @@ export default class TrabajadoresListar extends Controller {
 			const bodyRegion = layout.getRegion('body');
 			if (bodyRegion) {
 				const view = new TrabajadoresListarView({
-					collection: (this.App as any).Collections.trabajadores,
-					App: this.App,
+					collection: (this.app as any).Collections.trabajadores,
+					App: this.app,
 					api: this.api,
 					logger: this.logger,
 					region: this.region,
@@ -60,7 +60,7 @@ export default class TrabajadoresListar extends Controller {
 
 		} catch (error: any) {
 			this.logger?.error('Error al listar trabajadores:', error);
-			this.App?.trigger('alert:error', error.message || 'Error al listar trabajadores');
+			this.app?.trigger('alert:error', error.message || 'Error al listar trabajadores');
 		}
 	}
 

@@ -89,7 +89,7 @@ export default class AsistenciasMostrar extends BackboneView {
     crearIngreso(e: Event) {
         e.preventDefault();
         const cedrep = this.model.get('cedrep');
-        if (this.App && typeof this.app.trigger === 'function') {
+        if (this.app && typeof this.app.trigger === 'function') {
             this.app.trigger('set:representante', this.model.toJSON());
             this.app.trigger('navigate', 'validacion/' + cedrep);
         }
@@ -141,13 +141,13 @@ export default class AsistenciasMostrar extends BackboneView {
             if (response && response.success) {
                 const empresa = new Empresa(response.data.empresa);
                 this.modalView = new RechazoEmpresaView({ model: empresa, collection: response.data.rechazos });
-                if (this.App && typeof this.app.trigger === 'function') {
+                if (this.app && typeof this.app.trigger === 'function') {
                     this.app.trigger('show:modal', 'Detalle Rechazo Empresa', this.modalView, { bootstrapSize: 'modal-md' });
                 }
             }
         } catch (error: any) {
             this.logger?.error('Error al obtener rechazo:', error);
-            if (this.App && typeof this.app.trigger === 'function') {
+            if (this.app && typeof this.app.trigger === 'function') {
                 this.app.trigger('alert:error', { message: 'Ocurrió un error al obtener el rechazo' });
             }
         }

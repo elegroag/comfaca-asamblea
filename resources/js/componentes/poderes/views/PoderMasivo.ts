@@ -13,7 +13,7 @@ export default class PoderMasivo extends BackboneView {
         super(options);
         this.id = 'box_masivo';
         this.tagName = 'div';
-        this.App = options.App || null;
+        this.app = options.app || null;
     }
 
     get events() {

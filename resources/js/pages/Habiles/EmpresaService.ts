@@ -33,7 +33,7 @@ export default class EmpresaService {
             habiles: new HabilesCollection(),
         };
         this.api = options.api;
-        this.App = options.App;
+        this.app = options.app;
         this.logger = options.logger;
         this.EmpresaModel = options.EmpresaModel;
         this.storage = BoxCollectionStorage.getInstance();
@@ -77,10 +77,10 @@ export default class EmpresaService {
         const { model, callback } = transfer;
         if (!model.isValid()) {
             const errors = model.validationError;
-            this.App?.trigger('alert:error', { message: errors.toString() });
+            this.app?.trigger('alert:error', { message: errors.toString() });
             callback(false);
         } else {
-            this.App?.trigger('confirma', {
+            this.app?.trigger('confirma', {
                 message: 'Se requiere de confirmar la acción a realizar para guardar los datos',
                 callback: (confirm: boolean) => {
                     if (confirm === true) {
@@ -99,17 +99,17 @@ export default class EmpresaService {
             const response = await this.api.post('/habiles/saveEmpresaHabil', model.toJSON());
             if (response?.success) {
 
-                this.App?.trigger('alert:success', response.msj);
+                this.app?.trigger('alert:success', response.msj);
                 callback(true, {
                     empresa: response.data,
                     pre_registro: response.pre_registro,
                 });
             } else {
-                this.App?.trigger('alert:error', { message: response.message || 'Error al cargar carteras' });
+                this.app?.trigger('alert:error', { message: response.message || 'Error al cargar carteras' });
             }
         } catch (error: any) {
             this.logger?.error('Error al cargar carteras:', error);
-            this.App?.trigger('alert:error', { message: error.message || 'Error de conexión al cargar carteras' });
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al cargar carteras' });
             callback(false);
         }
     }
@@ -122,7 +122,7 @@ export default class EmpresaService {
 
         if (model && typeof model.get === 'function') {
 
-            this.App?.trigger('confirma', {
+            this.app?.trigger('confirma', {
                 message: 'Se requiere de confirmar la acción a realizar para remover el registro',
                 callback: (confirm: boolean) => {
                     if (confirm === true) {
@@ -141,15 +141,15 @@ export default class EmpresaService {
         try {
             const response = await this.api.delete(`/habiles/removeEmpresa/${model.get('nit')}`);
             if (response?.success) {
-                this.App?.trigger('alert:success', { message: response.msj });
+                this.app?.trigger('alert:success', { message: response.msj });
                 this.Collections.empresas.remove(model);
                 callback(true, response);
             } else {
-                this.App?.trigger('alert:error', { message: response.message || 'Error al cargar carteras' });
+                this.app?.trigger('alert:error', { message: response.message || 'Error al cargar carteras' });
             }
         } catch (error: any) {
             this.logger?.error('Error al cargar carteras:', error);
-            this.App?.trigger('alert:error', { message: error.message || 'Error de conexión al cargar carteras' });
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al cargar carteras' });
             callback(false);
         }
     }
@@ -169,11 +169,11 @@ export default class EmpresaService {
             if (response?.success) {
                 this.__setEmpresas(response.empresas);
             } else {
-                this.App?.trigger('alert:error', { message: response.msj });
+                this.app?.trigger('alert:error', { message: response.msj });
             }
         } catch (error: any) {
             this.logger?.error('Error al listar empresas:', error);
-            this.App?.trigger('alert:error', { message: error.message || 'Error de conexión al listar empresas' });
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar empresas' });
         }
     }
 
@@ -226,7 +226,7 @@ export default class EmpresaService {
         const { model, callback } = transfer;
 
         if (model instanceof HabilModel) {
-            this.App?.trigger('confirma', {
+            this.app?.trigger('confirma', {
                 message: 'Se requiere de confirmar la acción a realizar para remover el registro',
                 callback: (confirm: boolean) => {
                     if (confirm === true) {
@@ -254,15 +254,15 @@ export default class EmpresaService {
                 if (this.Collections && this.Collections.habiles) {
                     this.Collections.habiles.remove(model);
                 }
-                this.App?.trigger('alert:success', { message: response.msj });
+                this.app?.trigger('alert:success', { message: response.msj });
                 callback(response);
             } else {
-                this.App?.trigger('alert:error', { message: response.msj });
+                this.app?.trigger('alert:error', { message: response.msj });
                 callback(false);
             }
         } catch (error: any) {
             this.logger?.error('Error al remover habil:', error);
-            this.App?.trigger('alert:error', { message: error.message || 'Error de conexión al remover habil' });
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al remover habil' });
             callback(false);
         }
     }
@@ -282,13 +282,13 @@ export default class EmpresaService {
             });
 
             if (response?.success === true) {
-                this.App?.trigger('alert:success', { message: response.msj });
+                this.app?.trigger('alert:success', { message: response.msj });
             } else {
-                this.App?.trigger('alert:error', { message: response.msj });
+                this.app?.trigger('alert:error', { message: response.msj });
             }
         } catch (error: any) {
             this.logger?.error('Error al notificar plataforma:', error);
-            this.App?.trigger('alert:error', error.message || 'Error de conexión al notificar plataforma');
+            this.app?.trigger('alert:error', error.message || 'Error de conexión al notificar plataforma');
         }
     }
 
@@ -300,15 +300,15 @@ export default class EmpresaService {
         try {
             const response = await this.api.post('/habiles/cargue_masivo', formData);
             if (response && response.success === true) {
-                this.App?.trigger('alert:success', { message: response.msj || 'Cargue masivo completado' });
+                this.app?.trigger('alert:success', { message: response.msj || 'Cargue masivo completado' });
                 return callback(true, response);
             } else {
-                this.App?.trigger('alert:error', { message: (response && (response.msj || response.message)) || 'Error en cargue masivo' });
+                this.app?.trigger('alert:error', { message: (response && (response.msj || response.message)) || 'Error en cargue masivo' });
                 return callback(false);
             }
         } catch (error: any) {
             this.logger?.error('Error en cargue masivo:', error);
-            this.App?.trigger('alert:error', error.message || 'Error de conexión en cargue masivo');
+            this.app?.trigger('alert:error', error.message || 'Error de conexión en cargue masivo');
             return callback(false);
         }
     };
@@ -318,14 +318,14 @@ export default class EmpresaService {
         try {
             const response = await this.api.get('/habiles/exportar_lista');
             if (response?.success && response.url) {
-                this.App?.download({ url: response.url, filename: response.filename || 'empresas.csv' });
-                this.App?.trigger('alert:success', { message: response.msj || 'Exportación iniciada' });
+                this.app?.download({ url: response.url, filename: response.filename || 'empresas.csv' });
+                this.app?.trigger('alert:success', { message: response.msj || 'Exportación iniciada' });
             } else {
-                this.App?.trigger('alert:error', { message: response?.msj || response?.message || 'No fue posible exportar la lista' });
+                this.app?.trigger('alert:error', { message: response?.msj || response?.message || 'No fue posible exportar la lista' });
             }
         } catch (error: any) {
             this.logger?.error('Error al exportar lista:', error);
-            this.App?.trigger('alert:error', error.message || 'Error de conexión al exportar lista');
+            this.app?.trigger('alert:error', error.message || 'Error de conexión al exportar lista');
         }
     };
 
@@ -334,14 +334,14 @@ export default class EmpresaService {
         try {
             const response = await this.api.get('/habiles/exportar_pdf');
             if (response?.success && response.url) {
-                this.App?.download({ url: response.url, filename: response.filename || 'informe.pdf' });
-                this.App?.trigger('alert:success', { message: response.msj || 'Generación de informe iniciada' });
+                this.app?.download({ url: response.url, filename: response.filename || 'informe.pdf' });
+                this.app?.trigger('alert:success', { message: response.msj || 'Generación de informe iniciada' });
             } else {
-                this.App?.trigger('alert:error', { message: response?.msj || response?.message || 'No fue posible generar el informe' });
+                this.app?.trigger('alert:error', { message: response?.msj || response?.message || 'No fue posible generar el informe' });
             }
         } catch (error: any) {
             this.logger?.error('Error al exportar informe:', error);
-            this.App?.trigger('alert:error', error.message || 'Error de conexión al exportar informe');
+            this.app?.trigger('alert:error', error.message || 'Error de conexión al exportar informe');
         }
     };
 }

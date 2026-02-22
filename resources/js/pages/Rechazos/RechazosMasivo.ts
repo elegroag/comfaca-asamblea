@@ -33,14 +33,14 @@ export default class RechazosMasivo extends Controller {
     }
 
     cargueMasivo(): void {
-        if (!this.App?.Collections.rechazos) this.rechazoService.__findAll();
+        if (!this.app?.Collections.rechazos) this.rechazoService.__findAll();
         const layout = new LayoutView();
         this.region.show(layout);
         const bodyRegion = layout.getRegion('body');
 
 
         bodyRegion?.show(new RechazoMasivoView({
-            collection: this.App?.Collections.rechazos,
+            collection: this.app?.Collections.rechazos,
             app: this.app,
             api: this.api,
             logger: this.logger,

@@ -45,7 +45,7 @@ export default class NovedadesController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al listar novedades:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar novedades');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar novedades');
         }
     }
 
@@ -69,7 +69,7 @@ export default class NovedadesController extends Controller {
             const model = novedades.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Novedad no encontrada');
+                this.app?.trigger('alert:error', 'Novedad no encontrada');
                 return;
             }
 
@@ -85,7 +85,7 @@ export default class NovedadesController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al mostrar detalle:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar novedad');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar novedad');
         }
     }
 
@@ -101,7 +101,7 @@ export default class NovedadesController extends Controller {
             const model = novedades.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Novedad no encontrada');
+                this.app?.trigger('alert:error', 'Novedad no encontrada');
                 return;
             }
 
@@ -110,7 +110,7 @@ export default class NovedadesController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al editar novedad:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar novedad');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar novedad');
         }
     }
 
@@ -130,7 +130,7 @@ export default class NovedadesController extends Controller {
 
             // Crear una vista temporal para mostrar las no leídas
             const view = new NovedadesListar({
-                collection: new (this.App as any).Collection(noLeidas),
+                collection: new (this.app as any).Collection(noLeidas),
                 app: this.app,
                 api: this.api,
                 logger: this.logger,
@@ -147,7 +147,7 @@ export default class NovedadesController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al listar novedades no leídas:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar novedades');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar novedades');
         }
     }
 
@@ -155,7 +155,7 @@ export default class NovedadesController extends Controller {
      * Manejar errores
      */
     error(): void {
-        this.App?.trigger('alert:error', 'Error en la aplicación de Novedades');
+        this.app?.trigger('alert:error', 'Error en la aplicación de Novedades');
     }
 
     /**

@@ -1,12 +1,13 @@
 import { BackboneView } from "@/common/Bone";
 import type { AppInstance } from '@/types/types';
+import ApiService from "@/services/ApiService";
 import row from "@/componentes/novedades/templates/tmp_row.hbs?raw";
 
 interface NovedadRowOptions {
     model?: any;
-    api?: any;
+    api: ApiService;
     logger?: any;
-    app?: any;
+    app: AppInstance;
     storage?: any;
     region?: any;
     [key: string]: any;
@@ -15,14 +16,14 @@ interface NovedadRowOptions {
 export default class NovedadRow extends BackboneView {
     app: AppInstance;
     template: any;
-    api: any;
+    api: ApiService;
     logger: any;
     storage: any;
     region: any;
 
     constructor(options: NovedadRowOptions) {
         super(options);
-        this.app = options.app || options.AppInstance;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -34,7 +35,7 @@ export default class NovedadRow extends BackboneView {
         return 'tr';
     }
 
-    initialize(options: NovedadRowOptions = {}): void {
+    initialize(options: NovedadRowOptions): void {
         this.listenTo(options.model, 'change', this.render);
     }
 

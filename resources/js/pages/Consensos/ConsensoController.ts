@@ -47,7 +47,7 @@ export default class ConsensoController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al listar consensos:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar consensos');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar consensos');
         }
     }
 
@@ -88,7 +88,7 @@ export default class ConsensoController extends Controller {
             const model = consensos.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Consenso no encontrado');
+                this.app?.trigger('alert:error', 'Consenso no encontrado');
                 return;
             }
 
@@ -108,7 +108,7 @@ export default class ConsensoController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al editar consenso:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar consenso');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar consenso');
         }
     }
 
@@ -124,7 +124,7 @@ export default class ConsensoController extends Controller {
             const model = consensos.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Consenso no encontrado');
+                this.app?.trigger('alert:error', 'Consenso no encontrado');
                 return;
             }
 
@@ -140,7 +140,7 @@ export default class ConsensoController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al mostrar detalle:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar consenso');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar consenso');
         }
     }
 
@@ -169,7 +169,7 @@ export default class ConsensoController extends Controller {
      * Manejar errores
      */
     error(): void {
-        this.App?.trigger('alert:error', 'Error en la aplicación de Consensos');
+        this.app?.trigger('alert:error', 'Error en la aplicación de Consensos');
     }
 
     /**

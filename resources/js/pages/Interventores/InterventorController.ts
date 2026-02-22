@@ -45,7 +45,7 @@ export default class InterventorController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al listar interventores:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar interventores');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar interventores');
         }
     }
 
@@ -87,7 +87,7 @@ export default class InterventorController extends Controller {
             const model = interventores.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Interventor no encontrado');
+                this.app?.trigger('alert:error', 'Interventor no encontrado');
                 return;
             }
 
@@ -103,7 +103,7 @@ export default class InterventorController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al mostrar interventor:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar interventor');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar interventor');
         }
     }
 
@@ -119,7 +119,7 @@ export default class InterventorController extends Controller {
             const model = interventores.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Interventor no encontrado');
+                this.app?.trigger('alert:error', 'Interventor no encontrado');
                 return;
             }
 
@@ -139,7 +139,7 @@ export default class InterventorController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al editar interventor:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar interventor');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar interventor');
         }
     }
 
@@ -147,7 +147,7 @@ export default class InterventorController extends Controller {
      * Manejar errores
      */
     error(): void {
-        this.App?.trigger('alert:error', 'Error en la aplicación de Interventores');
+        this.app?.trigger('alert:error', 'Error en la aplicación de Interventores');
     }
 
     /**

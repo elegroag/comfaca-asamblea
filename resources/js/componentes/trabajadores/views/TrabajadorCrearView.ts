@@ -22,7 +22,7 @@ export default class TrabajadorCrearView extends BackboneView {
 
 	constructor(options: TrabajadorCrearViewOptions) {
 		super(options);
-		this.App = options.App;
+		this.app = options.app;
 		this.api = options.api;
 		this.logger = options.logger;
 		this.storage = options.storage;
@@ -31,7 +31,7 @@ export default class TrabajadorCrearView extends BackboneView {
 		this.trabajadorService = new TrabajadorService({
 			api: this.api,
 			logger: this.logger,
-			app: this.App
+			app: this.app
 		});
 	}
 
@@ -62,7 +62,7 @@ export default class TrabajadorCrearView extends BackboneView {
 
 		// Validación básica
 		if (!this.getInput('cedula') || !this.getInput('nombre')) {
-			if (this.App && typeof this.app.trigger === 'function') {
+			if (this.app && typeof this.app.trigger === 'function') {
 				this.app.trigger('alert:error', 'El cedula es un valor requerido');
 			}
 			target.removeAttr('disabled');
@@ -77,7 +77,7 @@ export default class TrabajadorCrearView extends BackboneView {
 			if (response && response.success) {
 				this.trigger('add:trabajador', response.data);
 				this.$el.find('input').val('');
-				if (this.App && typeof this.app.trigger === 'function') {
+				if (this.app && typeof this.app.trigger === 'function') {
 					this.app.trigger('alert:success', {
 						title: 'Éxito',
 						text: 'Trabajador guardado correctamente',
@@ -86,7 +86,7 @@ export default class TrabajadorCrearView extends BackboneView {
 				}
 				this.backlist();
 			} else {
-				if (this.App && typeof this.app.trigger === 'function') {
+				if (this.app && typeof this.app.trigger === 'function') {
 					this.app.trigger('alert:error', {
 						title: 'Error',
 						text: response.msj || 'Error al guardar el trabajador',
@@ -97,7 +97,7 @@ export default class TrabajadorCrearView extends BackboneView {
 		} catch (error: any) {
 			target.removeAttr('disabled');
 			this.logger?.error('Error al guardar trabajador:', error);
-			if (this.App && typeof this.app.trigger === 'function') {
+			if (this.app && typeof this.app.trigger === 'function') {
 				this.app.trigger('alert:error', {
 					title: 'Error',
 					text: 'Ocurrió un error al guardar el trabajador',
@@ -110,7 +110,7 @@ export default class TrabajadorCrearView extends BackboneView {
 	backlist(e: Event) {
 		e.preventDefault();
 		this.remove();
-		if (this.App && this.app.router) {
+		if (this.app && this.app.router) {
 			this.app.router.navigate('listar', { trigger: true, replace: true });
 		}
 		return false;

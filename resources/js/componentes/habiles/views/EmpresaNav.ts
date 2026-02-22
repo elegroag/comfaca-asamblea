@@ -104,7 +104,7 @@ export default class EmpresaNav extends BackboneView {
 
     static staticExportData(): void {
         // Mantener método estático por compatibilidad: emitir evento global si fuera necesario
-        // Recomendado: usar instancia (exportData) con this.App y delegar a controller/service
+        // Recomendado: usar instancia (exportData) con this.app y delegar a controller/service
     }
 
     static staticInformeData(): void {

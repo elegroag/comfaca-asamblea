@@ -252,7 +252,7 @@ export default class AsistenciasCrear extends BackboneView {
         };
         target.attr('disabled', 'true');
 
-        if (this.App && typeof this.app.trigger === 'function') {
+        if (this.app && typeof this.app.trigger === 'function') {
             this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea borrar el registro de poder.',
                 callback: async (status: boolean) => {
@@ -264,14 +264,14 @@ export default class AsistenciasCrear extends BackboneView {
 
                             if (response) {
                                 if (response.success) {
-                                    if (this.App && typeof this.app.trigger === 'function') {
+                                    if (this.app && typeof this.app.trigger === 'function') {
                                         this.app.trigger('alert:success', { message: response.msj });
                                     }
                                     if (typeof Backbone.history !== 'undefined' && Backbone.history.loadUrl) {
                                         Backbone.history.loadUrl();
                                     }
                                 } else {
-                                    if (this.App && typeof this.app.trigger === 'function') {
+                                    if (this.app && typeof this.app.trigger === 'function') {
                                         this.app.trigger('alert:error', { message: response.msj || 'Error al revocar poder' });
                                     }
                                 }
@@ -279,7 +279,7 @@ export default class AsistenciasCrear extends BackboneView {
                         } catch (error: any) {
                             target.removeAttr('disabled');
                             this.logger?.error('Error al revocar poder:', error);
-                            if (this.App && typeof this.app.trigger === 'function') {
+                            if (this.app && typeof this.app.trigger === 'function') {
                                 this.app.trigger('alert:error', { message: 'Ocurrió un error al revocar el poder' });
                             }
                         }

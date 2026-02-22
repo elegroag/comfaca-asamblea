@@ -58,7 +58,7 @@ export default class TrabajadorMostrar extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al mostrar trabajador:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al mostrar trabajador');
+            this.app?.trigger('alert:error', error.message || 'Error al mostrar trabajador');
         }
     }
 

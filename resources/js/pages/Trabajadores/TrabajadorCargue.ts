@@ -46,7 +46,7 @@ export default class TrabajadorCargue extends Controller {
             const bodyRegion = layout.getRegion('body');
             if (bodyRegion) {
                 const view = new TrabajadorCargueView({
-                    collection: (this.App as any).Collections.trabajadores,
+                    collection: (this.app as any).Collections.trabajadores,
                     app: this.app,
                     api: this.api,
                     logger: this.logger,
@@ -57,7 +57,7 @@ export default class TrabajadorCargue extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al cargar trabajadores:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar trabajadores');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar trabajadores');
         }
     }
 

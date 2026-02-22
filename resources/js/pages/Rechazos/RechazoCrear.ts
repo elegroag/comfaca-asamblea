@@ -26,7 +26,7 @@ export default class RechazoCrear extends Controller {
         this.rechazoService = new RechazoService({
             api: options.api,
             logger: options.logger,
-            app: options.App
+            app: options.app
         });
     }
 
@@ -44,7 +44,7 @@ export default class RechazoCrear extends Controller {
             }
         } catch (error: any) {
             this.logger?.error('Error al buscar criterios:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar criterios');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar criterios');
         }
     }
 
@@ -55,7 +55,7 @@ export default class RechazoCrear extends Controller {
         const view = new RechazoCrearView({
             collection: (this.rechazoService as any).collections.rechazos,
             model: model,
-            app: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -83,7 +83,7 @@ export default class RechazoCrear extends Controller {
                         masivo: true,
                         dataToggle: 'rechazos'
                     },
-                    app: this.App,
+                    app: this.app,
                     api: this.api,
                     logger: this.logger,
                     region: this.region,
@@ -105,7 +105,7 @@ export default class RechazoCrear extends Controller {
             }
         } catch (error: any) {
             this.logger?.error('Error al buscar criterios:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar criterios');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar criterios');
         }
     }
 
@@ -116,7 +116,7 @@ export default class RechazoCrear extends Controller {
         const view = new RechazoCrearView({
             collection: (this.rechazoService as any).collections.rechazos,
             model: model,
-            app: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -143,7 +143,7 @@ export default class RechazoCrear extends Controller {
                         masivo: true,
                         dataToggle: 'rechazos'
                     },
-                    app: this.App,
+                    app: this.app,
                     api: this.api,
                     logger: this.logger,
                     region: this.region,

@@ -28,7 +28,7 @@ export default class UsuariosListar extends BackboneView {
 
 	constructor(options: UsuariosListarOptions = {}) {
 		super({ ...options, className: 'box', id: 'box_usuarios' });
-		this.App = options.App;
+		this.app = options.app;
 		this.api = options.api;
 		this.logger = options.logger;
 		this.storage = options.storage;
@@ -41,7 +41,7 @@ export default class UsuariosListar extends BackboneView {
 		this.usuarioService = new UsuarioService({
 			api: this.api,
 			logger: this.logger,
-			app: this.App
+			app: this.app
 		});
 	}
 
@@ -67,7 +67,7 @@ export default class UsuariosListar extends BackboneView {
 			return;
 		}
 
-		if (this.App && this.app.router) {
+		if (this.app && this.app.router) {
 			this.app.router.navigate('mostrar/' + usuario, { trigger: true, replace: true });
 		}
 	}
@@ -83,7 +83,7 @@ export default class UsuariosListar extends BackboneView {
 			return;
 		}
 
-		if (this.App && this.app.router) {
+		if (this.app && this.app.router) {
 			this.app.router.navigate('edita_usuarios/' + usuario, { trigger: true, replace: true });
 		}
 	}
@@ -138,7 +138,7 @@ export default class UsuariosListar extends BackboneView {
 		// Implementación básica de subNav sin dependencias externas
 		this.subNavUsuarios = new SubNavUsuarios({
 			model: this.model,
-			App: this.App,
+			App: this.app,
 			api: this.api,
 			logger: this.logger,
 			storage: this.storage,

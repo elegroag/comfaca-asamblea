@@ -27,7 +27,7 @@ export default class TrabajadoresListarView extends BackboneView {
 
     constructor(options: TrabajadoresListarViewOptions) {
         super(options);
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -38,7 +38,7 @@ export default class TrabajadoresListarView extends BackboneView {
         this.trabajadorService = new TrabajadorService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -52,7 +52,7 @@ export default class TrabajadoresListarView extends BackboneView {
         e.preventDefault();
         const target = this.$el.find(e.currentTarget);
         const usuario = target.attr('data-code');
-        if (this.App && this.app.router) {
+        if (this.app && this.app.router) {
             this.app.router.navigate('mostrar/' + usuario, { trigger: true, replace: true });
         }
     }

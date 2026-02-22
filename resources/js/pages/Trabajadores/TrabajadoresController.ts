@@ -48,7 +48,7 @@ export default class TrabajadoresController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al listar trabajadores:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar trabajadores');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar trabajadores');
         }
     }
 
@@ -81,7 +81,7 @@ export default class TrabajadoresController extends Controller {
             const model = trabajadores.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Trabajador no encontrado');
+                this.app?.trigger('alert:error', 'Trabajador no encontrado');
                 return;
             }
 
@@ -97,7 +97,7 @@ export default class TrabajadoresController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al mostrar trabajador:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar trabajador');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar trabajador');
         }
     }
 
@@ -113,7 +113,7 @@ export default class TrabajadoresController extends Controller {
             const model = trabajadores.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Trabajador no encontrado');
+                this.app?.trigger('alert:error', 'Trabajador no encontrado');
                 return;
             }
 
@@ -133,7 +133,7 @@ export default class TrabajadoresController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al editar trabajador:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar trabajador');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar trabajador');
         }
     }
 
@@ -158,7 +158,7 @@ export default class TrabajadoresController extends Controller {
      * Manejar errores
      */
     error(): void {
-        this.App?.trigger('alert:error', 'Error en la aplicación de Trabajadores');
+        this.app?.trigger('alert:error', 'Error en la aplicación de Trabajadores');
     }
 
     /**

@@ -22,7 +22,7 @@ export default class NovedadesService {
 
   private get api() { return this.opts.api; }
   private get logger() { return this.opts.logger; }
-  private get App() { return this.opts.app; }
+  private get app() { return this.opts.app; }
 
   /**
    * Inicializar las colecciones necesarias usando BoxCollectionStorage
@@ -254,7 +254,7 @@ export default class NovedadesService {
       this.logger?.info('Archivo descargado exitosamente');
     } catch (error: any) {
       this.logger?.error('Error al descargar archivo:', error);
-      this.App?.trigger('alert:error', {
+      this.app?.trigger('alert:error', {
         message: 'Error al descargar el archivo'
       });
     }

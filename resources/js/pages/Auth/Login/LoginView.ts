@@ -11,7 +11,7 @@ class LoginView extends ModelView {
 
     constructor(options: LoginViewOptions) {
         super(options as any);
-        this.App = options.App;
+        this.app = options.app;
 
         // Template usando sintaxis de Underscore
         this.template = _.template(tmp_login);

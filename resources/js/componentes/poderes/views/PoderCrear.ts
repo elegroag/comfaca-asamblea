@@ -184,7 +184,7 @@ export default class PoderCrear extends BackboneView {
         }
 
         if (poderdante_nit == apoderado_nit) {
-            this.App?.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
+            this.app?.trigger('alert:error', 'La empresa poderdante no puede ser la misma empresa apoderada.');
             return false;
         }
 

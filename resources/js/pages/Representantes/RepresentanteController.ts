@@ -45,7 +45,7 @@ export default class RepresentanteController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al listar representantes:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar representantes');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar representantes');
         }
     }
 
@@ -88,7 +88,7 @@ export default class RepresentanteController extends Controller {
             const model = representantes.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Representante no encontrado');
+                this.app?.trigger('alert:error', 'Representante no encontrado');
                 return;
             }
 
@@ -104,7 +104,7 @@ export default class RepresentanteController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al mostrar representante:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar representante');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar representante');
         }
     }
 
@@ -120,7 +120,7 @@ export default class RepresentanteController extends Controller {
             const model = representantes.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Representante no encontrado');
+                this.app?.trigger('alert:error', 'Representante no encontrado');
                 return;
             }
 
@@ -140,7 +140,7 @@ export default class RepresentanteController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al editar representante:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar representante');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar representante');
         }
     }
 
@@ -188,7 +188,7 @@ export default class RepresentanteController extends Controller {
 
             // Crear una vista temporal para mostrar los resultados
             const view = new RepresentantesListar({
-                collection: new (this.App as any).Collection(representantes),
+                collection: new (this.app as any).Collection(representantes),
                 app: this.app,
                 api: this.api,
                 logger: this.logger,
@@ -204,7 +204,7 @@ export default class RepresentanteController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al buscar representantes:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al buscar representantes');
+            this.app?.trigger('alert:error', error.message || 'Error al buscar representantes');
         }
     }
 
@@ -212,7 +212,7 @@ export default class RepresentanteController extends Controller {
      * Manejar errores
      */
     error(): void {
-        this.App?.trigger('alert:error', 'Error en la aplicación de Representantes');
+        this.app?.trigger('alert:error', 'Error en la aplicación de Representantes');
     }
 
     /**

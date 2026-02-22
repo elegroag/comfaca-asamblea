@@ -28,7 +28,7 @@ export default class RepresentanteMostrar extends BackboneView {
             ...options,
             id: 'box_mostrar_representante',
         });
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -38,7 +38,7 @@ export default class RepresentanteMostrar extends BackboneView {
         this.representanteService = new RepresentanteService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 

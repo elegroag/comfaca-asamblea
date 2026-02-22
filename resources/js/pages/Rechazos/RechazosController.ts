@@ -21,13 +21,13 @@ export default class RechazosController extends Controller {
 
     constructor(options: RechazosControllerOptions) {
         super(options);
-        this.App = options.App;
+        this.app = options.app;
         _.extend(this, options);
 
         this.service = new RechazoService({
             api: options.api,
             logger: options.logger,
-            app: options.App
+            app: options.app
         });
     }
 
@@ -57,7 +57,7 @@ export default class RechazosController extends Controller {
 
             const view = new RechazosListar({
                 collection: (this.service as any).collections.rechazos,
-                app: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -72,7 +72,7 @@ export default class RechazosController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al listar rechazos:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar rechazos');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar rechazos');
         }
     }
 
@@ -81,7 +81,7 @@ export default class RechazosController extends Controller {
      */
     showMasivo(): void {
         const view = new RechazosMasivo({
-            app: this.App,
+            app: this.app,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -105,13 +105,13 @@ export default class RechazosController extends Controller {
             const model = rechazos.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Rechazo no encontrado');
+                this.app?.trigger('alert:error', 'Rechazo no encontrado');
                 return;
             }
 
             const view = new RechazoDetalle({
                 model: model,
-                app: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -122,7 +122,7 @@ export default class RechazosController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al mostrar detalle:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar rechazo');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar rechazo');
         }
     }
 
@@ -138,14 +138,14 @@ export default class RechazosController extends Controller {
             const model = rechazos.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Rechazo no encontrado');
+                this.app?.trigger('alert:error', 'Rechazo no encontrado');
                 return;
             }
 
             const view = new RechazoCrear({
                 model: model,
                 isNew: false,
-                app: this.App,
+                app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -158,7 +158,7 @@ export default class RechazosController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al editar rechazo:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar rechazo');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar rechazo');
         }
     }
 
@@ -166,7 +166,7 @@ export default class RechazosController extends Controller {
      * Manejar errores
      */
     error(): void {
-        this.App?.trigger('alert:error', 'Error en la aplicación de Rechazos');
+        this.app?.trigger('alert:error', 'Error en la aplicación de Rechazos');
     }
 
     /**

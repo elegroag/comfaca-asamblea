@@ -27,7 +27,7 @@ export default class RechazosListar extends Controller {
             this.renderLista();
         } catch (error: any) {
             this.logger?.error('Error al listar rechazos:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar rechazos');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar rechazos');
         }
     }
 

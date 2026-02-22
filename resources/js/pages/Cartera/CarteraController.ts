@@ -44,7 +44,7 @@ export default class CarteraController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al listar carteras:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar carteras');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar carteras');
         }
     }
 
@@ -79,7 +79,7 @@ export default class CarteraController extends Controller {
             const model = carteras.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Cartera no encontrada');
+                this.app?.trigger('alert:error', 'Cartera no encontrada');
                 return;
             }
 
@@ -99,7 +99,7 @@ export default class CarteraController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al editar cartera:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar cartera');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar cartera');
         }
     }
 
@@ -115,7 +115,7 @@ export default class CarteraController extends Controller {
             const model = carteras.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Cartera no encontrada');
+                this.app?.trigger('alert:error', 'Cartera no encontrada');
                 return;
             }
 
@@ -131,7 +131,7 @@ export default class CarteraController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al mostrar detalle:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar cartera');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar cartera');
         }
     }
 
@@ -156,7 +156,7 @@ export default class CarteraController extends Controller {
      * Manejar errores
      */
     error(): void {
-        this.App?.trigger('alert:error', 'Error en la aplicación de Cartera');
+        this.app?.trigger('alert:error', 'Error en la aplicación de Cartera');
     }
 
     /**

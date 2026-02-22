@@ -40,7 +40,7 @@ export default class AsambleaController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al mostrar asamblea activa:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar asamblea activa');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar asamblea activa');
         }
     }
 
@@ -69,7 +69,7 @@ export default class AsambleaController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al listar asambleas:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar asambleas');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar asambleas');
         }
     }
 
@@ -85,7 +85,7 @@ export default class AsambleaController extends Controller {
             const model = asambleas.get(id);
 
             if (!model) {
-                this.App?.trigger('alert:error', 'Asamblea no encontrada');
+                this.app?.trigger('alert:error', 'Asamblea no encontrada');
                 return;
             }
 
@@ -105,7 +105,7 @@ export default class AsambleaController extends Controller {
 
         } catch (error: any) {
             this.logger?.error('Error al mostrar detalle:', error);
-            this.App?.trigger('alert:error', error.message || 'Error al cargar asamblea');
+            this.app?.trigger('alert:error', error.message || 'Error al cargar asamblea');
         }
     }
 
@@ -148,7 +148,7 @@ export default class AsambleaController extends Controller {
      * Manejar errores
      */
     error(): void {
-        this.App?.trigger('alert:error', 'Error en la aplicación de Asamblea');
+        this.app?.trigger('alert:error', 'Error en la aplicación de Asamblea');
     }
 
     /**

@@ -24,7 +24,7 @@ export default class RepresentanteRow extends BackboneView {
 
     constructor(options: RepresentanteRowOptions) {
         super(options);
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -34,7 +34,7 @@ export default class RepresentanteRow extends BackboneView {
         this.representanteService = new RepresentanteService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 

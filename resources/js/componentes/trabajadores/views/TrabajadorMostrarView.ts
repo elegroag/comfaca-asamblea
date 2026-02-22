@@ -29,7 +29,7 @@ export default class TrabajadorMostrarView extends BackboneView {
             className: 'box',
             trabajador: undefined
         });
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -38,7 +38,7 @@ export default class TrabajadorMostrarView extends BackboneView {
         this.trabajadorService = new TrabajadorService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 

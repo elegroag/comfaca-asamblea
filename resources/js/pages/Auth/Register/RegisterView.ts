@@ -10,7 +10,7 @@ class RegisterView extends ModelView {
 
     constructor(options: RegisterViewOptions) {
         super(options as any);
-        this.App = options.App;
+        this.app = options.app;
 
         // Template usando sintaxis de Underscore
         this.template = _.template(tmp_register);
@@ -126,7 +126,7 @@ class RegisterView extends ModelView {
                 password_confirmation: (this as any).getInput('password_confirmation')
             };
 
-            if (!this.App) {
+            if (!this.app) {
                 throw new Error('App no está inicializada');
             }
             // Enviar solicitud AJAX
@@ -136,11 +136,11 @@ class RegisterView extends ModelView {
                 data: credentials,
                 success: (response: any) => {
                     if (response.success) {
-                        this.App?.trigger('notify', ['success', response.message || 'Cuenta creada exitosamente']);
+                        this.app?.trigger('notify', ['success', response.message || 'Cuenta creada exitosamente']);
                         // Redirigir al dashboard
                         window.location.href = response.redirect || route('dashboard');
                     } else {
-                        this.App?.trigger('notify', ['error', response.message || 'Error al crear cuenta']);
+                        this.app?.trigger('notify', ['error', response.message || 'Error al crear cuenta']);
                         this.resetRegisterButton();
                     }
                 },
@@ -158,14 +158,14 @@ class RegisterView extends ModelView {
                         }
                     }
 
-                    this.App?.trigger('notify', ['error', errorMessage]);
+                    this.app?.trigger('notify', ['error', errorMessage]);
                     this.resetRegisterButton();
                 }
             }]);
 
         } catch (error) {
             console.error('Error al crear cuenta:', error);
-            this.App?.trigger('notify', ['error', 'Error al crear cuenta']);
+            this.app?.trigger('notify', ['error', 'Error al crear cuenta']);
             this.resetRegisterButton();
         }
     }

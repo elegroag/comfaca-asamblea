@@ -29,7 +29,7 @@ export default class UsuarioCrear extends BackboneView {
 
 	constructor(options: UsuarioCrearOptions = {}) {
 		super(options);
-		this.App = options.App;
+		this.app = options.app;
 		this.api = options.api;
 		this.logger = options.logger;
 		this.storage = options.storage;
@@ -42,7 +42,7 @@ export default class UsuarioCrear extends BackboneView {
 		this.usuarioService = new UsuarioService({
 			api: this.api,
 			logger: this.logger,
-			app: this.App
+			app: this.app
 		});
 	}
 
@@ -95,7 +95,7 @@ export default class UsuarioCrear extends BackboneView {
 
 			if (confirmaClave !== clave) {
 				target.removeAttr('disabled');
-				if (this.App && typeof this.app.trigger === 'function') {
+				if (this.app && typeof this.app.trigger === 'function') {
 					this.app.trigger('alert:error', 'La clave no es válida, no se puede confirmar el valor.');
 				}
 				return false;
@@ -113,7 +113,7 @@ export default class UsuarioCrear extends BackboneView {
 		// Validación básica
 		if (!usuarioData.cedtra || !usuarioData.nombre || !usuarioData.usuario) {
 			target.removeAttr('disabled');
-			if (this.App && typeof this.app.trigger === 'function') {
+			if (this.app && typeof this.app.trigger === 'function') {
 				this.app.trigger('alert:error', 'Los campos cédula, nombre y usuario son requeridos');
 			}
 			return false;
@@ -147,19 +147,19 @@ export default class UsuarioCrear extends BackboneView {
 					this.app.trigger('alert:success', response.msj);
 					this.$el.find('input').val('');
 
-					if (!this.isNew && this.App && this.app.router) {
+					if (!this.isNew && this.app && this.app.router) {
 						this.app.router.navigate('listar', { trigger: true, replace: true });
 					}
 				}
 			} else {
-				if (this.App && typeof this.app.trigger === 'function') {
+				if (this.app && typeof this.app.trigger === 'function') {
 					this.app.trigger('alert:error', response?.msj || 'Error al guardar el usuario');
 				}
 			}
 		} catch (error: any) {
 			target.removeAttr('disabled');
 			this.logger?.error('Error al guardar usuario:', error);
-			if (this.App && typeof this.app.trigger === 'function') {
+			if (this.app && typeof this.app.trigger === 'function') {
 				this.app.trigger('alert:error', {
 					title: 'Error',
 					text: error.message || 'Error de conexión',
@@ -175,7 +175,7 @@ export default class UsuarioCrear extends BackboneView {
 		e.preventDefault();
 		this.remove();
 
-		if (this.App && this.app.router) {
+		if (this.app && this.app.router) {
 			this.app.router.navigate('listar', { trigger: true, replace: true });
 		}
 
@@ -185,7 +185,7 @@ export default class UsuarioCrear extends BackboneView {
 	subNav(): void {
 		this.subNavUsuarios = new SubNavUsuarios({
 			model: this.model,
-			App: this.App,
+			App: this.app,
 			api: this.api,
 			logger: this.logger,
 			storage: this.storage,

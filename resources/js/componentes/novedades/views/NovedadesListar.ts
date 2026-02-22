@@ -3,25 +3,27 @@ import NovedadRow from "./NovedadRow";
 import NovedadesService from "@/pages/Novedades/NovedadesService";
 import DataTable from 'datatables.net-bs5';
 import listar from "@/componentes/novedades/templates/tmp_listar.hbs?raw";
+import { AppInstance } from "@/types/types";
+import ApiService from "@/services/ApiService";
 
 interface NovedadesListarOptions {
     collection?: any;
-    api?: any;
+    api: ApiService;
     logger?: any;
-    app?: any;
+    app: AppInstance;
     storage?: any;
     region?: any;
     [key: string]: any;
 }
 
 export default class NovedadesListar extends BackboneView {
-    app: any;
+    app: AppInstance;
     subNavView: any;
     children: any;
     tableModule: any;
     modelView: any;
     template: any;
-    api: any;
+    api: ApiService;
     logger: any;
     storage: any;
     region: any;
@@ -29,7 +31,7 @@ export default class NovedadesListar extends BackboneView {
 
     constructor(options: NovedadesListarOptions) {
         super(options);
-        this.app = options.app || options.AppInstance;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -192,7 +194,7 @@ export default class NovedadesListar extends BackboneView {
 
         const id = this.$el.find(e.currentTarget).attr('data-code');
 
-        if (this.App && this.app.router) {
+        if (this.app && this.app.router) {
             this.app.router.navigate('detalle/' + id, { trigger: true, replace: true });
         }
     }

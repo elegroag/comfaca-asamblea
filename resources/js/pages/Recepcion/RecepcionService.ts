@@ -28,7 +28,7 @@ export default class RecepcionService {
 
   private get api() { return this.opts.api; }
   private get logger() { return this.opts.logger; }
-  private get App() { return this.opts.app; }
+  private get app() { return this.opts.app; }
 
   /**
    * Inicializar las colecciones necesarias usando BoxCollectionStorage
@@ -42,9 +42,9 @@ export default class RecepcionService {
 
     // Crear colecciones Backbone si no existen
     this.collections.asistencias = (asistenciasStorage as AsistenciasCollection) || new AsistenciasCollection();
-    this.collections.poderes = poderesStorage || new (this.App as any).Collection();
-    this.collections.representantes = representantesStorage || new (this.App as any).Collection();
-    this.collections.empresas = empresasStorage || new (this.App as any).Collection();
+    this.collections.poderes = poderesStorage || new (this.app as any).Collection();
+    this.collections.representantes = representantesStorage || new (this.app as any).Collection();
+    this.collections.empresas = empresasStorage || new (this.app as any).Collection();
 
     // Guardar colecciones en storage si no existen
     if (!asistenciasStorage) {

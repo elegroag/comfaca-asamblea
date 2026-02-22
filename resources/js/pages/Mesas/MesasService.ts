@@ -25,7 +25,7 @@ export default class MesasService {
 
     private get api() { return this.opts.api; }
     private get logger() { return this.opts.logger; }
-    private get App() { return this.opts.app; }
+    private get app() { return this.opts.app; }
 
     /**
      * Inicializar las colecciones necesarias usando BoxCollectionStorage
@@ -265,15 +265,15 @@ export default class MesasService {
             const response = await this.vincularMesaApi(data);
 
             if (response?.success) {
-                this.App?.trigger('alert:success', { message: response.msj || 'Mesa vinculada exitosamente' });
+                this.app?.trigger('alert:success', { message: response.msj || 'Mesa vinculada exitosamente' });
             } else {
-                this.App?.trigger('alert:error', { message: response?.msj || 'Error al vincular mesa' });
+                this.app?.trigger('alert:error', { message: response?.msj || 'Error al vincular mesa' });
             }
 
             return response;
         } catch (error: any) {
             this.logger.error('Error al vincular mesa:', error);
-            this.App?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message || 'Error de conexión' };
         }
     }
