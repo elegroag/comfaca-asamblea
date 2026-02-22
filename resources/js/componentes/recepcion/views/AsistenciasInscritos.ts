@@ -5,19 +5,31 @@ import listar_inscritos from "@/componentes/recepcion/templates/listar_inscritos
 interface AsistenciasInscritosOptions {
     collection?: any;
     estado?: string;
-    App?: any;
+    app?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
 export default class AsistenciasInscritos extends BackboneView {
     template: any;
-    App: any;
+    app: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
     estado: string;
     tableModule: any;
 
     constructor(options: AsistenciasInscritosOptions = {}) {
         super({ ...options, id: 'box_ingresados', tagName: 'div', className: 'box' });
-        this.App = options.App;
+        this.app = options.app;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
         this.estado = options.estado || '';
         this.template = _.template(listar_inscritos);
     }

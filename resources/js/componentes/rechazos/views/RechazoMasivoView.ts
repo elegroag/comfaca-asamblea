@@ -3,7 +3,7 @@ import RechazoService from "@/pages/Rechazos/RechazoService";
 import masivo from "@/componentes/rechazos/templates/masivo.hbs?raw";
 
 interface RechazoMasivoViewOptions {
-    App?: any;
+    app?: any;
     api?: any;
     logger?: any;
     storage?: any;
@@ -14,7 +14,7 @@ interface RechazoMasivoViewOptions {
 export default class RechazoMasivoView extends BackboneView {
     region: any;
     template: any;
-    App: any;
+    app: any;
     api: any;
     logger: any;
     storage: any;
@@ -25,7 +25,7 @@ export default class RechazoMasivoView extends BackboneView {
             ...options,
             className: 'box',
         });
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -34,7 +34,7 @@ export default class RechazoMasivoView extends BackboneView {
         this.rechazoService = new RechazoService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -72,8 +72,8 @@ export default class RechazoMasivoView extends BackboneView {
             target.removeAttr('disabled');
 
             if (response && response.success) {
-                if (this.App && typeof this.App.trigger === 'function') {
-                    this.App.trigger('alert:success', {
+                if (this.app && typeof this.app.trigger === 'function') {
+                    this.app.trigger('alert:success', {
                         title: 'Notificación!',
                         text: `Ya se completo el cargue de los rechazos.\nRegistrados: ${response.data.creados}\nCantidad: ${response.data.filas}\nFallos: ${response.data.fallidos}`,
                         button: 'Continuar!'
@@ -85,8 +85,8 @@ export default class RechazoMasivoView extends BackboneView {
                 this.$el.find('#name_archivo').text('Seleccionar aquí...');
                 this.$el.find('#remover_archivo').attr('disabled', 'true');
             } else {
-                if (this.App && typeof this.App.trigger === 'function') {
-                    this.App.trigger('alert:error', {
+                if (this.app && typeof this.app.trigger === 'function') {
+                    this.app.trigger('alert:error', {
                         title: 'Error!',
                         text: response.msj || 'Error al cargar los rechazos',
                         button: 'Continuar!'
@@ -96,8 +96,8 @@ export default class RechazoMasivoView extends BackboneView {
         } catch (error: any) {
             target.removeAttr('disabled');
             this.logger?.error('Error al cargar rechazos masivo:', error);
-            if (this.App && typeof this.App.trigger === 'function') {
-                this.App.trigger('alert:error', {
+            if (this.app && typeof this.app.trigger === 'function') {
+                this.app.trigger('alert:error', {
                     title: 'Error!',
                     text: 'Ocurrió un error al cargar los rechazos',
                     button: 'Continuar!'

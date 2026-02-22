@@ -433,4 +433,32 @@ export default class RecepcionService {
   private async buscarRepresentanteApi(data: Record<string, any>): Promise<ApiResponse> {
     return await this.api.post('/recepcion/buscar', data);
   }
+
+  /**
+   * Ingresar poder al consenso
+   */
+  async __ingresarPoderConsenso(data: Record<string, any>): Promise<ApiResponse> {
+    try {
+      const response = await this.ingresarPoderConsensoApi(data);
+
+      if (response?.success) {
+        this.App.trigger('alert:success', { message: response.msj || 'Poder ingresado al consenso exitosamente' });
+      } else {
+        this.App.trigger('alert:error', { message: response?.msj || 'Error al ingresar poder al consenso' });
+      }
+
+      return response;
+    } catch (error: any) {
+      this.logger.error('Error al ingresar poder consenso:', error);
+      this.App.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      return { success: false, message: error.message };
+    }
+  }
+
+  /**
+   * API para ingresar poder al consenso
+   */
+  private async ingresarPoderConsensoApi(data: Record<string, any>): Promise<ApiResponse> {
+    return await this.api.post('/poderes/ingresar_poder', data);
+  }
 }

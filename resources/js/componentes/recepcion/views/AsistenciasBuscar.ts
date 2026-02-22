@@ -2,23 +2,35 @@ import { BackboneView } from "@/common/Bone";
 
 interface AsistenciasBuscarOptions {
     collection?: any[];
-    App?: any;
+    app?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
 export default class AsistenciasBuscar extends BackboneView {
     template!: string;
-    App: any;
+    app: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
     collection: any[];
 
     constructor(options: AsistenciasBuscarOptions = {}) {
         super(options);
-        this.App = options.App;
+        this.app = options.app;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
         this.collection = options.collection || [];
     }
 
     initialize() {
-        this.template = $('#tmp_asistencias_buscar').html();
+        // Template ya inicializado en el constructor
     }
 
     render() {
@@ -69,7 +81,10 @@ export default class AsistenciasBuscar extends BackboneView {
     usarScanner(e: Event) {
         e.preventDefault();
         this.$el.find(e.currentTarget).attr('disabled', true);
-        window.location.href = create_url('recepcion/buscando#buscar');
+        // Navegación segura usando router
+        if (this.app && this.app.router) {
+            this.app.router.navigate('buscando', { trigger: true });
+        }
     }
 
     noevent(e: JQuery.Event) {
@@ -88,7 +103,9 @@ export default class AsistenciasBuscar extends BackboneView {
         const stCedrep = this.getInput('cedrep');
 
         if (stCedrep == '' || stCedrep == undefined || stCedrep.trim() == '') {
-            $App.trigger('alert:error', 'El documento no es valido para mostrar los datos del representante.');
+            if (this.app && typeof this.app.trigger === 'function') {
+                this.app.trigger('alert:error', 'El documento no es valido para mostrar los datos del representante.');
+            }
             return false;
         }
 
@@ -96,7 +113,9 @@ export default class AsistenciasBuscar extends BackboneView {
         const cedrep = splits[0];
 
         if (!/^([0-9]+){5,20}(.*)?$/.test(cedrep)) {
-            $App.trigger('alert:error', 'El documento no es valido para mostrar los datos del representante.');
+            if (this.app && typeof this.app.trigger === 'function') {
+                this.app.trigger('alert:error', 'El documento no es valido para mostrar los datos del representante.');
+            }
             return false;
         }
 
@@ -111,7 +130,9 @@ export default class AsistenciasBuscar extends BackboneView {
                     this.trigger('set:asistencias', response.asistente);
                     this.trigger('set:empresas', response.empresas);
                     this.trigger('show:item', response);
-                    $App.router.navigate('mostrar/' + cedrep, { trigger: true, replace: true });
+                    if (this.app && this.app.router) {
+                        this.app.router.navigate('mostrar/' + cedrep, { trigger: true, replace: true });
+                    }
                 }
             },
         });

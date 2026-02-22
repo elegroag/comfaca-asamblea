@@ -3,19 +3,31 @@ import { BackboneView } from "@/common/Bone";
 interface AsistenciasEmpresaOptions {
     model?: any;
     collection?: any[];
-    App?: any;
+    app?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
 export default class AsistenciasEmpresa extends BackboneView {
     template!: string;
-    App: any;
+    app: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
     representante: any;
     poder: any;
 
     constructor(options: AsistenciasEmpresaOptions = {}) {
         super(options);
-        this.App = options.App;
+        this.app = options.app;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
         this.representante = void 0;
         this.poder = void 0;
     }
@@ -27,7 +39,9 @@ export default class AsistenciasEmpresa extends BackboneView {
 
     back_lista(event: Event) {
         event.preventDefault();
-        this.App.router.navigate('listar', { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('listar', { trigger: true, replace: true });
+        }
     }
 
     events() {
@@ -39,7 +53,8 @@ export default class AsistenciasEmpresa extends BackboneView {
     render() {
         this.representante = this.collection[0];
         this.poder = this.collection[1];
-        let template = _.template($('#tmp_registro_empresa').html());
+        // Template ya inicializado en el constructor
+        const template = _.template(this.template);
         this.el.innerHTML = template({
             empresa: this.model.toJSON(),
             representante: this.representante ? this.representante.toJSON() : false,

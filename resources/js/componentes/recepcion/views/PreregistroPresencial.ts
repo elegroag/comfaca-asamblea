@@ -4,7 +4,7 @@ import preregistro_presencial from "@/componentes/recepcion/templates/preregistr
 
 interface PreregistroPresencialOptions {
     model?: any;
-    App?: any;
+    app?: any;
     api?: any;
     logger?: any;
     storage?: any;
@@ -14,7 +14,7 @@ interface PreregistroPresencialOptions {
 
 export default class PreregistroPresencial extends BackboneView {
     template: any;
-    App: any;
+    app: any;
     api: any;
     logger: any;
     storage: any;
@@ -24,7 +24,7 @@ export default class PreregistroPresencial extends BackboneView {
 
     constructor(options: PreregistroPresencialOptions) {
         super({ ...options, className: 'box', id: 'box_preregistro_presencial', tagName: 'div' });
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -34,7 +34,7 @@ export default class PreregistroPresencial extends BackboneView {
         this.recepcionService = new RecepcionService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -55,8 +55,8 @@ export default class PreregistroPresencial extends BackboneView {
         const target = this.$el.find(e.currentTarget);
         target.attr('disabled', 'true');
 
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea ejecutar el proceso.',
                 callback: async (success: boolean) => {
                     target.removeAttr('disabled');
@@ -66,16 +66,16 @@ export default class PreregistroPresencial extends BackboneView {
                             const response = await this.recepcionService.__cruzarHabilPreregistroPresencial();
 
                             if (response && response.success) {
-                                if (this.App && typeof this.App.trigger === 'function') {
-                                    this.App.trigger('alert:success', {
+                                if (this.app && typeof this.app.trigger === 'function') {
+                                    this.app.trigger('alert:success', {
                                         title: 'Notificación!',
                                         text: response.data.msj,
                                         button: 'Continuar!'
                                     });
                                 }
                             } else {
-                                if (this.App && typeof this.App.trigger === 'function') {
-                                    this.App.trigger('alert:error', {
+                                if (this.app && typeof this.app.trigger === 'function') {
+                                    this.app.trigger('alert:error', {
                                         title: 'Error!',
                                         text: 'Error al ejecutar el proceso',
                                         button: 'Continuar!'
@@ -85,8 +85,8 @@ export default class PreregistroPresencial extends BackboneView {
                         } catch (error: any) {
                             target.removeAttr('disabled');
                             this.logger?.error('Error al cruzar preregistro:', error);
-                            if (this.App && typeof this.App.trigger === 'function') {
-                                this.App.trigger('alert:error', {
+                            if (this.app && typeof this.app.trigger === 'function') {
+                                this.app.trigger('alert:error', {
                                     title: 'Error!',
                                     text: 'Ocurrió un error al ejecutar el proceso',
                                     button: 'Continuar!'

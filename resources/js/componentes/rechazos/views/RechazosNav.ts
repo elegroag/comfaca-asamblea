@@ -4,7 +4,7 @@ import tmp_show_subnav from "@/componentes/rechazos/templates/show_subnav.hbs?ra
 
 interface RechazosNavOptions {
     dataToggle: any;
-    App?: any;
+    app?: any;
     api?: any;
     logger?: any;
     storage?: any;
@@ -16,20 +16,27 @@ export default class RechazosNav extends BackboneView {
     template: any;
     dataToggle: any;
     model: any;
-    static parentView: any;
-    static App: any;
-    static rechazoService: RechazoService;
+    parentView: any;
+    app: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
+    rechazoService: RechazoService;
 
     constructor(options: RechazosNavOptions) {
         super(options);
         this.template = _.template(tmp_show_subnav);
         this.dataToggle = options.dataToggle;
-        // Guardar referencias estáticas para métodos estáticos
-        RechazosNav.App = options.App;
-        RechazosNav.rechazoService = new RechazoService({
-            api: options.api,
-            logger: options.logger,
-            app: options.App
+        this.app = options.app;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.rechazoService = new RechazoService({
+            api: this.api,
+            logger: this.logger,
+            app: this.app
         });
     }
 
@@ -46,61 +53,61 @@ export default class RechazosNav extends BackboneView {
 
     informeData(e: Event) {
         e.preventDefault();
-        RechazosNav.staticInformeData();
+        this.staticInformeData();
     }
 
     exportData(e: Event) {
         e.preventDefault();
-        RechazosNav.staticExportData();
+        this.staticExportData();
     }
 
     nuevoRegistro(e: Event) {
         e.preventDefault();
-        if (RechazosNav.parentView) RechazosNav.parentView.remove();
-        if (RechazosNav.App && RechazosNav.App.router) {
-            RechazosNav.App.router.navigate('crear', { trigger: true });
+        if (this.parentView) this.parentView.remove();
+        if (this.app && this.app.router) {
+            this.app.router.navigate('crear', { trigger: true });
         }
     }
 
     masivoRegistro(e: Event) {
         e.preventDefault();
-        if (RechazosNav.parentView) RechazosNav.parentView.remove();
-        if (RechazosNav.App && RechazosNav.App.router) {
-            RechazosNav.App.router.navigate('cargue', { trigger: true });
+        if (this.parentView) this.parentView.remove();
+        if (this.app && this.app.router) {
+            this.app.router.navigate('cargue', { trigger: true });
         }
     }
 
     listarData(e: Event) {
         e.preventDefault();
-        if (RechazosNav.parentView) RechazosNav.parentView.remove();
-        if (RechazosNav.App && RechazosNav.App.router) {
-            RechazosNav.App.router.navigate('listar', { trigger: true });
+        if (this.parentView) this.parentView.remove();
+        if (this.app && this.app.router) {
+            this.app.router.navigate('listar', { trigger: true });
         }
     }
 
     editaRegistro(e: Event) {
         e.preventDefault();
         const nit = this.model.get('nit');
-        if (RechazosNav.parentView) RechazosNav.parentView.remove();
-        if (RechazosNav.App && RechazosNav.App.router) {
-            RechazosNav.App.router.navigate('edita/' + nit, { trigger: true });
+        if (this.parentView) this.parentView.remove();
+        if (this.app && this.app.router) {
+            this.app.router.navigate('edita/' + nit, { trigger: true });
         }
     }
 
-    static async staticExportData() {
-        if (RechazosNav.App && typeof RechazosNav.App.trigger === 'function') {
-            RechazosNav.App.trigger('confirma', {
+    async staticExportData() {
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea exportar la lista.',
                 callback: async (status: boolean) => {
                     if (status) {
                         try {
-                            const response = await RechazosNav.rechazoService.__exportarLista();
+                            const response = await this.rechazoService.__exportarLista();
 
                             if (response && response.success) {
-                                RechazosNav.rechazoService.download_file(response);
+                                this.rechazoService.download_file(response);
                             } else {
-                                if (RechazosNav.App && typeof RechazosNav.App.trigger === 'function') {
-                                    RechazosNav.App.trigger('alert:warning', {
+                                if (this.app && typeof this.app.trigger === 'function') {
+                                    this.app.trigger('alert:warning', {
                                         title: 'Notificación!',
                                         text: response.msj || 'Error al exportar la lista',
                                         button: 'Continuar!'
@@ -108,8 +115,8 @@ export default class RechazosNav extends BackboneView {
                                 }
                             }
                         } catch (error: any) {
-                            if (RechazosNav.App && typeof RechazosNav.App.trigger === 'function') {
-                                RechazosNav.App.trigger('alert:warning', {
+                            if (this.app && typeof this.app.trigger === 'function') {
+                                this.app.trigger('alert:warning', {
                                     title: 'Notificación!',
                                     text: 'Se detecta un error al exportar los datos. Comunicar a soporte técnico',
                                     button: 'Continuar!'
@@ -122,20 +129,20 @@ export default class RechazosNav extends BackboneView {
         }
     }
 
-    static async staticInformeData() {
-        if (RechazosNav.App && typeof RechazosNav.App.trigger === 'function') {
-            RechazosNav.App.trigger('confirma', {
+    async staticInformeData() {
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea generar el informe.',
                 callback: async (status: boolean) => {
                     if (status) {
                         try {
-                            const response = await RechazosNav.rechazoService.__exportarPdf();
+                            const response = await this.rechazoService.__exportarPdf();
 
                             if (response && response.success) {
-                                RechazosNav.rechazoService.download_file(response);
+                                this.rechazoService.download_file(response);
                             } else {
-                                if (RechazosNav.App && typeof RechazosNav.App.trigger === 'function') {
-                                    RechazosNav.App.trigger('alert:warning', {
+                                if (this.app && typeof this.app.trigger === 'function') {
+                                    this.app.trigger('alert:warning', {
                                         title: 'Notificación!',
                                         text: response.msj || 'Error al generar el informe',
                                         button: 'Continuar!'
@@ -143,8 +150,8 @@ export default class RechazosNav extends BackboneView {
                                 }
                             }
                         } catch (error: any) {
-                            if (RechazosNav.App && typeof RechazosNav.App.trigger === 'function') {
-                                RechazosNav.App.trigger('alert:warning', {
+                            if (this.app && typeof this.app.trigger === 'function') {
+                                this.app.trigger('alert:warning', {
                                     title: 'Notificación!',
                                     text: 'Se detecta un error al exportar los datos. Comunicar a soporte técnico',
                                     button: 'Continuar!'

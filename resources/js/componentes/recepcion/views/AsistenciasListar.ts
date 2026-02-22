@@ -4,26 +4,39 @@ import DataTable from "datatables.net-bs5";
 
 interface AsistenciasListarOptions {
     collection?: any;
-    App?: any;
+    app?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
 export default class AsistenciasListar extends BackboneView {
     template!: string;
-    App: any;
+    app: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
+    recepcionService: RecepcionService;
 
     constructor(options: AsistenciasListarOptions = {}) {
         super(options);
-        this.App = options.App;
+        this.app = options.app;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
         this.recepcionService = new RecepcionService({
-            api: options.api,
-            logger: options.logger,
-            app: options.App,
+            api: this.api,
+            logger: this.logger,
+            app: this.app,
         });
     }
 
     initialize() {
-        this.template = $('#tmp_listar_ingreso').html();
+        // Template ya inicializado en el constructor
         this.render();
     }
 
@@ -48,8 +61,8 @@ export default class AsistenciasListar extends BackboneView {
         const target = this.$el.find(e.currentTarget);
         target.attr('disabled', 'true');
 
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea remover la inscripción.',
                 callback: async (success: boolean) => {
                     target.removeAttr('disabled');
@@ -60,21 +73,22 @@ export default class AsistenciasListar extends BackboneView {
                             const response = await this.recepcionService.__removerInscripcion(documento);
 
                             if (response.status === 200) {
-                                if (typeof Backbone.history !== 'undefined' && Backbone.history.loadUrl) {
-                                    Backbone.history.loadUrl();
+                                // Recargar la página actual de forma segura
+                                if (this.app && this.app.router) {
+                                    this.app.router.navigate('listar', { trigger: true, replace: true });
                                 }
-                                if (this.App && typeof this.App.trigger === 'function') {
-                                    this.App.trigger('alert:success', response.data.msj);
+                                if (this.app && typeof this.app.trigger === 'function') {
+                                    this.app.trigger('alert:success', response.data.msj);
                                 }
                             } else {
-                                if (this.App && typeof this.App.trigger === 'function') {
-                                    this.App.trigger('alert:error', response.data?.msj || 'Error al remover inscripción');
+                                if (this.app && typeof this.app.trigger === 'function') {
+                                    this.app.trigger('alert:error', response.data?.msj || 'Error al remover inscripción');
                                 }
                             }
                         } catch (error: any) {
                             this.logger?.error('Error al remover inscripción:', error);
-                            if (this.App && typeof this.App.trigger === 'function') {
-                                this.App.trigger('alert:error', 'Ocurrió un error al remover la inscripción');
+                            if (this.app && typeof this.app.trigger === 'function') {
+                                this.app.trigger('alert:error', 'Ocurrió un error al remover la inscripción');
                             }
                         }
                     }
@@ -88,14 +102,16 @@ export default class AsistenciasListar extends BackboneView {
     registroIngreso(event: Event) {
         event.preventDefault();
         let nit = this.$el.find(event.currentTarget).attr('data-code');
-        $App.router.navigate('registro_empresa/' + nit, { trigger: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('registro_empresa/' + nit, { trigger: true });
+        }
     }
 
     async export_data(e: Event) {
         e.preventDefault();
 
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea exportar la lista.',
                 callback: async (success: boolean) => {
                     if (success) {
@@ -104,12 +120,11 @@ export default class AsistenciasListar extends BackboneView {
 
                             if (response.status === 200) {
                                 if (response.data.status === 200) {
-                                    if (typeof download_file === 'function') {
-                                        download_file(response.data);
-                                    }
+                                    // Delegar al servicio para descargar archivo
+                                    this.recepcionService.download_file(response.data);
                                 } else {
-                                    if (this.App && typeof this.App.trigger === 'function') {
-                                        this.App.trigger('alert:warning', {
+                                    if (this.app && typeof this.app.trigger === 'function') {
+                                        this.app.trigger('alert:warning', {
                                             title: 'Notificación!',
                                             text: response.data.msj,
                                             button: 'Continuar!'
@@ -117,8 +132,8 @@ export default class AsistenciasListar extends BackboneView {
                                     }
                                 }
                             } else {
-                                if (this.App && typeof this.App.trigger === 'function') {
-                                    this.App.trigger('alert:warning', {
+                                if (this.app && typeof this.app.trigger === 'function') {
+                                    this.app.trigger('alert:warning', {
                                         title: 'Notificación!',
                                         text: 'Se detecta un error al exportar los datos. Comunicar a soporte técnico',
                                         button: 'Continuar!',
@@ -128,8 +143,8 @@ export default class AsistenciasListar extends BackboneView {
                             }
                         } catch (error: any) {
                             this.logger?.error('Error al exportar lista:', error);
-                            if (this.App && typeof this.App.trigger === 'function') {
-                                this.App.trigger('alert:error', 'Ocurrió un error al exportar los datos');
+                            if (this.app && typeof this.app.trigger === 'function') {
+                                this.app.trigger('alert:error', 'Ocurrió un error al exportar los datos');
                             }
                         }
                     }
@@ -141,8 +156,8 @@ export default class AsistenciasListar extends BackboneView {
     reporte_data(e: Event) {
         e.preventDefault();
 
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea generar reporte.',
                 callback: async (success: boolean) => {
                     if (success) {
@@ -151,12 +166,11 @@ export default class AsistenciasListar extends BackboneView {
 
                             if (response.status === 200) {
                                 if (response.data.status === 200) {
-                                    if (typeof download_file === 'function') {
-                                        download_file(response.data);
-                                    }
+                                    // Delegar al servicio para descargar archivo
+                                    this.recepcionService.download_file(response.data);
                                 } else {
-                                    if (this.App && typeof this.App.trigger === 'function') {
-                                        this.App.trigger('alert:warning', {
+                                    if (this.app && typeof this.app.trigger === 'function') {
+                                        this.app.trigger('alert:warning', {
                                             title: 'Notificación!',
                                             text: response.data.msj,
                                             button: 'Continuar!'
@@ -164,8 +178,8 @@ export default class AsistenciasListar extends BackboneView {
                                     }
                                 }
                             } else {
-                                if (this.App && typeof this.App.trigger === 'function') {
-                                    this.App.trigger('alert:warning', {
+                                if (this.app && typeof this.app.trigger === 'function') {
+                                    this.app.trigger('alert:warning', {
                                         title: 'Notificación!',
                                         text: 'Se detecta un error al exportar los datos. Comunicar a soporte técnico',
                                         button: 'Continuar!',
@@ -175,8 +189,8 @@ export default class AsistenciasListar extends BackboneView {
                             }
                         } catch (error: any) {
                             this.logger?.error('Error al generar reporte:', error);
-                            if (this.App && typeof this.App.trigger === 'function') {
-                                this.App.trigger('alert:error', 'Ocurrió un error al generar el reporte');
+                            if (this.app && typeof this.app.trigger === 'function') {
+                                this.app.trigger('alert:error', 'Ocurrió un error al generar el reporte');
                             }
                         }
                     }

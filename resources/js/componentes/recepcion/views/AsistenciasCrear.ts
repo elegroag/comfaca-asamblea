@@ -6,7 +6,7 @@ import ModalView from "./ModalView";
 interface AsistenciasCrearOptions {
     model?: any;
     collection?: any[];
-    App?: any;
+    app?: any;
     api?: any;
     logger?: any;
     storage?: any;
@@ -16,7 +16,7 @@ interface AsistenciasCrearOptions {
 
 export default class AsistenciasCrear extends BackboneView {
     template: any;
-    App: any;
+    app: any;
     api: any;
     logger: any;
     storage: any;
@@ -28,7 +28,7 @@ export default class AsistenciasCrear extends BackboneView {
 
     constructor(options: AsistenciasCrearOptions) {
         super(options);
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -40,7 +40,7 @@ export default class AsistenciasCrear extends BackboneView {
         this.recepcionService = new RecepcionService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -57,7 +57,7 @@ export default class AsistenciasCrear extends BackboneView {
     }
 
     initialize() {
-        this.template = $('#tmp_asistencias_crear').html();
+        // Template ya inicializado en el constructor
         this.votos = 0;
         this.poderes = [];
         this.empresas = [];
@@ -70,12 +70,14 @@ export default class AsistenciasCrear extends BackboneView {
         this.empresas = empresas;
 
         let _template = _.template(this.template);
+        // Establecer fecha y hora actuales sin dependencia global moment
+        const now = new Date();
         this.$el.html(
             _template({
                 representante: this.model.toJSON(),
                 empresas: this.empresas,
-                fecha: moment().format('YYYY-MM-DD'),
-                hora: moment().format('HH:mm'),
+                fecha: now.toISOString().split('T')[0], // YYYY-MM-DD
+                hora: now.toTimeString().slice(0, 5), // HH:mm
                 votos: this.votos,
                 poderes: this.poderes,
             })
@@ -93,8 +95,8 @@ export default class AsistenciasCrear extends BackboneView {
         const has_poderes = nit_poder !== undefined && nit_poder !== '' ? 1 : -1;
 
         if (cedrep === '') {
-            if (this.App && typeof this.App.trigger === 'function') {
-                this.App.trigger('warning', 'La identificación del representante es requerida para hacer el ingreso.');
+            if (this.app && typeof this.app.trigger === 'function') {
+                this.app.trigger('warning', 'La identificación del representante es requerida para hacer el ingreso.');
             }
             target.attr('disabled', 'true');
             return false;
@@ -109,8 +111,8 @@ export default class AsistenciasCrear extends BackboneView {
             radicado,
         };
 
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea realizar el ingreso.',
                 callback: async (success: boolean) => {
                     if (success) {
@@ -121,12 +123,12 @@ export default class AsistenciasCrear extends BackboneView {
 
                             if (response && response.success) {
                                 if (response.errors && response.errors.length > 0) {
-                                    if (this.App && typeof this.App.trigger === 'function') {
-                                        this.App.trigger('alert:warning', { message: response.errors.join('\n') });
+                                    if (this.app && typeof this.app.trigger === 'function') {
+                                        this.app.trigger('alert:warning', { message: response.errors.join('\n') });
                                     }
                                 } else {
-                                    if (this.App && typeof this.App.trigger === 'function') {
-                                        this.App.trigger('alert:success', { message: response.msj || 'Ingreso creado exitosamente' });
+                                    if (this.app && typeof this.app.trigger === 'function') {
+                                        this.app.trigger('alert:success', { message: response.msj || 'Ingreso creado exitosamente' });
                                     }
                                 }
 
@@ -137,19 +139,19 @@ export default class AsistenciasCrear extends BackboneView {
                                 }
 
                                 this.trigger('set:fichaIngreso', true);
-                                if (this.App && this.App.router) {
-                                    this.App.router.navigate('ficha/' + cedrep, { trigger: true, replace: true });
+                                if (this.app && this.app.router) {
+                                    this.app.router.navigate('ficha/' + cedrep, { trigger: true, replace: true });
                                 }
                             } else {
-                                if (this.App && typeof this.App.trigger === 'function') {
-                                    this.App.trigger('alert:error', { message: response.msj || 'Error al crear ingreso' });
+                                if (this.app && typeof this.app.trigger === 'function') {
+                                    this.app.trigger('alert:error', { message: response.msj || 'Error al crear ingreso' });
                                 }
                             }
                         } catch (error: any) {
                             target.removeAttr('disabled');
                             this.logger?.error('Error al crear ingreso:', error);
-                            if (this.App && typeof this.App.trigger === 'function') {
-                                this.App.trigger('alert:error', { message: 'Ocurrió un error al realizar el ingreso' });
+                            if (this.app && typeof this.app.trigger === 'function') {
+                                this.app.trigger('alert:error', { message: 'Ocurrió un error al realizar el ingreso' });
                             }
                         }
                     } else {

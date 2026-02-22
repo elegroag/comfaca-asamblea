@@ -10,7 +10,7 @@ import mostrar from "@/componentes/recepcion/templates/mostrar.hbs?raw";
 interface AsistenciasMostrarOptions {
     model?: any;
     collection?: any[];
-    App?: any;
+    app?: any;
     api?: any;
     logger?: any;
     storage?: any;
@@ -20,7 +20,7 @@ interface AsistenciasMostrarOptions {
 
 export default class AsistenciasMostrar extends BackboneView {
     template: any;
-    App: any;
+    app: any;
     api: any;
     logger: any;
     storage: any;
@@ -32,7 +32,7 @@ export default class AsistenciasMostrar extends BackboneView {
 
     constructor(options: AsistenciasMostrarOptions) {
         super(options);
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -44,7 +44,7 @@ export default class AsistenciasMostrar extends BackboneView {
         this.recepcionService = new RecepcionService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -52,8 +52,8 @@ export default class AsistenciasMostrar extends BackboneView {
         e.preventDefault();
         const cedrep = this.model.get('cedrep');
 
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: '¡Confirmar la acción de registro de ingreso a la Asamblea!',
                 callback: async (success: boolean) => {
                     if (success) {
@@ -62,21 +62,21 @@ export default class AsistenciasMostrar extends BackboneView {
 
                             if (response.success) {
                                 this.trigger('add:representante', this.model);
-                                if (this.App && typeof this.App.trigger === 'function') {
-                                    this.App.trigger('alert:success', { message: response.msj });
+                                if (this.app && typeof this.app.trigger === 'function') {
+                                    this.app.trigger('alert:success', { message: response.msj });
                                 }
-                                if (this.App && this.App.router) {
-                                    this.App.router.navigate('ficha/' + cedrep, { trigger: true });
+                                if (this.app && this.app.router) {
+                                    this.app.router.navigate('ficha/' + cedrep, { trigger: true });
                                 }
                             } else {
-                                if (this.App && typeof this.App.trigger === 'function') {
-                                    this.App.trigger('alert:warning', { message: response.msj });
+                                if (this.app && typeof this.app.trigger === 'function') {
+                                    this.app.trigger('alert:warning', { message: response.msj });
                                 }
                             }
                         } catch (error: any) {
                             this.logger?.error('Error al crear asistencia:', error);
-                            if (this.App && typeof this.App.trigger === 'function') {
-                                this.App.trigger('alert:error', { message: 'Ocurrió un error al crear la asistencia' });
+                            if (this.app && typeof this.app.trigger === 'function') {
+                                this.app.trigger('alert:error', { message: 'Ocurrió un error al realizar el registro' });
                             }
                         }
                     }

@@ -6,7 +6,7 @@ import listar from "@/componentes/rechazos/templates/listar.hbs?raw";
 interface RechazoListarViewOptions {
     model?: any;
     collection?: any;
-    App?: any;
+    app?: any;
     api?: any;
     logger?: any;
     storage?: any;
@@ -20,7 +20,7 @@ export default class RechazoListarView extends BackboneView {
     modelView: any;
     template: any;
     collection: any;
-    App: any;
+    app: any;
     api: any;
     logger: any;
     storage: any;
@@ -36,7 +36,7 @@ export default class RechazoListarView extends BackboneView {
             },
             className: 'box',
         });
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -68,8 +68,8 @@ export default class RechazoListarView extends BackboneView {
         const target = this.$el.find(e.currentTarget);
         const nit = target.attr('data-cid');
         this.remove();
-        if (this.App && this.App.router) {
-            this.App.router.navigate('detalle/' + nit, { trigger: true, replace: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('detalle/' + nit, { trigger: true, replace: true });
         }
     }
 
@@ -78,8 +78,8 @@ export default class RechazoListarView extends BackboneView {
         const target = this.$el.find(e.currentTarget);
         const nit = target.attr('data-cid');
         this.remove();
-        if (this.App && this.App.router) {
-            this.App.router.navigate('edita/' + nit, { trigger: true });
+        if (this.app && this.app.router) {
+            this.app.router.navigate('edita/' + nit, { trigger: true });
         }
     }
 

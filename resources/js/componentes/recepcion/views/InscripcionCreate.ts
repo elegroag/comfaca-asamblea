@@ -3,7 +3,7 @@ import RecepcionService from "@/pages/Recepcion/RecepcionService";
 
 interface InscripcionCreateOptions {
     model?: any;
-    App?: any;
+    app?: any;
     api?: any;
     logger?: any;
     storage?: any;
@@ -13,7 +13,7 @@ interface InscripcionCreateOptions {
 
 export default class InscripcionCreate extends BackboneView {
     template: any;
-    App: any;
+    app: any;
     api: any;
     logger: any;
     storage: any;
@@ -22,7 +22,7 @@ export default class InscripcionCreate extends BackboneView {
 
     constructor(options: InscripcionCreateOptions) {
         super(options);
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -30,12 +30,12 @@ export default class InscripcionCreate extends BackboneView {
         this.recepcionService = new RecepcionService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
     initialize() {
-        this.template = $('#tmp_create_ingreso').html();
+        // Template ya inicializado en el constructor
     }
 
     events() {
@@ -65,8 +65,8 @@ export default class InscripcionCreate extends BackboneView {
         const target = this.$el.find(e.currentTarget);
         target.attr('disabled', 'true');
 
-        if (this.App && typeof this.App.trigger === 'function') {
-            this.App.trigger('confirma', {
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
                 message: 'Se requiere de confirmar si desea realizar el ingreso.',
                 callback: async (success: boolean) => {
                     target.removeAttr('disabled');
@@ -101,20 +101,20 @@ export default class InscripcionCreate extends BackboneView {
 
                             if (response && response.success) {
                                 if (response.data.errors && response.data.errors.length > 0) {
-                                    if (this.App && typeof this.App.trigger === 'function') {
-                                        this.App.trigger('alert:warning', { message: response.data.errors.join('\n') });
+                                    if (this.app && typeof this.app.trigger === 'function') {
+                                        this.app.trigger('alert:warning', { message: response.data.errors.join('\n') });
                                     }
                                 } else {
-                                    if (this.App && typeof this.App.trigger === 'function') {
-                                        this.App.trigger('alert:success', { message: response.msj || 'Inscripción guardada exitosamente' });
+                                    if (this.app && typeof this.app.trigger === 'function') {
+                                        this.app.trigger('alert:success', { message: response.msj || 'Inscripción guardada exitosamente' });
                                     }
                                 }
                             }
                         } catch (error: any) {
                             target.removeAttr('disabled');
                             this.logger?.error('Error al guardar inscripción:', error);
-                            if (this.App && typeof this.App.trigger === 'function') {
-                                this.App.trigger('alert:error', { message: 'Ocurrió un error al guardar la inscripción' });
+                            if (this.app && typeof this.app.trigger === 'function') {
+                                this.app.trigger('alert:error', { message: 'Ocurrió un error al guardar la inscripción' });
                             }
                         }
                     }

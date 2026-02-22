@@ -1,18 +1,32 @@
 import { BackboneView } from "@/common/Bone";
+import tmp_sub_navbar from "@/templates/recepcion/sub_navbar.hbs?raw";
 
 interface AsistenciasNavbarOptions {
     model?: any;
-    App?: any;
+    app?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
 export default class AsistenciasNavbar extends BackboneView {
-    template!: string;
-    App: any;
+    template: any;
+    app: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
 
     constructor(options: AsistenciasNavbarOptions = {}) {
         super({ ...options, className: 'nav', id: 'ul_sidebar', tagName: 'ul' });
-        this.App = options.App;
+        this.app = options.app;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
+        this.template = _.template(tmp_sub_navbar);
     }
 
     events() {
@@ -23,19 +37,30 @@ export default class AsistenciasNavbar extends BackboneView {
 
     module_navegation(e: Event) {
         e.preventDefault();
-        var href = this.$el.find(e.currentTarget).attr('data-href');
+        const href = this.$el.find(e.currentTarget).attr('data-href');
         if (href) {
-            this.App.router.navigate(href, { trigger: true });
+            if (this.app && this.app.router) {
+                this.app.router.navigate(href, { trigger: true });
+            }
         }
     }
 
     inload(scope: AsistenciasNavbar) {
-        $('.sidebar-wrapper .nav li').removeClass('active');
-        $(`li[data-toggle-nav='${scope.model.item}'] a`).trigger('click');
+        // Usar DOM nativo en lugar de jQuery
+        const sidebarNav = document.querySelector('.sidebar-wrapper .nav');
+        if (sidebarNav) {
+            const navItems = sidebarNav.querySelectorAll('li');
+            navItems.forEach(item => item.classList.remove('active'));
+        }
+
+        const targetItem = document.querySelector(`li[data-toggle-nav='${scope.model.item}'] a`) as HTMLElement;
+        if (targetItem) {
+            targetItem.click();
+        }
     }
 
     render() {
-        let template = _.template($('#tmp_sub_navbar').html());
+        const template = _.template(this.template);
         this.$el.html(template());
         this.inload(this);
         return this;

@@ -5,7 +5,7 @@ import editar from "@/componentes/rechazos/templates/editar.hbs?raw";
 
 interface RechazoEditarViewOptions {
     model?: any;
-    App?: any;
+    app?: any;
     api?: any;
     logger?: any;
     storage?: any;
@@ -16,7 +16,7 @@ interface RechazoEditarViewOptions {
 export default class RechazoEditarView extends BackboneView {
     model: any;
     template: any;
-    App: any;
+    app: any;
     api: any;
     logger: any;
     storage: any;
@@ -25,7 +25,7 @@ export default class RechazoEditarView extends BackboneView {
 
     constructor(options: RechazoEditarViewOptions) {
         super(options);
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -35,7 +35,7 @@ export default class RechazoEditarView extends BackboneView {
         this.rechazoService = new RechazoService({
             api: this.api,
             logger: this.logger,
-            app: this.App
+            app: this.app
         });
     }
 
@@ -100,16 +100,16 @@ export default class RechazoEditarView extends BackboneView {
             if (response && response.success) {
                 this.trigger('item:edit', modelData);
 
-                if (this.App && typeof this.App.trigger === 'function') {
-                    this.App.trigger('alert:success', {
+                if (this.app && typeof this.app.trigger === 'function') {
+                    this.app.trigger('alert:success', {
                         title: 'Éxito',
                         text: 'Rechazo actualizado correctamente',
                         button: 'OK!'
                     });
                 }
             } else {
-                if (this.App && typeof this.App.trigger === 'function') {
-                    this.App.trigger('alert:error', {
+                if (this.app && typeof this.app.trigger === 'function') {
+                    this.app.trigger('alert:error', {
                         title: 'Error',
                         text: response.msj || 'Error al actualizar el rechazo',
                         button: 'OK!'
@@ -119,8 +119,8 @@ export default class RechazoEditarView extends BackboneView {
         } catch (error: any) {
             target.removeAttr('disabled');
             this.logger?.error('Error al actualizar rechazo:', error);
-            if (this.App && typeof this.App.trigger === 'function') {
-                this.App.trigger('alert:error', {
+            if (this.app && typeof this.app.trigger === 'function') {
+                this.app.trigger('alert:error', {
                     title: 'Error',
                     text: 'Ocurrió un error al actualizar el rechazo',
                     button: 'OK!'

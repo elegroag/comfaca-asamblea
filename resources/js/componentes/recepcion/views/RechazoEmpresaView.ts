@@ -1,16 +1,36 @@
-
 import { BackboneView } from "@/common/Bone";
 import tmp_rechazo_detalle from "@/templates/recepcion/rechazo_detalle.hbs?raw";
 
+interface RechazoEmpresaViewOptions {
+    model?: any;
+    collection?: any;
+    app?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
+    [key: string]: any;
+}
+
 export default class RechazoEmpresaView extends BackboneView {
     template!: string;
+    app: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
 
-    constructor(options: any) {
+    constructor(options: RechazoEmpresaViewOptions) {
         super(options);
+        this.app = options.app;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
     }
 
     initialize(options: any) {
-        this.template = tmp_rechazo_detalle;
+        // Template ya inicializado en el constructor
     }
 
     events() {
@@ -32,6 +52,8 @@ export default class RechazoEmpresaView extends BackboneView {
 
     closeModal(e: JQuery.Event) {
         e.preventDefault();
-        $App.trigger('hide:modal', this);
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('hide:modal', this);
+        }
     }
 }

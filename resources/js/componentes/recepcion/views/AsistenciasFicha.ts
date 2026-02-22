@@ -1,26 +1,46 @@
 import { BackboneView } from "@/common/Bone";
+import Poder from "@/models/Poder";
+import RecepcionService from "@/pages/Recepcion/RecepcionService";
 import tmp_ficha_ingreso from '@/templates/recepcion/ficha_ingreso.hbs?raw';
 
 interface AsistenciasFichaOptions {
     model?: any;
     collection?: any[];
-    App?: any;
+    app?: any;
+    api?: any;
+    logger?: any;
+    storage?: any;
+    region?: any;
     [key: string]: any;
 }
 
 export default class AsistenciasFicha extends BackboneView {
     template!: string;
-    App: any;
+    app: any;
+    api: any;
+    logger: any;
+    storage: any;
+    region: any;
+    recepcionService: RecepcionService;
     poder: any;
     votos: any;
     empresas: any;
 
     constructor(options: AsistenciasFichaOptions = {}) {
         super(options);
-        this.App = options.App;
+        this.app = options.app;
+        this.api = options.api;
+        this.logger = options.logger;
+        this.storage = options.storage;
+        this.region = options.region;
         this.poder = void 0;
         this.votos = void 0;
         this.empresas = void 0;
+        this.recepcionService = new RecepcionService({
+            api: this.api,
+            logger: this.logger,
+            app: this.app
+        });
     }
 
     initialize() {
@@ -61,8 +81,10 @@ export default class AsistenciasFicha extends BackboneView {
         const cedrep = this.model.get('cedrep');
         const anchor = document.createElement('a');
         anchor.setAttribute('target', '_blank');
-        anchor.setAttribute('href', create_url('recepcion/imprimir_ficha/' + cedrep));
-        anchor.click();
+        // Usar navegación segura en lugar de create_url
+        if (this.app && this.app.router) {
+            this.app.router.navigate('imprimir_ficha/' + cedrep, { trigger: true });
+        }
     }
 
     ingresoPoderManual(e: Event) {
@@ -78,29 +100,47 @@ export default class AsistenciasFicha extends BackboneView {
             documento_poder,
         };
 
-        $App.trigger('confirma', {
-            message: 'Se requiere de confirmar si desea ingresar el poder al consenso.',
-            callback: (success: boolean) => {
-                if (success) {
-                    const url = create_url('poderes/ingresar_poder');
-                    $App.trigger('syncro', {
-                        url,
-                        data: token,
-                        callback: (response: any) => {
-                            this.$el.find(e.target).removeAttr('disabled');
-                            if (response.success) {
-                                $App.trigger('success', 'El registro se completo con éxito.');
-                                Backbone.history.loadUrl();
-                            } else {
-                                $App.trigger('error', 'Se ha generado un error interno y el registro no se completo.');
-                            }
-                        },
-                    });
-                } else {
-                    return false;
+        if (this.app && typeof this.app.trigger === 'function') {
+            this.app.trigger('confirma', {
+                message: 'Se requiere de confirmar si desea ingresar el poder al consenso.',
+                callback: (success: boolean) => {
+                    if (success) {
+                        // Usar service layer en lugar de syncro
+                        this.ingresarPoderConsenso(token, e.target);
+                    } else {
+                        return false;
+                    }
+                },
+            });
+        }
+    }
+
+    async ingresarPoderConsenso(token: any, target: any) {
+        try {
+            const response = await this.recepcionService.__ingresarPoderConsenso(token);
+
+            this.$el.find(target).removeAttr('disabled');
+
+            if (response.success) {
+                if (this.app && typeof this.app.trigger === 'function') {
+                    this.app.trigger('alert:success', 'El registro se completo con éxito.');
                 }
-            },
-        });
+                // Recargar la página actual de forma segura
+                if (this.app && this.app.router) {
+                    this.app.router.navigate('ficha/' + token.cedrep, { trigger: true, replace: true });
+                }
+            } else {
+                if (this.app && typeof this.app.trigger === 'function') {
+                    this.app.trigger('alert:error', 'Se ha generado un error interno y el registro no se completo.');
+                }
+            }
+        } catch (error: any) {
+            this.$el.find(target).removeAttr('disabled');
+            this.logger?.error('Error al ingresar poder consenso:', error);
+            if (this.app && typeof this.app.trigger === 'function') {
+                this.app.trigger('alert:error', 'Ocurrió un error al ingresar el poder.');
+            }
+        }
     }
 
     aplicar_unpoder(e: JQuery.Event) {

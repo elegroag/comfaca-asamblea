@@ -3,7 +3,7 @@ import navbar from "@/componentes/recepcion/templates/navbar.hbs?raw";
 
 interface ScannerNavbarOptions {
     model?: any;
-    App?: any;
+    app?: any;
     api?: any;
     logger?: any;
     storage?: any;
@@ -13,7 +13,7 @@ interface ScannerNavbarOptions {
 
 export default class ScannerNavbar extends BackboneView {
     template: any;
-    App: any;
+    app: any;
     api: any;
     logger: any;
     storage: any;
@@ -26,7 +26,7 @@ export default class ScannerNavbar extends BackboneView {
             id: 'ul_sidebar',
             tagName: 'ul',
         });
-        this.App = options.App;
+        this.app = options.app;
         this.api = options.api;
         this.logger = options.logger;
         this.storage = options.storage;
@@ -45,8 +45,8 @@ export default class ScannerNavbar extends BackboneView {
         const target = this.$el.find(e.currentTarget);
         const href = target.attr('data-href');
         if (href) {
-            if (this.App && this.App.router) {
-                this.App.router.navigate(href, { trigger: true });
+            if (this.app && this.app.router) {
+                this.app.router.navigate(href, { trigger: true });
             } else {
                 // Fallback a window.location si no hay router
                 window.location.href = href;
@@ -55,8 +55,17 @@ export default class ScannerNavbar extends BackboneView {
     }
 
     inload(scope: ScannerNavbar) {
-        this.$el.find('.sidebar-wrapper .nav li').removeClass('active');
-        this.$el.find(`li[data-toggle-nav='${scope.model.item}'] a`).trigger('click');
+        // Usar DOM nativo en lugar de jQuery
+        const sidebarNav = document.querySelector('.sidebar-wrapper .nav');
+        if (sidebarNav) {
+            const navItems = sidebarNav.querySelectorAll('li');
+            navItems.forEach(item => item.classList.remove('active'));
+        }
+
+        const targetItem = this.$el.find(`li[data-toggle-nav='${scope.model.item}'] a`);
+        if (targetItem.length > 0) {
+            targetItem.trigger('click');
+        }
     }
 
     render() {
