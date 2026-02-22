@@ -18,7 +18,7 @@ interface PoderesListarViewOptions {
 export default class PoderesListarView extends BackboneView {
     tableModule: any | null;
     subNavView: any;
-    children: any[];
+    children: { [key: string]: PoderRowView | undefined }; // Permitir undefined
     modelView: typeof PoderRowView;
     api: any;
     logger: any;
@@ -35,7 +35,7 @@ export default class PoderesListarView extends BackboneView {
         this.storage = options.storage;
         this.region = options.region;
         this.tableModule = null;
-        this.children = [];
+        this.children = {}; // Cambiar a objeto para usar claves
         this.modelView = PoderRowView;
 
         // Inicializar el servicio
@@ -51,7 +51,7 @@ export default class PoderesListarView extends BackboneView {
     }
 
     initialize() {
-        this.children = [];
+        this.children = {}; // Cambiar a objeto para usar claves
         this.tableModule = null;
         this.modelView = PoderRowView;
 
@@ -293,8 +293,12 @@ export default class PoderesListarView extends BackboneView {
     }
 
     closeChildren() {
-        let children = this.children || {};
-        _.each(children, (child: BackboneView) => this.closeChildView(child));
+        const children = this.children || {};
+        Object.values(children).forEach((child: PoderRowView | undefined) => {
+            if (child) {
+                this.closeChildView(child);
+            }
+        });
     }
 
     closeChildView(view: BackboneView) {
