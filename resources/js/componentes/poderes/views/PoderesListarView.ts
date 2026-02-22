@@ -78,23 +78,10 @@ export default class PoderesListarView extends BackboneView {
         this.$('#show_data_poderes').empty();
         this.closeChildren();
 
-        // Renderizar cada modelo como una fila
+        // Renderizar cada modelo como una fila usando renderModel
         this.collection.forEach((model: any) => {
-            const rowView = new PoderRowView({
-                model: model,
-                app: this.app,
-                api: this.api,
-                logger: this.logger,
-                storage: this.storage,
-                region: this.region
-            });
-
-            // Renderizar la fila y agregarla a la tabla
-            rowView.render();
+            const rowView = this.renderModel(model);
             this.$('#show_data_poderes').append(rowView.$el);
-
-            // Guardar referencia para manejo posterior
-            this.children[model.get('cid')] = rowView;
         });
 
         // Inicializar DataTable después de renderizar las filas
