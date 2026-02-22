@@ -238,34 +238,21 @@ export default class PoderesListarView extends BackboneView {
 
     renderModel(model: BackboneModel): PoderRowView {
         let view: PoderRowView | undefined;
-        const modelCid = model.get('cid');
-
-        // Buscar vista existente en el array por model.cid
-        view = this.children.find(child => child.model?.get('cid') === modelCid);
-
+        if (_.size(this.children) > 0) {
+            if (_.indexOf(this.children, model.get('cid')) != -1) {
+                view = this.children[model.get('cid')];
+            }
+        }
         if (!view) {
-            // Crear nueva vista con todas las dependencias
-            view = new PoderRowView({
-                model,
-                app: this.app,
-                api: this.api,
-                logger: this.logger,
-                storage: this.storage,
-                region: this.region
-            });
-
-            // Renderizar la vista
-            view.render();
-
-            // Agregar al array y configurar eventos
-            this.children.push(view);
-
-            this.listenTo(view, 'all', (eventName: any, ...args: any[]) => {
-                this.trigger('item:' + eventName, view, model, ...args);
-            });
+            view = new this.modelView({ model: model });
+            this.children[model.get('cid')] = view;
         }
 
-        // Retornar la vista (ya renderizada)
+        this.listenTo(view, 'all', (eventName: string) => {
+            this.trigger('item:' + eventName, view, model);
+        });
+
+        view.render();
         return view;
     }
 

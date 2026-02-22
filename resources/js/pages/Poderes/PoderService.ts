@@ -1,18 +1,20 @@
 import { CommonDeps, ServiceOptions, ApiResponse, FileUploadTransfer } from '@/types/CommonDeps';
 import { BoxCollectionStorage } from '@/componentes/useStorage';
-import type { Poder } from './types';
 import ApiService from '@/services/ApiService';
 import { AppInstance } from '@/types/types';
 import PoderesCollection from '@/collections/Poderes';
 import RechazosCollection from '@/componentes/rechazos/models/RechazosCollection';
+import EmpresasCollection from '@/collections/EmpresasCollection';
+import Poder from '@/models/Poder';
+import CriteriosRechazos from '@/collections/CriteriosRechazos';
 
 export interface PoderServiceOptions extends ServiceOptions {
     // Opciones adicionales específicas del servicio si se necesitan
 }
 
 export interface PoderCollections {
-    poderes: any; // PoderesCollection si existe
-    rechazos: any; // RechazosCollection si existe
+    poderes: PoderesCollection; // PoderesCollection si existe
+    rechazos: RechazosCollection; // RechazosCollection si existe
 }
 
 export default class PoderService {
@@ -21,8 +23,8 @@ export default class PoderService {
 
     constructor(private readonly opts: PoderServiceOptions) {
         this.collections = {
-            poderes: null,
-            rechazos: null,
+            poderes: new PoderesCollection(),
+            rechazos: new RechazosCollection(),
         };
 
         _.extend(this, opts);
@@ -361,5 +363,41 @@ export default class PoderService {
      */
     private async registrarRechazoApi(data: Record<string, any>): Promise<ApiResponse> {
         return await this.api.post('/poderes/registraRechazoPoder', data);
+    }
+
+    getPoderesCollection(): PoderesCollection {
+        return this.collections.poderes;
+    }
+
+    async __findPoder(id: string): Promise<{
+        apoderado: EmpresasCollection;
+        poderdante: EmpresasCollection;
+        poder: Poder;
+        criteriosRechazos: CriteriosRechazos;
+    } | null> {
+        try {
+            const response = await this.api.get(`/poderes/detalle/${id}`);
+            if (response?.success) {
+                this.__setPoderes([response.data]);
+                const apoderado = new EmpresasCollection(response?.data?.habil_apoderado);
+                const poderdante = new EmpresasCollection(response?.data?.habil_poderdante);
+                const poder = new Poder(response?.data?.poder);
+                const criteriosRechazos = new CriteriosRechazos(response?.data?.criterio_rechazos);
+                return {
+                    apoderado,
+                    poderdante,
+                    poder,
+                    criteriosRechazos
+                };
+            } else {
+                this.logger.error('Error al cargar poder:', response?.message);
+                this.app?.trigger('alert:error', { message: response?.message || 'Error al cargar poder' });
+                return null;
+            }
+        } catch (error: any) {
+            this.logger.error('Error en findPoder:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return null;
+        }
     }
 }

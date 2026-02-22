@@ -1,185 +1,243 @@
-<div class="row">
-    <div class="col-md-4">
-        <span class="h4 mb-4 text-primary"> Detalles del poder</span>
+<div class="flex flex-col lg:flex-row gap-4 mb-6">
+    <div class="lg:w-1/4">
+        <h4 class="text-2xl font-bold text-blue-600 mb-4">Detalles del poder</h4>
     </div>
-    <div class="col">
-        <div id='showSubnav' class="nav justify-content-end">
-            <a href='#' class="btn btn-md btn-outline-primary btn-round" id='btn_back_list'><i
-                    class="fas fa-arrow-left"></i> Salir</a>
+    <div class="lg:flex-1">
+        <div class="flex justify-end">
+            <a href='#'
+                class="inline-flex items-center px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50 transition-colors duration-200"
+                id='btn_back_list'>
+                <i class="fas fa-arrow-left mr-2"></i> Salir
+            </a>
         </div>
     </div>
 </div>
 
-<div class="ml-auto mr-auto">
-    <div class="card-body">
-        <p class='text-center'>Los siguientes datos son informativos y no se pueden modificar. <br />Puede activar o
-            inactivar el poder si lo requiere.</p>
-        <div class="row justify-content-center">
-            <div class="col-sm-2">
-                <div class="picture-container">
-                    <div class="picture text-center">
-                        <img src="/images/poderes.jpg" alt="Poder" width="100px" class="picture-src" />
+<div class="max-w-6xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <p class='text-center text-gray-600 mb-6'>
+            Los siguientes datos son informativos y no se pueden modificar. <br />
+            Puede activar o inactivar el poder si lo requiere.
+        </p>
+
+        <div class="flex justify-center mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-5xl">
+                <!-- Columna de imagen -->
+                <div class="flex flex-col items-center">
+                    <div class="relative">
+                        <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 shadow-lg">
+                            <img src="/images/poderes.jpg" alt="Poder" class="w-full h-full object-cover" />
+                        </div>
                     </div>
-                    <h6 class="description text-center"><br />PODER</h6>
-                    <p class='text-center'>Fecha registro: <br />
-                        <%=poder.fecha%>
+                    <h6 class="text-lg font-semibold text-gray-800 mt-4 text-center">PODER</h6>
+                    <p class='text-sm text-gray-600 text-center mt-2'>
+                        Fecha registro: <br />
+                        <span class="font-medium">
+                            <%=poder.fecha%>
+                        </span>
                     </p>
                 </div>
-            </div>
 
-            <div class='col-sm-5'>
-                <div class='form-group'>
-                    <label>Número de radicado:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                        </div>
-                        <div class="form-control" style='background:#fff'>
-                            <input type="text" class="d-none" name="radicado" value='<%=poder.radicado%>' />
-                            <%=poder.radicado%>
+                <!-- Columna Poderdante -->
+                <div class='space-y-4'>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Número de radicado:</label>
+                        <div class="flex">
+                            <div
+                                class="flex items-center justify-center px-3 py-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md">
+                                <i class="fas fa-hashtag text-gray-500"></i>
+                            </div>
+                            <div class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-r-md">
+                                <input type="text" class="hidden" name="radicado" value='<%=poder.radicado%>' />
+                                <span class="text-gray-800">
+                                    <%=poder.radicado%>
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    <label>Poderdante nit:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-building"></i></span>
-                        </div>
-                        <div class="form-control" style='background:#fff'>
-                            <input type="text" class="d-none" name="nit2" value='<%=poder.poderdante_nit%>' />
-                            <%=poder.poderdante_nit%>
-                        </div>
-                    </div>
-
-                    <label>Poderdante razón social:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-building"></i></span>
-                        </div>
-                        <div class="form-control" style='background:#fff'>
-                            <input type="text" class="d-none" name="poderdante_razsoc"
-                                value='<%=poder.poderdante_razsoc%>' />
-                            <%=poder.poderdante_razsoc%>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Poderdante nit:</label>
+                        <div class="flex">
+                            <div
+                                class="flex items-center justify-center px-3 py-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md">
+                                <i class="fas fa-building text-gray-500"></i>
+                            </div>
+                            <div class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-r-md">
+                                <input type="text" class="hidden" name="nit2" value='<%=poder.poderdante_nit%>' />
+                                <span class="text-gray-800">
+                                    <%=poder.poderdante_nit%>
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    <label>Representante legal:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        </div>
-                        <div class="form-control" style='background:#fff'>
-                            <input type="text" class="d-none" name="poderdante_repleg"
-                                value='<%=poder.poderdante_repleg%>' />
-                            <%=poder.poderdante_repleg%>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Poderdante razón social:</label>
+                        <div class="flex">
+                            <div
+                                class="flex items-center justify-center px-3 py-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md">
+                                <i class="fas fa-building text-gray-500"></i>
+                            </div>
+                            <div class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-r-md">
+                                <input type="text" class="hidden" name="poderdante_razsoc"
+                                    value='<%=poder.poderdante_razsoc%>' />
+                                <span class="text-gray-800">
+                                    <%=poder.poderdante_razsoc%>
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    <label>Estado por subsidio:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-lightbulb"></i></span>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Representante legal:</label>
+                        <div class="flex">
+                            <div
+                                class="flex items-center justify-center px-3 py-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md">
+                                <i class="fas fa-user text-gray-500"></i>
+                            </div>
+                            <div class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-r-md">
+                                <input type="text" class="hidden" name="poderdante_repleg"
+                                    value='<%=poder.poderdante_repleg%>' />
+                                <span class="text-gray-800">
+                                    <%=poder.poderdante_repleg%>
+                                </span>
+                            </div>
                         </div>
-                        <div class="form-control" style='background:#fff'>
-                            <% if(habil_poderdante===false){ %>
-                                <input type="text" class="d-none" name="estado_poderdante" value='Rechazado' readonly
-                                    style='background:#fff' />Rechazado
-                                <% }else{ %>
-                                    <input type="text" class="d-none" name="estado_poderdante" value='Admitido' readonly
-                                        style='background:#fff' />Admitido
-                                    <% } %>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Estado por subsidio:</label>
+                        <div class="flex">
+                            <div
+                                class="flex items-center justify-center px-3 py-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md">
+                                <i class="fas fa-lightbulb text-gray-500"></i>
+                            </div>
+                            <div class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-r-md">
+                                <% if(habil_poderdante===false){ %>
+                                    <input type="text" class="hidden" name="estado_poderdante" value='Rechazado'
+                                        readonly />
+                                    <span class="text-red-600 font-medium">Rechazado</span>
+                                    <% }else{ %>
+                                        <input type="text" class="hidden" name="estado_poderdante" value='Admitido'
+                                            readonly />
+                                        <span class="text-green-600 font-medium">Admitido</span>
+                                        <% } %>
+                            </div>
                         </div>
                     </div>
 
                     <% has_checked=(poder.estado=='A' )? 'checked' :'' %>
-                        <label>Estado poder: <span id='show_estado_text'>
-                                <%= (poder.estado=='A' )? 'ACTIVO' : 'RECHAZADO' %>
-                            </span></label>
-                        <div class='input-group'>
-                            <input class="bootstrap-switch" id='estado_poder' type="checkbox" data-toggle="switch"
-                                data-handle-width="300" data-on-text="ACT" data-on-color="success"
-                                data-off-color="danger" data-off-text="REC" <%=has_checked%> />
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" style='border:0px'></span>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Estado poder: <span id='show_estado_text' class="font-semibold">
+                                    <%= (poder.estado=='A' )? 'ACTIVO' : 'RECHAZADO' %>
+                                </span>
+                            </label>
+                            <div class="flex items-center">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id='estado_poder' class="sr-only peer" <%=has_checked%> />
+                                    <div
+                                        class="w-64 h-8 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-56 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-7 after:w-7 after:transition-all peer-checked:bg-green-600">
+                                    </div>
+                                    <span class="ml-3 text-sm font-medium text-gray-700">
+                                        <span class="peer-checked:hidden text-red-600">REC</span>
+                                        <span class="hidden peer-checked:block text-green-600">ACT</span>
+                                    </span>
+                                </label>
                             </div>
                         </div>
                 </div>
-            </div>
 
-            <div class="col-sm-5">
-                <div class='form-group'>
-                    <br />
-                    <br />
-                    <br />
-                    <label>Apoderado nit:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-building"></i></span>
-                        </div>
-                        <div class="form-control" style='background:#fff'>
-                            <input type="text" class="d-none" name="nit1" value='<%=poder.apoderado_nit%>' />
-                            <%=poder.apoderado_nit%>
-                        </div>
-                    </div>
-                    <label>Apoderado razón social:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-building"></i></span>
-                        </div>
-                        <div class="form-control" style='background:#fff'>
-                            <input type="text" class="d-none" name="apoderado_razsoc"
-                                value='<%=poder.apoderado_razsoc%>' />
-                            <%=(poder.apoderado_razsoc)%>
+                <!-- Columna Apoderado -->
+                <div class='space-y-4 pt-8 lg:pt-0'>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Apoderado nit:</label>
+                        <div class="flex">
+                            <div
+                                class="flex items-center justify-center px-3 py-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md">
+                                <i class="fas fa-building text-gray-500"></i>
+                            </div>
+                            <div class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-r-md">
+                                <input type="text" class="hidden" name="nit1" value='<%=poder.apoderado_nit%>' />
+                                <span class="text-gray-800">
+                                    <%=poder.apoderado_nit%>
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    <label>Representante legal:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        </div>
-                        <div class="form-control" style='background:#fff'>
-                            <input type="text" class="d-none" name="apoderado_repleg"
-                                value='<%=poder.apoderado_repleg%>' />
-                            <%=(poder.apoderado_repleg)%>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Apoderado razón social:</label>
+                        <div class="flex">
+                            <div
+                                class="flex items-center justify-center px-3 py-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md">
+                                <i class="fas fa-building text-gray-500"></i>
+                            </div>
+                            <div class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-r-md">
+                                <input type="text" class="hidden" name="apoderado_razsoc"
+                                    value='<%=poder.apoderado_razsoc%>' />
+                                <span class="text-gray-800">
+                                    <%=poder.apoderado_razsoc%>
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    <label>Estado por subsidio:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-lightbulb"></i></span>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Representante legal:</label>
+                        <div class="flex">
+                            <div
+                                class="flex items-center justify-center px-3 py-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md">
+                                <i class="fas fa-user text-gray-500"></i>
+                            </div>
+                            <div class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-r-md">
+                                <input type="text" class="hidden" name="apoderado_repleg"
+                                    value='<%=poder.apoderado_repleg%>' />
+                                <span class="text-gray-800">
+                                    <%=poder.apoderado_repleg%>
+                                </span>
+                            </div>
                         </div>
-                        <div class="form-control" style='background:#fff'>
-                            <% if(habil_apoderado===false){ %>
-                                <input type="text" class="d-none" name="estado_apoderado" value='Rechazado' />Rechazado
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Estado por subsidio:</label>
+                        <div class="flex">
+                            <div
+                                class="flex items-center justify-center px-3 py-2 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md">
+                                <i class="fas fa-lightbulb text-gray-500"></i>
+                            </div>
+                            <div class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-r-md">
+                                <% if(habil_apoderado===false){ %>
+                                    <input type="text" class="hidden" name="estado_apoderado" value='Rechazado' />
+                                    <span class="text-red-600 font-medium">Rechazado</span>
+                                    <% }else{ %>
+                                        <input type="text" class="hidden" name="estado_apoderado" value='Admitido' />
+                                        <span class="text-green-600 font-medium">Admitido</span>
+                                        <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Criterios Rechazo:</label>
+                        <div class='w-full' id='show_motivo_rechazo'>
+                            <% if(poder.notificacion){ %>
+                                <div
+                                    class='px-3 py-2 bg-gray-50 border border-gray-300 rounded-md min-h-[80px] text-gray-800'>
+                                    <%=poder.notificacion%>
+                                </div>
                                 <% }else{ %>
-                                    <input type="text" class="d-none" name="estado_apoderado"
-                                        value='Admitido' />Admitido
+                                    <div
+                                        class='px-3 py-2 bg-gray-50 border border-gray-300 rounded-md min-h-[80px] text-gray-500 italic'>
+                                        NINGUNO
+                                    </div>
                                     <% } %>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-sm-10">
-                <div class='form-group'>
-                    <label>Criterios Rechazo:</label>
-                    <div class='input-group' id='show_motivo_rechazo'>
-                        <% if(poder.notificacion){ %>
-                            <div class='form-control' style='min-height:50px'>
-                                <%=poder.notificacion%>
-                            </div>
-                            <% }else{ %>
-                                <div class='form-control' style='min-height:50px'>NINGUNO</div>
-                                <% } %>
-                    </div>
-                </div>
-            </div>
-
         </div>
-    </div>
-    <div class="card-footer">
-        <h6 class="card-category"><br /></h6>
     </div>
 </div>

@@ -10,7 +10,6 @@ import PoderService from './PoderService';
 import type { Poder } from './types';
 
 interface PoderesControllerOptions extends CommonDeps {
-    region?: any;
     [key: string]: any;
 }
 
@@ -125,22 +124,29 @@ export default class PoderesController extends Controller {
     async mostrarDetalle(id: string): Promise<void> {
         try {
             // Asegurarse de que los poderes estén cargados
-            await this.service.__findAll();
+            const result = await this.service.__findPoder(id);
 
-            const poderes = (this.service as any).collections.poderes;
-            const model = poderes.get(id);
-
-            if (!model) {
+            if (!result) {
                 this.app?.trigger('alert:error', 'Poder no encontrado');
                 return;
             }
 
+            const { apoderado, poderdante, poder, criteriosRechazos } = result;
+
             const view = new PoderDetalle({
-                model: model,
+                model: poder,
                 app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
+                collection: [
+                    {
+                        apoderado,
+                        poderdante,
+                        criteriosRechazos,
+                    },
+                ]
+
             });
 
             this.region.show(view);

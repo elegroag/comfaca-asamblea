@@ -117,7 +117,8 @@ export default class PoderDetalle extends BackboneView {
                 criterios_rechazos: this.criterios_rechazos,
             })
         );
-        this.$el.find("[id='estado_poder']").bootstrapSwitch();
+
+        //this.$("[id='estado_poder']").bootstrapSwitch();
         return this;
     }
 
