@@ -292,14 +292,14 @@ export default class PoderService {
      * Subir archivo masivo a API
      */
     private async uploadMasivoApi(formData: FormData): Promise<ApiResponse> {
-        return await this.api.post('/poderes/cargue_masivo', formData);
+        return await this.api.post('/poderes/cargue-masivo', formData);
     }
 
     /**
      * Exportar lista desde API
      */
     private async exportListaApi(): Promise<ApiResponse> {
-        return await this.api.get('/poderes/exportar_lista');
+        return await this.api.get('/poderes/exportar-lista');
     }
 
     /**
@@ -320,7 +320,7 @@ export default class PoderService {
      * API para validación previa
      */
     private async validarPoderApi(data: Record<string, string>): Promise<ApiResponse> {
-        return await this.api.post('/poderes/validacion_previa', data);
+        return await this.api.post('/poderes/validacion-previa', data);
     }
 
     /**
@@ -341,7 +341,7 @@ export default class PoderService {
      * API para buscar empresa
      */
     private async buscarEmpresaApi(nit: string): Promise<ApiResponse> {
-        return await this.api.get(`/poderes/buscar_empresa/${nit}`);
+        return await this.api.get(`/poderes/buscar-empresa/${nit}`);
     }
 
     /**
@@ -396,6 +396,24 @@ export default class PoderService {
             }
         } catch (error: any) {
             this.logger.error('Error en findPoder:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return null;
+        }
+    }
+
+    async __findCriteriosRechazos(): Promise<CriteriosRechazos | null> {
+        try {
+            const response = await this.api.get('/poderes/criterios-rechazo');
+            if (response?.success) {
+                const criteriosRechazos = new CriteriosRechazos(response?.data);
+                return criteriosRechazos;
+            } else {
+                this.logger.error('Error al cargar criterios de rechazo:', response?.message);
+                this.app?.trigger('alert:error', { message: response?.message || 'Error al cargar criterios de rechazo' });
+                return null;
+            }
+        } catch (error: any) {
+            this.logger.error('Error en findCriteriosRechazos:', error);
             this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return null;
         }

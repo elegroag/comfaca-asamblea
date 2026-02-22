@@ -144,7 +144,7 @@ export default class PoderesController extends Controller {
                         apoderado,
                         poderdante,
                         criteriosRechazos,
-                    },
+                    }
                 ]
 
             });
@@ -174,15 +174,28 @@ export default class PoderesController extends Controller {
     /**
      * Crear rechazo de poder
      */
-    crearRechazo(): void {
-        const view = new RechazaPoder({
-            app: this.app,
-            api: this.api,
-            logger: this.logger,
-            region: this.region,
-        });
+    async crearRechazo(): Promise<void> {
+        try {
+            const criteriosRechazos = await this.service.__findCriteriosRechazos();
 
-        this.region.show(view);
+            if (!criteriosRechazos) {
+                this.app?.trigger('alert:error', 'Poder no encontrado');
+                return;
+            }
+
+            const view = new RechazaPoder({
+                app: this.app,
+                api: this.api,
+                logger: this.logger,
+                region: this.region,
+                collection: criteriosRechazos
+            });
+
+            this.region.show(view);
+        } catch (error) {
+            this.logger?.error('Error al crear rechazo:', error);
+            this.app?.trigger('alert:error', 'Error al crear rechazo');
+        }
     }
 
     /**

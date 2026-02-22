@@ -57,13 +57,14 @@ export default class RechazaPoder extends BackboneView {
     render() {
         let template = _.template(crearRechazoPoder);
         this.$el.html(template({ criterios_rechazos: this.collection.toJSON() }));
-        // Establecer fecha actual sin dependencia global moment
+
         const today = new Date();
         const formattedDate = today.toLocaleDateString('es-CO', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric'
         }).replace(/\//g, '-');
+
         this.$el.find("[name='fecha']").val(formattedDate);
         return this;
     }
@@ -150,10 +151,11 @@ export default class RechazaPoder extends BackboneView {
                     if (!response.success) {
                         this.app?.trigger('alert:error', response.msj);
                     } else {
-                        const empresa = response.empresa;
-                        this.setInput('poderdante_cedula', empresa.cedrep);
-                        this.setInput('razsoc_poderdante', empresa.razsoc);
-                        this.setInput('repleg_poderdante', empresa.repleg);
+                        if (response.data.available === true) {
+                            this.setInput('poderdante_cedula', response.data.cedrep);
+                            this.setInput('razsoc_poderdante', response.data.razsoc);
+                            this.setInput('repleg_poderdante', response.data.repleg);
+                        }
                     }
                 } else {
                     this.app?.trigger(

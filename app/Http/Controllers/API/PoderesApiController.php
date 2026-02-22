@@ -105,25 +105,27 @@ class PoderesApiController extends Controller
                 ->get();
 
             return response()->json([
-                'habil_apoderado' => $habil_apoderado ? $habil_apoderado->toArray() : false,
-                'habil_poderdante' => $habil_poderdante ? $habil_poderdante->toArray() : false,
-                'criterio_rechazos' => $criterio_rechazos,
-                'poder' => [
-                    'id' => $poder->id,
-                    'documento' => $poder->documento,
-                    'fecha' => $poder->fecha->format('Y-m-d'),
-                    'estado' => $poder->estado,
-                    'radicado' => $poder->radicado,
-                    'poderdante_nit' => $poder->poderdante_nit,
-                    'apoderado_nit' => $poder->apoderado_nit,
-                    'poderdante_cedrep' => $poder->poderdante_cedrep,
-                    'apoderado_cedrep' => $poder->apoderado_cedrep,
-                    'poderdante_repleg' => $poder->poderdante_repleg,
-                    'apoderado_repleg' => $poder->apoderado_repleg,
-                    'notificacion' => $poder->notificacion,
-                    'poderdante_razsoc' => $poder->poderdante ? $poder->poderdante->razsoc : null,
-                    'apoderado_razsoc' => $poder->apoderado ? $poder->apoderado->razsoc : null,
-                    'estado_detalle' => $poder->estado_detalle,
+                'data' => [
+                    'habil_apoderado' => $habil_apoderado ? $habil_apoderado->toArray() : false,
+                    'habil_poderdante' => $habil_poderdante ? $habil_poderdante->toArray() : false,
+                    'criterio_rechazos' => $criterio_rechazos,
+                    'poder' => [
+                        'id' => $poder->id,
+                        'documento' => $poder->documento,
+                        'fecha' => $poder->fecha->format('Y-m-d'),
+                        'estado' => $poder->estado,
+                        'radicado' => $poder->radicado,
+                        'poderdante_nit' => $poder->poderdante_nit,
+                        'apoderado_nit' => $poder->apoderado_nit,
+                        'poderdante_cedrep' => $poder->poderdante_cedrep,
+                        'apoderado_cedrep' => $poder->apoderado_cedrep,
+                        'poderdante_repleg' => $poder->poderdante_repleg,
+                        'apoderado_repleg' => $poder->apoderado_repleg,
+                        'notificacion' => $poder->notificacion,
+                        'poderdante_razsoc' => $poder->poderdante ? $poder->poderdante->razsoc : null,
+                        'apoderado_razsoc' => $poder->apoderado ? $poder->apoderado->razsoc : null,
+                        'estado_detalle' => $poder->estado_detalle,
+                    ]
                 ],
                 'msj' => 'El poder se encuentra registrado.',
                 'success' => true
@@ -224,8 +226,10 @@ class PoderesApiController extends Controller
 
             if (!$empresa) {
                 return response()->json([
-                    'empresa' => false,
-                    'success' => false,
+                    'data' => [
+                        'available' => false,
+                    ],
+                    'success' => true,
                     'msj' => 'La empresa no está disponible para Asamblea.',
                 ]);
             }
@@ -260,13 +264,17 @@ class PoderesApiController extends Controller
             $empresa_data['es_rechazado'] = 0; // Simulado
 
             return response()->json([
-                'empresa' => $empresa_data,
+                'data' => [
+                    'empresa' => $empresa_data,
+                    'available' => $empresa_data ? true : false,
+                ],
                 'success' => true,
                 'msj' => 'Ok la busqueda de la empresa',
             ]);
         } catch (\Exception $err) {
             return response()->json([
                 'success' => false,
+                'error' => $err->getTrace(),
                 'msj' => $err->getMessage()
             ], 500);
         }
@@ -432,7 +440,8 @@ class PoderesApiController extends Controller
 
             return response()->json([
                 'success' => true,
-                'criterios' => $criterios
+                'message' => 'Consulta realizada con éxito',
+                'data' => $criterios
             ]);
         } catch (\Exception $err) {
             return response()->json([
