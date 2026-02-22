@@ -46,7 +46,7 @@ export default class EmpresaMasivo extends Controller {
             collection: this.empresaService.Collections.empresas,
             router: this.router,
             api: this.api,
-            App: this.app
+            app: this.app
         });
 
         this.listenTo(masivoView, 'form:save', this.empresaService.__saveEmpresa);
@@ -74,7 +74,7 @@ export default class EmpresaMasivo extends Controller {
             },
             router: this.router,
             api: this.api,
-            App: this.app
+            app: this.app
         });
 
         const subheaderRegion = layout.getRegion('subheader');

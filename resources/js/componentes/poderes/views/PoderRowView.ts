@@ -1,5 +1,5 @@
 import row_poder from '@/componentes/poderes/templates/rowPoder.hbs?raw';
-import { ModelView } from '@/common/ModelView';
+import { BackboneView } from '@/common/Bone';
 
 interface PoderRowViewOptions {
     model?: any;
@@ -11,7 +11,7 @@ interface PoderRowViewOptions {
     [key: string]: any;
 }
 
-export default class PoderRowView extends ModelView {
+export default class PoderRowView extends BackboneView {
     api: any;
     logger: any;
     app: any;
@@ -34,5 +34,12 @@ export default class PoderRowView extends ModelView {
 
     initialize(options: PoderRowViewOptions = {}) {
         this.listenTo(options.model, 'change', this.render);
+    }
+
+    render() {
+        const data = this.model ? this.model.toJSON() : {};
+        const renderedHtml = this.template(data);
+        this.$el.html(renderedHtml);
+        return this;
     }
 }

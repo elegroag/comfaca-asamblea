@@ -3,6 +3,8 @@ import { BoxCollectionStorage } from '@/componentes/useStorage';
 import type { Poder } from './types';
 import ApiService from '@/services/ApiService';
 import { AppInstance } from '@/types/types';
+import PoderesCollection from '@/collections/Poderes';
+import RechazosCollection from '@/componentes/rechazos/models/RechazosCollection';
 
 export interface PoderServiceOptions extends ServiceOptions {
     // Opciones adicionales específicas del servicio si se necesitan
@@ -41,8 +43,8 @@ export default class PoderService {
         const rechazosStorage = this.storage.getCollection('rechazos')?.value;
 
         // Crear colecciones Backbone si no existen
-        this.collections.poderes = poderesStorage || new (this.app as any).Collection();
-        this.collections.rechazos = rechazosStorage || new (this.app as any).Collection();
+        this.collections.poderes = new PoderesCollection(poderesStorage || null);
+        this.collections.rechazos = new RechazosCollection(rechazosStorage || null);
 
         // Guardar colecciones en storage si no existen
         if (!poderesStorage) {
@@ -76,8 +78,10 @@ export default class PoderService {
      * Establecer lista de poderes
      */
     __setPoderes(poderes: Poder[]): void {
-        this.collections.poderes.reset();
-        this.collections.poderes.add(poderes, { merge: true });
+        if (this.collections.poderes !== null) {
+            this.collections.poderes.reset();
+            this.collections.poderes.add(poderes, { merge: true });
+        }
     }
 
     /**

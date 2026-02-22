@@ -198,6 +198,7 @@ export interface AppInstance {
     trigger: (event: string, ...args: any[]) => void;
     downLoadFile: (transfer: DownloadTransfer) => void;
     uploadFile: (transfer: UploadTransfer) => void;
+    Collection: any[];
 }
 
 export interface ApiProps {

@@ -267,9 +267,7 @@ export default class AsistenciasCrear extends BackboneView {
                                     if (this.app && typeof this.app.trigger === 'function') {
                                         this.app.trigger('alert:success', { message: response.msj });
                                     }
-                                    if (typeof Backbone.history !== 'undefined' && Backbone.history.loadUrl) {
-                                        Backbone.history.loadUrl();
-                                    }
+                                    (Backbone as any).history.loadUrl();
                                 } else {
                                     if (this.app && typeof this.app.trigger === 'function') {
                                         this.app.trigger('alert:error', { message: response.msj || 'Error al revocar poder' });

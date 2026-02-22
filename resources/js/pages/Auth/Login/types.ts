@@ -1,4 +1,5 @@
 import { Region } from "@/common/Region";
+import ApiService from "@/services/ApiService";
 import { AppInstance } from "@/types/types";
 
 // Definir interfaces localmente para evitar problemas de importación
@@ -10,5 +11,8 @@ export interface LoginCredentials {
 
 export interface LoginViewOptions {
     region: Region;
-    app: AppInstance | any;
+    app: AppInstance;
+    logger?: any;
+    router: any;
+    api: ApiService
 }

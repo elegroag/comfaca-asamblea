@@ -185,7 +185,7 @@ export default class UsuarioCrear extends BackboneView {
 	subNav(): void {
 		this.subNavUsuarios = new SubNavUsuarios({
 			model: this.model,
-			App: this.app,
+			app: this.app,
 			api: this.api,
 			logger: this.logger,
 			storage: this.storage,

@@ -47,7 +47,7 @@ export default class EmpresasHabiles extends Controller {
             },
             router: this.router,
             api: this.api,
-            App: this.app
+            app: this.app
         });
 
         const subheaderRegion = layout.getRegion('subheader');
@@ -64,7 +64,7 @@ export default class EmpresasHabiles extends Controller {
             collection: this.empresaService.Collections.habiles,
             router: this.router as any,
             api: this.api,
-            App: this.app
+            app: this.app
         });
 
         this.listenTo(listView, 'remove:habiles', this.empresaService.__removeHabil);

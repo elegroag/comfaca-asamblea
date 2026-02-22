@@ -72,17 +72,33 @@ export default class PoderesListarView extends BackboneView {
 
     render() {
         const _template = _.template(listarPoderes);
-        this.$el.html(_template({ datatable: 'tb_data_poderes' }));
+        this.el.innerHTML = _template({ datatable: 'tb_data_poderes' });
 
-        const filas = this.collection.map((model: any) => {
-            model.set('capitalize', (str: string) => capitalize(str));
-            let view = this.renderModel(model);
-            return view.$el;
+        // Limpiar filas existentes
+        this.$('#show_data_poderes').empty();
+
+        // Renderizar cada modelo como una fila
+        this.collection.forEach((model: any) => {
+            const rowView = new PoderRowView({
+                model: model,
+                app: this.app,
+                api: this.api,
+                logger: this.logger,
+                storage: this.storage,
+                region: this.region
+            });
+
+            // Renderizar la fila y agregarla a la tabla
+            rowView.render();
+            this.$('#show_data_poderes').append(rowView.$el);
+
+            // Guardar referencia para manejo posterior
+            this.children[model.get('cid')] = rowView;
         });
 
-        this.$el.find('#show_data_poderes').append(filas);
+        // Inicializar DataTable si es necesario
+        // this.initTable();
 
-        this.initTable();
         return this;
     }
 
@@ -235,7 +251,14 @@ export default class PoderesListarView extends BackboneView {
             }
         }
         if (!view) {
-            view = new this.modelView({ model: model });
+            view = new PoderRowView({
+                model,
+                app: this.app,
+                api: this.api,
+                logger: this.logger,
+                storage: this.storage,
+                region: this.region
+            });
             this.children[model.get('cid')] = view;
         }
 

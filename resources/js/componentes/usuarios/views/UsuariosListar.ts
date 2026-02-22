@@ -138,7 +138,7 @@ export default class UsuariosListar extends BackboneView {
 		// Implementación básica de subNav sin dependencias externas
 		this.subNavUsuarios = new SubNavUsuarios({
 			model: this.model,
-			App: this.app,
+			app: this.app,
 			api: this.api,
 			logger: this.logger,
 			storage: this.storage,

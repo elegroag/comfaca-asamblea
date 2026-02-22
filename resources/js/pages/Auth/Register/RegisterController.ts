@@ -17,7 +17,7 @@ export default class RegisterController extends Controller {
         if (this.region) {
             this.registerView = new RegisterView({
                 region: this.region,
-                App: this
+                app: this
             });
 
             this.listenTo(this.registerView, 'navigate:login', this.navigateToLogin);

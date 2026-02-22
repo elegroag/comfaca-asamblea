@@ -48,7 +48,7 @@ export default class EmpresaDetalle extends Controller {
             },
             router: this.router,
             api: this.api,
-            App: this.app
+            app: this.app
         });
 
         const subheaderRegion = layout.getRegion('subheader');

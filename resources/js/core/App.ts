@@ -22,6 +22,7 @@ const $App: AppInstance = {
     currentSubapp: null,
     Modal: null,
     layout: null,
+    Collection: new Array<any>(),
     el: null,
     mainRegion: null,
     props: null,

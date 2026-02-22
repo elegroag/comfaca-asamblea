@@ -47,7 +47,7 @@ export default class TrabajadoresListar extends Controller {
 			if (bodyRegion) {
 				const view = new TrabajadoresListarView({
 					collection: (this.app as any).Collections.trabajadores,
-					App: this.app,
+					app: this.app,
 					api: this.api,
 					logger: this.logger,
 					region: this.region,

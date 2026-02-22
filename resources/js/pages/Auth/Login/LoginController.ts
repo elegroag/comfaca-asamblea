@@ -7,16 +7,23 @@ export default class LoginController extends Controller {
     loginView: LoginView | Backbone.View | null = null;
 
     constructor(options: LoginViewOptions) {
-        super(options);
+        super({
+            ...options,
+            region: options.region,
+            logger: options.logger,
+            router: options.router,
+        });
     }
 
     // Iniciar vista de login
     login(): void {
         console.log('LoginController.login() called');
-        if (this.region) {
+        if (this.region && this.app) {
             this.loginView = new LoginView({
                 region: this.region,
-                App: this
+                app: this.app,
+                router: this.router,
+                api: this.api
             });
 
             this.listenTo(this.loginView, 'navigate:register', this.navigateToRegister);

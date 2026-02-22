@@ -85,6 +85,7 @@ class LoginView extends ModelView {
     handleLogin(e: Event): void {
         e.preventDefault();
 
+        console.log('LoginView.handleLogin', 'Login attempt');
         // Validar formulario
         const validation = this.validateForm();
         if (!validation.isValid) {
@@ -94,9 +95,11 @@ class LoginView extends ModelView {
 
         // Limpiar errores
         this.clearValidationErrors();
+        console.log('LoginView.handleLogin', 'Form valid, clearing errors');
 
         // Deshabilitar botón
         this.setLoginButtonLoading(true);
+        console.log('LoginView.handleLogin', 'Button loading');
 
         try {
             // Obtener credenciales
@@ -108,6 +111,8 @@ class LoginView extends ModelView {
 
             const url = route('login.authenticate');
 
+            console.log('APP AJAX', this.app);
+
             this.app.trigger('ajax', {
                 url,
                 method: 'POST',
@@ -115,11 +120,11 @@ class LoginView extends ModelView {
                 callback: (response: responseBody) => {
                     console.log('LoginView.handleLogin.success', response);
                     if (response && response.success) {
-                        this.app.trigger('notify', 'success', response.message || 'Login exitoso');
+                        this.app.trigger('alert:success', response.message || 'Login exitoso');
 
                         window.location.href = route('dashboard') || '/dashboard';
                     } else {
-                        this.app.trigger('notify', 'error', response.message || 'Error al iniciar sesión');
+                        this.app.trigger('alert:error', response.message || 'Error al iniciar sesión');
                         this.resetLoginButton();
                     }
                 }
@@ -127,7 +132,7 @@ class LoginView extends ModelView {
 
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
-            this.app.trigger('notify', 'error', 'Error al iniciar sesión');
+            this.app.trigger('alert:error', 'Error al iniciar sesión');
             this.resetLoginButton();
         }
     }
