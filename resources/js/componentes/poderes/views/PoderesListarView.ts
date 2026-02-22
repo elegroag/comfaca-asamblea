@@ -18,7 +18,7 @@ interface PoderesListarViewOptions {
 export default class PoderesListarView extends BackboneView {
     tableModule: any | null;
     subNavView: any;
-    children: { [key: string]: PoderRowView | undefined }; // Permitir undefined
+    children: PoderRowView[]; // Array de vistas
     modelView: typeof PoderRowView;
     api: any;
     logger: any;
@@ -35,7 +35,7 @@ export default class PoderesListarView extends BackboneView {
         this.storage = options.storage;
         this.region = options.region;
         this.tableModule = null;
-        this.children = {}; // Cambiar a objeto para usar claves
+        this.children = []; // Array de vistas
         this.modelView = PoderRowView;
 
         // Inicializar el servicio
@@ -51,7 +51,7 @@ export default class PoderesListarView extends BackboneView {
     }
 
     initialize() {
-        this.children = {}; // Cambiar a objeto para usar claves
+        this.children = []; // Array de vistas
         this.tableModule = null;
         this.modelView = PoderRowView;
 
@@ -240,10 +240,10 @@ export default class PoderesListarView extends BackboneView {
         let view: PoderRowView | undefined;
         const modelCid = model.get('cid');
 
-        // Reutilizar vista existente si está disponible
-        if (this.children[modelCid]) {
-            view = this.children[modelCid] as PoderRowView;
-        } else {
+        // Buscar vista existente en el array por model.cid
+        view = this.children.find(child => child.model?.get('cid') === modelCid);
+
+        if (!view) {
             // Crear nueva vista con todas las dependencias
             view = new PoderRowView({
                 model,
@@ -254,8 +254,8 @@ export default class PoderesListarView extends BackboneView {
                 region: this.region
             });
 
-            // Guardar referencia y configurar eventos
-            this.children[modelCid] = view;
+            // Agregar al array y configurar eventos
+            this.children.push(view);
 
             this.listenTo(view, 'all', (eventName: any, ...args: any[]) => {
                 this.trigger('item:' + eventName, view, model, ...args);
@@ -268,8 +268,12 @@ export default class PoderesListarView extends BackboneView {
     }
 
     removeModel(model: BackboneModel) {
-        const view = this.children[model.get('cid')] as PoderRowView;
-        if (view) {
+        const modelCid = model.get('cid');
+        const index = this.children.findIndex(child => child.model?.get('cid') === modelCid);
+
+        if (index !== -1) {
+            const view = this.children[index];
+
             // Remover del DataTable si está inicializado
             if (this.tableModule) {
                 const row = this.tableModule.row(view.$el);
@@ -281,8 +285,8 @@ export default class PoderesListarView extends BackboneView {
                 view.remove();
             }
 
-            // Limpiar referencia
-            this.children[model.get('cid')] = undefined;
+            // Remover del array
+            this.children.splice(index, 1);
         }
     }
 
@@ -293,12 +297,10 @@ export default class PoderesListarView extends BackboneView {
     }
 
     closeChildren() {
-        const children = this.children || {};
-        Object.values(children).forEach((child: PoderRowView | undefined) => {
-            if (child) {
-                this.closeChildView(child);
-            }
+        this.children.forEach((child: PoderRowView) => {
+            this.closeChildView(child);
         });
+        this.children = []; // Limpiar el array
     }
 
     closeChildView(view: BackboneView) {
@@ -307,9 +309,7 @@ export default class PoderesListarView extends BackboneView {
             view.remove();
         }
         this.stopListening(view);
-        if (view.model) {
-            this.children[view.model.cid] = undefined;
-        }
+        // No necesitamos eliminar del array aquí, se hace en closeChildren()
     }
 
     async removePoder(e: Event) {
