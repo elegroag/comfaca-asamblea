@@ -100,7 +100,7 @@ class SidebarSeeder extends Seeder
             [
                 'label' => 'EMPRESAS HABILES',
                 'estado' => 'activo',
-                'resource_router' => 'empresas',
+                'resource_router' => 'habiles',
                 'orden' => 3,
                 'sidebar_id' => null,
                 'ambiente' => 'todos',

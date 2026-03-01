@@ -103,6 +103,7 @@ class HandleInertiaRequests extends Middleware
         $routeToResource = [
             'poderes.index' => 'poderes',
             'cartera.index' => 'cartera',
+            'habiles.index' => 'habiles',
             'asamblea.index' => 'asamblea',
             'trabajadores.index' => 'trabajadores',
             'rechazos.index' => 'rechazos',

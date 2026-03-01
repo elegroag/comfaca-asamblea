@@ -1,4 +1,4 @@
-import { BackboneView } from "@/common/Bone";
+import { BackboneModel, BackboneView } from "@/common/Bone";
 import HabilesRowView from "./HabilesRowView";
 import tmp_listar_habiles from "@/componentes/habiles/templates/listar_habiles.hbs?raw";
 import HabilesService from "@/pages/Habiles/EmpresaService";
@@ -57,24 +57,34 @@ export default class HabilesListarView extends BackboneView {
     }
 
     initialize(): void {
-        this.children = {};
-        if (typeof this.listenTo === 'function') {
-            this.listenTo(this.collection, 'add', this.addModel);
-            this.listenTo(this.collection, 'remove', this.modelRemoved);
-            this.listenTo(this.collection, 'reset', this.render);
-        }
+
+        this.children = {}; // Objeto de vistas
+        this.tableModule = null;
+        this.modelView = HabilesRowView;
+
+        this.listenTo(this.collection, 'add', this.addModel);
+        this.listenTo(this.collection, 'remove', this.modelRemoved);
+        this.listenTo(this.collection, 'reset', this.render);
     }
 
     render(): this {
 
-        this.$el.html(this.template({ datatable: 'tb_data_habiles' }));
-        const filas = this.collection.map((model: any) => {
-            let view = this.renderModel(model);
-            return view.el;
+        const _template = _.template(tmp_listar_habiles);
+        this.el.innerHTML = _template({ datatable: 'tb_data_habiles' });
+
+
+        // Limpiar filas existentes y children
+        this.$('#show_datatable').empty();
+        this.closeChildren();
+
+        // Renderizar cada modelo como una fila usando renderModel
+        this.collection.forEach((model: any) => {
+            const rowView = this.renderModel(model);
+            this.$('#show_datatable').append(rowView.$el);
         });
 
-        this.$el.find('#show_data_habiles').append(filas);
-        this.init_table();
+
+        this.initTable();
         return this;
     }
 
@@ -124,7 +134,7 @@ export default class HabilesListarView extends BackboneView {
         });
     }
 
-    init_table(): void {
+    initTable(): void {
         if (this.tableModule) {
             this.tableModule.destroy();
         }
@@ -162,7 +172,6 @@ export default class HabilesListarView extends BackboneView {
             destroy: true
         });
 
-        this.$el.find('#tb_data_habiles').fadeIn();
     }
 
     addModel(model: any): void {
@@ -170,8 +179,33 @@ export default class HabilesListarView extends BackboneView {
         this.$el.find('#show_data_habiles').append(view.$el);
     }
 
-    renderModel(model: any): any {
-        return new this.modelView({ model: model });
+    renderModel(model: BackboneModel): any {
+        let view: any;
+        const cid = model.get('cid') || model.cid;
+
+        if (_.size(this.children) > 0 && this.children[cid]) {
+            view = this.children[cid];
+        }
+
+        if (!view) {
+            view = new this.modelView({ model: model });
+            this.children[cid] = view;
+        }
+
+        this.listenTo(view, 'all', (eventName: string) => {
+            this.trigger('item:' + eventName, view, model);
+        });
+
+        view.render();
+        return view;
+    }
+
+    closeChildren() {
+        Object.keys(this.children).forEach((key: string) => {
+            const child = this.children[key];
+            this.closeChildView(child);
+        });
+        this.children = {}; // Limpiar el objeto
     }
 
     modelRemoved(): void {

@@ -25,9 +25,8 @@ export default class EmpresaNav extends BackboneView {
     storage: any;
     region: any;
     router?: { navigate: (fragment: string, options?: any) => void };
-    empresaService: EmpresaService;
-
     static parentView?: any;
+    empresaService: EmpresaService;
 
     constructor(options: EmpresaNavOptions = {}) {
         super(options);
@@ -50,8 +49,13 @@ export default class EmpresaNav extends BackboneView {
         });
     }
 
+    render(): this {
+        this.$el.html(this.template(this.model));
+        return this;
+    }
+
     get className(): string {
-        return 'col';
+        return 'row justify-content-end';
     }
 
     get tagName(): string {

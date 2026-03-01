@@ -4,6 +4,8 @@ import EmpresaCrearView from "@/componentes/habiles/views/EmpresaCrearView";
 import EmpresaService from "./EmpresaService";
 import { Controller } from "@/common/Controller";
 import Empresa from "@/models/Empresa";
+import { getCachedCollection } from "@/componentes/CacheManager";
+import EmpresasCollection from "@/collections/EmpresasCollection";
 
 export default class EmpresaCrear extends Controller {
 
@@ -19,9 +21,6 @@ export default class EmpresaCrear extends Controller {
             logger: this.logger,
             EmpresaModel: Empresa
         });
-
-        // Los métodos __setEmpresas y __addEmpresas fueron eliminados del service
-        // El controller principal ahora maneja las collections directamente
     }
 
     /**
@@ -30,18 +29,18 @@ export default class EmpresaCrear extends Controller {
     crearEmpresa(): void {
         console.log('EmpresaCrear.crearEmpresa() called');
 
-        const layout = new LayoutView();
+        const layout: LayoutView = new LayoutView();
         this.region.show(layout);
 
-        // La colección se maneja en el controller principal
+        const empresas = getCachedCollection('empresas', EmpresasCollection);
 
         // Configurar vista principal
         const crearView = new EmpresaCrearView({
             EmpresaModel: Empresa,
-            collection: [], // La vista se actualizará cuando el controller cargue los datos
+            collection: empresas ?? [], // La vista se actualizará cuando el controller cargue los datos
             api: this.api,
             app: this.app,
-            router: this.router
+            router: this.router as any
         });
 
 
@@ -71,7 +70,7 @@ export default class EmpresaCrear extends Controller {
             },
             api: this.api,
             app: this.app,
-            router: this.router
+            router: this.router as any
         });
 
         const subheaderRegion = layout.getRegion('subheader');

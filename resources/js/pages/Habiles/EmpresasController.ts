@@ -1,9 +1,7 @@
 import { Controller } from '@/common/Controller';
 import EmpresaListar from "@/componentes/habiles/views/EmpresaListarView";
-import EmpresaCrear from "@/componentes/habiles/views/EmpresaCrearView";
 import EmpresaEditar from "@/componentes/habiles/views/EmpresaEditarView";
 import EmpresaDetalle from "@/componentes/habiles/views/EmpresaDetalleView";
-import EmpresaMasivo from "@/componentes/habiles/views/EmpresaMasivoView";
 import EmpresasListar from "./EmpresasListar";
 import EmpresasHabiles from "./EmpresasHabiles";
 import EmpresaService from "./EmpresaService";
@@ -12,6 +10,8 @@ import HabilesCollection from '@/componentes/habiles/collections/HabilesCollecti
 import EmpresasCollection from '@/collections/EmpresasCollection';
 import Empresa from '@/models/Empresa';
 import { CacheManager, cacheCollection, getCachedCollection } from '@/componentes/CacheManager';
+import EmpresaCrear from './EmpresaCrear';
+import EmpresaMasivo from './EmpresaMasivo';
 
 export default class EmpresasController extends Controller {
     empresaService: EmpresaService;
@@ -129,8 +129,8 @@ export default class EmpresasController extends Controller {
     crearEmpresa(): void {
         this.logger.log('EmpresasController.crearEmpresa() called');
 
-        const auth = this.startController(EmpresaCrear);
-        auth.crearEmpresa();
+        const controller = this.startController(EmpresaCrear) as EmpresaCrear;
+        controller.crearEmpresa();
     }
 
     /**
@@ -139,7 +139,7 @@ export default class EmpresasController extends Controller {
     cargueMasivo(): void {
         this.logger.log('EmpresasController.cargueMasivo() called');
 
-        const auth = this.startController(EmpresaMasivo);
+        const auth = this.startController(EmpresaMasivo) as EmpresaMasivo;
         auth.cargueMasivo();
     }
 

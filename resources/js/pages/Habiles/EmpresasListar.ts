@@ -8,7 +8,8 @@ import { getCachedCollection } from "@/componentes/CacheManager";
 import EmpresasCollection from "@/collections/EmpresasCollection";
 
 export default class EmpresasListar extends Controller {
-    public empresaService: any;
+
+    public empresaService: EmpresaService;
 
     constructor(options: any) {
         super(options);

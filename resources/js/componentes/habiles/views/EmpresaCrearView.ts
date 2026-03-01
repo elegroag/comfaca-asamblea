@@ -1,4 +1,4 @@
-import { BackboneView } from "@/common/Bone";
+import { ModelView } from "@/common/ModelView";
 import tmp_crear_habiles from "@/componentes/habiles/templates/crear_habiles.hbs?raw";
 import EmpresaService from "@/pages/Habiles/EmpresaService";
 
@@ -13,7 +13,7 @@ interface EmpresaCrearViewOptions {
 }
 
 
-export default class EmpresaCrearView extends BackboneView {
+export default class EmpresaCrearView extends ModelView {
     modelUse: any;
     template: any;
     api: any;
@@ -26,7 +26,7 @@ export default class EmpresaCrearView extends BackboneView {
     constructor(options: EmpresaCrearViewOptions) {
         super({
             ...options,
-            className: 'box',
+            className: 'row justify-content-around',
         });
         this.modelUse = options.EmpresaModel;
         this.api = options.api;
@@ -128,12 +128,5 @@ export default class EmpresaCrearView extends BackboneView {
         return element.length ? element.val() as string : '';
     }
 
-    getCheck(selector: string): boolean {
-        const element = this.$el.find(`[name='${selector}']`);
-        return element.length ? element.is(':checked') : false;
-    }
 
-    setInput(selector: string, value: string): void {
-        this.$el.find(`[name='${selector}']`).val(value || '');
-    }
 }
