@@ -1,0 +1,58 @@
+<div class="row">
+    <div class="col-md-4">
+        <span class="h4 mb-4 text-primary"> Cargue De Masivo</span>
+    </div>
+</div>
+<div class="col-md-8 ml-auto mr-auto">
+    <div class="card-body">
+        <div class="row justify-content-center">
+            <div class="col-sm-12">
+                <div class='form-group'>
+                    <label><i class='text-danger'>*</i> Archivo</label>
+                    <div toggle-error='archivo' class="error text-danger" for="required"></div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-badge"></i></span>
+                        </div>
+                        <input style='display:none' type='file' data-event='upload' name='archivo_masivo' id='archivo_masivo' onchange='handleFiles()' />
+                        <div class="form-control has-danger" data-toggle-file='searchfile' id='name_archivo' name="name_archivo" style='line-height:2'>nombre archivo</div>
+                        <div class="input-group-text group-botton">
+                            <button type='button' data-toggle-file='searchfile' class="btn btn-sm btn-outline-primary btn-round m-0">
+                                <i class="nc-icon nc-zoom-split"></i>
+                            </button>
+                        </div>
+                        <div class="input-group-text group-botton">
+                            <button type='button' disabled id='remover_archivo' class="btn btn-sm btn-outline-primary btn-round m-0">
+                                <i class="nc-icon nc-simple-remove"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p>Requiere de un archivo csv separado por (;) con:<br />
+                        Columna 1 Codigo <br />
+                        Columna 2 Fecha <br />
+                        Columna 3 Nit Apoderado <br />
+                        Columna 4 Nit Poderdante <br />
+                        Columna 5 Estado, solo admite (A) Activo (I) Inactivo (R) Revocado <br />
+                        Columna 6 Radicado <br />
+                        Columna 7 Cedula Apoderado <br />
+                        Columna 8 Nombre Apoderado <br />
+                        Columna 9 Cedula Poderdante <br />
+                        Columna 10 Nombre Poderdante <br />
+                        Columna 11 Motivos Rechazo <br />
+                    </p>
+                </div>
+            </div>
+
+            <div class='col-sm-12'>
+                <div class='text-center'>
+                    <button type='button' disabled class='btn btn-outline-success btn-round' id='bt_hacer_cargue'>
+                        <i class="fa fa-search"></i>
+                        Continuar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+    </div>
+</div>

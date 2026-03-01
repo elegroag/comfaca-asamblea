@@ -24,7 +24,10 @@ interface SidebarItem {
 
 export default class SidebarView extends BackboneView {
     constructor(options: any) {
-        super(options);
+        super({
+            ...options,
+            className: 'sidebar-container'
+        });
         this.template = _.template(tmp_sidebar);
         this.model = options.model || { menu: [], user: { name: 'Usuario', email: 'usuario@example.com' } };
     }

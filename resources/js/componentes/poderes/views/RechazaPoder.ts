@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import Poder from "@/models/Poder";
-import crearRechazoPoder from '@/componentes/poderes/templates/crearRechazoPoder.hbs?raw';
+import crearRechazoPoder from '@/componentes/poderes/templates/crear_rechazo_poder.hbs?raw';
 import PoderesService from "@/pages/Poderes/PoderService";
 
 interface RechazaPoderOptions {

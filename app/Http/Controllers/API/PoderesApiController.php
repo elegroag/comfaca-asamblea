@@ -53,6 +53,8 @@ class PoderesApiController extends Controller
                         'poderdante_razsoc' => $poder->poderdante ? $poder->poderdante->razsoc : null,
                         'apoderado_razsoc' => $poder->apoderado ? $poder->apoderado->razsoc : null,
                         'estado_detalle' => $poder->estado_detalle,
+                        'poderdante_cedrep' => $poder->poderdante_cedrep,
+                        'apoderado_cedrep' => $poder->apoderado_cedrep,
                     ];
                 });
 

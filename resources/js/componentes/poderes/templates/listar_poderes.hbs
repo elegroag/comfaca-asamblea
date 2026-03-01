@@ -1,66 +1,46 @@
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-    <div class="mb-4 md:mb-0">
-        <h4 class="text-2xl font-bold text-blue-600">Poderes</h4>
+<div class="row">
+    <div class="col-md-4">
+        <span class="h4 mb-4 text-primary"> Poderes</span>
     </div>
-    <div class="flex flex-wrap gap-2">
-        <a id='bt_masivo' href="#masivo"
-            class="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            <i class="fas fa-file-upload mr-2"></i>
-            <span>MASIVO</span>
-        </a>
-        <a id='bt_acta_poderes' href="#"
-            class="inline-flex items-center px-3 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors">
-            <i class="fas fa-file-alt mr-2"></i>
-            <span>ACTA</span>
-        </a>
-        <a id='bt_export_data' href="#"
-            class="inline-flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-            <i class="fas fa-file-excel mr-2"></i>
-            <span>Exportar</span>
-        </a>
-        <a id='bt_informe_data' href="#"
-            class="inline-flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-            <i class="fas fa-file-pdf mr-2"></i>
-            <span>Informe</span>
-        </a>
+    <div class="col">
+        <nav class="nav justify-content-end">
+            <a class="nav-link" id='bt_masivo' href="#masivo" style='padding:.1rem 1rem'>
+                <span class="btn btn-sm btn-icon btn-round btn-primary"><i
+                        class="fa fa-file-pdf-o"></i></span>&nbsp;MASIVO
+            </a>
+            <a class="nav-link" id='bt_acta_poderes' href="#" style='padding:.1rem 1rem'>
+                <span class="btn btn-sm btn-icon btn-round btn-warning"><i
+                        class="fa fa-file-pdf-o"></i></span>&nbsp;ACTA
+            </a>
+            <a class="nav-link" id='bt_export_data' href="#" style='padding:.1rem 1rem'>
+                <span class="btn btn-sm btn-icon btn-round btn-success"><i
+                        class="fa fa-file-excel-o"></i></span>&nbsp;Exportar
+            </a>
+            <a class="nav-link" id='bt_informe_data' href="#" style='padding:.1rem 1rem' s>
+                <span class="btn btn-sm btn-icon btn-round btn-danger"><i
+                        class="fa fa-file-pdf-o"></i></span>&nbsp;Informe
+            </a>
+        </nav>
     </div>
 </div>
-
-<div class="overflow-x-auto rounded-lg shadow-lg border border-gray-200">
-    <table class="min-w-full divide-y divide-gray-200" id='<%=datatable%>'>
-        <thead class="bg-gray-50">
+<div class="table-responsive">
+    <table class="table table-striped table-bordered dtr-inline" id='<%=datatable%>'>
+        <thead>
             <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Poderdante Razsoc
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Apoderado Razsoc
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Estado
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nit Poderdante
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nit Apoderado
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    CC Poderdante
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    CC Apoderado
-                </th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <i class='fas fa-cogs'></i>
-                </th>
+                <th>Poderdante Razsoc</th>
+                <th>Apoderado Razsoc</th>
+                <th>Estado</th>
+                <th>Nit Poderdante</th>
+                <th>Nit Apoderado</th>
+                <th>CC Poderdante</th>
+                <th>CC Apoderado</th>
+                <th><i class='nc-icon nc-tap-01'></i></th>
             </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200" id="show_data_poderes">
-            <!-- Las filas se insertarán aquí dinámicamente -->
-        </tbody>
+        <tbody id="show_data_poderes"></tbody>
     </table>
 </div>
+
 
 <style>
     #<%=datatable%>_wrapper {

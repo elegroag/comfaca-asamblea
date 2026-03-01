@@ -15,7 +15,7 @@ export default class ValidacionPoder extends BackboneView {
 
     modalClose(e: any) {
         e.preventDefault();
-        this.app.trigger('hide:modal', this);
+        this.app?.trigger('hide:modal', this);
     }
 
     initialize() {

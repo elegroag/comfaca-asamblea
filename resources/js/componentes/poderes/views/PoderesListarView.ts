@@ -1,6 +1,6 @@
 import { BackboneModel, BackboneView } from "@/common/Bone";
 import PoderRowView from "./PoderRowView";
-import listarPoderes from "@/componentes/poderes/templates/listarPoderes.hbs?raw";
+import listarPoderes from "@/componentes/poderes/templates/listar_poderes.hbs?raw";
 import { capitalize } from "@/core/Utils";
 import DataTable from 'datatables.net-bs5';
 import PoderesService from "@/pages/Poderes/PoderService";

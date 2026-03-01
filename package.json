@@ -7,20 +7,18 @@
     },
     "devDependencies": {
         "@rollup/plugin-inject": "^5.0.5",
-        "@tailwindcss/vite": "^4.1.18",
         "@types/backbone": "^1.4.23",
         "@types/datatables.net": "^1.12.3",
         "@types/jquery": "^3.5.33",
         "@types/loader-utils": "^2.0.6",
         "@types/node": "^20.19.33",
         "@types/underscore": "^1.13.0",
-        "daisyui": "^5.5.18",
+        "@types/bootstrap": "^5.2.10",
         "eslint": "^9.39.2",
         "eslint-plugin-async-await": "^0.0.0",
         "eslint-plugin-import": "^2.32.0",
         "eslint-plugin-jest": "^28.14.0",
         "eslint-plugin-jquery": "^1.5.1",
-        "prettier-plugin-tailwindcss": "^0.6.14",
         "typescript": "^5.9.3",
         "vite": "^7.3.1",
         "vite-plugin-checker": "^0.6.4"
@@ -30,6 +28,7 @@
         "@inertiajs/progress": "^0.2.7",
         "backbone": "^1.6.1",
         "choices.js": "^11.1.0",
+        "bootstrap": "^5.3.3",
         "datatables.net-bs5": "^2.3.7",
         "flatpickr": "^4.6.13",
         "jquery": "^3.7.1",
@@ -38,14 +37,10 @@
         "noty": "^3.1.4",
         "qs": "^6.15.0",
         "sweetalert2": "^11.26.18",
-        "tailwind-merge": "^3.4.1",
-        "tailwindcss": "^4.1.18",
-        "tailwindcss-animate": "^1.0.7",
         "underscore": "^1.13.7"
     },
     "optionalDependencies": {
         "@rollup/rollup-linux-x64-gnu": "4.9.5",
-        "@tailwindcss/oxide-linux-x64-gnu": "^4.1.18",
         "lightningcss-linux-x64-gnu": "^1.31.1"
     }
 }

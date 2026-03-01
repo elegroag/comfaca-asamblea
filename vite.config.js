@@ -1,4 +1,3 @@
-import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
 import { resolve } from "node:path";
@@ -16,7 +15,6 @@ export default defineConfig({
             refresh: true,
             ssr: false,
         }),
-        tailwindcss(),
     ],
     build: {
         sourcemap: true,
@@ -25,7 +23,7 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks: {
-                    vendor: ['jquery', 'underscore', 'backbone'],
+                    vendor: ['jquery', 'underscore', 'backbone', 'bootstrap'],
                     utils: ['@inertiajs/inertia', '@inertiajs/progress'],
                 },
             },
@@ -46,6 +44,6 @@ export default defineConfig({
         },
     },
     optimizeDeps: {
-        include: ['jquery', 'underscore', 'backbone', 'Qs'],
+        include: ['jquery', 'underscore', 'backbone', 'Qs', 'bootstrap'],
     },
 });

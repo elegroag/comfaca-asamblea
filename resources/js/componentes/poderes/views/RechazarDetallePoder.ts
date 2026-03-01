@@ -1,7 +1,7 @@
 import { BackboneView } from "@/common/Bone";
 import { Utils } from "@/core/Utils";
 import type { AppInstance } from '@/types/types';
-import rechazarPoder from '@/componentes/poderes/templates/rechazarPoder.hbs?raw';
+import rechazarPoder from '@/componentes/poderes/templates/rechazo_poder.hbs?raw';
 
 export default class RechazarDetallePoder extends BackboneView {
     app: AppInstance;

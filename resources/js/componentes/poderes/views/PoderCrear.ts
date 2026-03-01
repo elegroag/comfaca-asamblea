@@ -3,7 +3,7 @@ import ValidacionPoder from "./ValidacionPoder";
 import { Testeo } from "@/core/Testeo";
 import Poder from "@/models/Poder";
 import Loading from "@/common/Loading";
-import registroPoder from "@/componentes/poderes/templates/registroPoder.hbs?raw";
+import registroPoder from "@/componentes/poderes/templates/registro_poder.hbs?raw";
 import PoderesService from "@/pages/Poderes/PoderService";
 
 interface PoderCrearOptions {

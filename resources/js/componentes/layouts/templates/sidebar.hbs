@@ -1,85 +1,103 @@
-<!-- Sidebar -->
-<div id="sidebarContainer">
-    <div class="sidebar-header">
-        <div class="user-info">
-            <div class="user-avatar">
-                <img src="https://ui-avatars.com/api/?name=<%= user.name %>&background=4F46E5&color=fff&size=40"
-                    alt="<%= user.name %>" />
+<div class="sidebar-header">
+    <div class="user-info">
+        <div class="user-avatar">
+            <img src="https://ui-avatars.com/api/?name=<%= user.name %>&background=4F46E5&color=fff&size=40"
+                alt="<%= user.name %>" />
+        </div>
+        <div class="user-details">
+            <div class="user-name">
+                <%= user.name %>
             </div>
-            <div class="user-details">
-                <div class="user-name">
-                    <%= user.name %>
-                </div>
-                <div class="user-email">
-                    <%= user.email %>
-                </div>
+            <div class="user-email">
+                <%= user.email %>
             </div>
         </div>
     </div>
+</div>
 
-    <nav class="sidebar-nav">
-        <ul class="menu-list">
-            <% if (menu && menu.length> 0) { %>
-                <% _.each(menu, function(item) { %>
-                    <li class="menu-item <%= item.sidebar.sidebar_id ? 'submenu-item' : '' %> <%= item.sidebar.estado !== 'activo' ? 'disabled' : '' %>"
-                        data-menu-id="<%= item.id %>">
-                        <a href="<%= item.sidebar.resource_router ? '/' + item.sidebar.resource_router : '#' %>"
-                            class="menu-link <%= item.hasChildren ? 'has-children' : '' %>" <%=item.sidebar.estado
-                            !=='activo' ? 'onclick="return false;"' : '' %>>
-                            <i class="<%= item.sidebar.icon %> menu-icon"></i>
-                            <span class="menu-text">
-                                <%= item.sidebar.label %>
-                            </span>
-                            <% if (item.hasChildren) { %>
-                                <i class="nc-icon nc-minimal-down menu-arrow"></i>
-                                <% } %>
-                        </a>
-                        <% if (item.hasChildren && item.children && item.children.length> 0) { %>
-                            <ul class="submenu">
-                                <% _.each(item.children, function(child) { %>
-                                    <li class="menu-item submenu-item <%= child.sidebar.estado !== 'activo' ? 'disabled' : '' %>"
-                                        data-menu-id="<%= child.id %>">
-                                        <a href="<%= child.sidebar.resource_router ? '/' + child.sidebar.resource_router : '#' %>"
-                                            class="menu-link" <%=child.sidebar.estado !=='activo'
-                                            ? 'onclick="return false;"' : '' %>>
-                                            <i class="<%= child.sidebar.icon %> menu-icon"></i>
-                                            <span class="menu-text">
-                                                <%= child.sidebar.label %>
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <% }); %>
-                            </ul>
+<nav class="sidebar-wrapper">
+    <ul class="menu-list">
+        <% if (menu && menu.length> 0) { %>
+            <% _.each(menu, function(item) { %>
+                <li class="menu-item <%= item.sidebar.sidebar_id ? 'submenu-item' : '' %> <%= item.sidebar.estado !== 'activo' ? 'disabled' : '' %>"
+                    data-menu-id="<%= item.id %>">
+                    <a href="<%= item.sidebar.resource_router ? '/' + item.sidebar.resource_router : '#' %>"
+                        class="menu-link <%= item.hasChildren ? 'has-children' : '' %>" <%=item.sidebar.estado
+                        !=='activo' ? 'onclick="return false;"' : '' %>>
+                        <i class="<%= item.sidebar.icon %> menu-icon"></i>
+                        <span class="menu-text">
+                            <%= item.sidebar.label %>
+                        </span>
+                        <% if (item.hasChildren) { %>
+                            <i class="nc-icon nc-minimal-down menu-arrow"></i>
                             <% } %>
-                    </li>
-                    <% }); %>
-                        <% } else { %>
-                            <li class="menu-empty">No hay menús disponibles</li>
-                            <% } %>
-        </ul>
-    </nav>
+                    </a>
+                    <% if (item.hasChildren && item.children && item.children.length> 0) { %>
+                        <ul class="submenu">
+                            <% _.each(item.children, function(child) { %>
+                                <li class="menu-item submenu-item <%= child.sidebar.estado !== 'activo' ? 'disabled' : '' %>"
+                                    data-menu-id="<%= child.id %>">
+                                    <a href="<%= child.sidebar.resource_router ? '/' + child.sidebar.resource_router : '#' %>"
+                                        class="menu-link" <%=child.sidebar.estado !=='activo'
+                                        ? 'onclick="return false;"' : '' %>>
+                                        <i class="<%= child.sidebar.icon %> menu-icon"></i>
+                                        <span class="menu-text">
+                                            <%= child.sidebar.label %>
+                                        </span>
+                                    </a>
+                                </li>
+                                <% }); %>
+                        </ul>
+                        <% } %>
+                </li>
+                <% }); %>
+                    <% } else { %>
+                        <li class="menu-empty">No hay menús disponibles</li>
+                        <% } %>
+    </ul>
+</nav>
 
-    <div class="sidebar-footer">
-        <button class="logout-btn" id="bt_logout">
-            <i class="nc-icon nc-button-power"></i>
-            <span>Cerrar Sesión</span>
-        </button>
-    </div>
+<div class="sidebar-footer">
+    <button class="logout-btn" id="bt_logout">
+        <i class="nc-icon nc-button-power"></i>
+        <span>Cerrar Sesión</span>
+    </button>
 </div>
 
 <style>
-    #sidebarContainer {
-        min-width: 260px;
+    .sidebar-container {
+        width: 100%;
+        min-width: 250px;
+        max-width: 300px;
         height: 100vh;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         display: flex;
         flex-direction: column;
-        position: fixed;
-        left: 0;
-        top: 0;
+        position: relative;
         z-index: 1000;
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Bootstrap v4 compatibility */
+    .sidebar-container .d-flex {
+        display: flex !important;
+    }
+
+    .sidebar-container .flex-column {
+        flex-direction: column !important;
+    }
+
+    .sidebar-container .flex-grow-1 {
+        flex-grow: 1 !important;
+    }
+
+    .sidebar-container .align-items-center {
+        align-items: center !important;
+    }
+
+    .sidebar-container .justify-content-center {
+        justify-content: center !important;
     }
 
     .sidebar-header {
@@ -90,7 +108,14 @@
     .user-info {
         display: flex;
         align-items: center;
-        gap: 12px;
+    }
+
+    .user-info.d-flex {
+        display: flex !important;
+    }
+
+    .user-info.align-items-center {
+        align-items: center !important;
     }
 
     .user-avatar img {
@@ -102,6 +127,11 @@
 
     .user-details {
         flex: 1;
+        margin-left: 12px;
+    }
+
+    .user-details.flex-grow-1 {
+        flex-grow: 1 !important;
     }
 
     .user-name {
@@ -119,6 +149,8 @@
         flex: 1;
         overflow-y: auto;
         padding: 10px 0;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .menu-list {
@@ -141,9 +173,19 @@
         position: relative;
     }
 
+    .menu-link.d-flex {
+        display: flex !important;
+    }
+
+    .menu-link.align-items-center {
+        align-items: center !important;
+    }
+
     .menu-link:hover {
         background: rgba(255, 255, 255, 0.1);
         padding-left: 25px;
+        text-decoration: none;
+        color: white;
     }
 
     .menu-link.active {
@@ -220,14 +262,27 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
         font-size: 14px;
         transition: all 0.3s ease;
+    }
+
+    .logout-btn.d-flex {
+        display: flex !important;
+    }
+
+    .logout-btn.align-items-center {
+        align-items: center !important;
+    }
+
+    .logout-btn.justify-content-center {
+        justify-content: center !important;
     }
 
     .logout-btn:hover {
         background: rgba(255, 255, 255, 0.2);
         transform: translateY(-1px);
+        text-decoration: none;
+        color: white;
     }
 
     .menu-empty {
@@ -241,12 +296,49 @@
     @media (max-width: 768px) {
         #sidebarContainer {
             width: 100%;
+            min-width: 100%;
+            max-width: 100%;
             height: auto;
             position: relative;
         }
 
         .sidebar-nav {
             max-height: 300px;
+        }
+
+        .user-info {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .user-info.d-flex {
+            flex-direction: column !important;
+        }
+
+        .user-details {
+            margin-left: 0;
+            margin-top: 8px;
+        }
+
+        /* Bootstrap v4 responsive fixes */
+        .user-info.flex-column {
+            flex-direction: column !important;
+        }
+
+        .menu-link.d-flex {
+            display: flex !important;
+        }
+
+        .logout-btn.d-flex {
+            display: flex !important;
+        }
+    }
+
+    /* Large screens - ensure proper width with Bootstrap cols */
+    @media (min-width: 992px) {
+        #sidebarContainer {
+            width: 100% !important;
+            max-width: none !important;
         }
     }
 </style>

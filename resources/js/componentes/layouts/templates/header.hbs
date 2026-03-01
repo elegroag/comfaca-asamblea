@@ -1,40 +1,49 @@
 <!-- Header -->
 
-<div class="px-6 py-4 flex justify-between items-center">
-    <div class="flex items-center space-x-4">
-        <button id="sidebar-toggle" class="text-gray-500 hover:text-gray-700">
-            ☰
-        </button>
-        <h1 class="text-xl font-semibold text-gray-800">
+<div class="d-flex justify-content-between align-items-center px-4 py-3">
+    <div class="d-flex align-items-center navbar-wrapper">
+        <div class="navbar-minimize">
+            <button id="minimizeSidebar" class="btn btn-sm btn-icon btn-round">
+                <i class="nc-icon nc-minimal-right text-center visible-on-sidebar-mini"></i>
+                <i class="nc-icon nc-minimal-left text-center visible-on-sidebar-regular"></i>
+            </button>
+        </div>
+        <div class="navbar-toggle">
+            <button type="button" class="navbar-toggler">
+                <span class="navbar-toggler-bar bar1"></span>
+                <span class="navbar-toggler-bar bar2"></span>
+                <span class="navbar-toggler-bar bar3"></span>
+            </button>
+        </div>
+        <h5 class="h5 mb-0 ml-3 text-dark">
             <%= props.title || 'Dashboard' %>
-        </h1>
+        </h5>
     </div>
 
-    <div class="flex items-center space-x-4">
-        <div class="relative">
-            <button class="text-gray-500 hover:text-gray-700">
+    <div class="d-flex align-items-center">
+        <div class="position-relative">
+            <button class="btn btn-link text-muted p-0">
                 🔔
             </button>
-            <span
-                class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
         </div>
 
-        <div class="flex items-center space-x-3">
-            <div class="text-right">
-                <div class="text-sm font-medium text-gray-900">
+        <div class="d-flex align-items-center ml-3">
+            <div class="text-right mr-2">
+                <div class="font-weight-bold text-dark">
                     <%= props.auth.user.name %>
                 </div>
-                <div class="text-xs text-gray-500">
+                <div class="small text-muted">
                     <%= props.auth.user.email %>
                 </div>
             </div>
-            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium">
+            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white font-weight-bold"
+                style="width: 32px; height: 32px;">
                 <%= props.auth.user.name.charAt(0).toUpperCase() %>
             </div>
         </div>
 
-        <button id="logout-btn" class="text-gray-500 hover:text-red-600 transition">
-            🚪
+        <button id="logout-btn" class="btn btn-link text-muted p-0 ml-3">
+            <i class="nc-icon nc-button-power"></i>
         </button>
     </div>
 </div>

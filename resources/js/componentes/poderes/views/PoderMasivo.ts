@@ -4,7 +4,7 @@ import { BackboneView } from "@/common/Bone";
 import Loading from "@/common/Loading";
 import { Utils } from "@/core/Utils";
 import type { AppInstance } from "@/types/types";
-import cargueMasivo from "@/componentes/poderes/templates/cargueMasivo.hbs?raw";
+import cargueMasivo from "@/componentes/poderes/templates/tmp_masivo.hbs?raw";
 
 export default class PoderMasivo extends BackboneView {
     app: AppInstance;

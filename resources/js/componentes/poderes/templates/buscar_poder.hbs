@@ -1,0 +1,80 @@
+<div class="row">
+    <div class="col-md-4">
+        <span class="h4 mb-4 text-primary"> Buscar Poder</span>
+    </div>
+    <div class="col">
+        <div id='showSubnav'></div>
+    </div>
+</div>
+
+<div class="col-md-12 ml-auto mr-auto">
+    <div class="card-body">
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <div class="picture-container">
+                    <div class="picture text-center">
+                        <img src="/img/default-avatar.png" alt="Avatar" class="w-full h-full object-cover" />
+                    </div>
+                    <h6 class="description text-center"><br />Apoderado - Poderdante </h6>
+                </div>
+            </div>
+
+            <div class='col-md-4'>
+                <div class='form-group'>
+                    <label>Poderdante nit</label>
+                    <div toggle-error='poderdante_nit' class="error text-danger" for="required"></div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-badge"></i></span>
+                        </div>
+                        <input type="text" class="form-control" name="poderdante_nit" id='poderdante_nit'
+                            placeholder='poderdante nit' />
+                    </div>
+
+                    <label>Representante identificación</label>
+                    <div toggle-error='poderdante_identificacion' class="error text-danger" for="required"></div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-single-02"></i></span>
+                        </div>
+                        <input type="text" class="form-control" name="poderdante_identificacion"
+                            id='poderdante_identificacion' placeholder='identificacion' />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class='form-group'>
+                    <label>Apoderado nit</label>
+                    <div toggle-error='apoderado_nit' class="error text-danger" for="required"></div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-badge"></i></span>
+                        </div>
+                        <input type="text" class="form-control" name="apoderado_nit" id='apoderado_nit'
+                            placeholder='apoderado nit' />
+                    </div>
+
+                    <label>Representante identificación</label>
+                    <div toggle-error='apoderado_identificacion' class="error text-danger" for="required"></div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-single-02"></i></span>
+                        </div>
+                        <input type="text" class="form-control" name="apoderado_identificacion"
+                            id='apoderado_identificacion' placeholder='identificacion' />
+                    </div>
+                </div>
+            </div>
+
+            <div class='col-md-12'>
+                <div class='text-center'>
+                    <button type='button' class='btn btn-outline-success btn-round' id='btn_buscar_poder'><i
+                            class="fa fa-search"></i> Buscar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+    </div>
+</div>

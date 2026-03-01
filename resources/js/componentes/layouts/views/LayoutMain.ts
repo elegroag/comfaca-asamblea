@@ -5,7 +5,10 @@ import tmp_layout from "@/componentes/layouts/templates/layout-main.hbs?raw";
 class LayoutMain extends Layout {
 
     constructor(options: LayoutOptions = {}) {
-        super(options);
+        super({
+            ...options,
+            className: 'wrapper p-0 m-0'
+        });
         this.template = _.template(tmp_layout);
 
         // Configurar regiones usando el método de la clase base
@@ -15,14 +18,6 @@ class LayoutMain extends Layout {
             footer: '#footer',
             sidebar: '#sidebar'
         });
-    }
-
-    /**
-     * @override
-     */
-    // @ts-ignore
-    get className() {
-        return 'col-auto';
     }
 }
 

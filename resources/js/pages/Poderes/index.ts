@@ -18,7 +18,7 @@ const Poderes: DashboardComponent = {
     isLoading: false,
 
     render(props: BackendAuthProps): string {
-        return "<div class='w-full h-full bg-gray-50 font-sans' id='contentView'></div>";
+        return "<div class='w-100 h-100 bg-gray-light font-weight-normal' id='contentView'></div>";
     },
 
     mount(el: HTMLElement, props: BackendAuthProps): void {

@@ -1,4 +1,4 @@
-import row_poder from '@/componentes/poderes/templates/rowPoder.hbs?raw';
+import row_poder from '@/componentes/poderes/templates/row_poder.hbs?raw';
 import { BackboneView } from '@/common/Bone';
 
 interface PoderRowViewOptions {

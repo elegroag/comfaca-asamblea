@@ -1,6 +1,6 @@
 import { BackboneView } from "@/common/Bone";
 import RechazarDetallePoder from "./RechazarDetallePoder";
-import detallePoder from "@/componentes/poderes/templates/detallePoder.hbs?raw";
+import detallePoder from "@/componentes/poderes/templates/detalle_poder.hbs?raw";
 import PoderesService from "@/pages/Poderes/PoderService";
 
 interface PoderDetalleOptions {

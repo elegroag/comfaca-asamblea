@@ -1,0 +1,144 @@
+<div class="row">
+    <div class="col-md-4">
+        <span class="h4 mb-4 text-primary"> Crear Nuevo Poder</span>
+    </div>
+    <div class="col">
+        <div id='showSubnav'></div>
+    </div>
+</div>
+
+<div class="col ml-auto mr-auto">
+    <div class="card-body">
+        <div class="row justify-content-center">
+            <div class="col-2 mt-4">
+                <div class="picture-container">
+                    <div class="picture text-center">
+                        <img src="/img/default-avatar.png" width="100px" class="picture-src">
+                    </div>
+                    <h6 class="description text-center h6"><br />Poderdante - Apoderado</h6>
+                </div>
+            </div>
+
+            <div class='col-5'>
+                <div class='form-group'>
+                    <label for="poderdante_nit"><i class='text-danger'>*</i> Poderdante nit</label>
+                    <div toggle-error='poderdante_nit' class="error text-danger" for="required"></div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-badge"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id='poderdante_nit' name="poderdante_nit"
+                            placeholder='poderdante nit' />
+                        <div class="input-group-text group-botton">
+                            <button type='button' id='bt_buscar_poderdante'
+                                class="btn btn-sm btn-outline-primary btn-round" style='margin:0px'><i
+                                    class="nc-icon nc-zoom-split"></i></button>
+                        </div>
+                    </div>
+
+                    <label for="poderdante_cedula"><i class='text-info'>*</i> Representante identificación</label>
+                    <div toggle-error='poderdante_cedula' class="error text-danger" for="required"></div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-single-02"></i></span>
+                        </div>
+                        <input type="text" class="form-control" name="poderdante_cedula" id='poderdante_cedula'
+                            placeholder='identificacion' />
+                    </div>
+
+                    <label for="razsoc_poderdante"><i class='text-info'>*</i> Razón social</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-bank"></i></span>
+                        </div>
+                        <span class="form-control" style='line-height:2' name='razsoc_poderdante'
+                            id="razsoc_poderdante">razón social</span>
+                    </div>
+
+                    <label for="repleg_poderdante"><i class='text-info'>*</i> Representante legal</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-circle-10"></i></span>
+                        </div>
+                        <span class="form-control" style='line-height:2' name="repleg_poderdante"
+                            id="repleg_poderdante">representante legal</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-5">
+                <div class='form-group'>
+                    <label for="apoderado_nit"><i class='text-danger'>*</i> Apoderado nit</label>
+                    <div toggle-error='apoderado_nit' class="error text-danger" for="required"></div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-badge"></i></span>
+                        </div>
+                        <input type="text" class="form-control has-danger" id='apoderado_nit' name="apoderado_nit"
+                            placeholder='apoderado nit' />
+                        <div class="input-group-text group-botton">
+                            <button type='button' id='bt_buscar_apoderado'
+                                class="btn btn-sm btn-outline-primary btn-round" style='margin:0px'><i
+                                    class="nc-icon nc-zoom-split"></i></button>
+                        </div>
+                    </div>
+
+                    <label for="apoderado_cedula"><i class='text-info'>*</i> Representante identificación</label>
+                    <div toggle-error='apoderado_cedula' class="error text-danger" for="required"></div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-single-02"></i></span>
+                        </div>
+                        <input type="text" class="form-control" name="apoderado_cedula" placeholder='identificacion' />
+                    </div>
+
+                    <label for="razsoc_apoderado"><i class='text-info'>*</i> Razón social</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-bank"></i></span>
+                        </div>
+                        <span class="form-control" style='line-height:2' name='razsoc_apoderado'
+                            id="razsoc_apoderado">razón social</span>
+                    </div>
+
+                    <label for="repleg_apoderado"><i class='text-info'>*</i> Representante legal</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-circle-10"></i></span>
+                        </div>
+                        <span class="form-control" style='line-height:2' name='repleg_apoderado'
+                            id="repleg_apoderado">representante legal</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class='col-4'>
+                <div class='form-group'>
+                    <label for="fecha"><i class='text-info'>*</i> Fecha</label>
+                    <div toggle-error='fecha' class="error text-danger" for="required"></div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-badge"></i></span>
+                        </div>
+                        <input type="text" class="form-control has-danger" name="fecha" placeholder='fecha' readonly
+                            style='background:#fff' />
+                    </div>
+
+                    <label for="radicado"><i class='text-danger'>*</i> Radicado</label>
+                    <div toggle-error='radicado' class="error text-danger" for="required"></div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="nc-icon nc-tag-content"></i></span>
+                        </div>
+                        <input type="text" class="form-control" name="radicado" placeholder='radicado' />
+                    </div>
+                </div>
+
+                <div class='text-center'>
+                    <button type='button' class='btn btn-outline-success btn-round' id='btn_validar_poder'><i
+                            class="fa fa-search"></i> Continuar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

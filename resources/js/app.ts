@@ -1,6 +1,6 @@
 import { route as ziggyRoute } from "ziggy-js";
 import { InertiaProgress } from "@inertiajs/progress";
-import "./styles/global.css";
+import "./styles/app.css";
 import Logger from './common/Logger';
 import ApiService from './services/ApiService';
 import type { PageComponent, PageData } from './types/types';

@@ -3,7 +3,7 @@
 import { BackboneView } from "@/common/Bone";
 import { Testeo } from "@/core/Testeo";
 import { Utils } from "@/core/Utils";
-import buscarPoder from "@/componentes/poderes/templates/buscarPoder.hbs?raw";
+import buscarPoder from "@/componentes/poderes/templates/buscar_poder.hbs?raw";
 
 export default class PoderBuscar extends BackboneView {
 

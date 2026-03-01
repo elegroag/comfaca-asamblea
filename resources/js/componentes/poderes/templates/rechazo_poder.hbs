@@ -1,0 +1,30 @@
+<div class='col-md-12'>
+    <div class='row justify-content-center'>
+        <div class="icon icon-primary">
+            <i class="fa fa-quote-right"></i>
+        </div>
+        <p><span>&nbsp;Justificar el motivo de rechazo del poder.</span></p><br />
+    </div>
+    <div class='form-group'>
+        <label><i class='text-danger'>*</i> Criterio Rechazo: </label>
+        <div toggle-error='criterio_rechazo' class="error text-danger" for="required"></div>
+        <select class='form-control has-danger' id='criterio_rechazo' name='criterio_rechazo'>
+            <option value=''>Selecciona aquí..</option>
+            <% _.each(criterios_rechazos, function(criterio){ %>
+            <option value='<%=criterio.id%>'><%=criterio.estatutos + ' ' + criterio.detalle%></option>
+            <% })%>
+        </select>
+        <button type='button' class='btn btn-info btn-sm' id='copyMemory'>Copy</button>
+    </div>
+    <div class='form-group'>
+        <label><i class='text-danger'>*</i> Nota: </label>
+        <div toggle-error='motivo' class="error text-danger" for="required"></div>
+        <textarea rows="4" class="form-control has-danger" id='motivo' name="motivo" placeholder='motivo rechazo aquí.' style='max-height:initial'></textarea>
+    </div>
+    <div class='form-group'>
+        <p class='text-center'>
+            <button type='button' class='btn btn-ms btn-round btn-success' id='bt_rechazo_poder'>Continuar</button>&nbsp;
+            <button type='button' class='btn btn-ms btn-round btn-primary' id="bt_salir"> Salir </button>
+        </p>
+    </div>
+</div>
