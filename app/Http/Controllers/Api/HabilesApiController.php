@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\AsaAsamblea;
 use App\Models\AsaMesas;
 use App\Models\AsaRepresentantes;
@@ -25,17 +26,11 @@ use Illuminate\Support\Facades\DB;
 class HabilesApiController extends Controller
 {
     private int $idAsamblea = 0;
-    private int $itemMenuSidebar = 3;
 
-    public function __construct(private readonly AsambleaService $asambleaService)
+    public function __construct()
     {
-        $this->middleware('api.auth');
-        $this->middleware(function ($request, $next) {
-            $this->idAsamblea = (int) $this->asambleaService->getAsambleaActiva();
-            return $next($request);
-        });
+        $this->idAsamblea = (int) AsambleaService::getAsambleaActiva();
     }
-
 
     public function saveEmpresaHabil(Request $request): JsonResponse
     {

@@ -1,6 +1,5 @@
 import tmp_row_empresa from '../templates/row_empresa.hbs?raw';
-import EmpresaService from "@/pages/Habiles/EmpresaService";
-import { ModelView } from "@/common/ModelView";
+import { BackboneView } from '@/common/Bone';
 
 interface EmpresaRowViewOptions {
     model?: any;
@@ -12,13 +11,12 @@ interface EmpresaRowViewOptions {
     region?: any;
 }
 
-export default class EmpresaRowView extends ModelView {
+export default class EmpresaRowView extends BackboneView {
     api: any;
     logger: any;
     app: any;
     storage: any;
     region: any;
-    empresaService: EmpresaService;
 
     constructor(options: EmpresaRowViewOptions = {}) {
         super(options);
@@ -28,13 +26,6 @@ export default class EmpresaRowView extends ModelView {
         this.storage = options.storage;
         this.region = options.region;
         this.template = _.template(tmp_row_empresa);
-
-        // Inicializar el servicio con las dependencias
-        this.empresaService = new EmpresaService({
-            api: this.api,
-            app: this.app,
-            logger: this.logger
-        });
     }
 
     get tagName(): string {
@@ -45,5 +36,12 @@ export default class EmpresaRowView extends ModelView {
         if (options.model && typeof this.listenTo === 'function') {
             this.listenTo(options.model, 'change', this.render);
         }
+    }
+
+    render() {
+        const data = this.model ? this.model.toJSON() : {};
+        const renderedHtml = this.template(data);
+        this.$el.html(renderedHtml);
+        return this;
     }
 }

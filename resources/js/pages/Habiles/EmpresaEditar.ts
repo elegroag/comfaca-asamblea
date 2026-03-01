@@ -20,8 +20,8 @@ export default class EmpresaEditar extends Controller {
             EmpresaModel: Empresa
         });
 
-        this.listenTo(this, 'set:empresas', this.empresaService.__setEmpresas);
-        this.listenTo(this, 'add:empresa', this.empresaService.__addEmpresas);
+        // Los métodos __setEmpresas y __addEmpresas fueron eliminados del service
+        // El controller principal ahora maneja las collections directamente
     }
 
     /**
@@ -33,8 +33,7 @@ export default class EmpresaEditar extends Controller {
         const layout: LayoutView = new LayoutView();
         this.region.show(layout);
 
-        // Inicializar colección de empresas
-        this.empresaService.initEmpresas();
+        // La colección se maneja en el controller principal
 
         console.log('Habiles', model.toJSON());
 
@@ -49,8 +48,6 @@ export default class EmpresaEditar extends Controller {
 
 
         this.listenTo(editarView, 'form:edit', this.empresaService.__saveEmpresa);
-        this.listenTo(editarView, 'add:empresas', this.empresaService.__addEmpresas);
-        this.listenTo(editarView, 'set:empresas', this.empresaService.__setEmpresas);
         this.listenTo(editarView, 'notify', this.empresaService.__notifyPlataforma);
 
 

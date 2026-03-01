@@ -1,14 +1,10 @@
 import Logger from "@/common/Logger";
-import HabilesCollection from "@/componentes/habiles/collections/HabilesCollection";
-import EmpresasCollection from "@/collections/EmpresasCollection";
 import HabilModel from "@/componentes/habiles/models/HabilModel";
-import { BoxCollectionStorage } from "@/componentes/useStorage";
 import { AppInstance } from "@/types/types";
 import type {
     NotifyTransfer,
     RemoveTransfer,
-    SaveTransfer,
-    xCollection
+    SaveTransfer
 } from "./types";
 
 
@@ -20,53 +16,53 @@ export interface EmpresaServiceOptions {
 }
 
 export default class EmpresaService {
-    storage: BoxCollectionStorage;
-    Collections: xCollection | { [key: string]: any };
     api: any;
     app: AppInstance | any;
     logger: Logger;
     private EmpresaModel?: any;
 
     constructor(options: EmpresaServiceOptions) {
-        this.Collections = {
-            empresas: new EmpresasCollection(),
-            habiles: new HabilesCollection(),
-        };
         this.api = options.api;
         this.app = options.app;
         this.logger = options.logger;
         this.EmpresaModel = options.EmpresaModel;
-        this.storage = BoxCollectionStorage.getInstance();
     }
 
     /**
-     * Inicializar las colecciones necesarias usando BoxCollectionStorage
+     * Obtener todas las empresas desde API
      */
-    initializeCollections(): void {
-        const empresas = this.storage.getCollection('empresas')?.value || null;
-        const habiles = this.storage.getCollection('habiles')?.value || null;
-
-        if (empresas) this.Collections.empresas = new EmpresasCollection(empresas);
-        if (habiles) this.Collections.habiles = new HabilesCollection(habiles);
-    }
-
-    /**
-     * Inicializar colección de empresas
-     */
-    initEmpresas(): void {
-        if (!this.Collections || !this.Collections.empresas) {
-            this.Collections.empresas = new EmpresasCollection();
-            this.Collections.empresas.reset();
+    async findAllEmpresas(): Promise<any> {
+        try {
+            const response = await this.api.get('/habiles/listar');
+            if (response?.success) {
+                return response;
+            } else {
+                this.app?.trigger('alert:error', { message: response.msj || 'Error al listar empresas' });
+                return null;
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al listar empresas:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar empresas' });
+            return null;
         }
     }
 
     /**
-     * Inicializar colección de habiles
+     * Obtener todas las empresas hábiles desde API
      */
-    initHabiles(): void {
-        if (!this.Collections || !this.Collections.habiles) {
-            this.Collections.habiles = new HabilesCollection();
-            this.Collections.habiles.reset();
+    async findAllHabiles(): Promise<any> {
+        try {
+            const response = await this.api.get('/habiles/lista-habiles');
+            if (response?.success) {
+                return response;
+            } else {
+                this.app?.trigger('alert:error', { message: response.msj || 'Error al listar habiles' });
+                return null;
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al listar habiles:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar habiles' });
+            return null;
         }
     }
 
@@ -117,8 +113,8 @@ export default class EmpresaService {
     /**
      * Eliminar empresa
      */
-    __removeEmpresa(transfer: RemoveTransfer): void {
-        const { model, callback } = transfer;
+    __removeEmpresa(transfer: RemoveTransfer & { controller?: any }): void {
+        const { model, callback, controller } = transfer;
 
         if (model && typeof model.get === 'function') {
 
@@ -126,7 +122,7 @@ export default class EmpresaService {
                 message: 'Se requiere de confirmar la acción a realizar para remover el registro',
                 callback: (confirm: boolean) => {
                     if (confirm === true) {
-                        this.saveRemoveEmpresa(model, callback);
+                        this.saveRemoveEmpresa(model, callback, controller);
                     }
                     return callback(false);
                 },
@@ -137,100 +133,41 @@ export default class EmpresaService {
         }
     }
 
-    private async saveRemoveEmpresa(model: any, callback: (success: boolean, data?: any) => void): Promise<void> {
+    private async saveRemoveEmpresa(model: any, callback: (success: boolean, data?: any) => void, controller?: any): Promise<void> {
         try {
             const response = await this.api.delete(`/habiles/removeEmpresa/${model.get('nit')}`);
             if (response?.success) {
                 this.app?.trigger('alert:success', { message: response.msj });
-                this.Collections.empresas.remove(model);
+
+                // Si hay controller, delegar la eliminación de la collection
+                if (controller && typeof controller.handleRemoveEmpresa === 'function') {
+                    controller.handleRemoveEmpresa({ removeFromCollection: true, model });
+                }
+
                 callback(true, response);
             } else {
-                this.app?.trigger('alert:error', { message: response.message || 'Error al cargar carteras' });
+                this.app?.trigger('alert:error', { message: response.message || 'Error al eliminar empresa' });
             }
         } catch (error: any) {
-            this.logger?.error('Error al cargar carteras:', error);
-            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al cargar carteras' });
+            this.logger?.error('Error al eliminar empresa:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al eliminar empresa' });
             callback(false);
         }
     }
 
-    /**
-     * Buscar todas las empresas
-     */
-    __findAll(): void {
-        if (!this.Collections.empresas || (this.Collections.empresas.length ?? 0) === 0) {
-            this.findAllApi();
-        }
-    }
-
-    private async findAllApi(): Promise<void> {
-        try {
-            const response = await this.api.get('/habiles/listar');
-            if (response?.success) {
-                this.__setEmpresas(response.empresas);
-            } else {
-                this.app?.trigger('alert:error', { message: response.msj });
-            }
-        } catch (error: any) {
-            this.logger?.error('Error al listar empresas:', error);
-            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar empresas' });
-        }
-    }
-
-    /**
-     * Establecer colección de empresas
-     */
-    __setEmpresas(empresas: any[]): void {
-        this.initEmpresas();
-        if (this.Collections && this.Collections.empresas) {
-            this.Collections.empresas.add(empresas, { merge: true });
-        }
-    }
-
-    /**
-     * Agregar empresa a la colección
-     */
-    __addEmpresas(empresa: any): void {
-        this.initEmpresas();
-        const payload = this.EmpresaModel ? new this.EmpresaModel(empresa) : empresa;
-        if (this.Collections && this.Collections.empresas) {
-            this.Collections.empresas.add(payload, { merge: true });
-        }
-    }
-
-    /**
-     * Establecer colección de habiles
-     */
-    __setHabiles(empresas: any[]): void {
-        this.initHabiles();
-        if (this.Collections && this.Collections.habiles) {
-            this.Collections.habiles.add(empresas, { merge: true });
-        }
-    }
-
-    /**
-     * Agregar habil a la colección
-     */
-    __addHabiles(empresa: any): void {
-        this.initHabiles();
-        const _empresa = empresa instanceof HabilModel ? empresa : new HabilModel(empresa);
-        if (this.Collections && this.Collections.habiles) {
-            this.Collections.habiles.add(_empresa, { merge: true });
-        }
-    }
 
     /**
      * Eliminar habil
      */
-    __removeHabil(transfer: RemoveTransfer): void {
-        const { model, callback } = transfer;
+    __removeHabil(transfer: RemoveTransfer & { controller?: any }): void {
+        const { model, callback, controller } = transfer;
 
         if (model instanceof HabilModel) {
             this.app?.trigger('confirma', {
                 message: 'Se requiere de confirmar la acción a realizar para remover el registro',
                 callback: (confirm: boolean) => {
                     if (confirm === true) {
-                        this.removeHabilApi(model, callback);
+                        this.removeHabilApi(model, callback, controller);
                     }
                     callback(false);
                 },
@@ -242,7 +179,7 @@ export default class EmpresaService {
     }
 
 
-    private async removeHabilApi(model: any, callback: (success: boolean | any) => void): Promise<void> {
+    private async removeHabilApi(model: any, callback: (success: boolean | any) => void, controller?: any): Promise<void> {
         try {
             const response = await this.api.post('/habiles/remove_habil', {
                 nit: model.get('nit'),
@@ -251,10 +188,13 @@ export default class EmpresaService {
             });
 
             if (response?.success) {
-                if (this.Collections && this.Collections.habiles) {
-                    this.Collections.habiles.remove(model);
-                }
                 this.app?.trigger('alert:success', { message: response.msj });
+
+                // Si hay controller, delegar la eliminación de la collection
+                if (controller && typeof controller.handleRemoveHabil === 'function') {
+                    controller.handleRemoveHabil({ removeFromCollection: true, model });
+                }
+
                 callback(response);
             } else {
                 this.app?.trigger('alert:error', { message: response.msj });

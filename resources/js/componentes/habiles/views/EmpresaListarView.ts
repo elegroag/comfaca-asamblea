@@ -1,7 +1,8 @@
-import { BackboneView } from "@/common/Bone";
+import { BackboneModel, BackboneView } from "@/common/Bone";
 import EmpresaRowView from "./EmpresaRowView";
 import DataTable from 'datatables.net-bs5';
 import EmpresaService from "@/pages/Habiles/EmpresaService";
+import tmp_listar_empresas from "../templates/listar_empresas.hbs?raw";
 
 interface EmpresaListarViewOptions {
     router?: { navigate: (fragment: string, options?: any) => void };
@@ -18,7 +19,6 @@ export default class EmpresaListarView extends BackboneView {
     tableModule: any;
     children: any[];
     modelView: typeof EmpresaRowView;
-    template: any;
     api: any;
     logger: any;
     app: any;
@@ -40,7 +40,6 @@ export default class EmpresaListarView extends BackboneView {
         this.app = options.app;
         this.storage = options.storage;
         this.region = options.region;
-        this.template = _.template(document.getElementById('tmp_listar_empresas')?.innerHTML || '');
         this.router = options.router;
 
         // Inicializar el servicio con las dependencias
@@ -51,12 +50,15 @@ export default class EmpresaListarView extends BackboneView {
         });
     }
 
-    initialize(): void {
-        if (typeof this.listenTo === 'function') {
-            this.listenTo(this.collection, 'add', this.addModel);
-            this.listenTo(this.collection, 'remove', this.removeModel);
-            this.listenTo(this.collection, 'reset', this.render);
-        }
+    initialize() {
+
+        this.children = []; // Array de vistas
+        this.tableModule = null;
+        this.modelView = EmpresaRowView;
+
+        this.listenTo(this.collection, 'add', this.addModel);
+        this.listenTo(this.collection, 'remove', this.removeModel);
+        this.listenTo(this.collection, 'reset', this.render);
     }
 
     /**
@@ -71,15 +73,24 @@ export default class EmpresaListarView extends BackboneView {
     }
 
     render(): this {
-        this.$el.html(this.template());
 
-        const filas = this.collection.map((model: any) => {
-            const view = this.renderModel(model);
-            return view.$el;
+        console.log('rendering empresa listar view', this.collection);
+
+        const _template = _.template(tmp_listar_empresas);
+        this.el.innerHTML = _template({ datatable: 'tb_data_empresas' });
+
+
+        // Limpiar filas existentes y children
+        this.$('#show_datatable').empty();
+        this.closeChildren();
+
+        // Renderizar cada modelo como una fila usando renderModel
+        this.collection.forEach((model: any) => {
+            const rowView = this.renderModel(model);
+            this.$('#show_datatable').append(rowView.$el);
         });
 
-        this.$el.find('#show_data_habiles').append(filas);
-        this.init_table();
+        this.initTable();
         return this;
     }
 
@@ -129,13 +140,11 @@ export default class EmpresaListarView extends BackboneView {
         });
     }
 
-    init_table(): void {
-        // Destruir tabla existente si hay una
+    initTable(): void {
         if (this.tableModule) {
             this.tableModule.destroy();
         }
-
-        this.tableModule = new DataTable(this.$el.find('#tb_data_habiles'), {
+        this.tableModule = new DataTable(this.$el.find('#tb_data_empresas'), {
             paging: true,
             pageLength: 10,
             pagingType: 'full_numbers',
@@ -187,7 +196,30 @@ export default class EmpresaListarView extends BackboneView {
         }
     }
 
-    renderModel(model: any): any {
-        return new this.modelView({ model: model });
+    renderModel(model: BackboneModel): any {
+        let view: any;
+        if (_.size(this.children) > 0) {
+            if (_.indexOf(this.children, model.get('cid')) != -1) {
+                view = this.children[model.get('cid')];
+            }
+        }
+        if (!view) {
+            view = new this.modelView({ model: model });
+            this.children[model.get('cid')] = view;
+        }
+
+        this.listenTo(view, 'all', (eventName: string) => {
+            this.trigger('item:' + eventName, view, model);
+        });
+
+        view.render();
+        return view;
+    }
+
+    closeChildren() {
+        this.children.forEach((child: any) => {
+            this.closeChildView(child);
+        });
+        this.children = []; // Limpiar el array
     }
 }

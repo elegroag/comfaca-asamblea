@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Novedades;
 use App\Models\Carteras;
 use App\Models\Empresas;
@@ -16,27 +17,20 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
-class NovedadesController extends Controller
+class NovedadesApiController extends Controller
 {
-    protected AsambleaService $asambleaService;
     protected ?int $idAsamblea;
     protected ?string $cedtra;
     protected object $apisisu;
 
-    public function __construct(AsambleaService $asambleaService)
+    public function __construct()
     {
-        $this->asambleaService = $asambleaService;
-        $this->middleware(function ($request, $next) {
-            $this->idAsamblea = $this->asambleaService->getAsambleaActiva();
-            $this->cedtra = Auth::user()->cedtra ?? null;
+        $this->idAsamblea = AsambleaService::getAsambleaActiva();
 
-            // Cargar configuración del sistema
-            $this->apisisu = (object) [
-                'enable_novedades' => Config::get('services.apisisu.enable_novedades', true)
-            ];
-
-            return $next($request);
-        });
+        // Cargar configuración del sistema
+        $this->apisisu = (object) [
+            'enable_novedades' => Config::get('services.apisisu.enable_novedades', true)
+        ];
     }
 
     /**

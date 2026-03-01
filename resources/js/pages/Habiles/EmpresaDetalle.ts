@@ -19,11 +19,11 @@ export default class EmpresaDetalle extends Controller {
             logger: this.logger,
             EmpresaModel: Empresa
         });
-        this.empresaService.initEmpresas();
+        // La colección se maneja en el controller principal
 
         if (typeof this.listenTo === 'function') {
-            this.listenTo(this, 'set:empresas', this.empresaService.__setEmpresas);
-            this.listenTo(this, 'add:empresa', this.empresaService.__addEmpresas);
+            // Los métodos __setEmpresas y __addEmpresas fueron eliminados del service
+            // El controller principal ahora maneja las collections directamente
         }
     }
 

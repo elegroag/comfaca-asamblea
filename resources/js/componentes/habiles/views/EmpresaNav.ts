@@ -25,8 +25,9 @@ export default class EmpresaNav extends BackboneView {
     storage: any;
     region: any;
     router?: { navigate: (fragment: string, options?: any) => void };
-    parentView?: any;
     empresaService: EmpresaService;
+
+    static parentView?: any;
 
     constructor(options: EmpresaNavOptions = {}) {
         super(options);
@@ -40,7 +41,6 @@ export default class EmpresaNav extends BackboneView {
         this.storage = options.storage;
         this.region = options.region;
         this.router = options.router;
-        this.parentView = options.parentView;
 
         // Inicializar el servicio con las dependencias
         this.empresaService = new EmpresaService({

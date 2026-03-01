@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Exception;
 
-class ReportesController extends Controller
+class ReportesApiController extends Controller
 {
     private $idAsamblea;
 

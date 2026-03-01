@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Services\RepresentanteService;
 use App\Models\AsaRepresentantes;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Exception;
 
-class RepresentantesController extends Controller
+class RepresentantesApiController extends Controller
 {
     private $idAsamblea;
 

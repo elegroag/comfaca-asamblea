@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\AsaMesas;
@@ -24,7 +24,6 @@ class AdminApiController extends Controller
 
     public function __construct()
     {
-        $this->middleware('api.auth');
         $this->idAsamblea = AsambleaService::getAsambleaActiva();
     }
 

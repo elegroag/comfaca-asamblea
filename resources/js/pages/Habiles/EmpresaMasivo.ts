@@ -21,8 +21,8 @@ export default class EmpresaMasivo extends Controller {
             EmpresaModel: Empresa
         });
 
-        this.listenTo(this, 'set:empresas', this.empresaService.__setEmpresas);
-        this.listenTo(this, 'add:empresa', this.empresaService.__addEmpresas);
+        // Los métodos __setEmpresas y __addEmpresas fueron eliminados del service
+        // El controller principal ahora maneja las collections directamente
 
     }
 
@@ -35,15 +35,11 @@ export default class EmpresaMasivo extends Controller {
         const layout = new LayoutView();
         this.region.show(layout);
 
-        // Inicializar colección de empresas
-        this.empresaService.initEmpresas();
-
-        // Cargar datos si la colección está vacía
-        this.empresaService.__findAll();
+        // La colección se maneja en el controller principal
 
         // Configurar vista principal
         const masivoView = new EmpresaMasivoView({
-            collection: this.empresaService.Collections.empresas,
+            collection: [], // La vista se actualizará cuando el controller cargue los datos
             router: this.router,
             api: this.api,
             app: this.app

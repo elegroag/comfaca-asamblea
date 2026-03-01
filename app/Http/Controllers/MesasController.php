@@ -13,6 +13,7 @@ class MesasController extends Controller
 
     public function __construct(AsambleaService $asambleaService)
     {
+        $this->asambleaService = $asambleaService;
         $this->idAsamblea = $this->asambleaService->getAsambleaActiva();
     }
 

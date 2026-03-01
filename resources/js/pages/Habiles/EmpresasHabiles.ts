@@ -4,6 +4,8 @@ import HabilesListarView from "@/componentes/habiles/views/HabilesListarView";
 import EmpresaService from "./EmpresaService";
 import { Controller } from "@/common/Controller";
 import Empresa from "@/models/Empresa";
+import { cacheCollection, getCachedCollection } from "@/componentes/CacheManager";
+import HabilesCollection from "@/componentes/habiles/collections/HabilesCollection";
 
 
 export default class EmpresasHabiles extends Controller {
@@ -21,15 +23,18 @@ export default class EmpresasHabiles extends Controller {
             EmpresaModel: Empresa
         });
 
-        this.listenTo(this, 'set:habiles', this.empresaService.__setHabiles);
-        this.listenTo(this, 'add:habiles', this.empresaService.__addHabiles);
+    }
 
+    initialize(): void {
+        // Los métodos __setEmpresas y __addEmpresas fueron eliminados del service
+        // El controller principal ahora maneja las collections directamente
     }
 
     /**
      * Mostrar lista de habiles
      */
     listarHabiles(): void {
+        this.initialize();
         console.log('EmpresasHabiles.listarHabiles() called');
 
         const layout: LayoutView = new LayoutView();
@@ -45,7 +50,7 @@ export default class EmpresasHabiles extends Controller {
                 editar: false,
                 masivo: false,
             },
-            router: this.router,
+            router: this.router as any,
             api: this.api,
             app: this.app
         });
@@ -59,9 +64,10 @@ export default class EmpresasHabiles extends Controller {
         this.listenTo(navView, 'export:lista', this.empresaService.__exportLista);
         this.listenTo(navView, 'export:informe', this.empresaService.__exportInforme);
 
+        const habiles = getCachedCollection('habiles', HabilesCollection);
         // Configurar vista principal
         const listView = new HabilesListarView({
-            collection: this.empresaService.Collections.habiles,
+            collection: habiles ?? [],
             router: this.router as any,
             api: this.api,
             app: this.app
@@ -73,6 +79,8 @@ export default class EmpresasHabiles extends Controller {
         if (bodyRegion) {
             bodyRegion.show(listView);
         }
+
+        EmpresaNav.parentView = listView;
     }
 
     /**

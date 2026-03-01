@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Models\AsaMesas;
 use App\Models\AsaConsenso;
@@ -12,13 +12,12 @@ use Illuminate\Support\Facades\Log;
 
 class MesasApiController extends Controller
 {
-    protected AsambleaService $asambleaService;
     protected ?int $idAsamblea;
     protected ?string $cedtra;
 
-    public function __construct(AsambleaService $asambleaService)
+    public function __construct()
     {
-        $this->idAsamblea = $this->asambleaService->getAsambleaActiva();
+        $this->idAsamblea = AsambleaService::getAsambleaActiva();
     }
 
     /**

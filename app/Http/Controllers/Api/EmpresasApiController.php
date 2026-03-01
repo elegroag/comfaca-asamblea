@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Empresas;
@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class EmpresasController extends Controller
+class EmpresasApiController extends Controller
 {
     protected $production = false;
     protected $disponibilidad = false;
@@ -37,7 +37,6 @@ class EmpresasController extends Controller
 
     public function __construct()
     {
-        $this->middleware('api.auth');
         $this->idAsamblea = AsambleaService::getAsambleaActiva();
     }
 

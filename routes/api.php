@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\API\PoderesApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Controllers\API\UsuarioApiController;
-use App\Http\Controllers\API\TaskApiController;
+use App\Http\Controllers\Api\UsuarioApiController;
+use App\Http\Controllers\Api\TestApiController;
+
 
 use App\Models\UsuarioSisu;
 
@@ -107,37 +107,27 @@ Route::middleware(['auth.api'])->group(function () {
 
   // Recursos de la API
   Route::apiResource('/users', UsuarioApiController::class);
-
-
-  // Rutas adicionales para Tasks
-  Route::post('/tasks/{id}/toggle-complete', [TaskApiController::class, 'toggleComplete']);
-  Route::get('/tasks/completed', [TaskApiController::class, 'completed']);
-  Route::get('/tasks/pending', [TaskApiController::class, 'pending']);
-  Route::get('/tasks/search', [TaskApiController::class, 'search']);
-  Route::get('/tasks/stats', [TaskApiController::class, 'stats']);
-
-  Route::get('poderes/listar', [PoderesApiController::class, 'listar']);
-  Route::get('poderes/detalle/{id}', [PoderesApiController::class, 'detalle']);
-  Route::get('poderes/buscar', [PoderesApiController::class, 'buscar']);
-  Route::get('poderes/buscar-empresa/{nit}', [PoderesApiController::class, 'buscar_empresa']);
-  Route::post('poderes/activar/{documento}', [PoderesApiController::class, 'activar']);
-  Route::post('poderes/validacion-previa', [PoderesApiController::class, 'validacion_previa']);
-  Route::post('poderes/inactivar/{documento}', [PoderesApiController::class, 'inactivar']);
-  Route::delete('poderes/remover/{documento}', [PoderesApiController::class, 'remover']);
-  Route::get('poderes/criterios-rechazo', [PoderesApiController::class, 'criterios_rechazo']);
-  Route::post('poderes/cargue-masivo', [PoderesApiController::class, 'cargue_masivo']);
-
-  // Nuevas rutas migradas desde Kumbia
-  Route::post('poderes/ingresar-poder', [PoderesApiController::class, 'ingresar_poder']);
-  Route::get('poderes/buscar-apoderado/{apoderado_nit?}', [PoderesApiController::class, 'buscar_apoderado']);
-  Route::get('poderes/buscar-poderdante/{poderdante_nit?}', [PoderesApiController::class, 'buscar_poderdante']);
-  Route::get('poderes/exportar-lista-csv', [PoderesApiController::class, 'exportar_lista_csv']);
-  Route::get('poderes/exportar-pdf', [PoderesApiController::class, 'exportar_pdf']);
-  Route::get('poderes/exportar-lista', [PoderesApiController::class, 'exportar_lista']);
-  Route::get('poderes/acta-revision-verificacion', [PoderesApiController::class, 'acta_revision_verificacion']);
-  Route::get('poderes/exportar-asistencias', [PoderesApiController::class, 'exportar_asistencias']);
-  Route::post('poderes/registrar-rechazo-poder', [PoderesApiController::class, 'registrar_rechazo_poder']);
 });
+
+
+// Importar archivos de rutas individuales
+require __DIR__ . '/api/tasks.php';
+require __DIR__ . '/api/poderes.php';
+require __DIR__ . '/api/interventores.php';
+require __DIR__ . '/api/mesas.php';
+require __DIR__ . '/api/novedades.php';
+require __DIR__ . '/api/habiles.php';
+require __DIR__ . '/api/recepcion.php';
+require __DIR__ . '/api/rechazos.php';
+require __DIR__ . '/api/reportes.php';
+require __DIR__ . '/api/representantes.php';
+require __DIR__ . '/api/trabajadores.php';
+require __DIR__ . '/api/usuarios.php';
+
+// Ruta de prueba
+Route::get('/test', [TestApiController::class, 'index']);
+require __DIR__ . '/api/inicio.php';
+require __DIR__ . '/api/misc.php';
 
 /*
 |--------------------------------------------------------------------------

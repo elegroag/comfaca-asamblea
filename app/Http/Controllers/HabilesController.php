@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class HabilesController extends Controller
 {
@@ -26,8 +27,8 @@ class HabilesController extends Controller
 
     public function index()
     {
-        return view('habiles.index', [
-            'titulo' => 'Empresas',
+        return Inertia::render('Habiles', [
+            'title' => 'Empresas',
             'itemMenuSidebar' => $this->itemMenuSidebar,
         ]);
     }

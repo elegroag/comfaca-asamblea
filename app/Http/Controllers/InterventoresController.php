@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AsaInterventores;
 use App\Models\Empresas;
 use App\Models\Poderes;
-use App\Services\AsambleaService;
+use App\Services\Asamblea\AsambleaService;
 use App\Services\Reportes\InterventoresReporte;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -33,7 +33,7 @@ class InterventoresController extends Controller
     public function index()
     {
         AsambleaService::IsAdmin();
-        
+
         return view('interventores.index', [
             'titulo' => 'Interventores Y Consejeros'
         ]);
@@ -45,21 +45,21 @@ class InterventoresController extends Controller
     public function listar(): JsonResponse
     {
         $interventores = \DB::select("
-            SELECT 
+            SELECT
                 nit,
                 cedrep,
                 razsoc,
                 repleg,
                 IF(puede_votar > 0, 'SI', 'NO') as 'puedevotar',
-                (CASE 
-                    WHEN tipo_representacion='I' THEN 'Interventor' 
-                    WHEN tipo_representacion='S' THEN 'Suplente' 
-                    WHEN tipo_representacion='A' THEN 'Asambleista' 
-                    WHEN tipo_representacion='C' THEN 'Concejero' 
-                    ELSE 'Ninguno' 
+                (CASE
+                    WHEN tipo_representacion='I' THEN 'Interventor'
+                    WHEN tipo_representacion='S' THEN 'Suplente'
+                    WHEN tipo_representacion='A' THEN 'Asambleista'
+                    WHEN tipo_representacion='C' THEN 'Concejero'
+                    ELSE 'Ninguno'
                 END) as 'tipo',
-                create_at, 
-                IF(email <> '', email, (SELECT empresas.email FROM empresas WHERE empresas.cedrep = asa_interventores.cedrep LIMIT 1)) as 'correo' 
+                create_at,
+                IF(email <> '', email, (SELECT empresas.email FROM empresas WHERE empresas.cedrep = asa_interventores.cedrep LIMIT 1)) as 'correo'
             FROM asa_interventores
         ");
 
@@ -99,26 +99,26 @@ class InterventoresController extends Controller
 
             if (($fdata = fopen($fullPath, "r")) !== false) {
                 $ai = 0;
-                
+
                 while (($line = fgets($fdata)) !== false) {
                     $line = str_replace(["\n", "\t"], ["", " "], $line);
-                    
+
                     if ($ai == 0) {
                         $headers = explode(";", $line);
                     } else {
                         $fila = explode(";", $line);
                         $cedula = trim($fila[0] ?? '');
-                        
+
                         if ($cedula === "") {
                             $fallidos[] = $ai + 1;
                             continue;
                         }
-                        
+
                         if (is_numeric($cedula) && $cedula > 0) {
                             $filas++;
-                            
+
                             $empresa = Empresas::where('cedrep', $cedula)->first();
-                            
+
                             if ($empresa && $cruzarPoderes == 1) {
                                 $poder = Poderes::where('cedrep1', $cedula)->first();
                                 if ($poder) {
@@ -128,7 +128,7 @@ class InterventoresController extends Controller
                             }
 
                             $interventor = AsaInterventores::where('cedula', $cedula)->first();
-                            
+
                             if ($interventor) {
                                 $duplicados[] = $cedula;
                             } else {
@@ -174,10 +174,9 @@ class InterventoresController extends Controller
             Storage::delete($filepath);
 
             return response()->json($salida);
-
         } catch (\Exception $e) {
             Log::error('Error en cargue masivo de interventores: ' . $e->getMessage());
-            
+
             return response()->json([
                 'error' => 'Error no es posible el cargue del archivo: ' . $e->getMessage()
             ], 500);
@@ -192,15 +191,14 @@ class InterventoresController extends Controller
         try {
             $interventoresReporte = new InterventoresReporte();
             $result = $interventoresReporte->main($this->idAsamblea);
-            
+
             return response()->json([
                 'status' => 200,
                 ...$result
             ]);
-
         } catch (\Exception $e) {
             Log::error('Error exportando lista de interventores: ' . $e->getMessage());
-            
+
             return response()->json([
                 'status' => 500,
                 'error' => 'Error al exportar la lista de interventores'
@@ -213,8 +211,8 @@ class InterventoresController extends Controller
      */
     private function encodeUtf8(array $data): array
     {
-        return array_map(function($item) {
-            return array_map(function($value) {
+        return array_map(function ($item) {
+            return array_map(function ($value) {
                 return is_string($value) ? utf8_encode($value) : $value;
             }, (array) $item);
         }, $data);

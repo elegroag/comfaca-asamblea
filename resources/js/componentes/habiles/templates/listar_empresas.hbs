@@ -1,34 +1,237 @@
-<div class="bg-white rounded-lg shadow-md overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200" id='tb_data_habiles' width='100%'>
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Nit
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Razón Social
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Identificación
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Representante
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Teléfono
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email
-                    </th>
-                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        OPT
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200" id="show_data_habiles">
-                <!-- Las filas se insertarán dinámicamente aquí -->
-            </tbody>
-        </table>
-    </div>
+<div class="table-responsive tb-options">
+    <table class="table table-striped table-bordered dataTable dtr-inline" id='<%=datatable%>' width='100%'>
+        <thead>
+            <tr>
+                <th>Nit</th>
+                <th>Razon social</th>
+                <th>Identificación</th>
+                <th>Representante</th>
+                <th>Telefono</th>
+                <th>Email</th>
+                <th>OPT</th>
+            </tr>
+        </thead>
+        <tbody id="show_datatable"></tbody>
+    </table>
 </div>
+
+
+<style>
+    #<%=datatable%>_wrapper {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 12px;
+        color: #111827;
+    }
+
+    #<%=datatable%>_wrapper .row {
+        margin: 0;
+        gap: 10px;
+    }
+
+    #<%=datatable%>_wrapper .dt-length,
+    #<%=datatable%>_wrapper .dt-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        color: #374151;
+    }
+
+    #<%=datatable%>_wrapper .form-select,
+    #<%=datatable%>_wrapper .form-control {
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        min-height: 34px;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.875rem;
+        box-shadow: none;
+        background: #fff;
+    }
+
+    #<%=datatable%>_wrapper .form-select:focus,
+    #<%=datatable%>_wrapper .form-control:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    #<%=datatable%> {
+        width: 100% !important;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.92rem;
+    }
+
+    #<%=datatable%>_wrapper thead th {
+        background: #f9fafb;
+        color: #4b5563;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+        border-right: 1px solid #e5e7eb;
+    }
+
+    #<%=datatable%>_wrapper tbody td {
+        border: 1px solid #f1f5f9;
+        vertical-align: middle;
+        padding: 0.2rem 0.1rem;
+    }
+
+    #<%=datatable%>_wrapper tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    #<%=datatable%>_wrapper .btn-group .btn {
+        border-radius: 8px;
+        border: 0;
+        min-width: 34px;
+        min-height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #<%=datatable%>_wrapper .btn-group .btn+.btn {
+        margin-left: 6px;
+    }
+
+    #<%=datatable%>_wrapper .dt-info,
+    #<%=datatable%>_wrapper .dt-paging {
+        margin-top: 10px;
+        font-size: 0.86rem;
+        color: #6b7280;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging-button {
+        border: none;
+        border-radius: 8px;
+        padding: 0.1rem;
+        margin-left: 4px;
+        background: #fff;
+        color: #374151 !important;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging nav,
+    #<%=datatable%>_wrapper .dt-paging .pagination {
+        margin: 0;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging .pagination {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging .page-item {
+        margin: 0;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging .page-link {
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        min-width: 36px;
+        height: 36px;
+        padding: 0 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        color: #374151;
+        font-size: 0.85rem;
+        line-height: 1;
+        box-shadow: none;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging .page-link:hover {
+        background: #eff6ff;
+        border-color: #93c5fd;
+        color: #1d4ed8;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging .page-item.active .page-link,
+    #<%=datatable%>_wrapper .dt-paging .dt-paging-button.current .page-link {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #ffffff;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging .page-item.disabled .page-link,
+    #<%=datatable%>_wrapper .dt-paging .dt-paging-button.disabled .page-link {
+        background: #f9fafb;
+        border-color: #e5e7eb;
+        color: #9ca3af;
+        opacity: 1;
+        cursor: not-allowed;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging-button.current,
+    #<%=datatable%>_wrapper .dt-paging-button:hover {
+        background: #eff6ff !important;
+        border-color: #93c5fd;
+        color: #1d4ed8 !important;
+    }
+
+    #<%=datatable%>_wrapper .justify-content-between:first-child {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: .3rem;
+    }
+
+    @media (max-width: 1024px) {
+        #<%=datatable%>_wrapper {
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        #<%=datatable%>_wrapper {
+            font-size: 0.86rem;
+        }
+
+        #<%=datatable%>_wrapper thead th,
+        #<%=datatable%>_wrapper tbody td {
+            padding: 0.55rem 0.6rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        #<%=datatable%>_wrapper .dt-layout-start,
+        #<%=datatable%>_wrapper .dt-layout-end {
+            width: 100%;
+            justify-content: flex-start !important;
+        }
+
+        #<%=datatable%>_wrapper .dt-length,
+        #<%=datatable%>_wrapper .dt-search {
+            width: 100%;
+        }
+
+        #<%=datatable%>_wrapper .dt-search input,
+        #<%=datatable%>_wrapper .dt-length select {
+            width: 100%;
+        }
+
+        #<%=datatable%>_wrapper {
+            min-width: 760px;
+        }
+
+        #<%=datatable%>_wrapper .dt-info,
+        #<%=datatable%>_wrapper .dt-paging {
+            width: 100%;
+            text-align: left;
+        }
+
+        #<%=datatable%>_wrapper .dt-paging .pagination {
+            justify-content: flex-start;
+        }
+
+        #<%=datatable%>_wrapper .dt-paging .page-link {
+            min-width: 34px;
+            height: 34px;
+            font-size: 0.8rem;
+        }
+    }
+</style>

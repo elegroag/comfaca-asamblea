@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\AsaInterventores;
 use App\Models\Empresas;
 use App\Models\Poderes;
@@ -15,16 +16,11 @@ use Illuminate\Support\Facades\Log;
 
 class InterventoresApiController extends Controller
 {
-    protected AsambleaService $asambleaService;
     protected ?int $idAsamblea;
 
-    public function __construct(AsambleaService $asambleaService)
+    public function __construct()
     {
-        $this->asambleaService = $asambleaService;
-        $this->middleware(function ($request, $next) {
-            $this->idAsamblea = $this->asambleaService->getAsambleaActiva();
-            return $next($request);
-        });
+        $this->idAsamblea = AsambleaService::getAsambleaActiva();
     }
 
 

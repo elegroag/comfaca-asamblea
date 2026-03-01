@@ -4,18 +4,16 @@ import EmpresaCrear from "@/componentes/habiles/views/EmpresaCrearView";
 import EmpresaEditar from "@/componentes/habiles/views/EmpresaEditarView";
 import EmpresaDetalle from "@/componentes/habiles/views/EmpresaDetalleView";
 import EmpresaMasivo from "@/componentes/habiles/views/EmpresaMasivoView";
-import EmpresasHabiles from "./EmpresasListar";
+import EmpresasListar from "./EmpresasListar";
+import EmpresasHabiles from "./EmpresasHabiles";
 import EmpresaService from "./EmpresaService";
 import Loading from '@/common/Loading';
 import HabilesCollection from '@/componentes/habiles/collections/HabilesCollection';
 import EmpresasCollection from '@/collections/EmpresasCollection';
 import Empresa from '@/models/Empresa';
+import { CacheManager, cacheCollection, getCachedCollection } from '@/componentes/CacheManager';
 
 export default class EmpresasController extends Controller {
-    public Collections: {
-        empresas: any;
-        habiles: any;
-    };
     empresaService: EmpresaService;
 
     constructor(options: any) {
@@ -28,11 +26,7 @@ export default class EmpresasController extends Controller {
             EmpresaModel: Empresa,
         });
 
-        this.Collections = {
-            empresas: new EmpresasCollection(),
-            habiles: new HabilesCollection(),
-        };
-        this.empresaService.initializeCollections();
+        console.log('EmpresasController inicializado con cache global');
     }
 
 
@@ -43,20 +37,31 @@ export default class EmpresasController extends Controller {
         this.logger.log('EmpresasController.listaEmpresas() called');
 
         try {
-            const controller = this.startController(EmpresaListar);
+            const controller = this.startController(EmpresasListar) as EmpresasListar;
 
-            if (!this.Collections.empresas || !this.Collections.empresas.length || this.Collections.empresas.length === 0) {
+            // Obtener empresas desde cache
+            let empresas = getCachedCollection('empresas', EmpresasCollection);
+
+            if (_.size(empresas) === 0) {
                 try {
                     if (!this.api) {
                         this.app?.trigger('error', 'API no disponible');
                         return;
                     }
 
-                    const response = await this.api.get('/habiles/listar');
+                    const response = await this.empresaService.findAllEmpresas();
 
                     if (response && response.success === true) {
+                        // Crear collection y guardar en cache
+                        empresas = new EmpresasCollection();
+                        empresas.add(response.empresas || [], { merge: true });
 
-                        this.empresaService.__setEmpresas((response as any).empresas);
+                        // Guardar en cache para uso futuro
+                        cacheCollection('empresas', empresas, {
+                            persistent: true, // Persistir en localStorage
+                            ttl: 60 * 60 * 1000 // 1 hora
+                        });
+
                         controller.listaEmpresas();
                     } else {
                         this.app?.trigger('error', (response as any).msj || response.message || 'Error al listar empresas');
@@ -76,6 +81,44 @@ export default class EmpresasController extends Controller {
             this.logger.error('Error al listar empresas:', err);
             if (this.app?.trigger) {
                 this.app.trigger('error', 'Error de conexión al listar empresas');
+            }
+        }
+    }
+
+    /**
+     * Manejar eliminación de empresa desde la collection
+     */
+    private handleRemoveEmpresa(data: any): void {
+        if (data.removeFromCollection && data.model) {
+            // Obtener empresas desde cache y eliminar el modelo
+            const empresas = getCachedCollection('empresas', EmpresasCollection);
+            if (empresas) {
+                empresas.remove(data.model);
+
+                // Actualizar cache
+                cacheCollection('empresas', empresas, {
+                    persistent: true,
+                    ttl: 60 * 60 * 1000
+                });
+            }
+        }
+    }
+
+    /**
+     * Manejar eliminación de habil desde la collection
+     */
+    private handleRemoveHabil(data: any): void {
+        if (data.removeFromCollection && data.model) {
+            // Obtener habiles desde cache y eliminar el modelo
+            const habiles = getCachedCollection('habiles', HabilesCollection);
+            if (habiles) {
+                habiles.remove(data.model);
+
+                // Actualizar cache
+                cacheCollection('habiles', habiles, {
+                    persistent: true,
+                    ttl: 60 * 60 * 1000
+                });
             }
         }
     }
@@ -109,7 +152,10 @@ export default class EmpresasController extends Controller {
         try {
             const auth = this.startController(EmpresaEditar);
 
-            if (!this.Collections.empresas || !this.Collections.empresas.length || this.Collections.empresas.length <= 1) {
+            // Obtener empresas desde cache
+            let empresas = getCachedCollection('empresas', EmpresasCollection);
+
+            if (!empresas || !empresas.length || empresas.length <= 1) {
                 try {
                     if (!this.api) {
                         this.app?.trigger('error', 'API no disponible');
@@ -119,8 +165,17 @@ export default class EmpresasController extends Controller {
                     const response = await this.api.get('/habiles/listar');
 
                     if (response && response.success === true) {
-                        this.empresaService.__setEmpresas((response as any).empresas);
-                        const model = this.Collections.empresas.get(nit);
+                        // Crear collection y agregar datos
+                        empresas = new EmpresasCollection();
+                        empresas.add((response as any).empresas, { merge: true });
+
+                        // Guardar en cache
+                        cacheCollection('empresas', empresas, {
+                            persistent: true,
+                            ttl: 60 * 60 * 1000
+                        });
+
+                        const model = empresas.get(nit);
                         auth.editaEmpresa(model);
                     } else {
                         this.app?.trigger('alert:error', { message: response.message || 'Error al obtener datos de la empresa' });
@@ -130,7 +185,7 @@ export default class EmpresasController extends Controller {
                     this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al editar empresa' });
                 }
             } else {
-                const model = this.Collections.empresas.get(nit);
+                const model = empresas.get(nit);
                 auth.editaEmpresa(model);
             }
         } catch (err: any) {
@@ -150,7 +205,10 @@ export default class EmpresasController extends Controller {
         try {
             const auth = this.startController(EmpresaDetalle);
 
-            if (!this.Collections.empresas || !this.Collections.empresas.length || this.Collections.empresas.length === 0) {
+            // Obtener empresas desde cache
+            let empresas = getCachedCollection('empresas', EmpresasCollection);
+
+            if (!empresas || !empresas.length || empresas.length === 0) {
                 try {
                     if (!this.api) {
                         this.app?.trigger('alert:error', { message: 'API no disponible' });
@@ -160,8 +218,17 @@ export default class EmpresasController extends Controller {
                     const response = await this.api.get('/habiles/listar');
 
                     if (response && response.success === true) {
-                        this.empresaService.__setEmpresas((response as any).empresas);
-                        const model = this.Collections.empresas.get(nit);
+                        // Crear collection y agregar datos
+                        empresas = new EmpresasCollection();
+                        empresas.add((response as any).empresas, { merge: true });
+
+                        // Guardar en cache
+                        cacheCollection('empresas', empresas, {
+                            persistent: true,
+                            ttl: 60 * 60 * 1000
+                        });
+
+                        const model = empresas.get(nit);
                         auth.detalleEmpresa(model);
                     } else {
                         this.app?.trigger('alert:error', { message: response.message || 'Error al obtener detalles de la empresa' });
@@ -171,7 +238,7 @@ export default class EmpresasController extends Controller {
                     this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al mostrar detalles de la empresa' });
                 }
             } else {
-                const model = this.Collections.empresas.get(nit);
+                const model = empresas.get(nit);
                 auth.detalleEmpresa(model);
             }
         } catch (err: any) {
@@ -189,9 +256,12 @@ export default class EmpresasController extends Controller {
         this.logger.log('EmpresasController.listarHabiles() called');
 
         try {
-            const auth = this.startController(EmpresasHabiles);
+            const controller = this.startController(EmpresasHabiles) as EmpresasHabiles;
 
-            if (!this.Collections.habiles || !this.Collections.habiles.length || this.Collections.habiles.length === 0) {
+            // Obtener habiles desde cache
+            let habiles = getCachedCollection('habiles', HabilesCollection);
+
+            if (_.size(habiles) === 0) {
                 if (Loading) Loading.show();
 
                 try {
@@ -200,15 +270,24 @@ export default class EmpresasController extends Controller {
                         return;
                     }
 
-                    const response = await this.api.get('/habiles/lista_habiles');
+                    const response = await this.empresaService.findAllHabiles();
 
                     setTimeout(() => {
                         if (Loading) Loading.hide();
                     }, 300);
 
                     if (response && response.success === true) {
-                        this.empresaService.__setHabiles((response as any).empresas);
-                        auth.listarHabiles();
+                        // Crear collection y agregar datos
+                        habiles = new HabilesCollection();
+                        habiles.add(response.empresas, { merge: true });
+
+                        // Guardar en cache para uso futuro
+                        cacheCollection('habiles', habiles, {
+                            persistent: true, // Persistir en localStorage
+                            ttl: 60 * 60 * 1000 // 1 hora
+                        });
+
+                        controller.listarHabiles();
                     } else {
                         this.app?.trigger('alert:error', { message: (response as any).msj || response.message || 'Error al listar habiles' });
                     }
@@ -218,7 +297,7 @@ export default class EmpresasController extends Controller {
                     this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar habiles' });
                 }
             } else {
-                auth.listarHabiles();
+                controller.listarHabiles();
             }
         } catch (err: any) {
             this.logger.error('Error al listar habiles:', err);

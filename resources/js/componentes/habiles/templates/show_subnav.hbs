@@ -1,50 +1,28 @@
-<nav class="bg-white border-b border-gray-200 px-6 py-4">
-    <div class="flex items-center justify-between">
-        <div class="flex-shrink-0">
-            <h4 class="text-xl font-semibold text-gray-900">
-                <%=titulo%>
-            </h4>
-        </div>
-
-        <div class="flex items-center space-x-3">
-            <button
-                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                id='bt_listar' type="button" <%=(!listar)? 'disabled' : '' %>
-                <i class="fas fa-list mr-2"></i>
-                Listar
+<div class="row">
+    <div class="col-auto">
+        <h4 class="text-primary mt-2"> <%=titulo%></h4>
+    </div>
+    <div class="col">
+        <div class="nav justify-content-end">
+            <button class="nav-link btn btn-info" id='bt_listar' type="button" <%=(!listar)? 'disabled': '' %>>
+                &nbsp;Listar
             </button>
-
-            <% if (SuperAdmin===1) { %>
-                <button
-                    class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                    id='bt_export_data' type="button" <%=(!exportar)? 'disabled' : '' %>
-                    <i class="fas fa-download mr-2"></i>
-                    Exportar
+            <? if (Session::getData("SuperAdmin") == 1) { ?>
+                <button class="nav-link btn btn-primary" id='bt_export_data' type="button" <%=(!exportar)? 'disabled': '' %>>
+                    &nbsp;Exportar
                 </button>
-                <% } %>
-
-                    <button
-                        class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                        id='bt_nuevo_registro' type="button" <%=(!crear)? 'disabled' : '' %>
-                        <i class="fas fa-plus mr-2"></i>
-                        Nuevo
-                    </button>
-
-                    <button
-                        class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                        id='bt_edita_nav_registro' type="button" <%=(!editar)? 'disabled' : '' %>
-                        <i class="fas fa-edit mr-2"></i>
-                        Editar
-                    </button>
-
-                    <% if (Session::getData("SuperAdmin")==1) { %>
-                        <button
-                            class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
-                            id='bt_masivo_registro' type="button" <%=(!masivo)? 'disabled' : '' %>
-                            <i class="fas fa-upload mr-2"></i>
-                            Cargar Masivo
-                        </button>
-                        <% } %>
+            <? } ?>
+            <button class="nav-link btn btn-success" id='bt_nuevo_registro' type="button" <%=(!crear)? 'disabled': '' %>>
+                &nbsp;Nuevo
+            </button>
+            <button class="nav-link btn btn-default" id='bt_edita_nav_registro' type="button" <%=(!editar)? 'disabled': '' %>>
+                &nbsp;Editar
+            </button>
+            <? if (Session::getData("SuperAdmin") == 1) { ?>
+                <button class="nav-link btn btn-warning" id='bt_masivo_registro' type="button" <%=(!masivo)? 'disabled': '' %>>
+                    &nbsp;Cargar Masivo
+                </button>
+            <? } ?>
         </div>
     </div>
-</nav>
+</div>

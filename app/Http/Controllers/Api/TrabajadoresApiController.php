@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Models\AsaTrabajadores;
 use App\Models\Empresas;
@@ -17,7 +17,6 @@ class TrabajadoresApiController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
         $this->idAsamblea = $this->getAsambleaActiva();
     }
 

@@ -3,7 +3,7 @@ import EmpresasController from "./EmpresasController";
 import { RouterOptions } from "@/types/CommonDeps";
 
 export default class RouterHabiles extends BackboneRouter {
-    public controller: EmpresasController | null;
+
 
     constructor(options: RouterOptions) {
         super({
@@ -19,76 +19,68 @@ export default class RouterHabiles extends BackboneRouter {
         });
 
         this.app = options.app;
-        this.controller = null;
         this._bindRoutes();
     }
 
-    init() {
-        this.controller = this.app.startSubApplication(EmpresasController);
-    }
-
-    /**
-     * Método principal del router
-     */
-    main(): void {
-        console.log('RouterHabiles.main() called');
+    init(): EmpresasController {
+        return this.app.startSubApplication(EmpresasController);
     }
 
     /**
      * Manejar ruta para cargue masivo de empresas
      */
     masivoEmpresas(): void {
-        this.init();
-        this.controller?.cargueMasivo();
+        const controller = this.init();
+        controller.cargueMasivo();
     }
 
     /**
      * Manejar ruta para listar empresas
      */
     listaEmpresas(): void {
-        this.init();
-        this.controller?.listaEmpresas();
+        const controller = this.init();
+        controller.listaEmpresas();
     }
 
     /**
      * Manejar ruta para ver detalles de empresa
      */
     detalleEmpresa(nit: string): void {
-        this.init();
+        const controller = this.init();
         if (!nit || nit.trim() === '') {
             this.navigate('listar', { trigger: true });
             return;
         }
 
-        this.controller?.detalleEmpresa(nit);
+        controller.detalleEmpresa(nit);
     }
 
     /**
      * Manejar ruta para crear nueva empresa
      */
     crearEmpresa(): void {
-        this.init();
-        this.controller?.crearEmpresa();
+        const controller = this.init();
+        controller.crearEmpresa();
     }
 
     /**
      * Manejar ruta para editar empresa
      */
     editaEmpresa(nit: string): void {
-        this.init();
+        const controller = this.init();
         if (!nit || nit.trim() === '') {
             this.navigate('listar', { trigger: true });
             return;
         }
 
-        this.controller?.editaEmpresa(nit);
+        controller.editaEmpresa(nit);
     }
 
     /**
      * Manejar ruta para listar habiles
      */
     listarHabiles(): void {
-        this.init();
-        this.controller?.listarHabiles();
+        const controller = this.init();
+        controller.listarHabiles();
     }
 }

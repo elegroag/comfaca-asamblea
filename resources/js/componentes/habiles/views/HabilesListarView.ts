@@ -2,6 +2,7 @@ import { BackboneView } from "@/common/Bone";
 import HabilesRowView from "./HabilesRowView";
 import tmp_listar_habiles from "@/componentes/habiles/templates/listar_habiles.hbs?raw";
 import HabilesService from "@/pages/Habiles/EmpresaService";
+import DataTable from 'datatables.net-bs5';
 
 interface HabilesListarViewOptions {
     router?: { navigate: (fragment: string, options?: any) => void };
@@ -65,11 +66,13 @@ export default class HabilesListarView extends BackboneView {
     }
 
     render(): this {
-        this.$el.html(this.template());
+
+        this.$el.html(this.template({ datatable: 'tb_data_habiles' }));
         const filas = this.collection.map((model: any) => {
             let view = this.renderModel(model);
             return view.el;
         });
+
         this.$el.find('#show_data_habiles').append(filas);
         this.init_table();
         return this;
@@ -122,38 +125,43 @@ export default class HabilesListarView extends BackboneView {
     }
 
     init_table(): void {
-        const tableElement = this.$el.find('#tb_data_habiles');
-        if (tableElement.length && typeof tableElement.DataTable === 'function') {
-            this.tableModule = tableElement.DataTable({
-                paging: true,
-                pageLength: 10,
-                pagingType: 'full_numbers',
-                info: true,
-                columnDefs: [
-                    { targets: 0, width: '5%' },
-                    { targets: 1, width: '30%' },
-                    { targets: 2, width: '5%' },
-                    { targets: 3, width: '20%' },
-                    { targets: 4, width: '30%' },
-                    { targets: 5, width: '5%' },
-                    { targets: 6, searchable: false, width: '5%' },
-                ],
-                language: {
-                    lengthMenu: 'Mostrar _MENU_ registros',
-                    zeroRecords: 'No se encontraron resultados',
-                    info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
-                    infoEmpty: 'Mostrando 0 a 0 de 0 registros',
-                    infoFiltered: '(filtrado de _MAX_ registros totales)',
-                    search: 'Buscar:',
-                    paginate: {
-                        first: 'Primero',
-                        last: 'Último',
-                        next: 'Siguiente',
-                        previous: 'Anterior'
-                    }
-                }
-            });
+        if (this.tableModule) {
+            this.tableModule.destroy();
         }
+        this.tableModule = new DataTable(this.$el.find('#tb_data_habiles'), {
+            paging: true,
+            pageLength: 10,
+            pagingType: 'full_numbers',
+            info: true,
+            searching: true,
+            ordering: true,
+            autoWidth: false,
+            columnDefs: [
+                { targets: 0, width: '5%' },
+                { targets: 1, width: '30%' },
+                { targets: 2, width: '5%' },
+                { targets: 3, width: '20%' },
+                { targets: 4, width: '30%' },
+                { targets: 5, width: '5%' },
+                { targets: 6, searchable: false, width: '5%' },
+            ],
+            language: {
+                lengthMenu: 'Mostrar _MENU_ registros',
+                zeroRecords: 'No se encontraron resultados',
+                info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+                infoEmpty: 'Mostrando 0 a 0 de 0 registros',
+                infoFiltered: '(filtrado de _MAX_ registros totales)',
+                search: 'Buscar:',
+                paginate: {
+                    first: 'Primero',
+                    last: 'Último',
+                    next: 'Siguiente',
+                    previous: 'Anterior'
+                }
+            },
+            destroy: true
+        });
+
         this.$el.find('#tb_data_habiles').fadeIn();
     }
 

@@ -4,6 +4,8 @@ import EmpresaListarView from "@/componentes/habiles/views/EmpresaListarView";
 import { Controller } from "@/common/Controller";
 import EmpresaService from "./EmpresaService";
 import Empresa from "@/models/Empresa";
+import { getCachedCollection } from "@/componentes/CacheManager";
+import EmpresasCollection from "@/collections/EmpresasCollection";
 
 export default class EmpresasListar extends Controller {
     public empresaService: any;
@@ -18,9 +20,13 @@ export default class EmpresasListar extends Controller {
             logger: this.logger,
             EmpresaModel: Empresa
         });
+    }
 
-        this.listenTo(this, 'set:empresas', this.empresaService.__setEmpresas);
-        this.listenTo(this, 'add:empresa', this.empresaService.__addEmpresas);
+    /**
+     * Manejar eliminación de empresa
+     */
+    handleRemoveEmpresa(transfer: any): void {
+        this.empresaService.__removeEmpresa(transfer);
     }
 
     /**
@@ -44,7 +50,7 @@ export default class EmpresasListar extends Controller {
             },
             api: this.api,
             app: this.app,
-            router: this.router
+            router: this.router as any
         });
 
         const subheaderRegion = layout.getRegion('subheader');
@@ -55,16 +61,18 @@ export default class EmpresasListar extends Controller {
         this.listenTo(navView, 'export:lista', this.empresaService.__exportLista);
         this.listenTo(navView, 'export:informe', this.empresaService.__exportInforme);
 
+        const empresas = getCachedCollection('empresas', EmpresasCollection);
+
         // Configurar vista principal
         const listView = new EmpresaListarView({
-            collection: this.empresaService.Collections.empresas || [],
+            collection: empresas ?? [], // La vista se actualizará cuando el controller cargue los datos
             router: this.router as any,
             api: this.api,
             app: this.app
         });
 
         if (typeof this.listenTo === 'function') {
-            this.listenTo(listView, 'remove:empresa', this.empresaService.__removeEmpresa);
+            this.listenTo(listView, 'remove:empresa', this.handleRemoveEmpresa.bind(this));
         }
 
         const bodyRegion = layout.getRegion('body');

@@ -4,8 +4,6 @@ import type { AppInstance } from "@/types/types";
 
 interface RouterPoderesOptions {
     app: AppInstance;
-    routes?: Record<string, string>;
-    [key: string]: any;
 }
 
 export default class RouterPoderes extends BackboneRouter {
