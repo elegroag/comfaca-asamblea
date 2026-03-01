@@ -15,7 +15,8 @@ export default function useLayout(props: BackendAuthProps) {
     const viewSidebar = new ViewSidebar({
         model: {
             menu: props.auth?.menu || [],
-            user: props.auth?.user || { name: 'Usuario', email: 'usuario@example.com' }
+            user: props.auth?.user || { name: 'Usuario', email: 'usuario@example.com' },
+            resource_active: props.auth?.resource_router || ''
         }
     });
     const viewHeader = new ViewHeader({ props });

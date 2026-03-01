@@ -43,12 +43,16 @@ export default class SidebarView extends BackboneView {
         const el = this.$el;
         const template = this.template({
             user: this.model.user,
-            menu: processedMenu
+            menu: processedMenu,
+            resource_active: this.model.resource_active
         });
         el.html(template);
 
         // Inicializar eventos después de renderizar
         this.initializeEvents();
+
+        // Expandir menú activo basado en resource_active
+        this.expandActiveMenu();
 
         return this;
     }
@@ -173,5 +177,63 @@ export default class SidebarView extends BackboneView {
                 $link.addClass('active');
             }
         });
+    }
+
+    /**
+     * Expande el menú correspondiente al recurso activo
+     */
+    expandActiveMenu(): void {
+        const resourceActive = this.model.resource_active;
+
+        if (!resourceActive) {
+            console.log('No hay resource_active para expandir menú');
+            return;
+        }
+
+        console.log('Expandiendo menú para resource_active:', resourceActive);
+
+        // Buscar el item con el resource_router coincidente
+        const activeItem = this.$el.find(`[data-resource="${resourceActive}"]`);
+
+        if (activeItem.length) {
+            console.log('Item activo encontrado:', activeItem);
+
+            // Agregar clase active al item
+            activeItem.addClass('active');
+            activeItem.addClass('expanded');
+
+            // Si es un submenu-item, expandir su padre
+            if (activeItem.hasClass('submenu-item')) {
+                const parentItem = activeItem.closest('.menu-item').parent().closest('.menu-item');
+                if (parentItem.length) {
+                    console.log('Expandiendo menú padre:', parentItem);
+                    parentItem.addClass('expanded');
+                }
+            }
+
+            // Agregar clase active al enlace
+            const link = activeItem.find('.menu-link');
+            if (link.length) {
+                link.addClass('active');
+            }
+        } else {
+            console.log('No se encontró item con resource_router:', resourceActive);
+
+            // Intentar coincidencia parcial (para casos como 'poderes#listar')
+            const baseResource = resourceActive.split('#')[0];
+            const parentItem = this.$el.find(`[data-resource="${baseResource}"]`);
+
+            if (parentItem.length) {
+                console.log('Expandiendo menú padre por coincidencia parcial:', baseResource);
+                parentItem.addClass('expanded');
+
+                // Buscar y activar el submenu correspondiente
+                const submenuItem = parentItem.find(`[data-resource*="${resourceActive}"]`);
+                if (submenuItem.length) {
+                    submenuItem.addClass('active');
+                    submenuItem.find('.menu-link').addClass('active');
+                }
+            }
+        }
     }
 }

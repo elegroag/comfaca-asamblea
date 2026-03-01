@@ -78,7 +78,8 @@ class HandleInertiaRequests extends Middleware
             'user' => $user->only('id', 'name', 'email'),
             'roles' => [],
             'permissions' => [],
-            'menu' => $this->getMenu($user)
+            'menu' => $this->getMenu($user),
+            'resource_router' => $this->getCurrentResourceRouter($request)
         ];
     }
 
@@ -87,5 +88,33 @@ class HandleInertiaRequests extends Middleware
         $asaUsuarios = AsaUsuarios::where('cedtra', $user->cedtra)->first();
 
         return SidebarPermisos::where('rol', $asaUsuarios->rol)->with('sidebar')->get()->toArray();
+    }
+
+    protected function getCurrentResourceRouter(Request $request): ?string
+    {
+        // Obtener la ruta actual y extraer el recurso
+        $routeName = $request->route()->getName();
+
+        if (!$routeName) {
+            return null;
+        }
+
+        // Mapear nombres de ruta a recursos del sidebar
+        $routeToResource = [
+            'poderes.index' => 'poderes',
+            'cartera.index' => 'cartera',
+            'asamblea.index' => 'asamblea',
+            'trabajadores.index' => 'trabajadores',
+            'rechazos.index' => 'rechazos',
+            'usuarios.index' => 'usuarios',
+            'consensos.index' => 'consensos',
+            'interventores.index' => 'interventores',
+            'mesas.index' => 'mesas',
+            'novedades.index' => 'novedades',
+            'recepcion.index' => 'recepcion',
+            'representantes.index' => 'representantes',
+        ];
+
+        return $routeToResource[$routeName] ?? null;
     }
 }

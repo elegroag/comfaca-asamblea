@@ -12131,7 +12131,7 @@ img {
 .sidebar .sidebar-wrapper {
     position: relative;
     height: calc(100vh - 65px);
-    overflow: auto;
+    overflow: hidden;
     width: 260px;
     z-index: 4;
     padding-bottom: 100px;

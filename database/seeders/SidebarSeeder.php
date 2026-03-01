@@ -18,7 +18,7 @@ class SidebarSeeder extends Seeder
             [
                 'label' => 'RECEPCIÓN',
                 'estado' => 'activo',
-                'resource_router' => null,
+                'resource_router' => 'recepcion',
                 'orden' => 1,
                 'sidebar_id' => null,
                 'ambiente' => 'todos',
@@ -47,7 +47,7 @@ class SidebarSeeder extends Seeder
             [
                 'label' => 'PODERES',
                 'estado' => 'activo',
-                'resource_router' => null,
+                'resource_router' => 'poderes',
                 'orden' => 2,
                 'sidebar_id' => null,
                 'ambiente' => 'todos',
@@ -100,7 +100,7 @@ class SidebarSeeder extends Seeder
             [
                 'label' => 'EMPRESAS HABILES',
                 'estado' => 'activo',
-                'resource_router' => null,
+                'resource_router' => 'empresas',
                 'orden' => 3,
                 'sidebar_id' => null,
                 'ambiente' => 'todos',
@@ -129,7 +129,7 @@ class SidebarSeeder extends Seeder
             [
                 'label' => 'CARTERA',
                 'estado' => 'activo',
-                'resource_router' => null,
+                'resource_router' => 'cartera',
                 'orden' => 4,
                 'sidebar_id' => null,
                 'ambiente' => 'todos',
@@ -138,7 +138,7 @@ class SidebarSeeder extends Seeder
                     [
                         'label' => 'Conceptos de Cartera',
                         'estado' => 'activo',
-                        'resource_router' => 'carteras',
+                        'resource_router' => 'carteras#listar',
                         'orden' => 1,
                         'ambiente' => 'todos',
                         'icon' => 'nc-icon nc-money-coins',
@@ -158,7 +158,7 @@ class SidebarSeeder extends Seeder
             [
                 'label' => 'ASAMBLEAS',
                 'estado' => 'activo',
-                'resource_router' => null,
+                'resource_router' => 'asambleas',
                 'orden' => 5,
                 'sidebar_id' => null,
                 'ambiente' => 'todos',
@@ -203,7 +203,7 @@ class SidebarSeeder extends Seeder
             [
                 'label' => 'SISTEMA',
                 'estado' => 'activo',
-                'resource_router' => null,
+                'resource_router' => 'sistema',
                 'orden' => 6,
                 'sidebar_id' => null,
                 'ambiente' => 'todos',

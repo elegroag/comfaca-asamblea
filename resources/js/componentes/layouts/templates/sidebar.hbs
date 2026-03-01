@@ -20,7 +20,7 @@
         <% if (menu && menu.length> 0) { %>
             <% _.each(menu, function(item) { %>
                 <li class="menu-item <%= item.sidebar.sidebar_id ? 'submenu-item' : '' %> <%= item.sidebar.estado !== 'activo' ? 'disabled' : '' %>"
-                    data-menu-id="<%= item.id %>">
+                    data-menu-id="<%= item.id %>" data-resource="<%= item.sidebar.resource_router %>">
                     <a href="<%= item.sidebar.resource_router ? '/' + item.sidebar.resource_router : '#' %>"
                         class="menu-link <%= item.hasChildren ? 'has-children' : '' %>" <%=item.sidebar.estado
                         !=='activo' ? 'onclick="return false;"' : '' %>>
@@ -36,7 +36,7 @@
                         <ul class="submenu">
                             <% _.each(item.children, function(child) { %>
                                 <li class="menu-item submenu-item <%= child.sidebar.estado !== 'activo' ? 'disabled' : '' %>"
-                                    data-menu-id="<%= child.id %>">
+                                    data-menu-id="<%= child.id %>" data-resource="<%= child.sidebar.resource_router %>">
                                     <a href="<%= child.sidebar.resource_router ? '/' + child.sidebar.resource_router : '#' %>"
                                         class="menu-link" <%=child.sidebar.estado !=='activo'
                                         ? 'onclick="return false;"' : '' %>>
@@ -180,14 +180,14 @@
 
     .menu-link:hover {
         background: rgba(255, 255, 255, 0.1);
-        padding-left: 25px;
+        padding-left: 15px;
         text-decoration: none;
         color: white;
     }
 
     .menu-link.active {
         background: rgba(255, 255, 255, 0.2);
-        border-left: 3px solid white;
+        border-left: 1px solid white;
     }
 
     .menu-icon {
@@ -230,7 +230,7 @@
     }
 
     .submenu-item .menu-link:hover {
-        padding-left: 57px;
+        padding-left: 20px;
     }
 
     .menu-item.disabled .menu-link {
@@ -418,5 +418,57 @@
     .sidebar-wrapper,
     .main-panel {
         transition: all 0.3s ease !important;
+    }
+
+    /* Estados del menú */
+    .menu-item.active>.menu-link {
+        background: rgba(255, 255, 255, 0.15) !important;
+        border-left: 1px solid #fff;
+    }
+
+    .menu-item.expanded>.submenu {
+        display: block !important;
+        max-height: 500px;
+        opacity: 1;
+        transition: all 0.3s ease;
+    }
+
+    .menu-item:not(.expanded)>.submenu {
+        display: none !important;
+        max-height: 0;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .menu-item.submenu-item.active>.menu-link {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-left: 2px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .menu-link.active {
+        background: rgba(255, 255, 255, 0.2) !important;
+        color: #fff !important;
+        font-weight: 500;
+    }
+
+    /* Hover para items activos */
+    .menu-item.active:hover>.menu-link {
+        background: rgba(255, 255, 255, 0.25) !important;
+    }
+
+    /* Estilos para submenús */
+    .submenu {
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        margin-left: 5px;
+        padding-left: 5px;
+    }
+
+    .submenu .menu-link {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .submenu .menu-link:hover {
+        background: rgba(255, 255, 255, 0.05) !important;
     }
 </style>

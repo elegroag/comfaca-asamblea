@@ -240,6 +240,7 @@ export interface BackendAuthProps {
         };
         menu: [{} | any] | any;
         token: string | null;
+        resource_router?: string | null;
     };
 }
 
