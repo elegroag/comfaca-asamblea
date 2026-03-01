@@ -57,7 +57,7 @@ export default class SidebarView extends BackboneView {
         return {
             'click #bt_listar': 'listarData',
             'keydown #bt_listar': 'toggleSidebar',
-            'click  #bt_logout': 'logout'
+            'click #bt_logout': 'logout'
         };
     }
 
@@ -76,7 +76,8 @@ export default class SidebarView extends BackboneView {
         // Ctrl/Cmd + B para toggle sidebar
         if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
             e.preventDefault();
-            document.body.classList.toggle('sidebar-collapsed');
+            // Usar la clase sidebar-mini del Paper Dashboard
+            document.body.classList.toggle('sidebar-mini');
         }
     }
 

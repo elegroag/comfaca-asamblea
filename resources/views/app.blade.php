@@ -29,7 +29,6 @@
     <link rel="stylesheet" href="{{ asset('theme/nucleo.css') }}" />
     <link rel="stylesheet" href="{{ asset('theme/nucleo.svg.css') }}" />
     <link rel="stylesheet" href="{{ asset('theme/paper-dashboard.css') }}" />
-    <link rel="stylesheet" href="{{ asset('theme/asamblea.css') }}" />
     @stack('styles')
     {{-- Ziggy: inyecta las rutas del backend en window.Ziggy --}}
 

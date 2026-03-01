@@ -12431,11 +12431,6 @@ img {
 }
 
 
-
-
-
-
-
 .sidebar[data-color=white] .nav li a,
 .sidebar[data-color=white] .nav li a[data-toggle=collapse],
 .sidebar[data-color=white] .nav li a[data-toggle=collapse] i,
@@ -12480,11 +12475,6 @@ img {
 }
 
 
-
-
-
-
-
 .sidebar[data-active-color=primary] .nav li.active>a,
 .sidebar[data-active-color=primary] .nav li.active>a[data-toggle=collapse],
 .sidebar[data-active-color=primary] .nav li.active>a[data-toggle=collapse] i,
@@ -12494,11 +12484,6 @@ img {
     color: #51cbce;
     opacity: 1;
 }
-
-
-
-
-
 
 
 .sidebar[data-active-color=info] .nav li.active>a,
@@ -12527,12 +12512,6 @@ img {
     opacity: 1;
 }
 
-
-
-
-
-
-
 .sidebar[data-active-color=warning] .nav li.active>a,
 .sidebar[data-active-color=warning] .nav li.active>a[data-toggle=collapse],
 .sidebar[data-active-color=warning] .nav li.active>a[data-toggle=collapse] i,
@@ -12542,12 +12521,6 @@ img {
     color: #fbc658;
     opacity: 1;
 }
-
-
-
-
-
-
 
 .sidebar[data-active-color=danger] .nav li.active>a,
 .sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse],

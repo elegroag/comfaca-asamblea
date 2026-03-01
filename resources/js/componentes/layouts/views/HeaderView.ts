@@ -17,12 +17,20 @@ export default class HeaderView extends ModelView {
     get events() {
         return {
             'click #bt_salir': 'salir',
+            'click #minimizeSidebar': 'toggleSidebar',
         };
     }
 
     salir(e: Event) {
         e.preventDefault();
         console.log('salir');
+    }
+
+    toggleSidebar(e: Event) {
+        e.preventDefault();
+
+        // Usar la clase sidebar-mini del Paper Dashboard
+        document.body.classList.toggle('sidebar-mini');
     }
 
     /**

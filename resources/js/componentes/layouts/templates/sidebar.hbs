@@ -66,9 +66,6 @@
 
 <style>
     .sidebar-container {
-        width: 100%;
-        min-width: 250px;
-        max-width: 300px;
         height: 100vh;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
@@ -340,5 +337,86 @@
             width: 100% !important;
             max-width: none !important;
         }
+    }
+
+    /* Sidebar collapsed state - compatible with Paper Dashboard */
+    .sidebar-mini #sidebar {
+        width: 80px !important;
+        /* Igual que Paper Dashboard */
+        min-width: 80px !important;
+        max-width: 80px !important;
+    }
+
+    .sidebar-mini .user-details,
+    .sidebar-mini .menu-text,
+    .sidebar-mini .menu-arrow,
+    .sidebar-mini .sidebar-footer span {
+        display: none !important;
+    }
+
+    .sidebar-mini .user-avatar {
+        margin: 0 auto;
+    }
+
+    .sidebar-mini .menu-link {
+        padding: 12px;
+        justify-content: center;
+        position: relative;
+    }
+
+    .sidebar-mini .menu-icon {
+        margin: 0;
+        font-size: 18px;
+    }
+
+    .sidebar-mini .submenu {
+        display: none;
+    }
+
+    .sidebar-mini .logout-btn {
+        padding: 12px;
+        justify-content: center;
+    }
+
+    .sidebar-mini .logout-btn i {
+        margin: 0;
+    }
+
+    /* Override Paper Dashboard hover expansion */
+    .sidebar-mini #sidebar:hover {
+        width: 80px !important;
+        /* Prevenir expansión del sidebar */
+    }
+
+    .sidebar-mini #sidebar:hover .sidebar-wrapper {
+        width: 80px !important;
+        /* Prevenir expansión del wrapper */
+    }
+
+    /* Hover effects for collapsed sidebar */
+    .sidebar-mini .menu-link:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        padding-left: 12px !important;
+    }
+
+    .sidebar-mini .menu-item {
+        position: relative;
+    }
+
+    .sidebar-mini .menu-item:hover .menu-text,
+    .sidebar-mini .menu-item:hover .menu-arrow {
+        display: none !important;
+    }
+
+    /* Main panel adjustment - Paper Dashboard compatible */
+    .sidebar-mini .main-panel {
+        width: calc(100% - 80px) !important;
+    }
+
+    /* Override Paper Dashboard transitions */
+    .sidebar,
+    .sidebar-wrapper,
+    .main-panel {
+        transition: all 0.3s ease !important;
     }
 </style>
