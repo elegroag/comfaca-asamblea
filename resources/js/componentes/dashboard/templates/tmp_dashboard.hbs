@@ -1,105 +1,485 @@
-<div id="app" class="dashboard-container">
-    <header class="dashboard-header">
-        <div class="header-content">
-            <h1>
-                <%= props.title %>
-            </h1>
-            <div class="user-info">
-                <span>Bienvenido, <%= props.user.name %></span>
-                <button id="logout-btn" class="btn-logout">Cerrar sesión</button>
+<!-- Dashboard Principal -->
+<div class="container-fluid">
+    <!-- Header del Dashboard -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="h3 text-dark font-weight-bold mb-0">
+                        <i class="fa fa-tachometer mr-2"></i>
+                        Panel de Control
+                    </h2>
+                    <p class="text-muted mb-0">Vista general del sistema de asambleas</p>
+                </div>
+                <div class="text-right">
+                    <span class="badge badge-pill badge-info">
+                        <i class="fa fa-clock-o mr-1"></i>
+                        <span id="current-time"></span>
+                    </span>
+                </div>
             </div>
         </div>
-    </header>
+    </div>
 
-    <main class="dashboard-main">
-        <section class="welcome-section">
-            <h2>Panel de Control</h2>
-            <p>Este es tu dashboard personalizado.</p>
-        </section>
-
-        <% if (props.stats) { %>
-            <section class="stats-section">
-                <h3>Estadísticas</h3>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h4>Total de Tareas</h4>
-                        <span class="stat-number">
-                            <%= props.stats.totalTasks %>
-                        </span>
-                    </div>
-                    <div class="stat-card">
-                        <h4>Completadas</h4>
-                        <span class="stat-number completed">
-                            <%= props.stats.completedTasks %>
-                        </span>
-                    </div>
-                    <div class="stat-card">
-                        <h4>Pendientes</h4>
-                        <span class="stat-number pending">
-                            <%= props.stats.pendingTasks %>
-                        </span>
+    <!-- Fila Principal: Asamblea Activa -->
+    <div class="row mb-4">
+        <div class="col-lg-5 col-md-6">
+            <!-- Card Asamblea Activa -->
+            <div class="card shadow-lg border-left-primary">
+                <div class="card-header bg-gradient-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title mb-1">
+                                <i class="fa fa-users mr-2"></i>
+                                <?= $asamblea_activa['detalle'] ?>
+                            </h5>
+                            <p class="card-text mb-0">
+                                <i class="fa fa-info-circle mr-1"></i>
+                                Asamblea Activa
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <div class="icon icon-shape bg-white text-primary rounded-circle shadow">
+                                <i class="fa fa-gavel"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </section>
-            <% } %>
-
-                <section class="actions-section">
-                    <h3>Acciones Rápidas</h3>
-                    <div class="actions-grid">
-                        <button id="refresh-btn" class="btn-action">Actualizar Datos</button>
-                        <a href="/tasks" class="btn-action btn-primary">Ver Tareas</a>
-                        <button class="btn-action">Configuración</button>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <small class="text-uppercase text-muted font-weight-bold">Fecha Programada</small>
+                                <h6 class="mb-0">
+                                    <i class="fa fa-calendar-alt mr-2 text-primary"></i>
+                                    <span id="fecha_programada"></span>
+                                </h6>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-uppercase text-muted font-weight-bold">Estado</small>
+                                <h6 class="mb-0">
+                                    <? if ($asamblea_activa['estado'] == 'A') { ?>
+                                    <span class="badge badge-success">
+                                        <i class="fa fa-check-circle mr-1"></i>Activa
+                                    </span>
+                                    <? } else { ?>
+                                    <span class="badge badge-warning">
+                                        <i class="fa fa-pause-circle mr-1"></i>Pendiente
+                                    </span>
+                                    <? } ?>
+                                </h6>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <small class="text-uppercase text-muted font-weight-bold">Asambleas</small>
+                                <h6 class="mb-0">
+                                    <i class="fa fa-list mr-2 text-info"></i>
+                                    <?= $cont_asambleas ?>
+                                </h6>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-uppercase text-muted font-weight-bold">Consensos</small>
+                                <h6 class="mb-0">
+                                    <i class="fa fa-handshake-o mr-2 text-success"></i>
+                                    <?= $consenso_asa_detalle ?>
+                                </h6>
+                            </div>
+                        </div>
                     </div>
-                </section>
-    </main>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <small class="text-uppercase text-muted font-weight-bold">Usuarios</small>
+                                <h6 class="mb-0">
+                                    <i class="fa fa-user mr-2 text-primary"></i>
+                                    <?= $cont_usuarios_asa ?>
+                                </h6>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <small class="text-uppercase text-muted font-weight-bold">Mesas</small>
+                                <h6 class="mb-0">
+                                    <i class="fa fa-th-large mr-2 text-warning"></i>
+                                    <?= $cont_mesas_asa ?>
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <? if (Session::getData("SuperAdmin") == 1) { ?>
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between">
+                        <?= Tag::linkTo('admin/config#asamblea',
+                            '<i class="fa fa-cog mr-2"></i>Configurar',
+                            'class: btn btn-primary btn-sm rounded-pill') ?>
+                        <?= Tag::linkTo('reportes/index',
+                            '<i class="fa fa-file-pdf-o mr-2"></i>Reporte Antorami',
+                            'class: btn btn-success btn-sm rounded-pill') ?>
+                    </div>
+                </div>
+                <? } ?>
+            </div>
+        </div>
+
+        <!-- Cards Estadísticos -->
+        <div class="col-lg-7 col-md-6">
+            <div class="row">
+                <!-- Card Funcionarios -->
+                <div class="col-lg-6 col-md-12 mb-3">
+                    <div class="card shadow-sm border-left-warning">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="icon icon-shape bg-warning text-white rounded-circle shadow mr-3">
+                                    <i class="fa fa-users"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-uppercase text-muted mb-1">Funcionarios</h6>
+                                    <h3 class="font-weight-bold mb-0">
+                                        <?= $cont_usuarios ?>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                        <? if (Session::getData("SuperAdmin") == 1) { ?>
+                        <div class="card-footer bg-light">
+                            <?= Tag::linkTo('admin/usuarios#listar_comfaca',
+                                '<i class="fa fa-search mr-2"></i>Explorar',
+                                'class: btn btn-outline-warning btn-sm rounded-pill') ?>
+                        </div>
+                        <? } ?>
+                    </div>
+                </div>
+
+                <!-- Card Mesas -->
+                <div class="col-lg-6 col-md-12 mb-3">
+                    <div class="card shadow-sm border-left-danger">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="icon icon-shape bg-danger text-white rounded-circle shadow mr-3">
+                                    <i class="fa fa-th-large"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-uppercase text-muted mb-1">Mesas</h6>
+                                    <h3 class="font-weight-bold mb-0">
+                                        <?= $cont_mesas ?>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                        <? if (Session::getData("SuperAdmin") == 1) { ?>
+                        <div class="card-footer bg-light">
+                            <?= Tag::linkTo('admin/mesas#listar',
+                                '<i class="fa fa-search mr-2"></i>Explorar',
+                                'class: btn btn-outline-danger btn-sm rounded-pill') ?>
+                        </div>
+                        <? } ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fila de Estadísticas Detalladas -->
+    <div class="row">
+        <!-- Card Población Empresas -->
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card shadow-sm border-left-info">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon icon-shape bg-info text-white rounded-circle shadow mr-3">
+                            <i class="fa fa-building"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-uppercase text-muted mb-1">Población Empresas</h6>
+                            <h3 class="font-weight-bold mb-0">
+                                <?= $cont_empresas ?>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <?= Tag::linkTo('habiles/index#listar',
+                        '<i class="fa fa-search mr-2"></i>Explorar',
+                        'class: btn btn-outline-info btn-sm rounded-pill') ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Poderes -->
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card shadow-sm border-left-success">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon icon-shape bg-success text-white rounded-circle shadow mr-3">
+                            <i class="fa fa-briefcase"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-uppercase text-muted mb-1">Poderes</h6>
+                            <div class="small">
+                                <span class="badge badge-success">
+                                    <?= $cont_poderes ?> Activos
+                                </span><br>
+                                <span class="badge badge-danger">
+                                    <?= $poderes_rechazados ?> Rechazados
+                                </span><br>
+                                <span class="badge badge-primary">
+                                    <?= $poderes_qurom ?> Quorum
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <? if (Session::getData("SuperAdmin") == 1 || Session::getData("RD") == 'Poderes') { ?>
+                <div class="card-footer bg-light">
+                    <?= Tag::linkTo('poderes/index#listar',
+                        '<i class="fa fa-search mr-2"></i>Explorar',
+                        'class: btn btn-outline-success btn-sm rounded-pill') ?>
+                </div>
+                <? } ?>
+            </div>
+        </div>
+
+        <!-- Card Consensos -->
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card shadow-sm border-left-primary">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon icon-shape bg-primary text-white rounded-circle shadow mr-3">
+                            <i class="fa fa-handshake-o"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-uppercase text-muted mb-1">Consensos</h6>
+                            <h3 class="font-weight-bold mb-0">
+                                <?= $cont_consensos ?>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <? if (Session::getData("SuperAdmin") == 1) { ?>
+                <div class="card-footer bg-light">
+                    <?= Tag::linkTo('admin/config#consensos',
+                        '<i class="fa fa-search mr-2"></i>Explorar',
+                        'class: btn btn-outline-primary btn-sm rounded-pill') ?>
+                </div>
+                <? } ?>
+            </div>
+        </div>
+
+        <!-- Card Empresas Habiles -->
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card shadow-sm border-left-warning">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon icon-shape bg-warning text-white rounded-circle shadow mr-3">
+                            <i class="fa fa-bookmark"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-uppercase text-muted mb-1">Empresas Habiles</h6>
+                            <div class="small">
+                                <span class="badge badge-success">
+                                    <?= $cont_ingresos ?> Habiles
+                                </span><br>
+                                <span class="badge badge-primary">
+                                    <?= $ingreso_qurum ?> Quorum
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <? if (Session::getData("SuperAdmin") == 1) { ?>
+                <div class="card-footer bg-light">
+                    <?= Tag::linkTo('recepcion/index#listar',
+                        '<i class="fa fa-search mr-2"></i>Explorar',
+                        'class: btn btn-outline-warning btn-sm rounded-pill') ?>
+                </div>
+                <? } ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- Segunda Fila de Estadísticas -->
+    <div class="row">
+        <!-- Card Empleadores -->
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card shadow-sm border-left-info">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon icon-shape bg-info text-white rounded-circle shadow mr-3">
+                            <i class="fa fa-user-tie"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-uppercase text-muted mb-1">Empleadores</h6>
+                            <h4 class="font-weight-bold mb-0 text-primary">
+                                <?= $asa_representantes ?>
+                            </h4>
+                            <small class="text-muted">Registrados</small>
+                        </div>
+                    </div>
+                </div>
+                <? if (Session::getData("SuperAdmin") == 1) { ?>
+                <div class="card-footer bg-light">
+                    <?= Tag::linkTo('representantes/index#listar',
+                        '<i class="fa fa-search mr-2"></i>Explorar',
+                        'class: btn btn-outline-info btn-sm rounded-pill') ?>
+                </div>
+                <? } ?>
+            </div>
+        </div>
+
+        <!-- Card Cartera -->
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card shadow-sm border-left-secondary">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon icon-shape bg-secondary text-white rounded-circle shadow mr-3">
+                            <i class="fa fa-credit-card"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-uppercase text-muted mb-1">Cartera</h6>
+                            <h4 class="font-weight-bold mb-0 text-primary">
+                                <?= $cont_cartera ?>
+                            </h4>
+                            <small class="text-muted">Morosos Reportados</small>
+                        </div>
+                    </div>
+                </div>
+                <? if (Session::getData("SuperAdmin") == 1) { ?>
+                <div class="card-footer bg-light">
+                    <?= Tag::linkTo('cartera/index#listar',
+                        '<i class="fa fa-search mr-2"></i>Explorar',
+                        'class: btn btn-outline-secondary btn-sm rounded-pill') ?>
+                </div>
+                <? } ?>
+            </div>
+        </div>
+
+        <!-- Card Rechazos -->
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card shadow-sm border-left-danger">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon icon-shape bg-danger text-white rounded-circle shadow mr-3">
+                            <i class="fa fa-times-circle"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-uppercase text-muted mb-1">Rechazos</h6>
+                            <h4 class="font-weight-bold mb-0 text-primary">
+                                <?= $cont_rechazos ?>
+                            </h4>
+                            <small class="text-muted">Otros Conceptos</small>
+                        </div>
+                    </div>
+                </div>
+                <? if (Session::getData("SuperAdmin") == 1) { ?>
+                <div class="card-footer bg-light">
+                    <?= Tag::linkTo('rechazos/index#listar',
+                        '<i class="fa fa-search mr-2"></i>Explorar',
+                        'class: btn btn-outline-danger btn-sm rounded-pill') ?>
+                </div>
+                <? } ?>
+            </div>
+        </div>
+
+        <!-- Card Estado del Sistema -->
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card shadow-sm border-left-success">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="icon icon-shape bg-success text-white rounded-circle shadow mr-3">
+                            <i class="fa fa-heartbeat"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-uppercase text-muted mb-1">Estado Sistema</h6>
+                            <span class="badge badge-success">
+                                <i class="fa fa-check-circle mr-1"></i>Operativo
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <button class="btn btn-outline-success btn-sm rounded-pill" onclick="location.reload()">
+                        <i class="fa fa-refresh mr-2"></i>Actualizar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+<script type='text/javascript'>
+    $(document).ready(function () {
+        // Formatear fecha programada
+        var fecha_programada = "<?= $asamblea_activa['fecha_programada'] ?>";
+        $("#fecha_programada").text(moment(fecha_programada).format('DD [de] MMMM [de] YYYY'));
+
+        // Actualizar hora actual
+        function updateCurrentTime() {
+            var now = moment().format('DD/MM/YYYY HH:mm:ss');
+            $("#current-time").text(now);
+        }
+
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
+    });
+</script>
+
 <style>
-    .dashboard-layout {
+    .border-left-primary {
+        border-left: 4px solid #4e73df !important;
+    }
+
+    .border-left-success {
+        border-left: 4px solid #1cc88a !important;
+    }
+
+    .border-left-info {
+        border-left: 4px solid #36b9cc !important;
+    }
+
+    .border-left-warning {
+        border-left: 4px solid #f6c23e !important;
+    }
+
+    .border-left-danger {
+        border-left: 4px solid #e74a3b !important;
+    }
+
+    .border-left-secondary {
+        border-left: 4px solid #858796 !important;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #4e73df 0%, #224abe 100%);
+    }
+
+    .icon-shape {
+        width: 3rem;
+        height: 3rem;
         display: flex;
-        min-height: 100vh;
-        background: #f8f9fa;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
     }
 
-    .sidebar-wrapper {
-        position: fixed;
-        left: 0;
-        top: 0;
-        height: 100vh;
-        z-index: 1000;
+    .rounded-pill {
+        border-radius: 50px;
     }
 
-    .main-content {
-        flex: 1;
-        margin-left: 280px;
-        min-height: 100vh;
-        transition: margin-left 0.3s ease;
+    .card {
+        transition: transform 0.2s ease-in-out;
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-        .dashboard-layout {
-            flex-direction: column;
-        }
-
-        .sidebar-wrapper {
-            position: relative;
-            width: 100%;
-            height: auto;
-        }
-
-        .main-content {
-            margin-left: 0;
-        }
+    .card:hover {
+        transform: translateY(-2px);
     }
 
-    /* Sidebar collapsed state */
-    .sidebar-collapsed .main-content {
-        margin-left: 0;
+    .badge {
+        font-size: 0.75rem;
     }
 
-    .sidebar-collapsed .sidebar-wrapper {
-        width: 0;
-        overflow: hidden;
+    .text-uppercase {
+        letter-spacing: 0.05em;
     }
 </style>

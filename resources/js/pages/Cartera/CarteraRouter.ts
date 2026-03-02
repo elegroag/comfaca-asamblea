@@ -1,85 +1,87 @@
 import { BackboneRouter } from "@/common/Bone";
 import CarteraController from "./CarteraController";
-import type { AppInstance } from "@/types/types";
-
-interface RouterCarteraOptions {
-    app: AppInstance;
-    routes?: Record<string, string>;
-    [key: string]: any;
-}
+import { RouterOptions } from "@/types/CommonDeps";
 
 export default class CarteraRouter extends BackboneRouter {
-    controller: CarteraController | null = null;
-    private app: AppInstance;
 
-    constructor(options: RouterCarteraOptions) {
+    constructor(options: RouterOptions) {
         super({
-            routes: {
-                '': 'listar',
-                'listar': 'listar',
-                'crear': 'crear',
-                'cargue': 'cargueMasivo',
-                'mostrar/:id': 'mostrar',
-                'editar/:id': 'editar',
-                'error': 'error'
-            },
             ...options,
+            routes: {
+                '': 'listarCarteras',
+                listar: 'listarCarteras',
+                crear: 'crearCartera',
+                cargue: 'cargarCarteras',
+                'detalle/:id': 'detalleCartera',
+                'editar/:id': 'editarCartera',
+                error: 'errorCartera'
+            },
         });
 
-        // Patrón descentralizado: inyección directa del app
         this.app = options.app;
-        this.controller = null;
         this._bindRoutes();
     }
 
-    private init() {
-        // Patrón descentralizado: usar app.startSubApplication()
-        this.controller = this.app.startSubApplication(CarteraController);
+    init(): CarteraController {
+        return this.app.startSubApplication(CarteraController);
     }
 
-    error() {
-        this.init();
-        console.log('CarteraRouter.error() called');
-        this.controller?.error();
+    /**
+     * Manejar ruta para listar carteras
+     */
+    listarCarteras(): void {
+        const controller = this.init();
+        controller.listaCartera();
     }
 
-    listar() {
-        this.init();
-        console.log('CarteraRouter.listar() called');
-        this.controller?.listaCartera();
+    /**
+     * Manejar ruta para crear nueva cartera
+     */
+    crearCartera(): void {
+        const controller = this.init();
+        controller.crearCartera();
     }
 
-    crear() {
-        this.init();
-        console.log('CarteraRouter.crear() called');
-        this.controller?.crearCartera();
+    /**
+     * Manejar ruta para cargue masivo de carteras
+     */
+    cargarCarteras(): void {
+        const controller = this.init();
+        controller.cargueMasivoCartera();
     }
 
-    editar(id: string) {
-        this.init();
-        console.log('CarteraRouter.editar() called', id);
-        if (!id || id === undefined || id === void 0) {
-            this.app.trigger('warning', 'El id de la cartera es requerido.');
+    /**
+     * Manejar ruta para ver detalles de cartera
+     */
+    detalleCartera(id: string): void {
+        const controller = this.init();
+        if (!id || id.trim() === '') {
             this.navigate('listar', { trigger: true });
-            return false;
+            return;
         }
-        this.controller?.editaCartera(id);
+
+        controller.mostrarDetalle(id);
     }
 
-    mostrar(id: string) {
-        this.init();
-        console.log('CarteraRouter.mostrar() called', id);
-        if (!id || id === undefined || id === void 0) {
-            this.app.trigger('warning', 'El id de la cartera es requerido.');
+    /**
+     * Manejar ruta para editar cartera
+     */
+    editarCartera(id: string): void {
+        const controller = this.init();
+        if (!id || id.trim() === '') {
+            this.app?.trigger('warning', 'El id de la cartera es requerido.');
             this.navigate('listar', { trigger: true });
-            return false;
+            return;
         }
-        this.controller?.mostrarDetalle(id);
+
+        controller.editaCartera(id);
     }
 
-    cargueMasivo() {
-        this.init();
-        console.log('CarteraRouter.cargueMasivo() called');
-        this.controller?.cargueMasivoCartera();
+    /**
+     * Manejar ruta de error
+     */
+    errorCartera(): void {
+        const controller = this.init();
+        controller.error();
     }
 }

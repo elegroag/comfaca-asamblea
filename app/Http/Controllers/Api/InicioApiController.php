@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\AsaAsamblea;
 use App\Models\Empresas;
 use App\Models\Poderes;
@@ -14,29 +15,21 @@ use App\Models\AsaRepresentantes;
 use App\Models\Carteras;
 use App\Models\Rechazos;
 use App\Models\CriteriosRechazos;
+use App\Services\Asamblea\AsambleaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Exception;
 
-class InicioController extends Controller
+class InicioApiController extends Controller
 {
-    private $idAsamblea;
+    private int $idAsamblea = 0;
 
     public function __construct()
     {
-        $this->middleware('auth');
-        $this->idAsamblea = $this->getAsambleaActiva();
+        $this->idAsamblea = (int) AsambleaService::getAsambleaActiva();
     }
 
-    /**
-     * Obtener asamblea activa
-     */
-    private function getAsambleaActiva()
-    {
-        // Implementar lógica para obtener asamblea activa
-        return Session::get('idAsamblea', 1);
-    }
 
     /**
      * Mostrar página principal de inicio con dashboard
@@ -53,7 +46,7 @@ class InicioController extends Controller
 
             // Estadísticas principales
             $estadisticas = $this->getEstadisticasPrincipales($asamblea_id);
-            
+
             // Estadísticas detalladas
             $estadisticas_detalladas = $this->getEstadisticasDetalladas($asamblea_id);
 
@@ -98,7 +91,7 @@ class InicioController extends Controller
             'poderes_qurom' => DB::table('poderes')
                 ->where('asamblea_id', $asamblea_id)
                 ->where('estado', 'A')
-                ->whereIn('nit1', function($query) use ($asamblea_id) {
+                ->whereIn('nit1', function ($query) use ($asamblea_id) {
                     $query->select('nit')
                         ->from('registro_ingresos')
                         ->where('asamblea_id', $asamblea_id)
@@ -109,11 +102,11 @@ class InicioController extends Controller
                 ->where('estado', 'A')->count(),
             'asa_representantes' => AsaRepresentantes::where('asamblea_id', $asamblea_id)->count(),
             'cont_cartera' => Carteras::where('asamblea_id', $asamblea_id)->count(),
-            'cont_rechazos' => Rechazos::whereIn('criterio_id', function($query) {
-                    $query->select('id')
-                        ->from('criterios_rechazos')
-                        ->where('tipo', 'HAB');
-                })->count(),
+            'cont_rechazos' => Rechazos::whereIn('criterio_id', function ($query) {
+                $query->select('id')
+                    ->from('criterios_rechazos')
+                    ->where('tipo', 'HAB');
+            })->count(),
         ];
     }
 
@@ -131,19 +124,19 @@ class InicioController extends Controller
             ->count();
 
         // Mesas con consenso
-        $mesas = AsaMesas::whereHas('consenso', function($query) use ($asamblea_id) {
-                $query->where('asamblea_id', $asamblea_id);
-            })->count();
+        $mesas = AsaMesas::whereHas('consenso', function ($query) use ($asamblea_id) {
+            $query->where('asamblea_id', $asamblea_id);
+        })->count();
 
         // Detalles del consenso y mesas
         $consenso_detalle = '0';
         $mesas_asa = 0;
-        
+
         if ($consenso_asa > 0) {
             $masaconsenso = AsaConsenso::where('asamblea_id', $asamblea_id)
                 ->where('estado', 'A')
                 ->first();
-            
+
             if ($masaconsenso) {
                 $consenso_detalle = $masaconsenso->detalle;
                 $mesas_asa = AsaMesas::where('consenso_id', $masaconsenso->id)->count();
@@ -216,7 +209,7 @@ class InicioController extends Controller
                     'total_empresas' => $total_empresas,
                     'con_ingreso' => $empresas_con_ingreso,
                     'pendientes' => $empresas_pendientes,
-                    'porcentaje_quorum' => $total_empresas > 0 ? 
+                    'porcentaje_quorum' => $total_empresas > 0 ?
                         round(($empresas_con_ingreso / $total_empresas) * 100, 2) : 0
                 ]
             ]);
@@ -247,7 +240,7 @@ class InicioController extends Controller
             $poderes_quorum = DB::table('poderes')
                 ->where('asamblea_id', $asamblea_id)
                 ->where('estado', 'A')
-                ->whereIn('nit1', function($query) use ($asamblea_id) {
+                ->whereIn('nit1', function ($query) use ($asamblea_id) {
                     $query->select('nit')
                         ->from('registro_ingresos')
                         ->where('asamblea_id', $asamblea_id)

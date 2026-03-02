@@ -1,0 +1,24 @@
+<? $cantidad = count($param->poderes_apoderado); ?>
+<p>El representante es apoderado de  <?=($cantidad == 1)? $cantidad.' poder': $cantidad.' poderes' ?>.</p>
+<? if($cantidad > 0){ ?>
+    <div class='table-responsive'>
+    <table class='table table-sm'>
+        <tbody>
+            <? foreach ($param->poderes_apoderado as $ai => $poder) { ?>
+                <tr>
+                    <td><b>Nit Apoderado:</b> <?=$poder['nit1']?></td>
+                    <td><b>Nit Poderdante:</b> <?=$poder['nit2']?></td>
+                    <td><b>Apoderado</b> <?=capitalize($poder['razsoc1'])?></td>
+                    <td><b>Poderdante</b> <?=capitalize($poder['razsoc2'])?></td>
+                    <td><b>Estado</b> <?=capitalize($poder['estado_detalle'])?></td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <button type='button' title='Detalle' data-toggle='bt_revoca_apoderado' class='btn btn-outline-info btn-sm' data-code='<?=$poder['documento']?>'> Revocar poder</button>
+                    </td>
+                </tr>
+            <? } ?>
+        </tbody>
+    </table>
+    </div>
+<? } ?>

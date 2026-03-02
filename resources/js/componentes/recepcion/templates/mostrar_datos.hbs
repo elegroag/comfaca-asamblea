@@ -1,47 +1,118 @@
-<div class='bg-white rounded-lg shadow-lg overflow-hidden'>
-    <div class='p-6'>
-        <div class="border-b border-gray-200 pb-4 mb-6">
-            <h4 class="text-xl font-bold text-blue-600 m-2">Resultado De Validación Previa</h4>
+<div class="container-fluid">
+    <!-- Header Principal -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h3 class="text-primary font-weight-bold mb-0">
+                <i class="fa fa-check-circle mr-2"></i>
+                Resultado de Validación Previa
+            </h3>
+            <p class="text-muted mb-0">Información del representante y empresas asociadas</p>
         </div>
-        <div class="space-y-6">
-            <div class='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-                <div>
-                    <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
-                        <p class="text-sm text-gray-600">Aquí podrás encontrar toda la información relacionada con el
-                            representante legal y las empresas que representa.</p>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-end">
+                <button type="button" id="btn_back_list" class="btn btn-outline-primary rounded-pill">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    Volver
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Principal -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">
+                <i class="fa fa-user-check mr-2"></i>
+                Validación del Representante
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Columna Izquierda - Datos del Representante -->
+                <div class="col-md-6">
+                    <!-- Información -->
+                    <div class="alert alert-info border-0 bg-light mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fa fa-info-circle fa-2x mr-3"></i>
+                            <div>
+                                <h6 class="alert-heading mb-1">Información</h6>
+                                <p class="mb-0">
+                                    Aquí podrá encontrar toda la información relacionada con el representante legal y
+                                    las empresas que representa.
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mt-6">
-                        <p class='text-lg font-semibold text-gray-800 mb-4'>Datos</p>
-                        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                            <table class='w-full'>
-                                <tbody class="divide-y divide-gray-200">
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Identificación:
+                    <!-- Datos del Representante -->
+                    <div class="card border-0 bg-light">
+                        <div class="card-header bg-light">
+                            <h6 class="card-title mb-0">
+                                <i class="fa fa-user mr-2"></i>
+                                Datos del Representante
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <td width="40%">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fa fa-id-card text-primary mr-2"></i>
+                                                <strong>Identificación:</strong>
+                                            </div>
                                         </td>
-                                        <td class="px-4 py-3 text-sm text-gray-900 font-mono">
-                                            <%=representante.cedrep %>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Representante:
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-900">
-                                            <%=capitalize(representante.nombre) %>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Dirección email:
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-gray-900">
-                                            <%=(!representante.email)? 'No disponible' :
-                                                capitalize(representante.email)%>
+                                        <td>
+                                            <span class="badge badge-primary">
+                                                <%=representante.cedrep%>
+                                            </span>
                                         </td>
                                     </tr>
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td class="px-4 py-3 text-sm font-medium text-gray-700 w-1/3">Teléfono:</td>
-                                        <td class="px-4 py-3 text-sm text-gray-900">
-                                            <%=(!representante.telefono)? 'No disponible' : representante.telefono%>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fa fa-user text-info mr-2"></i>
+                                                <strong>Representante:</strong>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="font-weight-bold">
+                                                <%=capitalize(representante.nombre)%>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fa fa-envelope text-warning mr-2"></i>
+                                                <strong>Dirección email:</strong>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <% if(!representante.email){ %>
+                                                <span class="text-muted">No disponible</span>
+                                                <% }else{ %>
+                                                    <span class="badge badge-info">
+                                                        <%=capitalize(representante.email)%>
+                                                    </span>
+                                                    <% } %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fa fa-phone text-success mr-2"></i>
+                                                <strong>Teléfono:</strong>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <% if(!representante.telefono){ %>
+                                                <span class="text-muted">No disponible</span>
+                                                <% }else{ %>
+                                                    <span class="badge badge-success">
+                                                        <%=representante.telefono%>
+                                                    </span>
+                                                    <% } %>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -49,148 +120,326 @@
                         </div>
                     </div>
                 </div>
-                <div>
+
+                <!-- Columna Derecha - Botón de Registro -->
+                <div class="col-md-6">
                     <% if(tiene_incripcion==true){ %>
-                        <div class='flex justify-center mt-5'>
-                            <button type='button' id='bt_ficha_ingreso'
-                                class="group bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 border-2 border-transparent hover:border-blue-300">
-                                <div class="text-center">
-                                    <span class='text-lg font-bold text-red-600 block mb-4'>Registrar Ingreso Asamblea
-                                        Aquí</span>
-                                    <?= Tag::image('asamblea-logo.jpg', 'class: w-32 h-32 mx-auto object-contain') ?>
+                        <div class="card border-0 bg-success text-white">
+                            <div class="card-body text-center">
+                                <h5 class="card-title mb-4">
+                                    <i class="fa fa-sign-in-alt mr-2"></i>
+                                    Registrar Ingreso
+                                </h5>
+                                <p class="mb-4">
+                                    El representante está habilitado para ingresar a la asamblea.
+                                </p>
+                                <button type="button" id="bt_ficha_ingreso" class="btn btn-light rounded-pill">
+                                    <i class="fa fa-arrow-right mr-2"></i>
+                                    Registrar Ingreso Asamblea
+                                </button>
+                                <div class="mt-4">
+                                    <img src="asamblea-logo.jpg" alt="Asamblea Logo" class="img-fluid rounded"
+                                        style="max-height: 120px;">
                                 </div>
-                            </button>
+                            </div>
                         </div>
-                        <% } %>
+                        <% }else{ %>
+                            <div class="card border-0 bg-warning">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title mb-4">
+                                        <i class="fa fa-exclamation-triangle mr-2"></i>
+                                        No Habilitado
+                                    </h5>
+                                    <p class="mb-4">
+                                        El representante no está habilitado para ingresar a la asamblea.
+                                    </p>
+                                    <div class="mt-4">
+                                        <img src="asamblea-logo.jpg" alt="Asamblea Logo" class="img-fluid rounded"
+                                            style="max-height: 120px;">
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
                 </div>
             </div>
 
-            <div class='bg-gray-50 rounded-lg p-6'>
-                <h5 class='text-lg font-semibold text-gray-800 mb-4'>Empresas</h5>
-                <div class="overflow-x-auto">
-                    <table class='w-full text-sm'>
-                        <thead>
-                            <tr class="bg-gray-100 border-b border-gray-200">
-                                <th class="px-4 py-3 text-left font-semibold text-gray-800 text-base">Empresa</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-800 text-base">Nit</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-800 text-base">Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200" id='renderEmpresasMostrar'>
-                            <% _.each(empresas, function(empresa){ %>
-                                <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-4 py-3 text-base">
-                                        <%=capitalize(empresa.razsoc)%>
-                                    </td>
-                                    <td class="px-4 py-3 text-base font-mono">
-                                        <%=empresa.nit %>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <% if (empresa.inscripcion_estado !='Rechazada' ){ %>
-                                            <span
-                                                class="inline-flex px-3 py-1 text-sm font-semibold text-blue-800 bg-blue-100 rounded-full">
-                                                <%= empresa.inscripcion_estado %>
-                                            </span>
-                                            <% } else { %>
-                                                <div class="flex items-center space-x-3">
-                                                    <span class="text-sm text-red-600 font-medium">NO APLICA PARA
-                                                        INGRESO</span>
-                                                    <button type='button' data-toggle='bt_rechazo'
-                                                        data-cid="<%=empresa.nit%>"
-                                                        data-cedrep="<%=representante.cedrep%>"
-                                                        class="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-colors"
-                                                        title="Ver detalles del rechazo">
-                                                        <i class="fas fa-search text-xs"></i>
-                                                    </button>
-                                                </div>
-                                                <% } %>
-                                    </td>
-                                </tr>
-                                <% }) %>
-                        </tbody>
-                    </table>
+            <!-- Tabla de Empresas -->
+            <div class="card border-0 bg-light mt-4">
+                <div class="card-header bg-light">
+                    <h6 class="card-title mb-0">
+                        <i class="fa fa-building mr-2"></i>
+                        Empresas Asociadas
+                    </h6>
                 </div>
-            </div>
-
-            <% v_poder=(poderes==false && poder==false)? 'hidden' :'' %>
-                <div class='bg-gray-50 rounded-lg p-6 <%=v_poder%>'>
-                    <h5 class='text-lg font-semibold text-gray-800 mb-3'>Poderes</h5>
-                    <p class="text-sm text-gray-600 mb-4">Según Artículo 33 - 5.5.6, el representante solo puede
-                        disponer de un poder. Este poder debe estar registrado y aprobado por parte de las personas de
-                        recepción de poderes.</p>
-                    <div class="overflow-x-auto">
-                        <table class='w-full text-sm'>
-                            <thead>
-                                <tr class="bg-gray-100 border-b border-gray-200">
-                                    <th class="px-4 py-3 text-left font-semibold text-gray-800">Poderdante</th>
-                                    <th class="px-4 py-3 text-left font-semibold text-gray-800">Nit</th>
-                                    <th class="px-4 py-3 text-left font-semibold text-gray-800">Estado</th>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped" id="renderEmpresasMostrar">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>
+                                        <i class="fa fa-building mr-1"></i>
+                                        Empresa
+                                    </th>
+                                    <th>
+                                        <i class="fa fa-hashtag mr-1"></i>
+                                        Nit
+                                    </th>
+                                    <th>
+                                        <i class="fa fa-toggle-on mr-1"></i>
+                                        Estado
+                                    </th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200" id='renderPoderMostrar'>
-                                <% if(poder !=false){ %>
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td class="px-4 py-3">
-                                            <%=capitalize(poder.razsoc)%>
+                            <tbody>
+                                <% _.each(empresas, function(empresa){ %>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fa fa-building text-info mr-2"></i>
+                                                <%=capitalize(empresa.razsoc)%>
+                                            </div>
                                         </td>
-                                        <td class="px-4 py-3 font-mono">
-                                            <%=poder.nit %>
-                                        </td>
-                                        <td class="px-4 py-3">
-                                            <% if (poder.inscripcion_estado !='Rechazada' ){ %>
-                                                <span
-                                                    class="inline-flex px-3 py-1 text-sm font-semibold text-blue-800 bg-blue-100 rounded-full">
-                                                    <%= poder.inscripcion_estado %>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fa fa-hashtag text-muted mr-2"></i>
+                                                <span class="badge badge-secondary">
+                                                    <%=empresa.nit%>
                                                 </span>
-                                                <% } else { %>
-                                                    <div class="flex items-center space-x-3">
-                                                        <span class="text-sm text-red-600 font-medium">NO APLICA PARA
-                                                            INGRESO</span>
-                                                        <button type='button' data-toggle='bt_rechazo'
-                                                            data-cid="<%=poder.nit%>"
-                                                            class="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-colors"
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <% if(empresa.inscripcion_estado !='Rechazada' ){ %>
+                                                <span class="badge badge-success">
+                                                    <i class="fa fa-check-circle mr-1"></i>
+                                                    <%=empresa.inscripcion_estado%>
+                                                </span>
+                                                <% }else{ %>
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="badge badge-danger mr-2">
+                                                            <i class="fa fa-ban mr-1"></i>
+                                                            NO APLICA PARA INGRESO
+                                                        </span>
+                                                        <button type="button" data-toggle="bt_rechazo"
+                                                            data-cid="<%=empresa.nit%>"
+                                                            data-cedrep="<%=representante.cedrep%>"
+                                                            class="btn btn-primary btn-sm rounded-circle"
                                                             title="Ver detalles del rechazo">
-                                                            <i class="fas fa-search text-xs"></i>
+                                                            <i class="fa fa-eye"></i>
                                                         </button>
                                                     </div>
                                                     <% } %>
                                         </td>
                                     </tr>
-                                    <% } %>
-                                        <% if(poderes !=false){ _.each(poderes, function(_poder){ if(poder.nit
-                                            !=_poder.nit) { %>
-                                            <tr class="hover:bg-gray-50 transition-colors">
-                                                <td class="px-4 py-3">
-                                                    <%=capitalize(_poder.razsoc)%>
-                                                </td>
-                                                <td class="px-4 py-3 font-mono">
-                                                    <%=_poder.nit %>
-                                                </td>
-                                                <td class="px-4 py-3">
-                                                    <% if (_poder.estado !='R' ){ %>
-                                                        <span
-                                                            class="inline-flex px-3 py-1 text-sm font-semibold text-blue-800 bg-blue-100 rounded-full">
-                                                            <%= _poder.inscripcion_estado %>
-                                                        </span>
-                                                        <% } else { %>
-                                                            <div class="flex items-center space-x-3">
-                                                                <span class="text-sm text-red-600 font-medium">NO APLICA
-                                                                    PARA INGRESO</span>
-                                                                <button type='button' data-toggle='bt_rechazo'
-                                                                    data-cid="<%=_poder.nit%>"
-                                                                    class="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-colors"
-                                                                    title="Ver detalles del rechazo">
-                                                                    <i class="fas fa-search text-xs"></i>
-                                                                </button>
-                                                            </div>
-                                                            <% } %>
-                                                </td>
-                                            </tr>
-                                            <% } })}%>
+                                    <% }) %>
                             </tbody>
                         </table>
                     </div>
                 </div>
+            </div>
+
+            <!-- Tabla de Poderes -->
+            <% v_poder=(poderes==false && poder==false) ? 'd-none' : '' %>
+                <div class="card border-0 bg-light mt-4 <%=v_poder%>">
+                    <div class="card-header bg-light">
+                        <h6 class="card-title mb-0">
+                            <i class="fa fa-file-signature mr-2"></i>
+                            Poderes
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <!-- Información sobre Poderes -->
+                        <div class="alert alert-warning border-0 bg-light mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-exclamation-triangle fa-2x mr-3"></i>
+                                <div>
+                                    <h6 class="alert-heading mb-1">Reglamento de Poderes</h6>
+                                    <p class="mb-0">
+                                        Según Artículo 33 - 5.5.6, el representante solo puede disponer de un poder.
+                                        Este poder debe estar registrado y aprobado por parte de las personas de
+                                        recepción de poderes.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped" id="renderPoderMostrar">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>
+                                            <i class="fa fa-user-times mr-1"></i>
+                                            Poderdante
+                                        </th>
+                                        <th>
+                                            <i class="fa fa-hashtag mr-1"></i>
+                                            Nit
+                                        </th>
+                                        <th>
+                                            <i class="fa fa-toggle-on mr-1"></i>
+                                            Estado
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if(poder !=false){ %>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fa fa-user-times text-danger mr-2"></i>
+                                                    <%=capitalize(poder.razsoc)%>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fa fa-hashtag text-muted mr-2"></i>
+                                                    <span class="badge badge-secondary">
+                                                        <%=poder.nit%>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <% if(poder.inscripcion_estado !='Rechazada' ){ %>
+                                                    <span class="badge badge-success">
+                                                        <i class="fa fa-check-circle mr-1"></i>
+                                                        <%=poder.inscripcion_estado%>
+                                                    </span>
+                                                    <% }else{ %>
+                                                        <div class="d-flex align-items-center">
+                                                            <span class="badge badge-danger mr-2">
+                                                                <i class="fa fa-ban mr-1"></i>
+                                                                NO APLICA PARA INGRESO
+                                                            </span>
+                                                            <button type="button" data-toggle="bt_rechazo"
+                                                                data-cid="<%=poder.nit%>"
+                                                                class="btn btn-primary btn-sm rounded-circle"
+                                                                title="Ver detalles del rechazo">
+                                                                <i class="fa fa-eye"></i>
+                                                            </button>
+                                                        </div>
+                                                        <% } %>
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                                            <% if(poderes !=false){ %>
+                                                <% _.each(poderes, function(_poder){ %>
+                                                    <% if(poder.nit !=_poder.nit){ %>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="d-flex align-items-center">
+                                                                    <i class="fa fa-user-times text-danger mr-2"></i>
+                                                                    <%=capitalize(_poder.razsoc)%>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center">
+                                                                    <i class="fa fa-hashtag text-muted mr-2"></i>
+                                                                    <span class="badge badge-secondary">
+                                                                        <%=_poder.nit%>
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <% if(_poder.estado !='R' ){ %>
+                                                                    <span class="badge badge-success">
+                                                                        <i class="fa fa-check-circle mr-1"></i>
+                                                                        <%=_poder.inscripcion_estado%>
+                                                                    </span>
+                                                                    <% }else{ %>
+                                                                        <div class="d-flex align-items-center">
+                                                                            <span class="badge badge-danger mr-2">
+                                                                                <i class="fa fa-ban mr-1"></i>
+                                                                                NO APLICA PARA INGRESO
+                                                                            </span>
+                                                                            <button type="button"
+                                                                                data-toggle="bt_rechazo"
+                                                                                data-cid="<%=_poder.nit%>"
+                                                                                class="btn btn-primary btn-sm rounded-circle"
+                                                                                title="Ver detalles del rechazo">
+                                                                                <i class="fa fa-eye"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                        <% } %>
+                                                            </td>
+                                                        </tr>
+                                                        <% } %>
+                                                            <% }) %>
+                                                                <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        <i class="fa fa-info-circle mr-1"></i>
+                        Verifique el estado de las empresas y poderes antes de proceder.
+                    </small>
+                </div>
+                <div class="col-md-6 text-md-right">
+                    <small class="text-muted">
+                        <i class="fa fa-building mr-1"></i>
+                        Total de empresas: <span class="font-weight-bold">
+                            <%=empresas.length%>
+                        </span>
+                    </small>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    .rounded-pill {
+        border-radius: 50px;
+    }
+
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    .badge {
+        font-size: 0.875rem;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+    }
+
+    .thead-light th {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .table-borderless td {
+        border: none;
+        padding: 0.75rem;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .rounded {
+        border-radius: 0.375rem;
+    }
+</style>

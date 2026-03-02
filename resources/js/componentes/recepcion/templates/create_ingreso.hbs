@@ -1,129 +1,343 @@
-<div class="bg-white rounded-lg shadow-lg overflow-hidden">
-    <div class="p-6">
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h3 class="text-xl font-bold text-blue-600" id='titulo_lista_recepcion'>Crear Asistencia Empresa</h3>
+<div class="container-fluid">
+    <!-- Header Principal -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h3 class="text-success font-weight-bold mb-0">
+                <i class="fa fa-user-plus mr-2"></i>
+                <span id="titulo_lista_recepcion">Crear Asistencia Empresa</span>
+            </h3>
+            <p class="text-muted mb-0">Registro de asistencia y creación de empresas</p>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-end">
+                <button type="button" id="btn_back_list" class="btn btn-outline-success rounded-pill">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    Volver
+                </button>
             </div>
         </div>
+    </div>
 
-        <div class="flex justify-center">
-            <div class="w-full max-w-2xl">
-                <form method="post" action="#" class='space-y-6'>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-                        <label class='text-sm font-medium text-gray-700 pt-2'>Nit:</label>
-                        <div class="md:col-span-3">
-                            <input type="text"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
-                                name='nit' placeholder="nit" value="" />
-                        </div>
+    <!-- Card Principal -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="card-title mb-0">
+                <i class="fa fa-plus-circle mr-2"></i>
+                Nuevo Registro de Asistencia
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- Información -->
+            <div class="alert alert-info border-0 bg-light mb-4">
+                <div class="d-flex align-items-center">
+                    <i class="fa fa-info-circle fa-2x mr-3"></i>
+                    <div>
+                        <h6 class="alert-heading mb-1">Información</h6>
+                        <p class="mb-0">
+                            Ingrese el NIT de la empresa para registrar la asistencia.
+                            Puede crear una nueva empresa si no existe en el sistema.
+                        </p>
                     </div>
+                </div>
+            </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-                        <label class='text-sm font-medium text-gray-700 pt-2'>Crear:</label>
-                        <div class="md:col-span-3">
-                            <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="checkbox" name='crear_empresa' id='crear_empresa' value="1"
-                                    class="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded border-gray-300">
-                                <span class="text-sm text-gray-700">Crear empresa para simulacros</span>
+            <form method="post" action="#" class="form-horizontal">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-md-10">
+                        <!-- Campo NIT -->
+                        <div class="form-group row">
+                            <label for="nit" class="col-sm-3 col-form-label font-weight-bold">
+                                <i class="text-danger">*</i> NIT
                             </label>
-                        </div>
-                    </div>
-
-                    <div class="sh-crear_empresa hidden space-y-4" id="crear_empresa_fields">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-                            <label class='text-sm font-medium text-gray-700 pt-2'>Cedula:</label>
-                            <div class="md:col-span-3">
-                                <input type="text"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
-                                    name='cedrep' placeholder="cedula" />
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="fa fa-hashtag"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control" name="nit" id="nit"
+                                        placeholder="Número de identificación tributaria" required>
+                                </div>
+                                <div class="invalid-feedback" id="nit-error">
+                                    El NIT es obligatorio
+                                </div>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-                            <label class='text-sm font-medium text-gray-700 pt-2'>Nombres:</label>
-                            <div class="md:col-span-3">
-                                <input type='text'
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
-                                    name='nombres' id='nombres' placeholder='nombres representante' />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-                            <label class='text-sm font-medium text-gray-700 pt-2'>Apellidos:</label>
-                            <div class="md:col-span-3">
-                                <input type='text'
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
-                                    name='apellidos' id='apellidos' placeholder='apellidos representante' />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-                            <label class='text-sm font-medium text-gray-700 pt-2'>Razón Social:</label>
-                            <div class="md:col-span-3">
-                                <input type='text'
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
-                                    name='razsoc' id='razsoc' placeholder='razsoc' />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-                            <label class='text-sm font-medium text-gray-700 pt-2'>Email:</label>
-                            <div class="md:col-span-3">
-                                <input type='text'
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
-                                    name='email' id='email' placeholder='email' />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-                            <label class='text-sm font-medium text-gray-700 pt-2'>Telefono:</label>
-                            <div class="md:col-span-3">
-                                <input type='text'
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
-                                    name='telefono' id='telefono' placeholder='telefono' />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-                        <label class='text-sm font-medium text-gray-700 pt-2'>Opciones disponibles:</label>
-                        <div class="md:col-span-3 space-y-3">
-                            <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="checkbox" name='omit_estado' value=""
-                                    class="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded border-gray-300">
-                                <span class="text-sm text-gray-700">Omitir estado</span>
+                        <!-- Opción de Crear Empresa -->
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label font-weight-bold">
+                                Opciones
                             </label>
-                            <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="checkbox" name='is_habil' checked value=""
-                                    class="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded border-gray-300">
-                                <span class="text-sm text-gray-700">Crear habil</span>
-                            </label>
+                            <div class="col-sm-9">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" name="crear_empresa"
+                                                id="crear_empresa" value="1">
+                                            <label class="custom-control-label" for="crear_empresa">
+                                                <i class="fa fa-building mr-2"></i>
+                                                Crear empresa para simulacros
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-                        <div class="md:col-span-2"></div>
-                        <div class="md:col-span-2">
-                            <button type="button" id='bt_registrar_inscripcion'
-                                class="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 transform hover:scale-105">
-                                Continuar
-                            </button>
+                        <!-- Campos Adicionales (Crear Empresa) -->
+                        <div id="sh-crear_empresa" style="display: none;">
+                            <!-- Cédula -->
+                            <div class="form-group row">
+                                <label for="cedrep" class="col-sm-3 col-form-label font-weight-bold">
+                                    <i class="text-danger">*</i> Cédula
+                                </label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fa fa-id-card"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" name="cedrep" id="cedrep"
+                                            placeholder="Número de cédula">
+                                    </div>
+                                    <div class="invalid-feedback" id="cedrep-error">
+                                        La cédula es obligatoria
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Nombres -->
+                            <div class="form-group row">
+                                <label for="nombres" class="col-sm-3 col-form-label font-weight-bold">
+                                    <i class="text-danger">*</i> Nombres
+                                </label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fa fa-user"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" name="nombres" id="nombres"
+                                            placeholder="Nombres del representante">
+                                    </div>
+                                    <div class="invalid-feedback" id="nombres-error">
+                                        Los nombres son obligatorios
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Apellidos -->
+                            <div class="form-group row">
+                                <label for="apellidos" class="col-sm-3 col-form-label font-weight-bold">
+                                    <i class="text-danger">*</i> Apellidos
+                                </label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fa fa-user"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" name="apellidos" id="apellidos"
+                                            placeholder="Apellidos del representante">
+                                    </div>
+                                    <div class="invalid-feedback" id="apellidos-error">
+                                        Los apellidos son obligatorios
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Razón Social -->
+                            <div class="form-group row">
+                                <label for="razsoc" class="col-sm-3 col-form-label font-weight-bold">
+                                    <i class="text-danger">*</i> Razón Social
+                                </label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fa fa-building"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" name="razsoc" id="razsoc"
+                                            placeholder="Nombre de la empresa">
+                                    </div>
+                                    <div class="invalid-feedback" id="razsoc-error">
+                                        La razón social es obligatoria
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="form-group row">
+                                <label for="email" class="col-sm-3 col-form-label font-weight-bold">
+                                    Email
+                                </label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fa fa-envelope"></i>
+                                            </span>
+                                        </div>
+                                        <input type="email" class="form-control" name="email" id="email"
+                                            placeholder="correo@ejemplo.com">
+                                    </div>
+                                    <div class="invalid-feedback" id="email-error">
+                                        Ingrese un email válido
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Teléfono -->
+                            <div class="form-group row">
+                                <label for="telefono" class="col-sm-3 col-form-label font-weight-bold">
+                                    Teléfono
+                                </label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fa fa-phone"></i>
+                                            </span>
+                                        </div>
+                                        <input type="tel" class="form-control" name="telefono" id="telefono"
+                                            placeholder="Número de teléfono">
+                                    </div>
+                                    <div class="invalid-feedback" id="telefono-error">
+                                        Ingrese un teléfono válido
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Opciones Adicionales -->
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label font-weight-bold">
+                                Opciones Adicionales
+                            </label>
+                            <div class="col-sm-9">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body">
+                                        <div class="custom-control custom-switch mb-2">
+                                            <input type="checkbox" class="custom-control-input" name="omit_estado"
+                                                id="omit_estado">
+                                            <label class="custom-control-label" for="omit_estado">
+                                                <i class="fa fa-toggle-off mr-2"></i>
+                                                Omitir estado
+                                            </label>
+                                        </div>
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" name="is_habil"
+                                                id="is_habil" checked>
+                                            <label class="custom-control-label" for="is_habil">
+                                                <i class="fa fa-check-circle mr-2"></i>
+                                                Crear habil
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="form-group row">
+                            <div class="col-sm-3"></div>
+                            <div class="col-sm-9">
+                                <button type="button" id="bt_registrar_inscripcion"
+                                    class="btn btn-success rounded-pill">
+                                    <i class="fa fa-save mr-2"></i>
+                                    Registrar Asistencia
+                                </button>
+                                <button type="button" id="bt_cancelar" class="btn btn-secondary rounded-pill ml-2">
+                                    <i class="fa fa-times mr-2"></i>
+                                    Cancelar
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </form>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        <i class="fa fa-info-circle mr-1"></i>
+                        Complete los datos obligatorios para registrar la asistencia.
+                    </small>
+                </div>
+                <div class="col-md-6 text-md-right">
+                    <small class="text-muted">
+                        <i class="fa fa-clock-o mr-1"></i>
+                        Última actualización: <span id="last-update">-</span>
+                    </small>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<style>
+    .rounded-pill {
+        border-radius: 50px;
+    }
+
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover:not(:disabled) {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #ced4da;
+        color: #495057;
+    }
+
+    .custom-control-input:checked~.custom-control-label::before {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .custom-control-input:focus~.custom-control-label::before {
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .text-danger {
+        color: #dc3545 !important;
+    }
+</style>
+
 <script>
-    // Toggle visibility of additional fields when checkbox is changed
+    // Toggle para mostrar/ocultar campos de crear empresa
     document.getElementById('crear_empresa').addEventListener('change', function () {
-        const fields = document.getElementById('crear_empresa_fields');
+        const shCrearEmpresa = document.getElementById('sh-crear_empresa');
         if (this.checked) {
-            fields.classList.remove('hidden');
+            shCrearEmpresa.style.display = 'block';
         } else {
-            fields.classList.add('hidden');
+            shCrearEmpresa.style.display = 'none';
         }
     });
 </script>

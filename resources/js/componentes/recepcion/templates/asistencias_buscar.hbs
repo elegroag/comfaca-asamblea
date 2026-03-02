@@ -1,33 +1,133 @@
-<div class="flex justify-center mt-16 pt-16">
-    <div class="w-full max-w-2xl mx-auto">
-        <div class="bg-gray-100 rounded-lg shadow-lg overflow-hidden">
-            <div class="bg-gray-200 text-center p-6">
-                <?= Tag::image("registro_asamblea.jpg") ?>
-            </div>
-            <div class="p-6 space-y-6">
-                <div class="w-full">
-                    <div class="text-center">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Representante Legal</h3>
-                    </div>
-                    <div id='show_img_escribir' class='flex justify-center mb-4'>
-                        <?= Tag::image("escribir.png"); ?>
-                    </div>
-                </div>
-                <div class="w-full">
-                    <div id='show_identificacion' class="space-y-2">
-                        <label class='block text-sm font-semibold text-gray-700'>Identificación:</label>
-                        <input type="text" name='cedrep' id='cedrep'
-                            class="typeahead w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
-                            placeholder="cedula" tabindex='1' />
-                    </div>
-                </div>
-            </div>
-            <div class="bg-gray-200 text-center p-6">
-                <button id='bt_buscar_asistente' type='button'
-                    class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition-all duration-200 transform hover:scale-105">
-                    Buscar
+<div class="container-fluid">
+    <!-- Header Principal -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h3 class="text-primary font-weight-bold mb-0">
+                <i class="fa fa-search mr-2"></i>
+                Búsqueda de Asistencia
+            </h3>
+            <p class="text-muted mb-0">Buscar representante para registro de asistencia</p>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-end">
+                <button type="button" id="btn_back_list" class="btn btn-outline-primary rounded-pill">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    Volver
                 </button>
             </div>
         </div>
     </div>
+
+    <!-- Card Principal -->
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fa fa-user-search mr-2"></i>
+                        Representante Legal
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Imagen de Registro -->
+                    <div class="text-center mb-4">
+                        <img src="registro_asamblea.jpg" alt="Registro Asamblea" class="img-fluid rounded"
+                            style="max-height: 200px;">
+                    </div>
+
+                    <!-- Información -->
+                    <div class="alert alert-info border-0 bg-light mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fa fa-info-circle fa-2x mr-3"></i>
+                            <div>
+                                <h6 class="alert-heading mb-1">Instrucciones</h6>
+                                <p class="mb-0">
+                                    Ingrese el número de identificación del representante para buscar su información.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campo de Identificación -->
+                    <div class="form-group">
+                        <label for="cedrep" class="font-weight-bold">
+                            <i class="fa fa-id-card mr-1"></i>
+                            Identificación:
+                        </label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fa fa-id-card"></i>
+                                </span>
+                            </div>
+                            <input type="text" name="cedrep" id="cedrep" class="form-control typeahead"
+                                placeholder="Número de cédula" tabindex="1" required>
+                        </div>
+                        <div class="invalid-feedback" id="cedrep-error">
+                            La identificación es obligatoria
+                        </div>
+                    </div>
+
+                    <!-- Imagen de Escribir -->
+                    <div id="show_img_escribir" class="text-center mt-3">
+                        <img src="escribir.png" alt="Escribir" class="img-fluid" style="max-height: 150px;">
+                    </div>
+                </div>
+                <div class="card-footer bg-light text-center">
+                    <button type="button" id="bt_buscar_asistente" class="btn btn-primary rounded-pill">
+                        <i class="fa fa-search mr-2"></i>
+                        Buscar Representante
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .rounded-pill {
+        border-radius: 50px;
+    }
+
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #ced4da;
+        color: #495057;
+    }
+
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .rounded {
+        border-radius: 0.375rem;
+    }
+
+    .text-danger {
+        color: #dc3545 !important;
+    }
+</style>

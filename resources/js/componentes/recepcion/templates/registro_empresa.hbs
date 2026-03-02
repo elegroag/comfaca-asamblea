@@ -1,229 +1,125 @@
-<% if(empresa.estado_detalle=="Activo" ){ _status="success" } if(empresa.estado_detalle=="Finalizado" ){
-	_status="success" } if(empresa.estado_detalle=="Pendiente" || empresa.estado_detalle=="Actualizando" ){
-	_status="info" } if(empresa.estado_detalle=="Cancelado" ){ _status="warning" }
-	if(empresa.estado_detalle=="Rechazado" ){ _status="danger" } %>
-	<div class='bg-gray-50 min-h-screen'>
-		<div class='container mx-auto px-4 py-6'>
-			<div class='flex justify-end mb-6'>
-				<button type='button'
-					class="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 transform hover:scale-105"
-					id='bt_back'>
-					<i class="fas fa-arrow-left mr-2"></i>
-					Regresar
-				</button>
+<%
+		if(empresa.estado_detalle == "Activo"){
+			_status= "success"
+		}
+		if(empresa.estado_detalle == "Finalizado"){
+			_status= "success"
+		}
+		if(empresa.estado_detalle == "Pendiente" || empresa.estado_detalle == "Actualizando"){
+			_status= "info"
+		}
+		if(empresa.estado_detalle == "Cancelado"){
+			_status= "warning"
+		}
+		if(empresa.estado_detalle == "Rechazado"){
+			_status= "danger"
+		}
+	%>
+<div class='row'>
+	<div class='col-md-12'>
+		<div class="nav justify-content-end">
+			<button type='button' class="nav-link btn btn-sm btn-outline-primary  btn-round" id='bt_back'>Regresar</button>
+		</div>
+	</div>
+	<div class='col-md-6'>
+		<div class='card card-pricing'>
+			<div class="card-header">
+				<h4 class='card-title text-primary'><b>Registro de ingreso</b></h4>
 			</div>
-
-			<div class='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-				<div class='space-y-6'>
-					<div class='bg-white rounded-lg shadow-lg overflow-hidden'>
-						<div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4">
-							<h4 class='text-xl font-bold text-white'>Registro de ingreso</h4>
-						</div>
-						<div class='p-6 space-y-4'>
-							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<div>
-									<span class="text-sm font-semibold text-gray-600">Razón social:</span>
-									<p class="text-gray-900">
-										<%=capitalize(empresa.razsoc)%>
-									</p>
-								</div>
-								<div>
-									<span class="text-sm font-semibold text-gray-600">Nit:</span>
-									<p class="text-gray-900 font-mono">
-										<%=empresa.nit%>
-									</p>
-								</div>
-								<div>
-									<span class="text-sm font-semibold text-gray-600">Representante legal:</span>
-									<p class="text-gray-900">
-										<%=capitalize(empresa.repleg)%>
-									</p>
-								</div>
-								<div>
-									<span class="text-sm font-semibold text-gray-600">Identificación:</span>
-									<p class="text-gray-900 font-mono">
-										<%=empresa.cedrep%>
-									</p>
-								</div>
-								<div>
-									<span class="text-sm font-semibold text-gray-600">Estado asistencia:</span>
-									<p class="text-gray-900">
-										<%=empresa.estado_detalle%>
-									</p>
-								</div>
-								<div>
-									<span class="text-sm font-semibold text-gray-600">Día inscripción:</span>
-									<p class="text-gray-900">
-										<%=empresa.asa02_fecha%>
-									</p>
-								</div>
-								<div>
-									<span class="text-sm font-semibold text-gray-600">Hora inscripción:</span>
-									<p class="text-gray-900">
-										<%=empresa.asa02_hora%>
-									</p>
-								</div>
-								<div>
-									<span class="text-sm font-semibold text-gray-600">Email:</span>
-									<p class="text-gray-900">
-										<%=empresa.email%>
-									</p>
-								</div>
-							</div>
-
-							<div class="bg-gray-50 rounded-lg p-4 text-center">
-								<p class="text-sm text-gray-600 mb-4">Datos actualizados en el proceso de inscripción.
-								</p>
-								<div class="flex justify-center mb-4">
-									<div
-										class="w-16 h-16 bg-<%=_status%> rounded-full flex items-center justify-center">
-										<i class="fas fa-sun text-white text-2xl"></i>
-									</div>
-								</div>
-								<h3 class='text-2xl font-bold text-gray-800'>Votos: <%=empresa.votos%>
-								</h3>
-							</div>
-						</div>
-					</div>
-
-					<% if(poder){ %>
-						<div class='bg-white rounded-lg shadow-lg overflow-hidden'>
-							<div class="bg-gradient-to-r from-green-500 to-green-600 p-4">
-								<h4 class='text-xl font-bold text-white'>Apoderado</h4>
-							</div>
-							<div class='p-6 space-y-4'>
-								<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-									<div>
-										<span class="text-sm font-semibold text-gray-600">Empresa:</span>
-										<p class="text-gray-900">
-											<%=capitalize(poder.razsoc2)%>
-										</p>
-									</div>
-									<div>
-										<span class="text-sm font-semibold text-gray-600">Nit empresa poderdante:</span>
-										<p class="text-gray-900 font-mono">
-											<%=poder.nit2%>
-										</p>
-									</div>
-									<div>
-										<span class="text-sm font-semibold text-gray-600">Nombre representante
-											poderdante:</span>
-										<p class="text-gray-900">
-											<%=capitalize(poder.repleg2)%>
-										</p>
-									</div>
-									<div>
-										<span class="text-sm font-semibold text-gray-600">Identificación representante
-											poderdante:</span>
-										<p class="text-gray-900 font-mono">
-											<%=poder.cedrep2%>
-										</p>
-									</div>
-									<div>
-										<span class="text-sm font-semibold text-gray-600">Estado poder:</span>
-										<p class="text-gray-900">
-											<%=(poder.estado=='A'
-												)? '<span class="inline-flex px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Aprobado</span>'
-												: '<span class="inline-flex px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">Rechazado</span>'
-												%>
-										</p>
-									</div>
-									<div>
-										<span class="text-sm font-semibold text-gray-600">Estado registro:</span>
-										<p class="text-gray-900">
-											<%=poder.fecha%>
-										</p>
-									</div>
-									<div>
-										<span class="text-sm font-semibold text-gray-600">Radicado:</span>
-										<p class="text-gray-900">
-											<%=poder.radicado%>
-										</p>
-									</div>
-								</div>
-							</div>
-						</div>
-						<%}%>
+			<div class='card-body'>
+				<b>Razon social</b> <%=capitalize(empresa.razsoc)%></br>
+				<b>Nit</b> <%=empresa.nit%></br>
+				<b>Replesentante legal</b> <%=capitalize(empresa.repleg)%></br>
+				<b>Identificación</b> <%=empresa.cedrep%></br>
+				<b>Estado asistencia</b> <%=empresa.estado_detalle%></br>
+				<b>Día inscripción</b> <%=empresa.asa02_fecha%></br>
+				<b>Hora inscripción</b> <%=empresa.asa02_hora%></br>
+				<b>Email</b> <%=empresa.email%></br>
+				<p>Datos actualizados en el proceso de inscripción.</p>
+				<div class="card-icon icon-<%=_status%>">
+					<i class="nc-icon nc-sun-fog-29"></i>
 				</div>
-
-				<div class="lg:col-span-1">
-					<div class="bg-white rounded-lg shadow-lg overflow-hidden">
-						<div class="bg-gradient-to-r from-purple-500 to-purple-600 p-4">
-							<h4 class='text-xl font-bold text-white'>Estados del Registro</h4>
-						</div>
-						<div class="p-6">
-							<div class="space-y-6">
-								<div class="flex items-start space-x-4">
-									<div class="flex-shrink-0 mt-1">
-										<div
-											class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-											<i class="fas fa-check text-white"></i>
-										</div>
-									</div>
-									<div class="flex-1">
-										<div
-											class="inline-flex px-3 py-1 text-sm font-semibold text-green-800 bg-green-100 rounded-full mb-2">
-											Registro activo
-										</div>
-										<p class="text-sm text-gray-600">Se encuentra aprobado para el ingreso a la
-											Asamblea.</p>
-									</div>
+				<h3 class='card-title'>Votos</b> <%=empresa.votos%></h3>
+			</div>
+		</div>
+		<br />
+		<% if(poder){ %>
+		<div class='card'>
+			<div class="card-header">
+				<h4 class='card-title text-primary'><b>Apoderado</b></h4>
+			</div>
+			<div class='card-body'>
+				<b>Empresa</b> <%=capitalize(poder.razsoc2)%><br />
+				<b>Nit empresa poderdante</b> <%=poder.nit2%></br>
+				<b>Nombre representante poderdante</b> <%=capitalize(poder.repleg2)%></br>
+				<b>Identificación representante poderdante</b> <%=poder.cedrep2%></br>
+				<b>Estado poder</b> <%=(poder.estado == 'A')? 'Aprobado' : 'Rechazado'%></br>
+				<b>Estado registro</b> <%=poder.fecha%></br>
+				<b>Radicado</b> <%=poder.radicado%></br>
+			</div>
+		</div>
+		<%}%>
+		</div>
+		<div class="col-md-6">
+			<div class="card card-timeline card-plain">
+				<div class="card-body">
+					<ul class="timeline timeline-simple">
+						<li class="timeline-inverted">
+							<div class="timeline-badge success">
+								<i class="nc-icon nc-sun-fog-29"></i>
+							</div>
+							<div class="timeline-panel">
+								<div class="timeline-heading">
+									<span class="badge badge-pill badge-success">Registro activo</span>
 								</div>
-
-								<div class="flex items-start space-x-4">
-									<div class="flex-shrink-0 mt-1">
-										<div
-											class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-											<i class="fas fa-clock text-white"></i>
-										</div>
-									</div>
-									<div class="flex-1">
-										<div
-											class="inline-flex px-3 py-1 text-sm font-semibold text-blue-800 bg-blue-100 rounded-full mb-2">
-											Registro pendiente
-										</div>
-										<p class="text-sm text-gray-600">Requiere de validación por el área de subsidio.
-											Cruzar con los habiles para la aprobación.</p>
-									</div>
-								</div>
-
-								<div class="flex items-start space-x-4">
-									<div class="flex-shrink-0 mt-1">
-										<div
-											class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
-											<i class="fas fa-times text-white"></i>
-										</div>
-									</div>
-									<div class="flex-1">
-										<div
-											class="inline-flex px-3 py-1 text-sm font-semibold text-yellow-800 bg-yellow-100 rounded-full mb-2">
-											Registro cancelado
-										</div>
-										<p class="text-sm text-gray-600">La asistencia se encuentra cancelada. No puede
-											asistir a la Asamblea.</p>
-									</div>
-								</div>
-
-								<div class="flex items-start space-x-4">
-									<div class="flex-shrink-0 mt-1">
-										<div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
-											<i class="fas fa-ban text-white"></i>
-										</div>
-									</div>
-									<div class="flex-1">
-										<div
-											class="inline-flex px-3 py-1 text-sm font-semibold text-red-800 bg-red-100 rounded-full mb-2">
-											Registro rechazado
-										</div>
-										<p class="text-sm text-gray-600">La asistencia se encuentra rechazada. No puede
-											asistir a la Asamblea. Se ha rechazado por no cumplir criterios de
-											habilitación.</p>
-									</div>
+								<div class="timeline-body">
+									<p>Se encuentra aprobado para el ingreso a la Asamblea.</p>
 								</div>
 							</div>
-						</div>
-					</div>
+						</li>
+						<li class="timeline-inverted">
+							<div class="timeline-badge info">
+								<i class="nc-icon nc-sun-fog-29"></i>
+							</div>
+							<div class="timeline-panel">
+								<div class="timeline-heading">
+									<span class="badge badge-pill badge-info">Registro pendiente</span>
+								</div>
+								<div class="timeline-body">
+									<p>Requiere de validación por el área de subsidio. Cruzar con los habiles para la aprobación.</p>
+								</div>
+							</div>
+						</li>
+						<li class="timeline-inverted">
+							<div class="timeline-badge warning">
+								<i class="nc-icon nc-sun-fog-29"></i>
+							</div>
+							<div class="timeline-panel">
+								<div class="timeline-heading">
+									<span class="badge badge-pill badge-warning">Registro cancelado</span>
+								</div>
+								<div class="timeline-body">
+									<p>La asistencia se encuentra cancelada. No puede asistir a la Asamblea.</p>
+								</div>
+							</div>
+						</li>
+
+						<li class="timeline-inverted">
+							<div class="timeline-badge danger">
+								<i class="nc-icon nc-sun-fog-29"></i>
+							</div>
+							<div class="timeline-panel">
+								<div class="timeline-heading">
+									<span class="badge badge-pill badge-danger">Registro rechazado</span>
+								</div>
+								<div class="timeline-body">
+									<p>La asistencia se encuentra rechazada. No puede asistir a la Asamblea. Se ha rechazado por no cumplir criterios de habilitación.</p>
+								</div>
+							</div>
+						</li>
+					</ul>
 				</div>
 			</div>
 		</div>
 	</div>
+</div>

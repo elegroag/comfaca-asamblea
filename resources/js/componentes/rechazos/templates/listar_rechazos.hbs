@@ -1,18 +1,156 @@
-<div class="overflow-x-auto">
-    <table class="w-full text-sm" id='tb_data_rechazos' style='display:none; width:100%'>
-        <thead>
-            <tr class="bg-gray-50 border-b border-gray-200">
-                <th class="px-4 py-3 text-left font-semibold text-gray-800">Nit</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-800">Razón social</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-800">Identificación</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-800">Representante</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-800">Criterio</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-800">Tipo</th>
-                <th class="px-4 py-3 text-center font-semibold text-gray-800">OPT</th>
-            </tr>
-        </thead>
-        <tbody id="show_data_rechazos" class="divide-y divide-gray-200">
-            <!-- Los datos se cargarán dinámicamente aquí -->
-        </tbody>
-    </table>
+<div class="container-fluid">
+    <!-- Header Principal -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h3 class="text-danger font-weight-bold mb-0">
+                <i class="fa fa-times-circle mr-2"></i>
+                Lista de Rechazos
+            </h3>
+            <p class="text-muted mb-0">Gestión de rechazos del sistema</p>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-end gap-2">
+                <button type="button" id="bt_crear_rechazo" class="btn btn-success rounded-pill">
+                    <i class="fa fa-plus mr-2"></i>
+                    Nuevo Rechazo
+                </button>
+                <button type="button" id="bt_cargar_rechazos" class="btn btn-warning rounded-pill">
+                    <i class="fa fa-upload mr-2"></i>
+                    Cargar Masivo
+                </button>
+                <button type="button" id="bt_actualiza" class="btn btn-primary rounded-pill">
+                    <i class="fa fa-refresh mr-2"></i>
+                    Actualizar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Principal -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-danger text-white">
+            <h5 class="card-title mb-0">
+                <i class="fa fa-list mr-2"></i>
+                Rechazos Registrados
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- Tabla de Rechazos -->
+            <div class="table-responsive tb-options">
+                <table class="table table-hover table-striped" id="tb_data_rechazos" style="display: none; width: 100%">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>
+                                <i class="fa fa-building mr-1"></i>
+                                NIT
+                            </th>
+                            <th>
+                                <i class="fa fa-industry mr-1"></i>
+                                Razón Social
+                            </th>
+                            <th>
+                                <i class="fa fa-id-card mr-1"></i>
+                                Identificación
+                            </th>
+                            <th>
+                                <i class="fa fa-user-tie mr-1"></i>
+                                Representante
+                            </th>
+                            <th>
+                                <i class="fa fa-exclamation-triangle mr-1"></i>
+                                Criterio
+                            </th>
+                            <th>
+                                <i class="fa fa-tag mr-1"></i>
+                                Tipo
+                            </th>
+                            <th class="text-center">
+                                <i class="fa fa-cogs mr-1"></i>
+                                Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="show_data_rechazos">
+                        <!-- Las filas se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    #tb_data_rechazos_wrapper {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 12px;
+        color: #111827;
+    }
+
+    #tb_data_rechazos_wrapper .row {
+        margin: 0;
+        gap: 10px;
+    }
+
+    #tb_data_rechazos_wrapper .dt-length,
+    #tb_data_rechazos_wrapper .dt-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        color: #374151;
+    }
+
+    #tb_data_rechazos_wrapper .form-select,
+    #tb_data_rechazos_wrapper .form-control {
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        min-height: 34px;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.875rem;
+        box-shadow: none;
+        background: #fff;
+    }
+
+    #tb_data_rechazos_wrapper .form-control:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+    }
+
+    #tb_data_rechazos_wrapper .dataTables_paginate .paginate_button {
+        border-radius: 6px;
+        margin: 0 2px;
+        border: 1px solid #d1d5db;
+        background: #fff;
+        color: #374151;
+    }
+
+    #tb_data_rechazos_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #f9fafb;
+        border-color: #9ca3af;
+    }
+
+    #tb_data_rechazos_wrapper .dataTables_paginate .paginate_button.current {
+        background: #dc3545 !important;
+        border-color: #dc3545 !important;
+        color: #fff !important;
+    }
+
+    #tb_data_rechazos_wrapper .dataTables_paginate .paginate_button.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+        #tb_data_rechazos_wrapper .row {
+            flex-direction: column;
+        }
+
+        #tb_data_rechazos_wrapper .dt-length,
+        #tb_data_rechazos_wrapper .dt-search {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+</style>

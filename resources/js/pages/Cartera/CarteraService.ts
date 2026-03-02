@@ -1,28 +1,10 @@
-import { CommonDeps, ServiceOptions, ApiResponse, FileUploadTransfer } from '@/types/CommonDeps';
-import CarterasCollection from '@/collections/CarterasCollection';
-import RepresentantesCollection from '@/collections/RepresentantesCollection';
-import EmpresasCollection from '@/collections/EmpresasCollection';
-import { BoxCollectionStorage } from '@/componentes/useStorage';
-import type { Cartera, CarteraCreateRequest, CarteraUpdateRequest, CarteraResponse, CarteraListarResponse, CarteraDetalleResponse } from './types';
-
-export interface CarteraServiceOptions extends ServiceOptions {
-    // Opciones adicionales específicas del servicio si se necesitan
-}
-
-export interface CarteraCollections {
-    empresas: EmpresasCollection;
-    carteras: CarterasCollection;
-    representantes: RepresentantesCollection;
-    poderes: any; // PoderCollection si existe
-}
+import { ServiceOptions, ApiResponse, FileUploadTransfer } from '@/types/CommonDeps';
+import Cartera from '@/models/Cartera';
+import { cacheCollection, getCachedCollection, CacheManager } from '@/componentes/CacheManager';
 
 export default class CarteraService {
-    private storage: BoxCollectionStorage;
-    private collections: CarteraCollections;
-
-    constructor(private readonly opts: CarteraServiceOptions) {
-        this.storage = BoxCollectionStorage.getInstance();
-        this.__initializeCollections();
+    constructor(private readonly opts: ServiceOptions) {
+        _.extend(this, opts);
     }
 
     private get api() { return this.opts.api; }
@@ -30,97 +12,46 @@ export default class CarteraService {
     private get app() { return this.opts.app; }
 
     /**
-     * Inicializar las colecciones necesarias usando BoxCollectionStorage
-     */
-    private __initializeCollections(): void {
-        // Inicializar colecciones persistentes en localStorage
-        const empresasStorage = this.storage.getCollection('empresas')?.value;
-        const carterasStorage = this.storage.getCollection('carteras')?.value;
-        const representantesStorage = this.storage.getCollection('representantes')?.value;
-        const poderesStorage = this.storage.getCollection('poderes')?.value;
-
-        // Crear colecciones Backbone si no existen
-        this.collections.empresas = (empresasStorage as EmpresasCollection) || new EmpresasCollection();
-        this.collections.carteras = (carterasStorage as CarterasCollection) || new CarterasCollection();
-        this.collections.representantes = (representantesStorage as RepresentantesCollection) || new RepresentantesCollection();
-        this.collections.poderes = poderesStorage || new (this.app as any).Collection();
-
-        // Guardar colecciones en storage si no existen
-        if (!empresasStorage) {
-            this.storage.addCollection('empresas', this.collections.empresas);
-        }
-        if (!carterasStorage) {
-            this.storage.addCollection('carteras', this.collections.carteras);
-        }
-        if (!representantesStorage) {
-            this.storage.addCollection('representantes', this.collections.representantes);
-        }
-        if (!poderesStorage) {
-            this.storage.addCollection('poderes', this.collections.poderes);
-        }
-    }
-
-    // Métodos públicos (interfaz para controllers/vistas)
-
-    /**
      * Obtener todas las carteras
      */
-    async __findAll(): Promise<void> {
+    async findAllCarteras(): Promise<ApiResponse> {
         try {
             const response = await this.findAllApi();
-            if (response?.success) {
-                this.__setCarteras((response as any).carteras || []);
-            } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar carteras' });
-            }
+            return response;
         } catch (error: any) {
             this.logger.error('Error al listar carteras:', error);
-            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return { success: false, message: error.message };
         }
     }
 
     /**
-     * Establecer lista de carteras
+     * Buscar cartera por ID
      */
-    __setCarteras(carteras: Cartera[]): void {
-        this.collections.carteras.reset();
-        this.collections.carteras.add(carteras, { merge: true });
-    }
-
-    /**
-     * Agregar cartera a la colección
-     */
-    __addCartera(cartera: Cartera): void {
-        this.collections.carteras.add(cartera, { merge: true });
-    }
-
-    /**
-     * Remover cartera de la colección
-     */
-    __removeCartera(cartera: Cartera): void {
-        this.collections.carteras.remove(cartera);
+    async findCartera(id: string): Promise<ApiResponse> {
+        try {
+            const response = await this.findCarteraApi(id);
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al buscar cartera:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return { success: false, message: error.message };
+        }
     }
 
     /**
      * Guardar cartera (crear o actualizar)
      */
-    async __saveCartera(cartera: Cartera): Promise<ApiResponse> {
+    async saveCartera(cartera: Cartera): Promise<ApiResponse> {
         try {
             const response = cartera.id
                 ? await this.updateCarteraApi(cartera)
                 : await this.createCarteraApi(cartera);
 
-            if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Cartera guardada exitosamente' });
-                this.__addCartera((response as any).cartera);
-            } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar cartera' });
-            }
-
             return response;
         } catch (error: any) {
             this.logger.error('Error al guardar cartera:', error);
-            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
@@ -128,72 +59,74 @@ export default class CarteraService {
     /**
      * Eliminar cartera
      */
-    async __deleteCartera(id: string): Promise<ApiResponse> {
+    async removeCartera(id: string): Promise<ApiResponse> {
         try {
             const response = await this.deleteCarteraApi(id);
-
-            if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Cartera eliminada exitosamente' });
-                const cartera = this.collections.carteras.get(id);
-                if (cartera) {
-                    this.__removeCartera(cartera);
-                }
-            } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar cartera' });
-            }
-
             return response;
         } catch (error: any) {
             this.logger.error('Error al eliminar cartera:', error);
-            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
             return { success: false, message: error.message };
         }
     }
 
     /**
-     * Cargue masivo de carteras
+     * Activar cartera
      */
-    async __uploadMasivo({ formData, callback }: FileUploadTransfer): Promise<void> {
+    async activarCartera(id: string): Promise<ApiResponse> {
         try {
-            const response = await this.uploadMasivoApi(formData);
+            const response = await this.activarCarteraApi(id);
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al activar cartera:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return { success: false, message: error.message };
+        }
+    }
 
-            if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
-                await this.__findAll(); // Recargar datos
-                callback(true, response);
-            } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
-                callback(false);
-            }
+    /**
+     * Inactivar cartera
+     */
+    async inactivarCartera(id: string): Promise<ApiResponse> {
+        try {
+            const response = await this.inactivarCarteraApi(id);
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al inactivar cartera:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return { success: false, message: error.message };
+        }
+    }
+
+    /**
+     * Subir archivo masivo
+     */
+    async uploadMasivo(options: FileUploadTransfer): Promise<ApiResponse> {
+        try {
+            const response = await this.uploadMasivoApi(options.formData);
+            return response;
         } catch (error: any) {
             this.logger.error('Error en cargue masivo:', error);
-            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
-            callback(false);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return { success: false, message: error.message };
         }
     }
 
     /**
      * Exportar lista de carteras
      */
-    async __exportLista(): Promise<void> {
+    async exportLista(): Promise<ApiResponse> {
         try {
             const response = await this.exportListaApi();
-
-            if (response?.success && response.url) {
-                this.app.download({
-                    url: response.url,
-                    filename: response.filename || 'carteras.csv'
-                });
-            } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al exportar lista' });
-            }
+            return response;
         } catch (error: any) {
             this.logger.error('Error al exportar lista:', error);
-            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return { success: false, message: error.message };
         }
     }
 
-    // Métodos privados (solo Service)
+    // Métodos privados (solo API)
 
     /**
      * Obtener carteras desde API
@@ -203,16 +136,23 @@ export default class CarteraService {
     }
 
     /**
+     * Buscar cartera por ID desde API
+     */
+    private async findCarteraApi(id: string): Promise<ApiResponse> {
+        return await this.api.get(`/cartera/${id}`);
+    }
+
+    /**
      * Crear cartera en API
      */
-    private async createCarteraApi(cartera: CarteraCreateRequest): Promise<ApiResponse> {
+    private async createCarteraApi(cartera: Cartera): Promise<ApiResponse> {
         return await this.api.post('/cartera/crear', cartera);
     }
 
     /**
      * Actualizar cartera en API
      */
-    private async updateCarteraApi(cartera: CarteraUpdateRequest): Promise<ApiResponse> {
+    private async updateCarteraApi(cartera: Cartera): Promise<ApiResponse> {
         return await this.api.put(`/cartera/editar/${cartera.id}`, cartera);
     }
 
@@ -221,6 +161,20 @@ export default class CarteraService {
      */
     private async deleteCarteraApi(id: string): Promise<ApiResponse> {
         return await this.api.delete(`/cartera/eliminar/${id}`);
+    }
+
+    /**
+     * Activar cartera en API
+     */
+    private async activarCarteraApi(id: string): Promise<ApiResponse> {
+        return await this.api.post(`/cartera/activar/${id}`);
+    }
+
+    /**
+     * Inactivar cartera en API
+     */
+    private async inactivarCarteraApi(id: string): Promise<ApiResponse> {
+        return await this.api.post(`/cartera/inactivar/${id}`);
     }
 
     /**

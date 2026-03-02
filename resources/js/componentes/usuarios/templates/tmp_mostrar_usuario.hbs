@@ -1,216 +1,414 @@
-<div class="w-full">
-	<h5 class="text-xl font-semibold text-gray-800 pb-4">Detalle Usuario Asamblea</h5>
-</div>
-
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-	<!-- Columna izquierda - Información de la asamblea -->
-	<div class="lg:col-span-1">
-		<h6 class="text-center font-semibold text-gray-700 mb-4">
-			<%=asamblea.detalle%>
-		</h6>
-		<div class="text-center">
-			<div class="mb-4">
-				<div class="inline-block">
-					<img src="/images/asamblea-logo.png" alt="Logo Asamblea"
-						class="w-24 h-24 rounded-full mx-auto object-cover" />
-				</div>
+<div class="container-fluid">
+	<!-- Header Principal -->
+	<div class="row mb-4">
+		<div class="col-md-6">
+			<h3 class="text-info font-weight-bold mb-0">
+				<i class="fa fa-user-circle mr-2"></i>
+				Detalle de Usuario
+			</h3>
+			<p class="text-muted mb-0">Información completa del usuario</p>
+		</div>
+		<div class="col-md-6">
+			<div class="d-flex justify-content-end">
+				<button type="button" id="btn_back_list" class="btn btn-outline-info rounded-pill">
+					<i class="fa fa-arrow-left mr-2"></i>
+					Volver
+				</button>
 			</div>
-			<h6 class="text-center text-gray-600 mb-4">
-				<%=moment(asamblea.fecha_programada).format('DD-MM-YYYY') %>
-			</h6>
-
-			<% if(asa_usuario==false){ %>
-				<div class="text-center">
-					<button
-						class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-						id='vincular_asamblea' data-id='<%=asamblea.id%>'>
-						Vincular
-					</button>
-				</div>
-				<% }else{ %>
-					<div class="text-center">
-						<p class="text-gray-500 bg-gray-50 rounded-lg p-3">El usuario ya se encuentra vinculado a una
-							asamblea.</p>
-					</div>
-					<% } %>
 		</div>
 	</div>
 
-	<!-- Columna derecha - Información del usuario -->
-	<div class="lg:col-span-2">
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-			<div class="space-y-4">
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
-					<div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-						<div class="bg-gray-50 px-3 py-2 border-r border-gray-300">
-							<i class="fas fa-user text-gray-500"></i>
-						</div>
-						<span class="flex-1 px-3 py-2 bg-gray-50" id='nombre'>
-							<%=capitalize(usuario.nombre)%>
-						</span>
-					</div>
-				</div>
-
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Identificación</label>
-					<div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-						<div class="bg-gray-50 px-3 py-2 border-r border-gray-300">
-							<i class="fas fa-id-card text-gray-500"></i>
-						</div>
-						<span class="flex-1 px-3 py-2 bg-gray-50" id='cedula'>
-							<%=usuario.cedtra%>
-						</span>
-					</div>
-				</div>
-			</div>
-
-			<div class="space-y-4">
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Estado usuario SisuWeb</label>
-					<div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-						<div class="bg-gray-50 px-3 py-2 border-r border-gray-300">
-							<i class="fas fa-info-circle text-gray-500"></i>
-						</div>
-						<span class="flex-1 px-3 py-2 bg-gray-50" id='estado'>
-							<%=(usuario.estado=='A' )? 'Activo' : 'Inactivo' %>
-						</span>
-					</div>
-				</div>
-
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Roles</label>
-					<select
-						class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
-						id='userrol' name='userrol'>
-						<% n=0 while (n < _.size(roles)){ if(asa_usuario.rol==n){%>
-							<option selected value='<%=n%>'>
-								<%=roles[n]%>
-							</option>
-							<% }else{%>
-								<option value='<%=n%>'>
-									<%=roles[n]%>
-								</option>
-								<%}%>
-									<% n++ } %>
-					</select>
-				</div>
-			</div>
+	<!-- Card Principal -->
+	<div class="card shadow-sm">
+		<div class="card-header bg-info text-white">
+			<h5 class="card-title mb-0">
+				<i class="fa fa-info-circle mr-2"></i>
+				Información del Usuario
+			</h5>
 		</div>
+		<div class="card-body">
+			<div class="row">
+				<!-- Columna Izquierda - Datos del Usuario -->
+				<div class="col-md-4">
+					<div class="card border-0 bg-light mb-4">
+						<div class="card-body text-center">
+							<!-- Imagen y Asamblea -->
+							<div class="picture-container mb-3">
+								<div class="picture text-center">
+									<img src="asamblea-logo.png" alt="Asamblea" class="img-fluid rounded-circle"
+										style="width: 100px; height: 100px; object-fit: cover;">
+								</div>
+								<h6 class="description text-center mt-2">
+									<strong>
+										<%=asamblea.detalle%>
+									</strong>
+								</h6>
+								<p class="text-muted mb-0">
+									<%=moment(asamblea.fecha_programada).format('DD-MM-YYYY') %>
+								</p>
+							</div>
 
-		<hr class="my-6 border-gray-200" />
-
-		<h6 class="font-semibold text-gray-700 mb-4">Mesa de trabajo</h6>
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-			<% if(mesa !==false){ %>
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Mesa detalle</label>
-					<div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-						<div class="bg-gray-50 px-3 py-2 border-r border-gray-300">
-							<i class="fas fa-hashtag text-gray-500"></i>
+							<!-- Botón de Vinculación -->
+							<% if(asa_usuario==false){ %>
+								<div class="text-center">
+									<button class="btn btn-primary rounded-pill" id="vincular_asamblea"
+										data-id="<%=asamblea.id%>">
+										<i class="fa fa-link mr-2"></i>
+										Vincular
+									</button>
+								</div>
+								<% }else{ %>
+									<div class="text-center">
+										<div class="alert alert-info border-0 bg-light">
+											<i class="fa fa-info-circle mr-2"></i>
+											El usuario ya se encuentra vinculado a una asamblea.
+										</div>
+									</div>
+									<% } %>
 						</div>
-						<span class="flex-1 px-3 py-2 bg-gray-50" id='mesa_codigo'>
-							<%=mesa.codigo%>
-						</span>
 					</div>
 				</div>
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-2">Estado mesa</label>
-					<div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-						<div class="bg-gray-50 px-3 py-2 border-r border-gray-300">
-							<i class="fas fa-info-circle text-gray-500"></i>
+
+				<!-- Columna Derecha - Información Detallada -->
+				<div class="col-md-8">
+					<!-- Card de Información Personal -->
+					<div class="card border-0 bg-light mb-4">
+						<div class="card-header bg-light">
+							<h6 class="card-title mb-0">
+								<i class="fa fa-user mr-2"></i>
+								Información Personal
+							</h6>
 						</div>
-						<span class="flex-1 px-3 py-2 bg-gray-50" id='mesa_estado'>
-							<%=mesa.estado%>
-						</span>
-					</div>
-				</div>
-				<% } else { %>
-					<% if(mesas_disponibles){ %>
-						<div class="md:col-span-2">
-							<div class="flex items-center space-x-4">
-								<div class="relative">
-									<input id='check_buscar_mesa' class="sr-only" type="checkbox"
-										data-toggle="switch" />
-									<div
-										class="w-14 h-7 bg-gray-200 rounded-full relative cursor-pointer transition-colors duration-200 ease-in-out peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:bg-green-600">
-										<div
-											class="absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out peer-checked:translate-x-7">
-										</div>
-									</div>
-									<span class="ml-3 text-sm text-gray-600">
-										<span class="peer-checked:hidden">NO</span>
-										<span class="hidden peer-checked:inline">SI</span>
-									</span>
-								</div>
-								<div class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg">
-									<span class="text-sm">¿Desea ocupar mesa disponible?</span>
-								</div>
-							</div>
-						</div>
-						<% } %>
-							<div class="space-y-4" data-toggle='input-crear-mesa'>
-								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-2">Mesa detalle</label>
-									<div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-										<div class="bg-gray-50 px-3 py-2 border-r border-gray-300">
-											<i class="fas fa-hashtag text-gray-500"></i>
-										</div>
-										<input
-											class="flex-1 px-3 py-2 border-0 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
-											name='mesa_codigo' id='mesa_codigo' />
-									</div>
-								</div>
-								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-2">Estado mesa</label>
-									<div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-										<div class="bg-gray-50 px-3 py-2 border-r border-gray-300">
-											<i class="fas fa-info-circle text-gray-500"></i>
-										</div>
-										<select
-											class="flex-1 px-3 py-2 border-0 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
-											name='mesa_estado' id='mesa_estado'>
-											<option value='A'>Activo</option>
-											<option value='P'>Pendiente</option>
-										</select>
-									</div>
-								</div>
-							</div>
-							<% if(mesas_disponibles){ %>
-								<div class="space-y-4 hidden" data-toggle='input-selector-mesa'>
-									<div>
-										<label class="block text-sm font-medium text-gray-700 mb-2">Mesa detalle</label>
-										<div
-											class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-											<div class="bg-gray-50 px-3 py-2 border-r border-gray-300">
-												<i class="fas fa-hashtag text-gray-500"></i>
+						<div class="card-body">
+							<div class="row">
+								<div class="col-md-6">
+									<!-- Nombre -->
+									<div class="form-group mb-3">
+										<label class="font-weight-bold text-muted">
+											<i class="fa fa-user mr-1"></i>
+											Nombre
+										</label>
+										<div class="input-group">
+											<div class="input-group-prepend">
+												<span class="input-group-text">
+													<i class="fa fa-user"></i>
+												</span>
 											</div>
-											<select
-												class="flex-1 px-3 py-2 border-0 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
-												name='mesa_select_codigo' id='mesa_select_codigo'>
-												<% _.each(mesas_disponibles, function(mesa_dispo){ %>
-													<option value='<%=mesa_dispo.id%>'>
-														<%=mesa_dispo.codigo%>
+											<div class="form-control bg-white">
+												<span class="font-weight-bold">
+													<%=capitalize(usuario.nombre)%>
+												</span>
+											</div>
+										</div>
+									</div>
+
+									<!-- Identificación -->
+									<div class="form-group mb-3">
+										<label class="font-weight-bold text-muted">
+											<i class="fa fa-id-card mr-1"></i>
+											Identificación
+										</label>
+										<div class="input-group">
+											<div class="input-group-prepend">
+												<span class="input-group-text">
+													<i class="fa fa-id-card"></i>
+												</span>
+											</div>
+											<div class="form-control bg-white">
+												<span class="badge badge-primary">
+													<%=usuario.cedtra%>
+												</span>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-md-6">
+									<!-- Estado Usuario -->
+									<div class="form-group mb-3">
+										<label class="font-weight-bold text-muted">
+											<i class="fa fa-toggle-on mr-1"></i>
+											Estado Usuario SisuWeb
+										</label>
+										<div class="input-group">
+											<div class="input-group-prepend">
+												<span class="input-group-text">
+													<i class="fa fa-toggle-on"></i>
+												</span>
+											</div>
+											<div class="form-control bg-white">
+												<% if(usuario.estado=='A' ){ %>
+													<span class="badge badge-success">
+														<i class="fa fa-check-circle mr-1"></i>
+														Activo
+													</span>
+													<% }else{ %>
+														<span class="badge badge-danger">
+															<i class="fa fa-times-circle mr-1"></i>
+															Inactivo
+														</span>
+														<% } %>
+											</div>
+										</div>
+									</div>
+
+									<!-- Roles -->
+									<div class="form-group mb-3">
+										<label class="font-weight-bold text-muted">
+											<i class="fa fa-users mr-1"></i>
+											Roles
+										</label>
+										<div class="input-group">
+											<div class="input-group-prepend">
+												<span class="input-group-text">
+													<i class="fa fa-users"></i>
+												</span>
+											</div>
+											<select class="form-control" id="userrol" name="userrol">
+												<% n=0 while (n < _.size(roles)){ if(asa_usuario.rol==n){ %>
+													<option selected value="<%=n%>">
+														<%=roles[n]%>
 													</option>
-													<% }) %>
+													<% }else{ %>
+														<option value="<%=n%>">
+															<%=roles[n]%>
+														</option>
+														<% } %>
+															<% n++ } %>
 											</select>
 										</div>
 									</div>
 								</div>
-								<% } %>
-									<div class="md:col-span-2">
-										<% if(asa_usuario){ %>
-											<div class="text-center">
-												<button
-													class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
-													id='vincular_mesa' data-id='<%=asamblea.id%>'>
-													Aplicar Mesa
-												</button>
+							</div>
+						</div>
+					</div>
+
+					<!-- Card de Mesa de Trabajo -->
+					<div class="card border-0 bg-light">
+						<div class="card-header bg-light">
+							<h6 class="card-title mb-0">
+								<i class="fa fa-desktop mr-2"></i>
+								Mesa de Trabajo
+							</h6>
+						</div>
+						<div class="card-body">
+							<div class="row justify-content-center">
+								<% if(mesa !==false){ %>
+									<!-- Mesa Asignada -->
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<label class="font-weight-bold text-muted">
+												<i class="fa fa-hashtag mr-1"></i>
+												Código Mesa
+											</label>
+											<div class="input-group">
+												<div class="input-group-prepend">
+													<span class="input-group-text">
+														<i class="fa fa-hashtag"></i>
+													</span>
+												</div>
+												<div class="form-control bg-white">
+													<span class="badge badge-primary">
+														<%=mesa.codigo%>
+													</span>
+												</div>
 											</div>
-											<% } %>
+										</div>
 									</div>
-									<% } %>
-										<% } %>
+									<div class="col-md-6">
+										<div class="form-group mb-3">
+											<label class="font-weight-bold text-muted">
+												<i class="fa fa-toggle-on mr-1"></i>
+												Estado Mesa
+											</label>
+											<div class="input-group">
+												<div class="input-group-prepend">
+													<span class="input-group-text">
+														<i class="fa fa-toggle-on"></i>
+													</span>
+												</div>
+												<div class="form-control bg-white">
+													<% if(mesa.estado=='A' ){ %>
+														<span class="badge badge-success">
+															<i class="fa fa-check-circle mr-1"></i>
+															Activo
+														</span>
+														<% }else{ %>
+															<span class="badge badge-warning">
+																<i class="fa fa-clock-o mr-1"></i>
+																<%=mesa.estado%>
+															</span>
+															<% } %>
+												</div>
+											</div>
+										</div>
+									</div>
+									<% } else { %>
+										<% if(mesas_disponibles){ %>
+											<!-- Opción de Ocupar Mesa -->
+											<div class="col-md-12">
+												<div class="alert alert-warning border-0 bg-light mb-3">
+													<div class="d-flex align-items-center">
+														<div class="custom-control custom-switch mr-3">
+															<input type="checkbox" class="custom-control-input"
+																id="check_buscar_mesa">
+															<label class="custom-control-label" for="check_buscar_mesa">
+																¿Desea ocupar mesa disponible?
+															</label>
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<!-- Campos para Crear Mesa -->
+											<div class="col-md-6" data-toggle="input-crear-mesa">
+												<div class="form-group mb-3">
+													<label class="font-weight-bold text-muted">
+														<i class="fa fa-hashtag mr-1"></i>
+														Código Mesa
+													</label>
+													<div class="input-group">
+														<div class="input-group-prepend">
+															<span class="input-group-text">
+																<i class="fa fa-hashtag"></i>
+															</span>
+														</div>
+														<input type="text" class="form-control" name="mesa_codigo"
+															id="mesa_codigo" placeholder="Código de mesa">
+													</div>
+												</div>
+											</div>
+											<div class="col-md-6" data-toggle="input-crear-mesa">
+												<div class="form-group mb-3">
+													<label class="font-weight-bold text-muted">
+														<i class="fa fa-toggle-on mr-1"></i>
+														Estado Mesa
+													</label>
+													<div class="input-group">
+														<div class="input-group-prepend">
+															<span class="input-group-text">
+																<i class="fa fa-toggle-on"></i>
+															</span>
+														</div>
+														<select class="form-control" name="mesa_estado"
+															id="mesa_estado">
+															<option value="A">Activo</option>
+															<option value="P">Pendiente</option>
+														</select>
+													</div>
+												</div>
+											</div>
+
+											<!-- Selector de Mesa Disponible -->
+											<% if(mesas_disponibles){ %>
+												<div class="col-md-6" data-toggle="input-selector-mesa"
+													style="display: none;">
+													<div class="form-group mb-3">
+														<label class="font-weight-bold text-muted">
+															<i class="fa fa-desktop mr-1"></i>
+															Mesa Disponible
+														</label>
+														<div class="input-group">
+															<div class="input-group-prepend">
+																<span class="input-group-text">
+																	<i class="fa fa-desktop"></i>
+																</span>
+															</div>
+															<select class="form-control" name="mesa_select_codigo"
+																id="mesa_select_codigo">
+																<% _.each(mesas_disponibles, function(mesa_dispo){ %>
+																	<option value="<%=mesa_dispo.id%>">
+																		<%=mesa_dispo.codigo%>
+																	</option>
+																	<% }) %>
+															</select>
+														</div>
+													</div>
+												</div>
+												<div class="col-md-12">
+													<% if(asa_usuario){ %>
+														<div class="text-center">
+															<button class="btn btn-primary rounded-pill"
+																id="vincular_mesa" data-id="<%=asamblea.id%>">
+																<i class="fa fa-link mr-2"></i>
+																Aplicar Mesa
+															</button>
+														</div>
+														<% } %>
+												</div>
+												<% } %>
+													<% } %>
+														<% } %>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="card-footer bg-light">
+			<div class="row align-items-center">
+				<div class="col-md-6">
+					<small class="text-muted">
+						<i class="fa fa-info-circle mr-1"></i>
+						Puede editar la información del usuario o gestionar su mesa de trabajo.
+					</small>
+				</div>
+				<div class="col-md-6 text-md-right">
+					<small class="text-muted">
+						<i class="fa fa-clock-o mr-1"></i>
+						Última actualización: <span id="last-update">-</span>
+					</small>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
+
+<style>
+	.rounded-pill {
+		border-radius: 50px;
+	}
+
+	.card {
+		transition: transform 0.2s ease-in-out;
+	}
+
+	.card:hover {
+		transform: translateY(-2px);
+	}
+
+	.badge {
+		font-size: 0.875rem;
+	}
+
+	.input-group-text {
+		background-color: #f8f9fa;
+		border-color: #ced4da;
+		color: #495057;
+	}
+
+	.form-control:focus {
+		border-color: #17a2b8;
+		box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+	}
+
+	.custom-control-input:checked~.custom-control-label::before {
+		background-color: #17a2b8;
+		border-color: #17a2b8;
+	}
+
+	.custom-control-input:focus~.custom-control-label::before {
+		box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+	}
+
+	.picture-container {
+		position: relative;
+	}
+
+	.picture {
+		border-radius: 50%;
+		overflow: hidden;
+		border: 4px solid #17a2b8;
+		margin-bottom: 1rem;
+	}
+</style>

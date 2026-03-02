@@ -1,39 +1,90 @@
-<button
-	class="px-4 py-2 text-sm font-medium rounded-lg transition-colors <%=(!listar) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2' %>"
-	id='bt_listar' type="button" <%=(!listar)? 'disabled' : '' %>
-	title="Listar carteras"
-	>
-	<i class="fas fa-list mr-2"></i>Listar
-</button>
+<!-- Sub-navbar de Navegación -->
+<div class="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm mb-3">
+	<div class="container-fluid">
+		<div class="navbar-nav d-flex flex-row gap-2">
+			<button class="btn btn-info rounded-pill" id='bt_listar' type="button" <%=(!listar)? 'disabled' : '' %>>
+				<i class="fa fa-list mr-2"></i>Listar
+			</button>
+			<button class="btn btn-success rounded-pill" id='bt_nuevo_registro' type="button" <%=(!crear)? 'disabled'
+				: '' %>>
+				<i class="fa fa-plus mr-2"></i>Nuevo
+			</button>
+			<button class="btn btn-warning rounded-pill" id='bt_edita_nav_registro' type="button"
+				<%=(!editar)? 'disabled' : '' %>>
+				<i class="fa fa-edit mr-2"></i>Editar
+			</button>
+			<button class="btn btn-primary rounded-pill" id='bt_masivo_registro' type="button" <%=(!masivo)? 'disabled'
+				: '' %>>
+				<i class="fa fa-upload mr-2"></i>Cargar Masivo
+			</button>
+			<button class="btn btn-success rounded-pill" id='bt_export_data' type="button" <%=(!exportar)? 'disabled'
+				: '' %>>
+				<i class="fa fa-download mr-2"></i>Exportar
+			</button>
+		</div>
+	</div>
+</div>
 
-<button
-	class="ml-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors <%=(!crear) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-green-500 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2' %>"
-	id='bt_nuevo_registro' type="button" <%=(!crear)? 'disabled' : '' %>
-	title="Crear nueva cartera"
-	>
-	<i class="fas fa-plus mr-2"></i>Nuevo
-</button>
+<style>
+	.rounded-pill {
+		border-radius: 50px;
+		transition: all 0.2s ease-in-out;
+	}
 
-<button
-	class="ml-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors <%=(!editar) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-gray-500 text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2' %>"
-	id='bt_edita_nav_registro' type="button" <%=(!editar)? 'disabled' : '' %>
-	title="Editar cartera"
-	>
-	<i class="fas fa-edit mr-2"></i>Editar
-</button>
+	.rounded-pill:hover:not(:disabled) {
+		transform: translateY(-1px);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	}
 
-<button
-	class="ml-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors <%=(!masivo) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-amber-500 text-white hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2' %>"
-	id='bt_masivo_registro' type="button" <%=(!masivo)? 'disabled' : '' %>
-	title="Carga masiva"
-	>
-	<i class="fas fa-upload mr-2"></i>Cargar Masivo
-</button>
+	.rounded-pill:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
 
-<button
-	class="ml-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors <%=(!exportar) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-emerald-500 text-white hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2' %>"
-	id='bt_export_data' type="button" <%=(!exportar)? 'disabled' : '' %>
-	title="Exportar datos"
-	>
-	<i class="fas fa-download mr-2"></i>Exportar
-</button>
+	.navbar {
+		background-color: #f8f9fa !important;
+		border-bottom: 2px solid #e9ecef;
+	}
+
+	.btn-info {
+		background-color: #17a2b8;
+		border-color: #17a2b8;
+	}
+
+	.btn-info:hover:not(:disabled) {
+		background-color: #138496;
+		border-color: #117a8b;
+	}
+
+	.btn-success {
+		background-color: #28a745;
+		border-color: #28a745;
+	}
+
+	.btn-success:hover:not(:disabled) {
+		background-color: #218838;
+		border-color: #1e7e34;
+	}
+
+	.btn-warning {
+		background-color: #ffc107;
+		border-color: #ffc107;
+		color: #212529;
+	}
+
+	.btn-warning:hover:not(:disabled) {
+		background-color: #e0a800;
+		border-color: #d39e00;
+		color: #212529;
+	}
+
+	.btn-primary {
+		background-color: #007bff;
+		border-color: #007bff;
+	}
+
+	.btn-primary:hover:not(:disabled) {
+		background-color: #0069d9;
+		border-color: #0062cc;
+	}
+</style>

@@ -1,41 +1,62 @@
-<td class="px-4 py-3 text-sm text-gray-900 font-mono">
-    <%=nit%>
+<td>
+    <div class="d-flex align-items-center">
+        <i class="fa fa-building text-muted mr-2"></i>
+        <span class="font-weight-bold">
+            <%=nit%>
+        </span>
+    </div>
 </td>
-<td class="px-4 py-3 text-sm text-gray-900">
-    <%=capitalize(razsoc)%>
+<td>
+    <div class="d-flex align-items-center">
+        <i class="fa fa-industry text-info mr-2"></i>
+        <%=capitalize(razsoc)%>
+    </div>
 </td>
-<td class="px-4 py-3 text-sm text-gray-900 font-mono">
-    <%=cedula_representa%>
+<td>
+    <div class="d-flex align-items-center">
+        <i class="fa fa-id-card text-warning mr-2"></i>
+        <%=cedula_representa%>
+    </div>
 </td>
-<td class="px-4 py-3 text-sm text-gray-900">
-    <%=capitalize(nombre_representa)%>
+<td>
+    <div class="d-flex align-items-center">
+        <i class="fa fa-user-tie text-primary mr-2"></i>
+        <%=capitalize(nombre_representa)%>
+    </div>
 </td>
-<td class="px-4 py-3 text-sm text-gray-900">
-    <%=criterio%>
+<td>
+    <div class="d-flex align-items-center">
+        <i class="fa fa-exclamation-triangle text-danger mr-2"></i>
+        <span class="badge badge-warning">
+            <%=criterio%>
+        </span>
+    </div>
 </td>
-<td class="px-4 py-3 text-sm text-gray-900">
-    <%=tipo_criterio%>
+<td>
+    <div class="d-flex align-items-center">
+        <i class="fa fa-tag text-secondary mr-2"></i>
+        <span class="badge badge-info">
+            <%=tipo_criterio%>
+        </span>
+    </div>
 </td>
-<td class="px-4 py-3 text-sm">
-    <div class="flex items-center justify-center space-x-2">
-        <button type="button" data-cid='<%=id%>' data-toggle='row-like'
-            class="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-colors"
-            title="Ver detalles">
-            <i class="fas fa-user text-xs"></i>
+<td class="text-center">
+    <div class="btn-group" role="group">
+        <button type="button" data-cid="<%=id%>" data-toggle="row-like" class="btn btn-primary btn-sm rounded-circle"
+            title="Ver detalles del rechazo">
+            <i class="fa fa-eye"></i>
         </button>
-        <?php if (Session::getData("SuperAdmin") == 1) { ?>
-        <button type="button" data-cid='<%=id%>' data-toggle='row-edit'
-            class="p-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 focus:ring-2 focus:ring-yellow-500 transition-colors"
-            title="Editar">
-            <i class="fas fa-edit text-xs"></i>
+        <? if (Session::getData("SuperAdmin") == 1) { ?>
+        <button type="button" data-cid="<%=id%>" data-toggle="row-edit" class="btn btn-warning btn-sm rounded-circle"
+            title="Editar rechazo">
+            <i class="fa fa-edit"></i>
         </button>
-        <?php } ?>
-        <?php if (Session::getData("SuperAdmin") == 1) { ?>
-        <button type="button" data-cid='<%=id%>' data-toggle='row-remove'
-            class="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition-colors"
-            title="Eliminar">
-            <i class="fas fa-times text-xs"></i>
+        <? } ?>
+        <? if (Session::getData("SuperAdmin") == 1) { ?>
+        <button type="button" data-cid="<%=id%>" data-toggle="row-remove" class="btn btn-danger btn-sm rounded-circle"
+            title="Eliminar rechazo">
+            <i class="fa fa-trash"></i>
         </button>
-        <?php } ?>
+        <? } ?>
     </div>
 </td>

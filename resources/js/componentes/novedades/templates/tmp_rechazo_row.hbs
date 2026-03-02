@@ -1,68 +1,63 @@
-<!-- Columna de ID -->
-<td class="px-4 py-3 text-sm text-gray-900 font-medium">
-    <%=id%>
+<td>
+    <div class="d-flex align-items-center">
+        <span class="badge badge-danger mr-2">#<%=id%></span>
+    </div>
 </td>
-
-<!-- Columna de Línea -->
-<td class="px-4 py-3 text-sm text-gray-600">
-    <%=linea%>
-</td>
-
-<!-- Columna de NIT -->
-<td class="px-4 py-3 text-sm text-gray-900">
-    <%=nit%>
-</td>
-
-<!-- Columna de Cédula Representante -->
-<td class="px-4 py-3 text-sm text-gray-600">
-    <%=cedula_representante%>
-</td>
-
-<!-- Columna de Syncro -->
-<td class="px-4 py-3 text-sm">
-    <% if(syncro==='S' || syncro==='SI' ) { %>
-        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-            Sí
+<td>
+    <div class="d-flex align-items-center">
+        <i class="fa fa-code text-info mr-2"></i>
+        <span class="font-weight-bold">
+            <%=linea%>
         </span>
-        <% } else { %>
-            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                No
+    </div>
+</td>
+<td>
+    <div class="d-flex align-items-center">
+        <i class="fa fa-building text-muted mr-2"></i>
+        <%=nit%>
+    </div>
+</td>
+<td>
+    <div class="d-flex align-items-center">
+        <i class="fa fa-id-card text-warning mr-2"></i>
+        <%=cedula_representante%>
+    </div>
+</td>
+<td>
+    <% if(syncro=='S' ){ %>
+        <span class="badge badge-success">
+            <i class="fa fa-check-circle mr-1"></i>
+            Sincronizado
+        </span>
+        <% }else{ %>
+            <span class="badge badge-warning">
+                <i class="fa fa-clock-o mr-1"></i>
+                Pendiente
             </span>
             <% } %>
 </td>
-
-<!-- Columna de Estado -->
-<td class="px-4 py-3 text-sm">
-    <% if(estado==='A' || estado==='ACTIVO' ) { %>
-        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+<td>
+    <% if(estado=='A' ){ %>
+        <span class="badge badge-success">
+            <i class="fa fa-check-circle mr-1"></i>
             Activo
         </span>
-        <% } else if(estado==='R' || estado==='RECHAZADO' ) { %>
-            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                Rechazado
+        <% }else{ %>
+            <span class="badge badge-secondary">
+                <i class="fa fa-pause-circle mr-1"></i>
+                Inactivo
             </span>
-            <% } else { %>
-                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                    <%=estado%>
-                </span>
-                <% } %>
+            <% } %>
 </td>
-
-<!-- Columna de Acciones -->
-<td class="px-4 py-3 text-sm">
-    <div class="flex items-center gap-2">
-        <!-- Botón de Ver -->
-        <button type="button" data-code='<%=id%>' data-toggle='row-show'
-            class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
-            title="Ver detalles">
-            <i class="nc-icon nc-tap-01 text-sm"></i>
+<td class="text-center">
+    <div class="btn-group" role="group">
+        <button type="button" data-code="<%=id%>" data-toggle="row-show" class="btn btn-primary btn-sm rounded-circle"
+            title="Ver detalles del rechazo">
+            <i class="fa fa-eye"></i>
         </button>
-
-        <!-- Botón de Eliminar -->
-        <button type="button" data-code='<%=id%>' data-toggle='row-remove'
-            class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors duration-200 shadow-sm"
-            title="Eliminar">
-            <i class="fa fa-times text-sm"></i>
+        <button type="button" data-code="<%=id%>" data-toggle="row-remove" class="btn btn-danger btn-sm rounded-circle"
+            title="Eliminar rechazo">
+            <i class="fa fa-trash"></i>
         </button>
     </div>
 </td>

@@ -1,0 +1,76 @@
+<div class='table-responsive'>
+<table class='table table-sm'>
+    <thead>
+        <tr>
+            <th width='20%'>Opción</th>    
+            <th width='10%'>NIT</th>
+            <th width='40%'>Empresa</th>
+            <th width='5%'>Estado</th>
+            <th width='10%'>Inscripción</th>
+        </tr>
+    </thead>
+    <tbody>
+        <? foreach ($empresas as $ai => $empresa) { ?>
+            <tr>
+                <? 
+                if($empresa['habil'] == 0){?>
+                    <td><button type='button' data-toggle='bt_borrar_editor' class='btn btn-outline-danger btn-sm' style='cursor:initial'> No habil</button></td>
+                <?}else{
+                    if($empresa['is_poderdante'] == 0){
+                        if($empresa['estado'] == "I"){ ?>
+                            <td><button type='button' data-toggle='bt_borrar_editor' class='btn btn-outline-danger btn-sm' style='cursor:initial'> No habil</button></td>
+                        <? }else{
+                            if($empresa['has_asistencia'] == 0){?>
+                            <td>
+                                <button type='button' title='Pendiente de registro' data-toggle='bt_buscar_empresa' class='btn btn-outline-info btn-sm' data-code='<?=$empresa['nit']?>'>
+                                    <i class='fa fa-hand-pointer-o text-info'></i> Inscribir
+                                </button>
+                            </td>
+                            <?}else{?>
+                            <td>
+                                <button type='button' title='Ya se encuentra registrada' data-toggle='bt_buscar_empresa' class='btn btn-outline-success btn-sm' data-code='<?=$empresa['nit']?>'>
+                                    <i class='fa fa-hand-pointer-o text-info'></i> Editar
+                                </button>
+                            </td>
+                            <?}?>
+                        <?}?>
+                    <?}else{?>
+                        <td><button type='button' data-toggle='bt_borrar_editor' class='btn btn-outline-warning btn-sm' style='cursor:initial'> No habil</button></td>
+                    <?}?>
+                <?}?>
+                <td><?=$empresa['nit']?></td>
+                <td><?=capitalize($empresa['razsoc'])?></td>
+                <td><?=capitalize($empresa['estado_detalle'])?></td>
+                <td><?
+                    if($empresa['habil'] == 0){ 
+                        echo "Rechazado";
+                    }else{ 
+                        if($empresa['has_asistencia'] > 0){
+                            switch ($empresa['estado_asistencia']) {
+                                case 'A':
+                                case 'P':    
+                                    echo "Activa";
+                                    break;
+                                case 'C':
+                                    echo "Cancelada";
+                                    break;
+                                case 'F':
+                                    echo "Finalizada";
+                                    break;
+                                case 'U':
+                                    echo "Actualizando";
+                                break;
+                                case 'I':
+                                    echo "Inactivo";
+                                break;                                
+                            }
+                        }else{
+                            echo "Pendiente";
+                        }
+                    }?>
+                </td>
+            </tr>
+        <? } ?>
+    </tbody>
+</table>
+</div>

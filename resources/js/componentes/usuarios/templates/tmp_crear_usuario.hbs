@@ -1,124 +1,249 @@
-<div class="flex flex-col lg:flex-row gap-4 mb-6">
-    <div class="lg:w-1/4">
-        <h5 class="mb-4 text-lg font-semibold text-blue-600 text-center">
-            <%=(isNew==true)? 'Crear Registro Usuario' : 'Editar Registro Usuario' %>
-        </h5>
+<div class="container-fluid">
+    <!-- Header Principal -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h3 class="text-success font-weight-bold mb-0">
+                <i class="fa fa-user-plus mr-2"></i>
+                <% if(isNew==true){ %>
+                    Crear Nuevo Usuario
+                    <% }else{ %>
+                        Editar Usuario
+                        <% } %>
+            </h3>
+            <p class="text-muted mb-0">Gestión de usuarios del sistema</p>
+        </div>
+        <div class="col-md-6">
+            <div id="showSubnav"></div>
+        </div>
     </div>
-    <div class="lg:w-3/4">
-        <div id='showSubnav'></div>
-    </div>
-</div>
 
-<div class="bg-white rounded-lg shadow-md overflow-hidden">
-    <div class="p-6">
-        <div class="flex justify-center">
-            <div class="w-full max-w-2xl">
-                <div class="mb-6">
-                    <label for="usuario" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="text-red-500">*</i> Número usuario
-                    </label>
-                    <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                        <div class="bg-gray-50 px-3 py-2 border-r border-gray-300">
-                            <i class="fas fa-user text-gray-500"></i>
-                        </div>
-                        <input type="text"
-                            class="flex-1 px-3 py-2 border-0 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                            name="usuario" id='usuario' placeholder='número' value='<%=usuario%>' />
+    <!-- Card Principal -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="card-title mb-0">
+                <i class="fa fa-user-cog mr-2"></i>
+                <% if(isNew==true){ %>
+                    Crear Nuevo Usuario
+                    <% }else{ %>
+                        Editar Usuario
+                        <% } %>
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- Información -->
+            <div class="alert alert-info border-0 bg-light mb-4">
+                <div class="d-flex align-items-center">
+                    <i class="fa fa-info-circle fa-2x mr-3"></i>
+                    <div>
+                        <h6 class="alert-heading mb-1">Información</h6>
+                        <p class="mb-0">
+                            Complete los datos para <% if(isNew==true){ %>crear un nuevo<% }else{ %>editar el<% } %>
+                                        usuario.
+                                        Los campos marcados con * son obligatorios.
+                        </p>
                     </div>
                 </div>
-
-                <div class="mb-6">
-                    <label for="cedtra" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="text-red-500">*</i> Cedula usuario
-                    </label>
-                    <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                        <div class="bg-gray-50 px-3 py-2 border-r border-gray-300">
-                            <i class="fas fa-id-card text-gray-500"></i>
-                        </div>
-                        <input type="text"
-                            class="flex-1 px-3 py-2 border-0 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                            name="cedtra" id='cedtra' placeholder='cedtra' value='<%=cedtra%>' />
-                    </div>
-                </div>
-
-                <div class="mb-6">
-                    <label for="nombre" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="text-red-500">*</i> Nombre usuario
-                    </label>
-                    <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                        <div class="bg-gray-50 px-3 py-2 border-r border-gray-300">
-                            <i class="fas fa-user text-gray-500"></i>
-                        </div>
-                        <input type="text"
-                            class="flex-1 px-3 py-2 border-0 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                            name="nombre" id='nombre' placeholder='nombre' value='<%=nombre%>' />
-                    </div>
-                </div>
-
-                <% if (isNew !=true){%>
-                    <div class="mb-6 flex items-center justify-between">
-                        <label class="text-sm font-medium text-gray-700">Para cambiar clave</label>
-                        <div class="relative">
-                            <input type="checkbox" id='estado_poder' class="sr-only" data-toggle="switch" />
-                            <div
-                                class="w-14 h-7 bg-gray-200 rounded-full relative cursor-pointer transition-colors duration-200 ease-in-out peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:bg-blue-600">
-                                <div
-                                    class="absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out peer-checked:translate-x-7">
-                                </div>
-                            </div>
-                            <span class="ml-3 text-sm text-gray-600">
-                                <span class="peer-checked:hidden">REC</span>
-                                <span class="hidden peer-checked:inline">ACT</span>
-                            </span>
-                        </div>
-                    </div>
-                    <%}%>
-
-                        <% if (isNew !=true){%>
-                            <div id='showChangeClave' class="hidden">
-                                <div class="space-y-6">
-                                    <div>
-                                        <label for="clave" class="block text-sm font-medium text-gray-700 mb-2">
-                                            <i class="text-red-500">*</i> Clave
-                                        </label>
-                                        <div
-                                            class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                                            <div class="bg-gray-50 px-3 py-2 border-r border-gray-300">
-                                                <i class="fas fa-lock text-gray-500"></i>
-                                            </div>
-                                            <input type="password"
-                                                class="flex-1 px-3 py-2 border-0 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                                                name="clave" id='clave' placeholder='' />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label for="confirma_clave"
-                                            class="block text-sm font-medium text-gray-700 mb-2">
-                                            <i class="text-red-500">*</i> Confirmar la clave
-                                        </label>
-                                        <div
-                                            class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                                            <div class="bg-gray-50 px-3 py-2 border-r border-gray-300">
-                                                <i class="fas fa-lock text-gray-500"></i>
-                                            </div>
-                                            <input type="password"
-                                                class="flex-1 px-3 py-2 border-0 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                                                name="confirma_clave" id='confirma_clave' placeholder='' />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <%}%>
             </div>
 
-            <div class="text-center mt-8">
-                <button type='button'
-                    class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
-                    id='bt_guardar'>
-                    <i class="fas fa-save mr-2"></i> Continuar
-                </button>
+            <form id="formulario_usuario">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-md-10">
+                        <!-- Campo Usuario -->
+                        <div class="form-group">
+                            <label for="usuario" class="font-weight-bold">
+                                <i class="text-danger">*</i> Número Usuario
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-hashtag"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" name="usuario" id="usuario"
+                                    placeholder="Número de usuario" value="<%=usuario%>" required>
+                            </div>
+                            <div class="invalid-feedback" id="usuario-error">
+                                El número de usuario es obligatorio
+                            </div>
+                        </div>
+
+                        <!-- Campo Cédula -->
+                        <div class="form-group">
+                            <label for="cedtra" class="font-weight-bold">
+                                <i class="text-danger">*</i> Cédula Usuario
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-id-card"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" name="cedtra" id="cedtra"
+                                    placeholder="Número de cédula" value="<%=cedtra%>" required>
+                            </div>
+                            <div class="invalid-feedback" id="cedtra-error">
+                                La cédula es obligatoria
+                            </div>
+                        </div>
+
+                        <!-- Campo Nombre -->
+                        <div class="form-group">
+                            <label for="nombre" class="font-weight-bold">
+                                <i class="text-danger">*</i> Nombre Usuario
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-user"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" name="nombre" id="nombre"
+                                    placeholder="Nombre completo del usuario" value="<%=nombre%>" required>
+                            </div>
+                            <div class="invalid-feedback" id="nombre-error">
+                                El nombre es obligatorio
+                            </div>
+                        </div>
+
+                        <!-- Opción de Cambiar Clave (solo para edición) -->
+                        <% if (isNew !=true){ %>
+                            <div class="form-group">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="cambiar_clave">
+                                            <label class="custom-control-label" for="cambiar_clave">
+                                                <i class="fa fa-key mr-2"></i>
+                                                Desea cambiar la clave del usuario
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+
+                                <!-- Sección de Cambio de Clave -->
+                                <div id="showChangeClave" style="display: none;">
+                                    <% } %>
+
+                                        <!-- Campo Clave -->
+                                        <div class="form-group">
+                                            <label for="clave" class="font-weight-bold">
+                                                <i class="text-danger">*</i> Clave
+                                            </label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fa fa-key"></i>
+                                                    </span>
+                                                </div>
+                                                <input type="password" class="form-control" name="clave" id="clave"
+                                                    placeholder="Ingrese la clave" <% if(isNew==true){ %>required<% } %>
+                                                    >
+                                            </div>
+                                            <div class="invalid-feedback" id="clave-error">
+                                                La clave es obligatoria
+                                            </div>
+                                        </div>
+
+                                        <% if (isNew !=true){ %>
+                                            <!-- Campo Confirmar Clave -->
+                                            <div class="form-group">
+                                                <label for="confirma_clave" class="font-weight-bold">
+                                                    <i class="text-danger">*</i> Confirmar Clave
+                                                </label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fa fa-lock"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input type="password" class="form-control" name="confirma_clave"
+                                                        id="confirma_clave" placeholder="Confirme la clave">
+                                                </div>
+                                                <div class="invalid-feedback" id="confirma_clave-error">
+                                                    Las claves no coinciden
+                                                </div>
+                                            </div>
+
+                                            <% } %>
+                                </div>
+
+                                <!-- Botones de Acción -->
+                                <div class="text-center mt-4">
+                                    <button type="button" class="btn btn-success rounded-pill" id="bt_guardar">
+                                        <i class="fa fa-save mr-2"></i>
+                                        <% if(isNew==true){ %>Crear Usuario<% }else{ %>Actualizar Usuario<% } %>
+                                    </button>
+                                    <button type="button" class="btn btn-secondary rounded-pill ml-2" id="bt_cancelar">
+                                        <i class="fa fa-times mr-2"></i>
+                                        Cancelar
+                                    </button>
+                                </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        <i class="fa fa-info-circle mr-1"></i>
+                        Los datos serán validados antes de <% if(isNew==true){ %>crear<% }else{ %>actualizar<% } %> el
+                                    usuario.
+                    </small>
+                </div>
+                <div class="col-md-6 text-md-right">
+                    <small class="text-muted">
+                        <i class="fa fa-clock-o mr-1"></i>
+                        Última actualización: <span id="last-update">-</span>
+                    </small>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .rounded-pill {
+        border-radius: 50px;
+    }
+
+    .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover:not(:disabled) {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #ced4da;
+        color: #495057;
+    }
+
+    .custom-control-input:checked~.custom-control-label::before {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .custom-control-input:focus~.custom-control-label::before {
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+</style>

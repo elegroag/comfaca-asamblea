@@ -14,7 +14,6 @@ interface EmpresaCrearViewOptions {
 
 
 export default class EmpresaCrearView extends ModelView {
-    modelUse: any;
     template: any;
     api: any;
     logger: any;
@@ -28,7 +27,7 @@ export default class EmpresaCrearView extends ModelView {
             ...options,
             className: 'row justify-content-around',
         });
-        this.modelUse = options.EmpresaModel;
+        this.modelDOM = options.EmpresaModel;
         this.api = options.api;
         this.logger = options.logger;
         this.app = options.app;

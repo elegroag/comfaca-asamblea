@@ -1,123 +1,154 @@
-<!-- Título principal -->
-<h5 class='text-2xl font-bold text-center text-gray-800 mt-4 mb-6'>Asamblea Activa</h5>
-
-<!-- Contenido principal -->
-<div class='flex flex-col lg:flex-row gap-6'>
-	<!-- Columna izquierda - Información de la asamblea -->
-	<div class='lg:w-1/3'>
-		<div class="flex flex-col items-center space-y-4">
-			<!-- Imagen de la asamblea -->
-			<div class="relative">
-				<div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 shadow-lg">
-					<?= Tag::image("asamblea-logo.png", "width: 100px", "class: w-full h-full object-cover") ?>
-				</div>
-			</div>
-
-			<!-- Detalle de la asamblea -->
-			<h6 class='text-lg font-semibold text-center text-gray-700'>
-				<span class="font-bold">
-					<%=asamblea.detalle%>
-				</span>
-			</h6>
-
-			<!-- Fecha y botón -->
-			<div class="text-center space-y-3">
-				<p class="text-gray-600 font-medium">
-					<%=moment(asamblea.fecha_programada).format('DD-MM-YYYY') %>
-				</p>
-				<button type='button' id='bt_listar_asambleas'
-					class='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow'>
-					Listar Asambleas
-				</button>
-			</div>
+<div class="container-fluid">
+	<!-- Card Principal -->
+	<div class="card shadow-sm">
+		<div class="card-header bg-primary text-white">
+			<h5 class="card-title mb-0">
+				<i class="fa fa-users mr-2"></i>
+				Asamblea Activa
+			</h5>
 		</div>
-	</div>
+		<div class="card-body">
+			<div class="row">
+				<!-- Columna Izquierda - Info Asamblea -->
+				<div class="col-lg-4 col-md-5">
+					<div class="card border-0 bg-light">
+						<div class="card-body text-center">
+							<!-- Logo de Asamblea -->
+							<div class="mb-3">
+								<img src="/asamblea-logo.png" alt="Logo Asamblea" class="rounded-circle img-fluid"
+									style="width: 120px; height: 120px; object-fit: cover;">
+							</div>
 
-	<!-- Columna derecha - Consensos -->
-	<div class='lg:w-2/3'>
-		<% if(_.size(consensos)> 0){%>
-			<!-- Header de consensos -->
-			<div class='flex justify-between items-center mb-4'>
-				<h6 class='text-lg font-semibold text-gray-700'>
-					<span class="font-bold">Consensos</span>
-				</h6>
-				<button type='button' id='bt_nuevo_consenso'
-					class='bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow flex items-center gap-2'>
-					<i class='fa fa-plus'></i>
-					Crear Consenso
-				</button>
-			</div>
+							<!-- Nombre de Asamblea -->
+							<h6 class="card-title font-weight-bold text-primary">
+								<%=asamblea.detalle%>
+							</h6>
 
-			<!-- Contador de consensos -->
-			<p class="text-gray-600 mb-4">
-				Número de consensos:
-				<span id='num_consensos' class="font-semibold text-blue-600">
-					<%=_.size(consensos)%>
-				</span>
-			</p>
+							<!-- Fecha Programada -->
+							<div class="text-muted mb-3">
+								<i class="fa fa-calendar-alt mr-2"></i>
+								<%=moment(asamblea.fecha_programada).format('DD-MM-YYYY') %>
+							</div>
 
-			<!-- Tabla de consensos -->
-			<div class="overflow-x-auto shadow-lg rounded-lg">
-				<table class='min-w-full bg-white border border-gray-200'>
-					<thead class="bg-gray-50 border-b border-gray-200">
-						<tr>
-							<th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Detalle</th>
-							<th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Estado</th>
-							<th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Fecha</th>
-							<th
-								class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Acciones</th>
-						</tr>
-					</thead>
-					<tbody id='tb_data_consensos' class="bg-white divide-y divide-gray-200">
-						<% _.each(consensos, function(consenso){ %>
-							<tr class="hover:bg-gray-50 transition-colors">
-								<td class="px-4 py-3 text-sm text-gray-900">
-									<%=consenso.detalle%>
-								</td>
-								<td class="px-4 py-3 text-sm">
-									<span
-										class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
-                                <% if(consenso.estado === 'A'){ %>bg-green-100 text-green-800<% }else{ %>bg-red-100 text-red-800<% } %>">
-										<%=consenso.estado%>
-									</span>
-								</td>
-								<td class="px-4 py-3 text-sm text-gray-600">
-									<%=consenso.create_at%>
-								</td>
-								<td class="px-4 py-3 text-sm text-center">
-									<button data-code='<%=consenso.id%>'
-										class='bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs font-medium transition-colors duration-200'
-										type='button' data-toggle='consenso'>
-										<i class='nc-icon nc-tap-01'></i>
-									</button>
-								</td>
-							</tr>
-							<% })%>
-					</tbody>
-				</table>
-			</div>
-			<%}else{%>
-				<!-- Estado vacío -->
-				<div class="text-center py-8">
-					<h6 class='text-lg font-semibold text-gray-700 mb-4'>
-						<span class="font-bold">Consensos</span>
-					</h6>
-					<div class="bg-gray-50 rounded-lg p-6 mb-4">
-						<p class="text-gray-600 mb-4">
-							El sistema no dispone de consensos creados. Se requiere de crear un consenso para la
-							Asamblea actual.
-						</p>
-						<button type='button' id='bt_nuevo_consenso'
-							class='bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow flex items-center gap-2 mx-auto'>
-							<i class='fa fa-plus'></i>
-							Crear Consenso
-						</button>
+							<!-- Botón Listar Asambleas -->
+							<button type="button" id="bt_listar_asambleas" class="btn btn-primary btn-sm rounded-pill">
+								<i class="fa fa-list mr-2"></i>
+								Listar Asambleas
+							</button>
+						</div>
 					</div>
 				</div>
-				<%}%>
+
+				<!-- Columna Derecha - Consensos -->
+				<div class="col-lg-8 col-md-7">
+					<% if(_.size(consensos)> 0){ %>
+						<!-- Header de Consensos -->
+						<div class="d-flex justify-content-between align-items-center mb-3">
+							<h6 class="font-weight-bold mb-0">
+								<i class="fa fa-handshake-o mr-2 text-success"></i>
+								Consensos
+							</h6>
+							<div class="d-flex align-items-center gap-2">
+								<span class="badge badge-info">
+									<i class="fa fa-layer-group mr-1"></i>
+									<%=_.size(consensos)%> consensos
+								</span>
+								<button type="button" id="bt_nuevo_consenso"
+									class="btn btn-success btn-sm rounded-pill">
+									<i class="fa fa-plus mr-1"></i>
+									Crear Consenso
+								</button>
+							</div>
+						</div>
+
+						<!-- Tabla de Consensos -->
+						<div class="table-responsive">
+							<table class="table table-hover table-striped">
+								<thead class="thead-light">
+									<tr>
+										<th>
+											<i class="fa fa-info-circle mr-1"></i>
+											Detalle
+										</th>
+										<th>
+											<i class="fa fa-toggle-on mr-1"></i>
+											Estado
+										</th>
+										<th>
+											<i class="fa fa-clock-o mr-1"></i>
+											Fecha
+										</th>
+										<th class="text-center">
+											<i class="fa fa-cogs mr-1"></i>
+											Acciones
+										</th>
+									</tr>
+								</thead>
+								<tbody id="tb_data_consensos">
+									<% _.each(consensos, function(consenso){ %>
+										<tr>
+											<td>
+												<div class="d-flex align-items-center">
+													<i class="fa fa-file-text-o mr-2 text-muted"></i>
+													<%=consenso.detalle%>
+												</div>
+											</td>
+											<td>
+												<% if(consenso.estado==='A' ){ %>
+													<span class="badge badge-success">
+														<i class="fa fa-check-circle mr-1"></i>
+														Activo
+													</span>
+													<% }else{ %>
+														<span class="badge badge-secondary">
+															<i class="fa fa-pause-circle mr-1"></i>
+															Inactivo
+														</span>
+														<% } %>
+											</td>
+											<td>
+												<div class="d-flex align-items-center">
+													<i class="fa fa-calendar mr-2 text-muted"></i>
+													<%=moment(consenso.create_at).format('DD-MM-YYYY')%>
+												</div>
+											</td>
+											<td class="text-center">
+												<button data-code="<%=consenso.id%>"
+													class="btn btn-primary btn-sm rounded-circle" type="button"
+													data-toggle="consenso" title="Ver detalles del consenso">
+													<i class="fa fa-eye"></i>
+												</button>
+											</td>
+										</tr>
+										<% })%>
+								</tbody>
+							</table>
+						</div>
+
+						<% }else{ %>
+							<!-- Sin Consensos -->
+							<div class="card border-0 bg-light">
+								<div class="card-body text-center py-4">
+									<div class="mb-3">
+										<i class="fa fa-handshake-o fa-3x text-muted"></i>
+									</div>
+									<h6 class="font-weight-bold text-muted mb-2">
+										No hay consensos creados
+									</h6>
+									<p class="text-muted mb-3">
+										El sistema no dispone de consensos creados. Se requiere de crear un consenso
+										para la Asamblea actual.
+									</p>
+									<button type="button" id="bt_nuevo_consenso"
+										class="btn btn-success btn-rounded-pill">
+										<i class="fa fa-plus mr-2"></i>
+										Crear Primer Consenso
+									</button>
+								</div>
+							</div>
+							<% } %>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>

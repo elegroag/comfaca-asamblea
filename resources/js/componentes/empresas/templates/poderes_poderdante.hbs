@@ -1,0 +1,45 @@
+<? $cantidad = count($param->poderes_poderdante); ?>
+<p>El representante es poderdante de <?=($cantidad == 1)? $cantidad.' poder': $cantidad.' poderes' ?>.<br/>
+<? if ($cantidad > 0){ ?>
+    Para iniciar un proceso de revocatoria. Puede seleccionar la opción disponible e indicar el motivo por el cual desiste del poder.
+<? } ?>
+</p>
+<? if($cantidad > 0){ ?>
+    <div class='table-responsive'>
+    <table class='table table-sm'>
+        <thead>
+            <tr>
+                <th style='width:5%'>Nit Apoderado</th>
+                <th style='width:5%'>Nit Poderdante</th>
+                <th style='width:40%'>Apoderado</th>
+                <th style='width:40%'>Poderdante</th>
+                <th style='width:5%'>Estado</th>
+                <th style='width:5%'>Opción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <? foreach ($param->poderes_poderdante as $ai => $poder) { ?>
+                <tr>
+                    <td><?=$poder['nit1']?></td>
+                    <td><?=$poder['nit2']?></td>
+                    <td><?=capitalize($poder['razsoc1'])?></td>
+                    <td><?=capitalize($poder['razsoc2'])?></td>
+                    <td><?=capitalize($poder['estado_detalle'])?></td>
+                    <? 
+                    if($poder['estado'] == "A"){ ?>
+                        <td>
+                            <button type='button' title='Pendiente de registro' data-toggle='bt_revocar_poder' class='btn btn-outline-info btn-sm' data-code='<?=$poder['documento']?>'> revocar
+                            </button>
+                        </td>
+                    <? }else{ ?>
+                        <td>
+                            <button type='button' title='Detalle' data-toggle='bt_detalle_poder' class='btn btn-outline-warning btn-sm' data-code='<?=$poder['documento']?>'> Detalles
+                            </button>
+                        </td>
+                    <? } ?>
+                </tr>
+            <? } ?>
+        </tbody>
+    </table>
+    </div>
+<? } ?>

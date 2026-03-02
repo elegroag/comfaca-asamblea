@@ -1,75 +1,203 @@
-<div class="flex flex-col md:flex-row justify-between items-start mb-6">
-    <div class="mb-4 md:mb-0">
-        <h5 class="text-xl font-semibold text-blue-600">Cartera Detalle</h5>
-    </div>
-    <div class="w-full md:w-auto">
-        <div id='showSubnav' class="flex justify-end">
-            <button href='#'
-                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors inline-flex items-center"
-                id='btn_back_list'>
-                <i class="fas fa-arrow-left mr-2"></i>
-                Volver
-            </button>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fa fa-eye mr-2 pb-3"></i>Detalle de Cartera
+            </h5>
+            <div class="nav">
+                <a href="#" class="btn btn-outline-light btn-sm" id="btn_back_list">
+                    <i class="fa fa-arrow-left mr-1"></i>Salir
+                </a>
+            </div>
         </div>
-    </div>
-</div>
+        <div class="card-body">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-12">
 
-<div class="max-w-2xl mx-auto">
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="p-6">
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <tbody class="divide-y divide-gray-200">
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="py-3 px-4 font-medium text-gray-900 w-1/3">Nit</td>
-                            <td class="py-3 px-4 text-gray-700">
-                                <%=cartera.nit%>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="py-3 px-4 font-medium text-gray-900">Razón social</td>
-                            <td class="py-3 px-4 text-gray-700 capitalize">
-                                <%=cartera.razsoc%>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="py-3 px-4 font-medium text-gray-900">Cédula</td>
-                            <td class="py-3 px-4 text-gray-700">
-                                <%=cartera.cedrep%>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="py-3 px-4 font-medium text-gray-900">Representante legal</td>
-                            <td class="py-3 px-4 text-gray-700 capitalize">
-                                <%=cartera.repleg%>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="py-3 px-4 font-medium text-gray-900">Código Detalle</td>
-                            <td class="py-3 px-4 text-gray-700">
-                                <%=cartera.codigo_detalle%>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="py-3 px-4 font-medium text-gray-900">Concepto</td>
-                            <td class="py-3 px-4 text-gray-700">
-                                <%=cartera.concepto%>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="py-3 px-4 font-medium text-gray-900">Teléfono</td>
-                            <td class="py-3 px-4 text-gray-700">
-                                <%=cartera.telefono%>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="py-3 px-4 font-medium text-gray-900">Email</td>
-                            <td class="py-3 px-4 text-gray-700 capitalize">
-                                <%=cartera.email%>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                    <!-- Información Detallada -->
+                    <div class="card bg-light shadow-sm">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-hashtag mr-1"></i>NIT Empresa
+                                        </label>
+                                        <h6 class="font-weight-bold text-dark">
+                                            <%=cartera.nit%>
+                                        </h6>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-building mr-1"></i>Razón Social
+                                        </label>
+                                        <h6 class="font-weight-bold text-dark">
+                                            <%=capitalize(cartera.razsoc)%>
+                                        </h6>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-user-tie mr-1"></i>Representante Legal
+                                        </label>
+                                        <h6 class="font-weight-bold text-dark">
+                                            <%=capitalize(cartera.repleg)%>
+                                        </h6>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-id-card mr-1"></i>Cédula Representante
+                                        </label>
+                                        <h6 class="font-weight-bold text-dark">
+                                            <%=cartera.cedrep%>
+                                        </h6>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-barcode mr-1"></i>Código Detalle
+                                        </label>
+                                        <h6 class="font-weight-bold text-dark">
+                                            <span class="badge badge-primary">
+                                                <%=cartera.codigo_detalle%>
+                                            </span>
+                                        </h6>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-file-alt mr-1"></i>Concepto
+                                        </label>
+                                        <h6 class="font-weight-bold text-dark">
+                                            <%=cartera.concepto%>
+                                        </h6>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-phone mr-1"></i>Teléfono
+                                        </label>
+                                        <h6 class="font-weight-bold text-dark">
+                                            <% if (cartera.telefono && cartera.telefono !=='' ) { %>
+                                                <a href="tel:<%=cartera.telefono%>" class="text-primary">
+                                                    <i class="fa fa-phone-alt mr-1"></i>
+                                                    <%=cartera.telefono%>
+                                                </a>
+                                                <% } else { %>
+                                                    <span class="text-muted">No registrado</span>
+                                                    <% } %>
+                                        </h6>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-envelope mr-1"></i>Correo Electrónico
+                                        </label>
+                                        <h6 class="font-weight-bold text-dark">
+                                            <% if (cartera.email && cartera.email !=='' ) { %>
+                                                <a href="mailto:<%=cartera.email%>" class="text-primary">
+                                                    <i class="fa fa-paper-plane mr-1"></i>
+                                                    <%=capitalize(cartera.email)%>
+                                                </a>
+                                                <% } else { %>
+                                                    <span class="text-muted">No registrado</span>
+                                                    <% } %>
+                                        </h6>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Información Adicional -->
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="border-top pt-3">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="text-center">
+                                                    <label class="text-muted small mb-2">
+                                                        <i class="fa fa-calendar mr-1"></i>Fecha de Registro
+                                                    </label>
+                                                    <h6 class="font-weight-bold text-dark">
+                                                        <% if (cartera.fecha_registro) { %>
+                                                            <%=cartera.fecha_registro%>
+                                                                <% } else { %>
+                                                                    <span class="text-muted">No disponible</span>
+                                                                    <% } %>
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="text-center">
+                                                    <label class="text-muted small mb-2">
+                                                        <i class="fa fa-user mr-1"></i>Registrado por
+                                                    </label>
+                                                    <h6 class="font-weight-bold text-dark">
+                                                        <% if (cartera.usuario_registro) { %>
+                                                            <%=cartera.usuario_registro%>
+                                                                <% } else { %>
+                                                                    <span class="text-muted">No disponible</span>
+                                                                    <% } %>
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="text-center">
+                                                    <label class="text-muted small mb-2">
+                                                        <i class="fa fa-info-circle mr-1"></i>Estado
+                                                    </label>
+                                                    <h6 class="font-weight-bold">
+                                                        <% if (cartera.estado==='activa' ) { %>
+                                                            <span class="badge badge-success">
+                                                                <i class="fa fa-check-circle mr-1"></i>Activa
+                                                            </span>
+                                                            <% } else if (cartera.estado==='inactiva' ) { %>
+                                                                <span class="badge badge-warning">
+                                                                    <i class="fa fa-pause-circle mr-1"></i>Inactiva
+                                                                </span>
+                                                                <% } else { %>
+                                                                    <span class="badge badge-secondary">
+                                                                        <i
+                                                                            class="fa fa-question-circle mr-1"></i>Desconocido
+                                                                    </span>
+                                                                    <% } %>
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-center">
+                                <button type="button" class="btn btn-primary btn-lg px-4 py-2 mr-2"
+                                    id="bt_editar_detalle">
+                                    <i class="fa fa-edit mr-2"></i>Editar Cartera
+                                </button>
+                                <button type="button" class="btn btn-info btn-lg px-4 py-2 mr-2"
+                                    id="bt_imprimir_detalle">
+                                    <i class="fa fa-print mr-2"></i>Imprimir
+                                </button>
+                                <button type="button" class="btn btn-warning btn-lg px-4 py-2 mr-2"
+                                    id="bt_exportar_detalle">
+                                    <i class="fa fa-download mr-2"></i>Exportar
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-lg px-4 py-2" id="bt_cerrar_detalle">
+                                    <i class="fa fa-times mr-2"></i>Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

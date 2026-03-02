@@ -1,163 +1,286 @@
-<div class="max-w-2xl mx-auto p-6">
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div class="p-6">
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class='text-red-500'>*</i> Nit Empresa
-                    </label>
-                    <div toggle-error='nit' class="error text-red-500 text-sm mb-2" for="required"></div>
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <div
-                                class="flex items-center justify-center w-10 h-10 bg-gray-200 border border-r-0 rounded-l-md">
-                                <i class="fas fa-building text-gray-600"></i>
-                            </div>
-                        </div>
-                        <% disabled=(isNew==false)? 'disabled' : '' %>
-                            <input type="number"
-                                class="flex-1 px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                id='nit' name="nit" placeholder='nit' value="<%=(nit)? nit: ''%>" <%=disabled%> />
-                            <div class="flex-shrink-0">
-                                <button type='button' id='bt_buscar_empresa'
-                                    class="p-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 transition-colors"
-                                    title="Buscar empresa">
-                                    <i class="fas fa-search text-sm"></i>
-                                </button>
-                            </div>
+<div class="container-fluid">
+    <!-- Card Principal -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="card-title mb-0">
+                <i class="fa fa-plus-circle mr-2"></i>
+                <% if(isNew){ %>
+                    Crear Nuevo Rechazo
+                    <% }else{ %>
+                        Editar Rechazo
+                        <% } %>
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- Información -->
+            <div class="alert alert-info border-0 bg-light mb-4">
+                <div class="d-flex align-items-center">
+                    <i class="fa fa-info-circle fa-2x mr-3"></i>
+                    <div>
+                        <h6 class="alert-heading mb-1">Información</h6>
+                        <p class="mb-0">
+                            Complete los datos para <% if(isNew){ %>crear un nuevo<% }else{ %>editar el<% } %> rechazo.
+                                        Los campos marcados con * son obligatorios.
+                        </p>
                     </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class='text-red-500'>*</i> Razón Social
-                    </label>
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <div
-                                class="flex items-center justify-center w-10 h-10 bg-gray-200 border border-r-0 rounded-l-md">
-                                <i class="fas fa-building text-gray-600"></i>
-                            </div>
-                        </div>
-                        <input type="text"
-                            class="flex-1 px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            name="razsoc" id='razsoc' placeholder='razon social' value="<%=razsoc%>" />
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class='text-red-500'>*</i> Representante Legal
-                    </label>
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <div
-                                class="flex items-center justify-center w-10 h-10 bg-gray-200 border border-r-0 rounded-l-md">
-                                <i class="fas fa-user text-gray-600"></i>
-                            </div>
-                        </div>
-                        <input type="text"
-                            class="flex-1 px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            name="nombre_representa" id='nombre_representa' placeholder='representante legal'
-                            value="<%=nombre_representa%>" />
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class='text-red-500'>*</i> Cedula Representante
-                    </label>
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <div
-                                class="flex items-center justify-center w-10 h-10 bg-gray-200 border border-r-0 rounded-l-md">
-                                <i class="fas fa-id-card text-gray-600"></i>
-                            </div>
-                        </div>
-                        <input type="number"
-                            class="flex-1 px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            name="cedula_representa" id='cedula_representa' placeholder='cedula representante'
-                            value="<%=cedula_representa%>" />
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Empresa</label>
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <div
-                                class="flex items-center justify-center w-10 h-10 bg-gray-200 border border-r-0 rounded-l-md">
-                                <i class="fas fa-envelope text-gray-600"></i>
-                            </div>
-                        </div>
-                        <input type='text'
-                            class="flex-1 px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            name='email' id='email' placeholder='email' />
-                    </div>
-                    <span toggle-error='email' class="error text-red-500 text-sm mt-1"></span>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Teléfono Empresa</label>
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <div
-                                class="flex items-center justify-center w-10 h-10 bg-gray-200 border border-r-0 rounded-l-md">
-                                <i class="fas fa-phone text-gray-600"></i>
-                            </div>
-                        </div>
-                        <input type='number'
-                            class="flex-1 px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            name='telefono' id='telefono' placeholder='telefono' />
-                    </div>
-                    <span toggle-error='telefono' class="error text-red-500 text-sm mt-1"></span>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class='text-red-500'>*</i> Criterio
-                    </label>
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <div
-                                class="flex items-center justify-center w-10 h-10 bg-gray-200 border border-r-0 rounded-l-md">
-                                <i class="fas fa-list text-gray-600"></i>
-                            </div>
-                        </div>
-                        <select
-                            class="flex-1 px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            name="criterio" id='criterio' <%=disabled%>>
-                            <%_.each(criterios, function(value, key){%>
-                                <option value="<%=key%>">
-                                    <%=value%>
-                                </option>
-                                <% }) %>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="pt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-3">
-                        <i class='text-red-500'>*</i> Validación y acciones disponibles
-                    </label>
-                    <label class="flex items-center space-x-3 cursor-pointer">
-                        <input type="checkbox" class="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded border-gray-300"
-                            name='cruzar' id='cruzar' value="">
-                        <span class="text-sm text-gray-700">Cruzar Con Habiles</span>
-                    </label>
                 </div>
             </div>
 
-            <div class='mt-8'>
-                <div class='text-center'>
-                    <button type='button'
-                        class='px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'
-                        id='bt_registrar' <%=(isNew==false)? '' : 'disabled' %>>
-                        <i class="fas fa-play mr-2"></i>
-                        Continuar
-                    </button>
+            <form id="formulario_rechazo">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-md-10">
+                        <!-- Campo NIT -->
+                        <div class="form-group">
+                            <label for="nit" class="font-weight-bold">
+                                <i class="text-danger">*</i> NIT Empresa
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-building"></i>
+                                    </span>
+                                </div>
+                                <% disabled=(isNew==false)? 'disabled' : '' %>
+                                    <input type="number" class="form-control" id="nit" name="nit"
+                                        placeholder="Número de Identificación Tributaria" value="<%=(nit)? nit: ''%>"
+                                        <%=disabled%>
+                                    required>
+                                    <div class="input-group-append">
+                                        <button type="button" id="bt_buscar_empresa" class="btn btn-outline-primary"
+                                            title="Buscar empresa">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                            </div>
+                            <div class="invalid-feedback" id="nit-error">
+                                El NIT es obligatorio
+                            </div>
+                        </div>
+
+                        <!-- Campo Razón Social -->
+                        <div class="form-group">
+                            <label for="razsoc" class="font-weight-bold">
+                                <i class="text-danger">*</i> Razón Social
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-industry"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" id="razsoc" name="razsoc"
+                                    placeholder="Razón social de la empresa" value="<%=razsoc%>" required>
+                            </div>
+                            <div class="invalid-feedback" id="razsoc-error">
+                                La razón social es obligatoria
+                            </div>
+                        </div>
+
+                        <!-- Campo Nombre Representante -->
+                        <div class="form-group">
+                            <label for="nombre_representa" class="font-weight-bold">
+                                <i class="text-danger">*</i> Representante Legal
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-user-tie"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" id="nombre_representa" name="nombre_representa"
+                                    placeholder="Nombre completo del representante" value="<%=nombre_representa%>"
+                                    required>
+                            </div>
+                            <div class="invalid-feedback" id="nombre_representa-error">
+                                El nombre del representante es obligatorio
+                            </div>
+                        </div>
+
+                        <!-- Campo Cédula Representante -->
+                        <div class="form-group">
+                            <label for="cedula_representa" class="font-weight-bold">
+                                <i class="text-danger">*</i> Cédula Representante
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-id-card"></i>
+                                    </span>
+                                </div>
+                                <input type="number" class="form-control" id="cedula_representa"
+                                    name="cedula_representa" placeholder="Número de cédula del representante"
+                                    value="<%=cedula_representa%>" required>
+                            </div>
+                            <div class="invalid-feedback" id="cedula_representa-error">
+                                La cédula es obligatoria
+                            </div>
+                        </div>
+
+                        <!-- Campo Email -->
+                        <div class="form-group">
+                            <label for="email" class="font-weight-bold">
+                                <i class="fa fa-envelope mr-1"></i>
+                                Email Empresa
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-envelope"></i>
+                                    </span>
+                                </div>
+                                <input type="email" class="form-control" id="email" name="email"
+                                    placeholder="correo@empresa.com">
+                            </div>
+                            <div class="invalid-feedback" id="email-error">
+                                Ingrese un email válido
+                            </div>
+                        </div>
+
+                        <!-- Campo Teléfono -->
+                        <div class="form-group">
+                            <label for="telefono" class="font-weight-bold">
+                                <i class="fa fa-phone mr-1"></i>
+                                Teléfono Empresa
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-phone"></i>
+                                    </span>
+                                </div>
+                                <input type="tel" class="form-control" id="telefono" name="telefono"
+                                    placeholder="Número de teléfono">
+                            </div>
+                            <div class="invalid-feedback" id="telefono-error">
+                                Ingrese un teléfono válido
+                            </div>
+                        </div>
+
+                        <!-- Campo Criterio -->
+                        <div class="form-group">
+                            <label for="criterio" class="font-weight-bold">
+                                <i class="text-danger">*</i> Criterio
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                    </span>
+                                </div>
+                                <select class="form-control" id="criterio" name="criterio" <%=disabled%> required>
+                                    <option value="">Seleccione un criterio...</option>
+                                    <%_.each(criterios, function(value, key){%>
+                                        <option value="<%=key%>">
+                                            <%=value%>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </div>
+                            <div class="invalid-feedback" id="criterio-error">
+                                El criterio es obligatorio
+                            </div>
+                        </div>
+
+                        <!-- Campo Validación -->
+                        <div class="form-group mt-4">
+                            <label class="font-weight-bold mb-2">
+                                <i class="text-danger">*</i> Validación y Acciones Disponibles
+                            </label>
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="cruzar" name="cruzar"
+                                            value="1">
+                                        <label class="form-check-label" for="cruzar">
+                                            <i class="fa fa-check-square mr-2"></i>
+                                            Cruzar Con Hábiles
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">
+                                        <i class="fa fa-info-circle mr-1"></i>
+                                        Marque esta opción para validar el rechazo contra los registros hábiles
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="text-center mt-4">
+                            <button type="button" id="bt_registrar" class="btn btn-success rounded-pill" <%
+                                if(isNew==false){ %>disabled<% } %>>
+                                    <i class="fa fa-save mr-2"></i>
+                                    <% if(isNew){ %>Crear Rechazo<% }else{ %>Actualizar Rechazo<% } %>
+                            </button>
+                            <button type="button" id="bt_cancelar" class="btn btn-secondary rounded-pill ml-2">
+                                <i class="fa fa-times mr-2"></i>
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        <i class="fa fa-info-circle mr-1"></i>
+                        Los datos serán validados antes de <% if(isNew){ %>crear<% }else{ %>actualizar<% } %> el
+                                    rechazo.
+                    </small>
+                </div>
+                <div class="col-md-6 text-md-right">
+                    <small class="text-muted">
+                        <i class="fa fa-clock-o mr-1"></i>
+                        Última actualización: <span id="last-update">-</span>
+                    </small>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .rounded-pill {
+        border-radius: 50px;
+    }
+
+    .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover:not(:disabled) {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #ced4da;
+        color: #495057;
+    }
+
+    .form-check-input:checked {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .form-check-input:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+</style>

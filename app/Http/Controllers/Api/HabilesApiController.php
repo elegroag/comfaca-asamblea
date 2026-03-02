@@ -827,4 +827,18 @@ class HabilesApiController extends Controller
 
         return [(int) $mesa->mesa_id, (string) $mesa->codigo];
     }
+
+    public function imprimir2_ficha(string $cedrep)
+    {
+        try {
+            $asistenciaService = new AsistenciaService($this->idAsamblea, $cedrep);
+            $salida = $asistenciaService->fichaData();
+            return view('recepcion.imprimir', $salida);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'msj' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

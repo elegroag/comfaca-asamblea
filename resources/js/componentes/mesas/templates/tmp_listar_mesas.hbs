@@ -1,88 +1,209 @@
-<div class="bg-white rounded-lg shadow-md overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="w-full" id='tb_data_mesas'>
-            <thead class="bg-gray-50 border-b border-gray-200">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Código
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Votantes
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Votos
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Cédula
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Funcionario
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Usuario
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Estado
-                    </th>
-                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <i class="fas fa-cog text-gray-400"></i>
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                <% _.each(mesas, function(mesa){ %>
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <%=mesa.codigo%>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                            <%=mesa.cantidad_votantes%>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                            <%=mesa.cantidad_votos%>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <%=mesa.cedtra_responsable%>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                            <%=mesa.nombre%>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                            <%=mesa.usuario%>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                            <% if (mesa.estado=='A' ) { %>
-                                <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                                    Activo
-                                </span>
-                                <% } else { %>
-                                    <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
-                                        Inactivo
-                                    </span>
-                                    <% } %>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                            <div class="flex justify-center space-x-2">
-                                <button type='button' data-toggle='mostrar_mesa' data-code='<%=mesa.id%>'
-                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                    title="Ver detalles">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button type='button' data-toggle='borrar_mesa' data-code='<%=mesa.id%>'
-                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                    title="Eliminar">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                                <button type='button' data-toggle='edita_mesa' data-code='<%=mesa.id%>'
-                                    class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                                    title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <% }) %>
-            </tbody>
-        </table>
-    </div>
+<div class="container-fluid">
+	<!-- Card Principal -->
+	<div class="card shadow-sm">
+		<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+			<h5 class="card-title mb-0">
+				<i class="fa fa-th-large mr-2"></i>
+				Lista de Mesas de Votación
+			</h5>
+			<button type="button" id="bt_crear_mesa" class="btn btn-light btn-sm rounded-pill">
+				<i class="fa fa-plus mr-2"></i>
+				Nueva Mesa
+			</button>
+		</div>
+		<div class="card-body">
+			<!-- Tabla de Mesas -->
+			<div class="table-responsive">
+				<table class="table table-hover table-striped" id="tb_data_mesas">
+					<thead class="thead-light">
+						<tr>
+							<th>
+								<i class="fa fa-hashtag mr-1"></i>
+								Código
+							</th>
+							<th>
+								<i class="fa fa-users mr-1"></i>
+								Votantes
+							</th>
+							<th>
+								<i class="fa fa-vote-yea mr-1"></i>
+								Votos
+							</th>
+							<th>
+								<i class="fa fa-id-card mr-1"></i>
+								Cédula
+							</th>
+							<th>
+								<i class="fa fa-user-tie mr-1"></i>
+								Funcionario
+							</th>
+							<th>
+								<i class="fa fa-user mr-1"></i>
+								Usuario
+							</th>
+							<th>
+								<i class="fa fa-toggle-on mr-1"></i>
+								Estado
+							</th>
+							<th class="text-center">
+								<i class="fa fa-cogs mr-1"></i>
+								Acciones
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% _.each(mesas, function(mesa){ %>
+							<tr>
+								<td>
+									<div class="d-flex align-items-center">
+										<span class="badge badge-primary mr-2">#<%=mesa.codigo%></span>
+									</div>
+								</td>
+								<td>
+									<div class="d-flex align-items-center">
+										<i class="fa fa-users text-info mr-2"></i>
+										<span class="font-weight-bold">
+											<%=mesa.cantidad_votantes%>
+										</span>
+									</div>
+								</td>
+								<td>
+									<div class="d-flex align-items-center">
+										<i class="fa fa-vote-yea text-success mr-2"></i>
+										<span class="font-weight-bold">
+											<%=mesa.cantidad_votos%>
+										</span>
+									</div>
+								</td>
+								<td>
+									<div class="d-flex align-items-center">
+										<i class="fa fa-id-card text-muted mr-2"></i>
+										<%=mesa.cedtra_responsable%>
+									</div>
+								</td>
+								<td>
+									<div class="d-flex align-items-center">
+										<i class="fa fa-user-tie text-primary mr-2"></i>
+										<%=mesa.nombre%>
+									</div>
+								</td>
+								<td>
+									<div class="d-flex align-items-center">
+										<i class="fa fa-user text-warning mr-2"></i>
+										<%=mesa.usuario%>
+									</div>
+								</td>
+								<td>
+									<% if(mesa.estado=='A' ){ %>
+										<span class="badge badge-success">
+											<i class="fa fa-check-circle mr-1"></i>
+											Activo
+										</span>
+										<% }else{ %>
+											<span class="badge badge-secondary">
+												<i class="fa fa-pause-circle mr-1"></i>
+												Inactivo
+											</span>
+											<% } %>
+								</td>
+								<td class="text-center">
+									<div class="btn-group" role="group">
+										<button type="button" data-toggle="mostrar_mesa" data-code="<%=mesa.id%>"
+											class="btn btn-primary btn-sm rounded-circle"
+											title="Ver detalles de la mesa">
+											<i class="fa fa-eye"></i>
+										</button>
+										<button type="button" data-toggle="edita_mesa" data-code="<%=mesa.id%>"
+											class="btn btn-warning btn-sm rounded-circle" title="Editar mesa">
+											<i class="fa fa-edit"></i>
+										</button>
+										<button type="button" data-toggle="borrar_mesa" data-code="<%=mesa.id%>"
+											class="btn btn-danger btn-sm rounded-circle" title="Eliminar mesa">
+											<i class="fa fa-trash"></i>
+										</button>
+									</div>
+								</td>
+							</tr>
+							<% }) %>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 </div>
+
+<style>
+	#tb_data_mesas_wrapper {
+		background: #ffffff;
+		border: 1px solid #e5e7eb;
+		border-radius: 12px;
+		padding: 12px;
+		color: #111827;
+	}
+
+	#tb_data_mesas_wrapper .row {
+		margin: 0;
+		gap: 10px;
+	}
+
+	#tb_data_mesas_wrapper .dt-length,
+	#tb_data_mesas_wrapper .dt-search {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 0.9rem;
+		color: #374151;
+	}
+
+	#tb_data_mesas_wrapper .form-select,
+	#tb_data_mesas_wrapper .form-control {
+		border: 1px solid #d1d5db;
+		border-radius: 8px;
+		min-height: 34px;
+		padding: 0.35rem 0.6rem;
+		font-size: 0.875rem;
+		box-shadow: none;
+		background: #fff;
+	}
+
+	#tb_data_mesas_wrapper .form-control:focus {
+		border-color: #007bff;
+		box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+	}
+
+	#tb_data_mesas_wrapper .dataTables_paginate .paginate_button {
+		border-radius: 6px;
+		margin: 0 2px;
+		border: 1px solid #d1d5db;
+		background: #fff;
+		color: #374151;
+	}
+
+	#tb_data_mesas_wrapper .dataTables_paginate .paginate_button:hover {
+		background: #f9fafb;
+		border-color: #9ca3af;
+	}
+
+	#tb_data_mesas_wrapper .dataTables_paginate .paginate_button.current {
+		background: #007bff !important;
+		border-color: #007bff !important;
+		color: #fff !important;
+	}
+
+	#tb_data_mesas_wrapper .dataTables_paginate .paginate_button.disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	@media (max-width: 768px) {
+		#tb_data_mesas_wrapper .row {
+			flex-direction: column;
+		}
+
+		#tb_data_mesas_wrapper .dt-length,
+		#tb_data_mesas_wrapper .dt-search {
+			width: 100%;
+			justify-content: space-between;
+		}
+	}
+</style>

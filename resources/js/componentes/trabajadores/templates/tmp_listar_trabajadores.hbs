@@ -1,17 +1,139 @@
-<div class="overflow-x-auto">
-    <table class="w-full text-sm" id='tb_data_trabajadores'>
-        <thead>
-            <tr class="bg-gray-50 border-b border-gray-200">
-                <th class="px-4 py-3 text-left font-semibold text-gray-800">Cedula</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-800">Nombres</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-800">Nit</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-800">Razon social</th>
-                <th class="px-4 py-3 text-left font-semibold text-gray-800">Fecha</th>
-                <th class="px-4 py-3 text-center font-semibold text-gray-800">Action</th>
-            </tr>
-        </thead>
-        <tbody id="show_data_trabajadores" class="divide-y divide-gray-200">
-            <!-- Los datos se cargarán dinámicamente aquí -->
-        </tbody>
-    </table>
+<div class="container-fluid">
+    <!-- Header Principal -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h3 class="text-primary font-weight-bold mb-0">
+                <i class="fa fa-users mr-2"></i>
+                Lista de Trabajadores
+            </h3>
+            <p class="text-muted mb-0">Gestión de trabajadores del sistema</p>
+        </div>
+        <div class="col-md-6">
+            <div id="showSubnav"></div>
+        </div>
+    </div>
+
+    <!-- Card Principal -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">
+                <i class="fa fa-list mr-2"></i>
+                Trabajadores Registrados
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- Tabla de Trabajadores -->
+            <div class="table-responsive">
+                <table class="table table-hover table-striped" id="tb_data_trabajadores">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>
+                                <i class="fa fa-id-card mr-1"></i>
+                                Cédula
+                            </th>
+                            <th>
+                                <i class="fa fa-user mr-1"></i>
+                                Nombres
+                            </th>
+                            <th>
+                                <i class="fa fa-building mr-1"></i>
+                                NIT
+                            </th>
+                            <th>
+                                <i class="fa fa-industry mr-1"></i>
+                                Razón Social
+                            </th>
+                            <th>
+                                <i class="fa fa-calendar mr-1"></i>
+                                Fecha
+                            </th>
+                            <th class="text-center">
+                                <i class="fa fa-cogs mr-1"></i>
+                                Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="show_data_trabajadores">
+                        <!-- Las filas se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    #tb_data_trabajadores_wrapper {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 12px;
+        color: #111827;
+    }
+
+    #tb_data_trabajadores_wrapper .row {
+        margin: 0;
+        gap: 10px;
+    }
+
+    #tb_data_trabajadores_wrapper .dt-length,
+    #tb_data_trabajadores_wrapper .dt-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        color: #374151;
+    }
+
+    #tb_data_trabajadores_wrapper .form-select,
+    #tb_data_trabajadores_wrapper .form-control {
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        min-height: 34px;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.875rem;
+        box-shadow: none;
+        background: #fff;
+    }
+
+    #tb_data_trabajadores_wrapper .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    #tb_data_trabajadores_wrapper .dataTables_paginate .paginate_button {
+        border-radius: 6px;
+        margin: 0 2px;
+        border: 1px solid #d1d5db;
+        background: #fff;
+        color: #374151;
+    }
+
+    #tb_data_trabajadores_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #f9fafb;
+        border-color: #9ca3af;
+    }
+
+    #tb_data_trabajadores_wrapper .dataTables_paginate .paginate_button.current {
+        background: #007bff !important;
+        border-color: #007bff !important;
+        color: #fff !important;
+    }
+
+    #tb_data_trabajadores_wrapper .dataTables_paginate .paginate_button.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+        #tb_data_trabajadores_wrapper .row {
+            flex-direction: column;
+        }
+
+        #tb_data_trabajadores_wrapper .dt-length,
+        #tb_data_trabajadores_wrapper .dt-search {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+</style>

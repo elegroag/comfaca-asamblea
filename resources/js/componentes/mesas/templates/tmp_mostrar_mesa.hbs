@@ -1,94 +1,219 @@
-<div class="max-w-2xl mx-auto">
-    <div class="bg-white rounded-lg shadow-md overflow-hidden relative">
-        <!-- Botón de salir flotante -->
-        <div class="absolute top-4 right-4 z-50">
-            <a href='#'
-                class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-300 rounded-lg hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                id='bt_back'>
-                <i class="fas fa-arrow-left mr-2"></i> Salir
-            </a>
+<div class="container-fluid">
+    <!-- Card Principal -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+                <i class="fa fa-eye mr-2"></i>
+                Detalle de Mesa
+            </h5>
+            <button type="button" id="bt_back" class="btn btn-light btn-sm rounded-pill">
+                <i class="fa fa-arrow-left mr-2"></i>
+                Volver
+            </button>
         </div>
-
-        <div class="p-6">
-            <h4 class="text-xl font-semibold text-gray-800 text-center mb-6">Detalle de mesa</h4>
-
-            <div class="flex justify-center">
-                <div class="w-full max-w-lg">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        <div class="md:col-span-2">
-                            <!-- Espacio para contenido adicional si es necesario -->
-                        </div>
-                    </div>
-
-                    <hr class="border-gray-200 mb-6" />
-
-                    <div class="bg-gray-50 rounded-lg p-6">
-                        <h6 class="text-lg font-semibold text-gray-800 mb-4">Mesa de trabajo</h6>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-3">
-                                <div class="flex">
-                                    <span class="font-medium text-gray-600 w-32">Código:</span>
-                                    <span class="text-gray-900">
-                                        <%=mesa.codigo %>
+        <div class="card-body">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <!-- Card de Información de la Mesa -->
+                    <div class="card border-0 bg-light">
+                        <div class="card-body text-center">
+                            <!-- ID y Estado -->
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-center align-items-center gap-3">
+                                    <span class="badge badge-info badge-pill">
+                                        <i class="fa fa-hashtag mr-1"></i>
+                                        Código: <%=mesa.codigo%>
                                     </span>
-                                </div>
-                                <div class="flex">
-                                    <span class="font-medium text-gray-600 w-32">Cedtra Responsable:</span>
-                                    <span class="text-gray-900">
-                                        <%=mesa.cedtra_responsable %>
-                                    </span>
-                                </div>
-                                <div class="flex">
-                                    <span class="font-medium text-gray-600 w-32">Estado:</span>
-                                    <span class="text-gray-900">
-                                        <%=mesa.estado %>
-                                    </span>
-                                </div>
-                                <div class="flex">
-                                    <span class="font-medium text-gray-600 w-32">Consenso_id:</span>
-                                    <span class="text-gray-900">
-                                        <%=mesa.consenso_id %>
-                                    </span>
-                                </div>
-                                <div class="flex">
-                                    <span class="font-medium text-gray-600 w-32">Hora Apertura:</span>
-                                    <span class="text-gray-900">
-                                        <%=mesa.hora_apertura %>
-                                    </span>
+                                    <% if(mesa.estado=='A' ){ %>
+                                        <span class="badge badge-success badge-pill">
+                                            <i class="fa fa-check-circle mr-1"></i>
+                                            Activo
+                                        </span>
+                                        <% }else{ %>
+                                            <span class="badge badge-secondary badge-pill">
+                                                <i class="fa fa-pause-circle mr-1"></i>
+                                                Inactivo
+                                            </span>
+                                            <% } %>
                                 </div>
                             </div>
 
-                            <div class="space-y-3">
-                                <div class="flex">
-                                    <span class="font-medium text-gray-600 w-32">Hora Cierre Mesa:</span>
-                                    <span class="text-gray-900">
-                                        <%=mesa.hora_cierre_mesa %>
-                                    </span>
+                            <!-- Información Principal -->
+                            <h4 class="card-title font-weight-bold text-primary mb-4">
+                                <i class="fa fa-th-large mr-2"></i>
+                                Mesa de Trabajo
+                            </h4>
+
+                            <!-- Información del Responsable -->
+                            <div class="row text-center mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-id-card fa-2x text-muted mr-3"></i>
+                                        <div>
+                                            <h6 class="font-weight-bold text-dark mb-1">Cédula Responsable</h6>
+                                            <span class="text-muted">
+                                                <%=mesa.cedtra_responsable%>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex">
-                                    <span class="font-medium text-gray-600 w-32">Cantidad Votantes:</span>
-                                    <span class="text-gray-900">
-                                        <%=mesa.cantidad_votantes %>
-                                    </span>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-user-tie fa-2x text-muted mr-3"></i>
+                                        <div>
+                                            <h6 class="font-weight-bold text-dark mb-1">Funcionario</h6>
+                                            <span class="text-muted">
+                                                <%=mesa.nombre%>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex">
-                                    <span class="font-medium text-gray-600 w-32">Cantidad Votos:</span>
-                                    <span class="text-gray-900">
-                                        <%=mesa.cantidad_votos %>
-                                    </span>
+                            </div>
+
+                            <!-- Información de Votación -->
+                            <div class="row text-center mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-users fa-2x text-info mr-3"></i>
+                                        <div>
+                                            <h6 class="font-weight-bold text-dark mb-1">Votantes Asignados</h6>
+                                            <span class="badge badge-info badge-pill">
+                                                <%=mesa.cantidad_votantes%>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex">
-                                    <span class="font-medium text-gray-600 w-32">Create_at:</span>
-                                    <span class="text-gray-900">
-                                        <%=mesa.create_at %>
-                                    </span>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-vote-yea fa-2x text-success mr-3"></i>
+                                        <div>
+                                            <h6 class="font-weight-bold text-dark mb-1">Votos Emitidos</h6>
+                                            <span class="badge badge-success badge-pill">
+                                                <%=mesa.cantidad_votos%>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex">
-                                    <span class="font-medium text-gray-600 w-32">Update_at:</span>
-                                    <span class="text-gray-900">
-                                        <%=mesa.update_at %>
-                                    </span>
+                            </div>
+
+                            <!-- Información de Tiempos -->
+                            <div class="row text-center mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-play-circle fa-2x text-success mr-3"></i>
+                                        <div>
+                                            <h6 class="font-weight-bold text-dark mb-1">Hora Apertura</h6>
+                                            <span class="text-muted">
+                                                <% if(mesa.hora_apertura){ %>
+                                                    <%=mesa.hora_apertura%>
+                                                        <% }else{ %>
+                                                            No definida
+                                                            <% } %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-stop-circle fa-2x text-danger mr-3"></i>
+                                        <div>
+                                            <h6 class="font-weight-bold text-dark mb-1">Hora Cierre</h6>
+                                            <span class="text-muted">
+                                                <% if(mesa.hora_cierre_mesa){ %>
+                                                    <%=mesa.hora_cierre_mesa%>
+                                                        <% }else{ %>
+                                                            No definida
+                                                            <% } %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Información Adicional -->
+                            <div class="row text-center mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-handshake-o fa-2x text-primary mr-3"></i>
+                                        <div>
+                                            <h6 class="font-weight-bold text-dark mb-1">ID Consenso</h6>
+                                            <span class="text-muted">
+                                                <% if(mesa.consenso_id){ %>
+                                                    <%=mesa.consenso_id%>
+                                                        <% }else{ %>
+                                                            No asignado
+                                                            <% } %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-user fa-2x text-warning mr-3"></i>
+                                        <div>
+                                            <h6 class="font-weight-bold text-dark mb-1">Usuario</h6>
+                                            <span class="text-muted">
+                                                <%=mesa.usuario%>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Timestamps -->
+                            <div class="row text-center mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-calendar fa-2x text-muted mr-3"></i>
+                                        <div>
+                                            <h6 class="font-weight-bold text-dark mb-1">Fecha Creación</h6>
+                                            <span class="text-muted">
+                                                <% if(mesa.create_at){ %>
+                                                    <%=moment(mesa.create_at).format('DD-MM-YYYY HH:mm')%>
+                                                        <% }else{ %>
+                                                            No disponible
+                                                            <% } %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-clock-o fa-2x text-muted mr-3"></i>
+                                        <div>
+                                            <h6 class="font-weight-bold text-dark mb-1">Última Actualización</h6>
+                                            <span class="text-muted">
+                                                <% if(mesa.update_at){ %>
+                                                    <%=moment(mesa.update_at).format('DD-MM-YYYY HH:mm')%>
+                                                        <% }else{ %>
+                                                            No disponible
+                                                            <% } %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botones de Acción -->
+                            <div class="mt-4 pt-3 border-top">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button type="button" id="bt_editar_mesa" class="btn btn-primary rounded-pill">
+                                        <i class="fa fa-edit mr-2"></i>
+                                        Editar Mesa
+                                    </button>
+                                    <button type="button" id="bt_ver_votantes" class="btn btn-info rounded-pill">
+                                        <i class="fa fa-users mr-2"></i>
+                                        Ver Votantes
+                                    </button>
+                                    <button type="button" id="bt_exportar" class="btn btn-success rounded-pill">
+                                        <i class="fa fa-download mr-2"></i>
+                                        Exportar
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -96,5 +221,44 @@
                 </div>
             </div>
         </div>
+        <div class="card-footer bg-light">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        <i class="fa fa-info-circle mr-1"></i>
+                        Puede editar la información de la mesa o ver los detalles de votantes.
+                    </small>
+                </div>
+                <div class="col-md-6 text-md-right">
+                    <small class="text-muted">
+                        <i class="fa fa-clock-o mr-1"></i>
+                        Última actualización: <span id="last-update">-</span>
+                    </small>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+    .rounded-pill {
+        border-radius: 50px;
+    }
+
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    .badge-pill {
+        padding-right: 0.6em;
+        padding-left: 0.6em;
+    }
+
+    .fa-2x {
+        font-size: 2em;
+    }
+</style>

@@ -1,241 +1,454 @@
-<div class='bg-white rounded-lg shadow-lg overflow-hidden'>
-    <div class='p-6'>
-        <div class='flex items-center justify-between mb-6'>
-            <div>
-                <h5 class='text-xl font-bold text-gray-800'>Registrar Ingreso</h5>
+<div class="container-fluid">
+    <!-- Header Principal -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h3 class="text-success font-weight-bold mb-0">
+                <i class="fa fa-user-plus mr-2"></i>
+                Registrar Ingreso
+            </h3>
+            <p class="text-muted mb-0">Registro de asistencia y poderes</p>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-end">
+                <button type="button" id="btn_back_list" class="btn btn-outline-success rounded-pill">
+                    <i class="fa fa-arrow-left mr-2"></i>
+                    Volver
+                </button>
             </div>
         </div>
+    </div>
 
-        <div class='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
-            <div class="space-y-4">
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm font-medium text-gray-600 w-24">Representante:</span>
-                    <div class="flex-1 px-3 py-2 bg-gray-100 rounded-md">
-                        <%=representante.repleg%>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm font-medium text-gray-600 w-24">Fecha:</span>
-                    <div class="flex-1 px-3 py-2 bg-gray-100 rounded-md">
-                        <%=fecha%>
-                    </div>
-                </div>
-            </div>
-
-            <div class="space-y-4">
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm font-medium text-gray-600 w-24">Identificación:</span>
-                    <div class="flex-1 px-3 py-2 bg-gray-100 rounded-md">
-                        <%=representante.cedrep%>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm font-medium text-gray-600 w-24">Hora:</span>
-                    <div class="flex-1 px-3 py-2 bg-gray-100 rounded-md">
-                        <%=hora %>
-                    </div>
-                </div>
-            </div>
+    <!-- Card Principal -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="card-title mb-0">
+                <i class="fa fa-plus-circle mr-2"></i>
+                Nuevo Registro de Ingreso
+            </h5>
         </div>
+        <div class="card-body">
+            <!-- Información del Representante -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title text-center mb-3">
+                                <i class="fa fa-user mr-2"></i>
+                                Datos del Representante
+                            </h6>
+                            <div class="form-group mb-2">
+                                <label class="font-weight-bold text-muted">
+                                    <i class="fa fa-user mr-1"></i>
+                                    Representante
+                                </label>
+                                <div class="form-control bg-white">
+                                    <span class="font-weight-bold">
+                                        <%=representante.repleg%>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group mb-2">
+                                <label class="font-weight-bold text-muted">
+                                    <i class="fa fa-calendar mr-1"></i>
+                                    Fecha
+                                </label>
+                                <div class="form-control bg-white">
+                                    <span class="badge badge-primary">
+                                        <%=fecha%>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title text-center mb-3">
+                                <i class="fa fa-info-circle mr-2"></i>
+                                Información Adicional
+                            </h6>
+                            <div class="form-group mb-2">
+                                <label class="font-weight-bold text-muted">
+                                    <i class="fa fa-id-card mr-1"></i>
+                                    Identificación
+                                </label>
+                                <div class="form-control bg-white">
+                                    <span class="badge badge-primary">
+                                        <%=representante.cedrep%>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group mb-2">
+                                <label class="font-weight-bold text-muted">
+                                    <i class="fa fa-clock-o mr-1"></i>
+                                    Hora
+                                </label>
+                                <div class="form-control bg-white">
+                                    <span class="badge badge-info">
+                                        <%=hora%>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <div class='mb-6'>
-            <div class='bg-gray-50 rounded-lg p-4'>
-                <h6 class='text-lg font-semibold text-gray-800 mb-4'>Empresas Habiles</h6>
-                <div class='space-y-3'>
+            <!-- Empresas Habiles -->
+            <div class="card border-0 bg-light mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="card-title mb-0">
+                        <i class="fa fa-building mr-2"></i>
+                        Empresas Habiles
+                    </h6>
+                </div>
+                <div class="card-body">
                     <% _.each(empresas, function(empresa){ %>
-                        <div
-                            class='grid grid-cols-12 gap-2 items-center p-3 bg-white rounded-lg border border-gray-200'>
-                            <div class="col-span-2">
-                                <div class="px-3 py-2 bg-gray-100 rounded text-sm font-mono">
-                                    <%=empresa.nit %>
+                        <div class="row align-items-center mb-2">
+                            <div class="col-md-2">
+                                <div class="form-control bg-white">
+                                    <span class="badge badge-secondary">
+                                        <%=empresa.nit%>
+                                    </span>
                                 </div>
                             </div>
-                            <div class="col-span-5">
-                                <div class="px-3 py-2 bg-gray-100 rounded">
-                                    <div class="text-sm">
-                                        <%=empresa.razsoc %>
+                            <div class="col-md-5">
+                                <div class="form-control bg-white">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa fa-building text-info mr-2"></i>
+                                        <div>
+                                            <strong>
+                                                <%=empresa.razsoc%>
+                                            </strong>
+                                            <br>
+                                            <small class="text-muted">Razón social</small>
+                                        </div>
                                     </div>
-                                    <div class="text-xs text-gray-500">Razón social</div>
                                 </div>
                             </div>
-                            <div class="col-span-2 text-center">
+                            <div class="col-md-2 text-center">
                                 <% if(empresa.estado=="A" ){ %>
-                                    <span
-                                        class="inline-flex px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Activa</span>
-                                    <% } %>
-                                        <% if(empresa.estado=="D" ){ %>
-                                            <span
-                                                class="inline-flex px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">Desactualizada</span>
+                                    <span class="badge badge-success">
+                                        <i class="fa fa-check-circle mr-1"></i>
+                                        Activa
+                                    </span>
+                                    <% } else if(empresa.estado=="D" ){ %>
+                                        <span class="badge badge-warning">
+                                            <i class="fa fa-exclamation-triangle mr-1"></i>
+                                            Desactualizada
+                                        </span>
+                                        <% } else if(empresa.estado=="I" ){ %>
+                                            <span class="badge badge-danger">
+                                                <i class="fa fa-times-circle mr-1"></i>
+                                                No Activa
+                                            </span>
                                             <% } %>
-                                                <% if(empresa.estado=="I" ){ %>
-                                                    <span
-                                                        class="inline-flex px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">No
-                                                        Activa</span>
-                                                    <% } %>
                             </div>
-                            <div class="col-span-1 text-center">
+                            <div class="col-md-1 text-center">
                                 <% if(empresa.habil==-1){ %>
-                                    <span
-                                        class="inline-flex px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full">No
-                                        habil</span>
+                                    <span class="badge badge-danger">
+                                        <i class="fa fa-ban mr-1"></i>
+                                        No habil
+                                    </span>
                                     <% }else{ %>
-                                        <span
-                                            class="inline-flex px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Habil</span>
+                                        <span class="badge badge-success">
+                                            <i class="fa fa-check mr-1"></i>
+                                            Habil
+                                        </span>
                                         <% } %>
                             </div>
-                            <div class="col-span-2">
+                            <div class="col-md-2 text-center">
                                 <% if(empresa.habil===1 && poderes===false && (empresa.estado=="A" ||
                                     empresa.estado=="D" )){ %>
-                                    <label class="flex items-center space-x-2 cursor-pointer">
-                                        <input type="radio" name="check_apoderado" id="check_apoderado"
-                                            value="<%=empresa.nit %>" class="w-4 h-4 text-blue-600 focus:ring-blue-500">
-                                        <span class="text-sm text-gray-700">Apoderado</span>
-                                    </label>
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" class="custom-control-input" name="check_apoderado"
+                                            id="check_apoderado_<%=empresa.nit%>" value="<%=empresa.nit%>">
+                                        <label class="custom-control-label" for="check_apoderado_<%=empresa.nit%>">
+                                            Apoderado
+                                        </label>
+                                    </div>
                                     <% } %>
                             </div>
                         </div>
                         <% }) %>
                 </div>
             </div>
-        </div>
 
-        <% if(poderes===false){ %>
-            <div class="mb-6">
-                <div class="flex items-center space-x-3">
-                    <input type="checkbox" name='check_dispone_poder'
-                        class="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded">
-                    <label class="text-sm text-gray-700">Dispone de Algun Poder</label>
-                </div>
-            </div>
-            <% } %>
-
-                <div id='content_buscar_empresa' class='hidden mb-6'>
-                    <div class='bg-blue-50 rounded-lg p-4'>
-                        <h6 class='text-lg font-semibold text-gray-800 mb-4'>Buscar la empresa</h6>
-                        <div class="flex flex-col sm:flex-row gap-3 items-center">
-                            <div class="flex-1 max-w-xs">
-                                <div class="flex">
-                                    <div class="flex items-center px-3 bg-gray-200 border border-r-0 rounded-l-md">
-                                        <span class="text-sm font-medium">NIT</span>
-                                    </div>
-                                    <input type="text" id="nit_poder" name='nit_poder' placeholder="Buscar aquí..."
-                                        class="flex-1 px-3 py-2 border border-gray-300 rounded-r-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button type="button" id='bt_buscar_poder'
-                                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                                    <i class='fas fa-search'></i>
-                                </button>
-                                <button type="button" id='bt_cancelar_poder'
-                                    class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
-                                    <i class='fas fa-times'></i>
-                                </button>
-                            </div>
+            <!-- Opción de Poder -->
+            <% if(poderes===false){ %>
+                <div class="card border-0 bg-light mb-4">
+                    <div class="card-body">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" name="check_dispone_poder"
+                                id="check_dispone_poder">
+                            <label class="custom-control-label" for="check_dispone_poder">
+                                <i class="fa fa-file-signature mr-2"></i>
+                                Dispone de algún poder
+                            </label>
                         </div>
                     </div>
                 </div>
+                <% } %>
 
-                <div class='mb-6'>
-                    <div class='bg-gray-50 rounded-lg p-4'>
-                        <h6 class='text-lg font-semibold text-gray-800 mb-4'>Poder</h6>
-                        <% if(poderes !==false){ cantidad_poderes=_.size(poderes) _.each(poderes, function(poder){ %>
-                            <div class='bg-white rounded-lg p-4 mb-3 border border-gray-200'>
-                                <div class='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                                    <div>
-                                        <div class="px-3 py-2 bg-gray-100 rounded">
-                                            <div class="text-xs text-gray-500 mb-1">Poderdante:</div>
-                                            <div class="text-sm">
-                                                <%=poder.razsoc2 %>
+                    <!-- Buscar Empresa -->
+                    <div id="content_buscar_empresa" style="display: none;">
+                        <div class="card border-0 bg-warning mb-4">
+                            <div class="card-header bg-warning text-white">
+                                <h6 class="card-title mb-0">
+                                    <i class="fa fa-search mr-2"></i>
+                                    Buscar Empresa
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3">
+                                        <label for="nit_poder" class="font-weight-bold">
+                                            <i class="fa fa-hashtag mr-1"></i>
+                                            NIT
+                                        </label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="fa fa-hashtag"></i>
+                                                </span>
                                             </div>
-                                            <div class="text-xs text-gray-500">NIT: <%=poder.nit2 %>
-                                            </div>
+                                            <input type="text" class="form-control" id="nit_poder" name="nit_poder"
+                                                placeholder="Buscar aquí...">
                                         </div>
                                     </div>
-                                    <div>
-                                        <div class="px-3 py-2 bg-gray-100 rounded">
-                                            <div class="text-xs text-gray-500 mb-1">Apoderado:</div>
-                                            <div class="text-sm">
-                                                <%=poder.razsoc1 %>
-                                            </div>
-                                            <div class="text-xs text-gray-500">NIT: <%=poder.nit1 %>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <% if(cantidad_poderes> 1){ %>
-                                        <div class="flex justify-end">
-                                            <button type='button' data-code='<%=poder.nit2 %>'
-                                                class='px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors'
-                                                id='borrar_poder_server'>
-                                                <i class='fas fa-trash'></i>
+                                    <div class="col-md-4">
+                                        <div class="btn-group">
+                                            <button type="button" id="bt_buscar_poder" class="btn btn-primary">
+                                                <i class="fa fa-search mr-2"></i>
+                                                Buscar
+                                            </button>
+                                            <button type="button" id="bt_cancelar_poder" class="btn btn-secondary">
+                                                <i class="fa fa-times mr-2"></i>
+                                                Cancelar
                                             </button>
                                         </div>
-                                        <% } %>
+                                    </div>
                                 </div>
                             </div>
-                            <% }) }else{ %>
-                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
-                                    <div class="text-yellow-600 mb-2">
-                                        <i class="fas fa-quote-right text-2xl"></i>
-                                    </div>
-                                    <p class="text-yellow-800 font-medium"><i>No disponde de un poder.</i></p>
-                                </div>
-                                <% } %>
-                                    <div id='card_poder' class='hidden'>
-                                        <div id='data_content_poder'></div>
-                                    </div>
+                        </div>
                     </div>
-                </div>
-    </div>
 
-    <div class='mb-6'>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="flex items-center space-x-4">
-                <span class="text-sm font-bold text-gray-700">Votos admitidos:</span>
-                <div class="px-3 py-2 bg-gray-100 rounded-md font-mono" id='num_votos_admitidos'>
-                    <%=votos %>
-                </div>
-            </div>
-            <div class="flex items-center space-x-4">
-                <span class="text-sm font-bold text-gray-700">Radicado<span class="text-red-500">*</span>:</span>
-                <input type='text' name='radicado' id='radicado'
-                    class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-            </div>
+                    <!-- Poderes -->
+                    <div class="card border-0 bg-light mb-4">
+                        <div class="card-header bg-light">
+                            <h6 class="card-title mb-0">
+                                <i class="fa fa-file-signature mr-2"></i>
+                                Poderes
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <% if(poderes !==false){ %>
+                                <% cantidad_poderes=_.size(poderes) %>
+                                    <% _.each(poderes, function(poder){ %>
+                                        <div class="card border-0 bg-white mb-2">
+                                            <div class="card-body">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-5">
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fa fa-user-times text-danger mr-2"></i>
+                                                            <div>
+                                                                <strong>Poderdante:</strong>
+                                                                <br>
+                                                                <%=poder.razsoc2%>
+                                                                    <br>
+                                                                    <small class="text-muted">NIT: <%=poder.nit2%>
+                                                                            </small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-5">
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fa fa-user-check text-success mr-2"></i>
+                                                            <div>
+                                                                <strong>Apoderado:</strong>
+                                                                <br>
+                                                                <%=poder.razsoc1%>
+                                                                    <br>
+                                                                    <small class="text-muted">NIT: <%=poder.nit1%>
+                                                                            </small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <% if(cantidad_poderes> 1){ %>
+                                                        <div class="col-md-2 text-center">
+                                                            <button type="button" data-code="<%=poder.nit2%>"
+                                                                class="btn btn-danger btn-sm" id="borrar_poder_server">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                        <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                            <% }else{ %>
+                                                <div class="alert alert-warning border-0 bg-light">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fa fa-exclamation-triangle fa-2x mr-3"></i>
+                                                        <div>
+                                                            <h6 class="alert-heading mb-1">Sin Poderes</h6>
+                                                            <p class="mb-0">
+                                                                No dispone de un poder registrado.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <% } %>
+                                                    <div id="card_poder" style="display: none;">
+                                                        <div id="data_content_poder"></div>
+                                                    </div>
+                        </div>
+                    </div>
+
+                    <!-- Votos y Radicado -->
+                    <div class="card border-0 bg-light mb-4">
+                        <div class="card-header bg-light">
+                            <h6 class="card-title mb-0">
+                                <i class="fa fa-vote-yea mr-2"></i>
+                                Información de Votos
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-3">
+                                    <label class="font-weight-bold">
+                                        <i class="fa fa-box mr-1"></i>
+                                        Votos Admitidos
+                                    </label>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-control bg-white">
+                                        <span class="badge badge-success">
+                                            <%=votos%>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="font-weight-bold">
+                                        <i class="text-danger">*</i>
+                                        Radicado
+                                    </label>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fa fa-file-alt"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" name="radicado" id="radicado"
+                                            placeholder="Número de radicado">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        </div>
+
+        <!-- Footer con Botones -->
+        <div class="card-footer bg-light">
+            <% if(votos !==0){ %>
+                <% if(poderes !==false){ %>
+                    <% if(_.size(poderes)==1){ %>
+                        <div class="text-center">
+                            <button type="button" id="bt_registrar_ingreso" class="btn btn-success rounded-pill">
+                                <i class="fa fa-save mr-2"></i>
+                                Registrar Ingreso
+                            </button>
+                        </div>
+                        <% }else{ %>
+                            <div class="alert alert-warning border-0 bg-light">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa fa-exclamation-triangle fa-2x mr-3"></i>
+                                    <div>
+                                        <h6 class="alert-heading mb-1">Límite de Poderes</h6>
+                                        <p class="mb-0">
+                                            No puede disponer de más de un poder.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+                                <% }else{ %>
+                                    <div class="text-center">
+                                        <button type="button" id="bt_registrar_ingreso"
+                                            class="btn btn-success rounded-pill">
+                                            <i class="fa fa-save mr-2"></i>
+                                            Registrar Ingreso
+                                        </button>
+                                    </div>
+                                    <% } %>
+                                        <% }else{ %>
+                                            <div class="alert alert-danger border-0 bg-light">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fa fa-ban fa-2x mr-3"></i>
+                                                    <div>
+                                                        <h6 class="alert-heading mb-1">Sin Empresas Habiles</h6>
+                                                        <p class="mb-0">
+                                                            No dispone de empresas habiles para ingresar.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% } %>
         </div>
     </div>
 </div>
 
-<% if(votos !==0){ if(poderes !==false){ if (_.size(poderes)==1){ %>
-    <div class='bg-gray-50 px-6 py-4'>
-        <div class="text-center">
-            <button type="button" id='bt_registrar_ingreso'
-                class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 transform hover:scale-105">
-                Registrar
-            </button>
-        </div>
-    </div>
-    <% }else{ %>
-        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-            <div class="text-yellow-600 mb-2">
-                <i class="fas fa-quote-right text-2xl"></i>
-            </div>
-            <p class="text-yellow-800 font-medium"><i>No puede disponer de más de un poder.</i></p>
-        </div>
-        <% } }else{ %>
-            <div class='bg-gray-50 px-6 py-4'>
-                <div class="text-center">
-                    <button type="button" id='bt_registrar_ingreso'
-                        class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 transform hover:scale-105">
-                        Registrar
-                    </button>
-                </div>
-            </div>
-            <% } }else{ %>
-                <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-                    <div class="text-red-600 mb-2">
-                        <i class="fas fa-quote-right text-2xl"></i>
-                    </div>
-                    <p class="text-red-800 font-medium"><i>No disponde de empresas habiles para ingresar.</i></p>
-                </div>
-                <% } %>
-                    </div>
+<style>
+    .rounded-pill {
+        border-radius: 50px;
+    }
+
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    .badge {
+        font-size: 0.875rem;
+    }
+
+    .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover:not(:disabled) {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #ced4da;
+        color: #495057;
+    }
+
+    .custom-control-input:checked~.custom-control-label::before {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .custom-control-input:focus~.custom-control-label::before {
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .text-danger {
+        color: #dc3545 !important;
+    }
+</style>

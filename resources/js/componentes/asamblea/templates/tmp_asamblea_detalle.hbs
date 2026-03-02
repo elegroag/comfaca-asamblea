@@ -1,40 +1,105 @@
-<!-- Botón de salir flotante -->
-<div class="fixed top-4 right-4 z-50">
-    <button href='#'
-        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow-lg flex items-center gap-2"
-        id='bt_back'>
-        <i class="fa fa-heart"></i>
-        Salir
-    </button>
-</div>
+<div class="container-fluid">
+    <!-- Card Principal -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+                <i class="fa fa-info-circle mr-2"></i>
+                Detalle de Asamblea
+            </h5>
+            <button type="button" id="bt_back" class="btn btn-light btn-sm rounded-pill">
+                <i class="fa fa-arrow-left mr-2"></i>
+                Volver
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-8">
+                    <!-- Card de Información de Asamblea -->
+                    <div class="card border-0 bg-light">
+                        <div class="card-body text-center">
+                            <!-- Logo de Asamblea -->
+                            <div class="mb-4">
+                                <img src="/asamblea-logo.png" alt="Logo Asamblea"
+                                    class="rounded-circle img-fluid shadow-sm"
+                                    style="width: 150px; height: 150px; object-fit: cover;">
+                            </div>
 
-<!-- Título principal -->
-<h5 class='text-2xl font-bold text-center text-gray-800 mt-4 mb-6'>Asamblea Detalle</h5>
+                            <!-- Nombre de Asamblea -->
+                            <h4 class="card-title font-weight-bold text-primary mb-3">
+                                <i class="fa fa-users mr-2"></i>
+                                <%=asamblea.detalle%>
+                            </h4>
 
-<!-- Contenido principal -->
-<div class='flex justify-center'>
-    <div class='w-full max-w-md'>
-        <!-- Detalle de la asamblea -->
-        <h6 class='text-lg font-semibold text-center text-gray-700 mb-4'>
-            <span class="font-bold">
-                <%=asamblea.detalle%>
-            </span>
-        </h6>
+                            <!-- Información Adicional -->
+                            <div class="row text-center">
+                                <div class="col-12 mb-3">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-calendar-alt fa-2x text-muted mr-3"></i>
+                                        <div>
+                                            <h6 class="font-weight-bold text-dark mb-1">Fecha Programada</h6>
+                                            <span class="text-muted">
+                                                <%=moment(asamblea.fecha_programada).format('dddd, DD [de] MMMM [de]
+                                                    YYYY')%>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
 
-        <!-- Contenedor de imagen y fecha -->
-        <div class="flex flex-col items-center space-y-4">
-            <!-- Imagen de la asamblea -->
-            <div class="relative">
-                <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 shadow-lg">
-                    <?= Tag::image("asamblea-logo.png", "width: 100px", "class: w-full h-full object-cover") ?>
+                                <div class="col-12 mb-3">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-toggle-on fa-2x text-muted mr-3"></i>
+                                        <div>
+                                            <h6 class="font-weight-bold text-dark mb-1">Estado</h6>
+                                            <% if(asamblea.estado=='A' ){ %>
+                                                <span class="badge badge-success badge-pill">
+                                                    <i class="fa fa-check-circle mr-1"></i>
+                                                    Activa
+                                                </span>
+                                                <% }else{ %>
+                                                    <span class="badge badge-secondary badge-pill">
+                                                        <i class="fa fa-pause-circle mr-1"></i>
+                                                        Inactiva
+                                                    </span>
+                                                    <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <% if(asamblea.created_at){ %>
+                                    <div class="col-12">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <i class="fa fa-clock-o fa-2x text-muted mr-3"></i>
+                                            <div>
+                                                <h6 class="font-weight-bold text-dark mb-1">Fecha de Creación</h6>
+                                                <span class="text-muted">
+                                                    <%=moment(asamblea.created_at).format('DD-MM-YYYY HH:mm')%>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                            </div>
+
+                            <!-- Botones de Acción -->
+                            <div class="mt-4 pt-3 border-top">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button type="button" class="btn btn-primary btn-sm rounded-pill">
+                                        <i class="fa fa-edit mr-1"></i>
+                                        Editar
+                                    </button>
+                                    <button type="button" class="btn btn-info btn-sm rounded-pill">
+                                        <i class="fa fa-list-alt mr-1"></i>
+                                        Ver Consensos
+                                    </button>
+                                    <button type="button" class="btn btn-success btn-sm rounded-pill">
+                                        <i class="fa fa-users mr-1"></i>
+                                        Ver Participantes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Fecha programada -->
-            <div class="text-center">
-                <p class="text-gray-600 font-medium">
-                    <%=moment(asamblea.fecha_programada).format('DD-MM-YYYY') %>
-                </p>
             </div>
         </div>
     </div>

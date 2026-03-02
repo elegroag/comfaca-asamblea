@@ -1,0 +1,296 @@
+<div class="container-fluid">
+    <!-- Card Principal -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="card-title mb-0">
+                <i class="fa fa-plus-circle mr-2"></i>
+                Crear Nueva Novedad
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- Información -->
+            <div class="alert alert-info border-0 bg-light mb-4">
+                <div class="d-flex align-items-center">
+                    <i class="fa fa-info-circle fa-2x mr-3"></i>
+                    <div>
+                        <h6 class="alert-heading mb-1">Información</h6>
+                        <p class="mb-0">
+                            Complete los datos para crear una nueva novedad en el sistema.
+                            Todos los campos marcados con * son obligatorios.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <form id="formulario_novedad">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-md-10">
+                        <!-- Campo Línea -->
+                        <div class="form-group">
+                            <label for="linea" class="font-weight-bold">
+                                <i class="text-danger">*</i> Línea de Novedad
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-code"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" id="linea" name="linea"
+                                    placeholder="Código o identificador de la línea" required>
+                            </div>
+                            <div class="invalid-feedback" id="linea-error">
+                                La línea es obligatoria
+                            </div>
+                        </div>
+
+                        <!-- Campo NIT -->
+                        <div class="form-group">
+                            <label for="nit" class="font-weight-bold">
+                                <i class="text-danger">*</i> NIT Empresa
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-building"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" id="nit" name="nit"
+                                    placeholder="Número de Identificación Tributaria" required>
+                                <div class="input-group-append">
+                                    <button type="button" id="bt_buscar_empresa" class="btn btn-outline-primary"
+                                        title="Buscar empresa">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="invalid-feedback" id="nit-error">
+                                El NIT es obligatorio
+                            </div>
+                        </div>
+
+                        <!-- Campo Cédula Representante -->
+                        <div class="form-group">
+                            <label for="cedula_representante" class="font-weight-bold">
+                                <i class="text-danger">*</i> Cédula Representante
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-id-card"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" id="cedula_representante"
+                                    name="cedula_representante" placeholder="Número de cédula del representante"
+                                    required>
+                            </div>
+                            <div class="invalid-feedback" id="cedula_representante-error">
+                                La cédula es obligatoria
+                            </div>
+                        </div>
+
+                        <!-- Campo Razón Social -->
+                        <div class="form-group">
+                            <label for="razon_social" class="font-weight-bold">
+                                <i class="text-danger">*</i> Razón Social
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-industry"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" id="razon_social" name="razon_social"
+                                    placeholder="Razón social de la empresa" required>
+                            </div>
+                            <div class="invalid-feedback" id="razon_social-error">
+                                La razón social es obligatoria
+                            </div>
+                        </div>
+
+                        <!-- Campo Nombre Representante -->
+                        <div class="form-group">
+                            <label for="nombre_representante" class="font-weight-bold">
+                                <i class="text-danger">*</i> Nombre Representante
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-user-tie"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" id="nombre_representante"
+                                    name="nombre_representante" placeholder="Nombre completo del representante"
+                                    required>
+                            </div>
+                            <div class="invalid-feedback" id="nombre_representante-error">
+                                El nombre es obligatorio
+                            </div>
+                        </div>
+
+                        <!-- Campo Apoderado NIT -->
+                        <div class="form-group">
+                            <label for="apoderado_nit" class="font-weight-bold">
+                                <i class="text-danger">*</i> Apoderado NIT
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-user"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" id="apoderado_nit" name="apoderado_nit"
+                                    placeholder="NIT del apoderado" required>
+                            </div>
+                            <div class="invalid-feedback" id="apoderado_nit-error">
+                                El NIT del apoderado es obligatorio
+                            </div>
+                        </div>
+
+                        <!-- Campo Apoderado Cédula -->
+                        <div class="form-group">
+                            <label for="apoderado_cedula" class="font-weight-bold">
+                                <i class="text-danger">*</i> Apoderado Cédula
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-id-badge"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" id="apoderado_cedula" name="apoderado_cedula"
+                                    placeholder="Cédula del apoderado" required>
+                            </div>
+                            <div class="invalid-feedback" id="apoderado_cedula-error">
+                                La cédula del apoderado es obligatoria
+                            </div>
+                        </div>
+
+                        <!-- Campo Apoderado Nombre -->
+                        <div class="form-group">
+                            <label for="apoderado_nombre" class="font-weight-bold">
+                                <i class="text-danger">*</i> Apoderado Nombre
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-user-circle"></i>
+                                    </span>
+                                </div>
+                                <input type="text" class="form-control" id="apoderado_nombre" name="apoderado_nombre"
+                                    placeholder="Nombre completo del apoderado" required>
+                            </div>
+                            <div class="invalid-feedback" id="apoderado_nombre-error">
+                                El nombre del apoderado es obligatorio
+                            </div>
+                        </div>
+
+                        <!-- Campo Clave -->
+                        <div class="form-group">
+                            <label for="clave" class="font-weight-bold">
+                                <i class="text-danger">*</i> Clave
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-key"></i>
+                                    </span>
+                                </div>
+                                <input type="password" class="form-control" id="clave" name="clave"
+                                    placeholder="Clave de acceso" required>
+                            </div>
+                            <div class="invalid-feedback" id="clave-error">
+                                La clave es obligatoria
+                            </div>
+                        </div>
+
+                        <!-- Campo Estado -->
+                        <div class="form-group">
+                            <label for="estado" class="font-weight-bold">
+                                <i class="text-danger">*</i> Estado
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-toggle-on"></i>
+                                    </span>
+                                </div>
+                                <select class="form-control" id="estado" name="estado" required>
+                                    <option value="">Seleccione un estado...</option>
+                                    <option value="A">Activo</option>
+                                    <option value="I">Inactivo</option>
+                                </select>
+                            </div>
+                            <div class="invalid-feedback" id="estado-error">
+                                El estado es obligatorio
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="text-center mt-4">
+                            <button type="button" id="bt_hacer_cargue" class="btn btn-success rounded-pill" disabled>
+                                <i class="fa fa-save mr-2"></i>
+                                Crear Novedad
+                            </button>
+                            <button type="button" id="bt_cancelar" class="btn btn-secondary rounded-pill ml-2">
+                                <i class="fa fa-times mr-2"></i>
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        <i class="fa fa-info-circle mr-1"></i>
+                        Los datos serán validados antes de crear la novedad.
+                    </small>
+                </div>
+                <div class="col-md-6 text-md-right">
+                    <small class="text-muted">
+                        <i class="fa fa-clock-o mr-1"></i>
+                        Última actualización: <span id="last-update">-</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-pill {
+        border-radius: 50px;
+    }
+
+    .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover:not(:disabled) {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #ced4da;
+        color: #495057;
+    }
+</style>
