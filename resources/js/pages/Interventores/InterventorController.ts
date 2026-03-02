@@ -4,6 +4,9 @@ import InterventorService from './InterventorService';
 import InterventorMostrar from '@/componentes/interventores/views/InterventorMostrar';
 import InterventorCrear from '@/componentes/interventores/views/InterventorCrear';
 import InterventoresListar from '@/componentes/interventores/views/InterventoresListar';
+import { cacheCollection, getCachedCollection } from '@/componentes/CacheManager';
+import InterventoresCollection from '@/collections/InterventoresCollection';
+import Loading from '@/common/Loading';
 
 interface InterventorControllerOptions extends CommonDeps {
     [key: string]: any;
@@ -26,11 +29,50 @@ export default class InterventorController extends Controller {
      */
     async listarInterventores(): Promise<void> {
         try {
-            await this.service.__findAll();
+            // Obtener interventores desde cache
+            let interventores = getCachedCollection('interventores', InterventoresCollection);
+            if (interventores === null) {
+                if (Loading) Loading.show();
+
+                try {
+                    if (!this.api) {
+                        this.app?.trigger('error', 'API no disponible');
+                        return;
+                    }
+
+                    const response = await this.service.findAllInterventores();
+
+                    if (response && response.success === true) {
+                        // Crear collection y guardar en cache
+                        interventores = new InterventoresCollection();
+                        interventores.add(response.interventores || [], { merge: true });
+
+                        // Guardar en cache para uso futuro
+                        cacheCollection('interventores', interventores, {
+                            persistent: true, // Persistir en localStorage
+                            ttl: 35 * 60 * 1000 // 35 minutos
+                        });
+                    } else {
+                        this.app?.trigger('error', (response as any).msj || response.message || 'Error al listar interventores');
+                        return;
+                    }
+                } catch (error: any) {
+                    this.logger.error('Error al listar interventores:', error);
+                    this.app?.trigger('error', error.message || 'Error de conexión al listar interventores');
+                    return;
+                } finally {
+                    if (Loading) Loading.hide();
+                }
+            } else {
+                if (Loading) Loading.show();
+                setTimeout(() => {
+                    if (Loading) Loading.hide();
+                }, 300);
+            }
 
             const view = new InterventoresListar({
-                collection: (this.service as any).collections.interventores,
-                app: this.app,
+                collection: interventores,
+                app: this.app || undefined,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -63,7 +105,7 @@ export default class InterventorController extends Controller {
                 estado: 'activo'
             },
             isNew: true,
-            app: this.app,
+            app: this.app || undefined,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -80,10 +122,21 @@ export default class InterventorController extends Controller {
      */
     async mostrarInterventor(id: string): Promise<void> {
         try {
-            // Asegurarse de que los interventores estén cargados
-            await this.service.__findAll();
+            // Obtener interventores desde cache
+            let interventores = getCachedCollection('interventores', InterventoresCollection);
+            if (interventores === null) {
+                // Si no está en cache, cargar desde API
+                const response = await this.service.findAllInterventores();
+                if (response && response.success === true) {
+                    interventores = new InterventoresCollection();
+                    interventores.add(response.interventores || [], { merge: true });
+                    cacheCollection('interventores', interventores, {
+                        persistent: true,
+                        ttl: 35 * 60 * 1000
+                    });
+                }
+            }
 
-            const interventores = (this.service as any).collections.interventores;
             const model = interventores.get(id);
 
             if (!model) {
@@ -93,7 +146,7 @@ export default class InterventorController extends Controller {
 
             const view = new InterventorMostrar({
                 model: model,
-                app: this.app,
+                app: this.app || undefined,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -112,10 +165,21 @@ export default class InterventorController extends Controller {
      */
     async editarInterventor(id: string): Promise<void> {
         try {
-            // Asegurarse de que los interventores estén cargados
-            await this.service.__findAll();
+            // Obtener interventores desde cache
+            let interventores = getCachedCollection('interventores', InterventoresCollection);
+            if (interventores === null) {
+                // Si no está en cache, cargar desde API
+                const response = await this.service.findAllInterventores();
+                if (response && response.success === true) {
+                    interventores = new InterventoresCollection();
+                    interventores.add(response.interventores || [], { merge: true });
+                    cacheCollection('interventores', interventores, {
+                        persistent: true,
+                        ttl: 35 * 60 * 1000
+                    });
+                }
+            }
 
-            const interventores = (this.service as any).collections.interventores;
             const model = interventores.get(id);
 
             if (!model) {
@@ -126,7 +190,7 @@ export default class InterventorController extends Controller {
             const view = new InterventorCrear({
                 model: model,
                 isNew: false,
-                app: this.app,
+                app: this.app || undefined,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,

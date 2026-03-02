@@ -3,6 +3,9 @@ import { CommonDeps } from '@/types/CommonDeps';
 import NovedadesService from './NovedadesService';
 import NovedadesListar from '@/componentes/novedades/views/NovedadesListar';
 import NovedadDetalle from '@/componentes/novedades/views/NovedadDetalle';
+import { cacheCollection, getCachedCollection } from '@/componentes/CacheManager';
+import NovedadesCollection from '@/collections/NovedadesCollection';
+import Loading from '@/common/Loading';
 
 interface NovedadesControllerOptions extends CommonDeps {
     [key: string]: any;
@@ -25,10 +28,48 @@ export default class NovedadesController extends Controller {
      */
     async listarNovedades(): Promise<void> {
         try {
-            await this.service.__findAll();
+            // Obtener novedades desde cache
+            let novedades = getCachedCollection('novedades', NovedadesCollection);
+            if (novedades === null) {
+                if (Loading) Loading.show();
+
+                try {
+                    if (!this.api) {
+                        this.app?.trigger('error', 'API no disponible');
+                        return;
+                    }
+
+                    const response = await this.service.findAllNovedades();
+
+                    if (response && response.success === true) {
+                        // Crear collection y guardar en cache
+                        novedades = new NovedadesCollection(response.novedades || []);
+
+                        // Guardar en cache para uso futuro
+                        cacheCollection('novedades', novedades, {
+                            persistent: true, // Persistir en localStorage
+                            ttl: 25 * 60 * 1000 // 25 minutos
+                        });
+                    } else {
+                        this.app?.trigger('error', (response as any).msj || response.message || 'Error al listar novedades');
+                        return;
+                    }
+                } catch (error: any) {
+                    this.logger.error('Error al listar novedades:', error);
+                    this.app?.trigger('error', error.message || 'Error de conexión al listar novedades');
+                    return;
+                } finally {
+                    if (Loading) Loading.hide();
+                }
+            } else {
+                if (Loading) Loading.show();
+                setTimeout(() => {
+                    if (Loading) Loading.hide();
+                }, 300);
+            }
 
             const view = new NovedadesListar({
-                collection: (this.service as any).collections.novedades,
+                collection: novedades,
                 app: this.app,
                 api: this.api,
                 logger: this.logger,
@@ -62,10 +103,20 @@ export default class NovedadesController extends Controller {
      */
     async mostrarDetalle(id: string): Promise<void> {
         try {
-            // Asegurarse de que las novedades estén cargadas
-            await this.service.__findAll();
+            // Obtener novedades desde cache
+            let novedades = getCachedCollection('novedades', NovedadesCollection);
+            if (novedades === null) {
+                // Si no está en cache, cargar desde API
+                const response = await this.service.findAllNovedades();
+                if (response && response.success === true) {
+                    novedades = new NovedadesCollection(response.novedades || []);
+                    cacheCollection('novedades', novedades, {
+                        persistent: true,
+                        ttl: 25 * 60 * 1000
+                    });
+                }
+            }
 
-            const novedades = (this.service as any).collections.novedades;
             const model = novedades.get(id);
 
             if (!model) {
@@ -94,10 +145,20 @@ export default class NovedadesController extends Controller {
      */
     async editarNovedad(id: string): Promise<void> {
         try {
-            // Asegurarse de que las novedades estén cargadas
-            await this.service.__findAll();
+            // Obtener novedades desde cache
+            let novedades = getCachedCollection('novedades', NovedadesCollection);
+            if (novedades === null) {
+                // Si no está en cache, cargar desde API
+                const response = await this.service.findAllNovedades();
+                if (response && response.success === true) {
+                    novedades = new NovedadesCollection(response.novedades || []);
+                    cacheCollection('novedades', novedades, {
+                        persistent: true,
+                        ttl: 25 * 60 * 1000
+                    });
+                }
+            }
 
-            const novedades = (this.service as any).collections.novedades;
             const model = novedades.get(id);
 
             if (!model) {
@@ -130,7 +191,7 @@ export default class NovedadesController extends Controller {
 
             // Crear una vista temporal para mostrar las no leídas
             const view = new NovedadesListar({
-                collection: new (this.app as any).Collection(noLeidas),
+                collection: new NovedadesCollection(noLeidas),
                 app: this.app,
                 api: this.api,
                 logger: this.logger,

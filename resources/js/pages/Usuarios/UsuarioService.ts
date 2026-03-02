@@ -1,5 +1,4 @@
 import { CommonDeps, ServiceOptions, ApiResponse } from '@/types/CommonDeps';
-import { BoxCollectionStorage } from '@/componentes/useStorage';
 import AsaUsuariosCollection from '@/collections/AsaUsuariosCollection';
 import AsaUsuario from '@/models/AsaUsuario';
 
@@ -7,17 +6,9 @@ export interface UsuarioServiceOptions extends ServiceOptions {
     // Opciones adicionales específicas del servicio si se necesitan
 }
 
-export interface UsuarioCollections {
-    usuarios: AsaUsuariosCollection;
-}
-
 export default class UsuarioService {
-    private storage: BoxCollectionStorage;
-    private collections: UsuarioCollections;
-
     constructor(private readonly opts: UsuarioServiceOptions) {
-        this.storage = BoxCollectionStorage.getInstance();
-        this.__initializeCollections();
+        // SIN storage/persistencia local - solo API
     }
 
     private get api() { return this.opts.api; }
@@ -25,54 +16,22 @@ export default class UsuarioService {
     private get app() { return this.opts.app; }
 
     /**
-     * Inicializar las colecciones necesarias usando BoxCollectionStorage
+     * Obtener todos los usuarios desde API
      */
-    private __initializeCollections(): void {
-        // Inicializar colecciones persistentes en localStorage
-        const usuariosStorage = this.storage.getCollection('usuarios')?.value;
-
-        // Crear colecciones Backbone si no existen
-        this.collections.usuarios = (usuariosStorage as AsaUsuariosCollection) || new AsaUsuariosCollection();
-
-        // Guardar colecciones en storage si no existen
-        if (!usuariosStorage) {
-            this.storage.addCollection('usuarios', this.collections.usuarios);
-        }
-    }
-
-    // Métodos públicos (interfaz para controllers/vistas)
-
-    /**
-     * Obtener todos los usuarios
-     */
-    async __findAll(): Promise<void> {
+    async findAllUsuarios(): Promise<any> {
         try {
-            const response = await this.findAllApi();
+            const response = await this.api.get('/usuarios/listar');
             if (response?.success) {
-                this.__setUsuarios((response as any).usuarios || []);
+                return response;
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar usuarios' });
+                this.app?.trigger('alert:error', { message: response?.msj || 'Error al listar usuarios' });
+                return null;
             }
         } catch (error: any) {
-            this.logger.error('Error al listar usuarios:', error);
-            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.logger?.error('Error al listar usuarios:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar usuarios' });
+            return null;
         }
-    }
-
-    /**
-     * Establecer lista de usuarios
-     */
-    __setUsuarios(usuarios: any[]): void {
-        this.collections.usuarios.reset();
-        this.collections.usuarios.add(usuarios, { merge: true });
-    }
-
-    /**
-     * Agregar usuario a la colección
-     */
-    __addUsuarios(usuario: any): void {
-        const _usuario = usuario instanceof AsaUsuario ? usuario : new AsaUsuario(usuario);
-        this.collections.usuarios.add(_usuario, { merge: true });
     }
 
     /**
@@ -90,7 +49,6 @@ export default class UsuarioService {
 
             if (response?.success) {
                 this.app.trigger('alert:success', { message: response.msj || 'Usuario guardado exitosamente' });
-                this.__addUsuarios((response as any).usuario);
             } else {
                 this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar usuario' });
             }
@@ -112,7 +70,6 @@ export default class UsuarioService {
 
             if (response?.success) {
                 this.app.trigger('alert:success', { message: response.msj || 'Usuario eliminado exitosamente' });
-                this.collections.usuarios.remove(usuario);
             } else {
                 this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar usuario' });
             }
@@ -139,7 +96,6 @@ export default class UsuarioService {
 
             if (response?.success) {
                 this.app.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
-                await this.__findAll(); // Recargar datos
                 return response;
             } else {
                 this.app.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });

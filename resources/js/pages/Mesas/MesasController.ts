@@ -4,6 +4,9 @@ import MesasService from './MesasService';
 import MesasListar from '@/componentes/mesas/views/MesasListar';
 import MesasCrear from '@/componentes/mesas/views/MesasCrear';
 import MesaMostrar from '@/componentes/mesas/views/MesaMostrar';
+import { cacheCollection, getCachedCollection } from '@/componentes/CacheManager';
+import MesasCollection from '@/collections/MesasCollection';
+import Loading from '@/common/Loading';
 
 interface MesasControllerOptions extends CommonDeps {
     [key: string]: any;
@@ -26,11 +29,50 @@ export default class MesasController extends Controller {
      */
     async listarMesas(): Promise<void> {
         try {
-            await this.service.__findAll();
+            // Obtener mesas desde cache
+            let mesas = getCachedCollection('mesas', MesasCollection);
+            if (mesas === null) {
+                if (Loading) Loading.show();
+
+                try {
+                    if (!this.api) {
+                        this.app?.trigger('error', 'API no disponible');
+                        return;
+                    }
+
+                    const response = await this.service.findAllMesas();
+
+                    if (response && response.success === true) {
+                        // Crear collection y guardar en cache
+                        mesas = new MesasCollection();
+                        mesas.add(response.mesas || [], { merge: true });
+
+                        // Guardar en cache para uso futuro
+                        cacheCollection('mesas', mesas, {
+                            persistent: true, // Persistir en localStorage
+                            ttl: 30 * 60 * 1000 // 30 minutos
+                        });
+                    } else {
+                        this.app?.trigger('error', (response as any).msj || response.message || 'Error al listar mesas');
+                        return;
+                    }
+                } catch (error: any) {
+                    this.logger.error('Error al listar mesas:', error);
+                    this.app?.trigger('error', error.message || 'Error de conexión al listar mesas');
+                    return;
+                } finally {
+                    if (Loading) Loading.hide();
+                }
+            } else {
+                if (Loading) Loading.show();
+                setTimeout(() => {
+                    if (Loading) Loading.hide();
+                }, 300);
+            }
 
             const view = new MesasListar({
-                collection: (this.service as any).collections.mesas,
-                app: this.app,
+                collection: mesas,
+                app: this.app || undefined,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -64,7 +106,7 @@ export default class MesasController extends Controller {
                 estado: 'inactivo'
             },
             isNew: true,
-            app: this.app,
+            app: this.app || undefined,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -81,10 +123,21 @@ export default class MesasController extends Controller {
      */
     async mostrarMesa(id: string): Promise<void> {
         try {
-            // Asegurarse de que las mesas estén cargadas
-            await this.service.__findAll();
+            // Obtener mesas desde cache
+            let mesas = getCachedCollection('mesas', MesasCollection);
+            if (mesas === null) {
+                // Si no está en cache, cargar desde API
+                const response = await this.service.findAllMesas();
+                if (response && response.success === true) {
+                    mesas = new MesasCollection();
+                    mesas.add(response.mesas || [], { merge: true });
+                    cacheCollection('mesas', mesas, {
+                        persistent: true,
+                        ttl: 30 * 60 * 1000
+                    });
+                }
+            }
 
-            const mesas = (this.service as any).collections.mesas;
             const model = mesas.get(id);
 
             if (!model) {
@@ -94,7 +147,7 @@ export default class MesasController extends Controller {
 
             const view = new MesaMostrar({
                 model: model,
-                app: this.app,
+                app: this.app || undefined,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -113,10 +166,21 @@ export default class MesasController extends Controller {
      */
     async editarMesa(id: string): Promise<void> {
         try {
-            // Asegurarse de que las mesas estén cargadas
-            await this.service.__findAll();
+            // Obtener mesas desde cache
+            let mesas = getCachedCollection('mesas', MesasCollection);
+            if (mesas === null) {
+                // Si no está en cache, cargar desde API
+                const response = await this.service.findAllMesas();
+                if (response && response.success === true) {
+                    mesas = new MesasCollection();
+                    mesas.add(response.mesas || [], { merge: true });
+                    cacheCollection('mesas', mesas, {
+                        persistent: true,
+                        ttl: 30 * 60 * 1000
+                    });
+                }
+            }
 
-            const mesas = (this.service as any).collections.mesas;
             const model = mesas.get(id);
 
             if (!model) {
@@ -127,7 +191,7 @@ export default class MesasController extends Controller {
             const view = new MesasCrear({
                 model: model,
                 isNew: false,
-                app: this.app,
+                app: this.app || undefined,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,

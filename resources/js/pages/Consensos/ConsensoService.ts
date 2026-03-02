@@ -1,5 +1,4 @@
 import { CommonDeps, ServiceOptions, ApiResponse } from '@/types/CommonDeps';
-import { BoxCollectionStorage } from '@/componentes/useStorage';
 import ConsensosCollection from '@/collections/ConsensosCollection';
 import Consenso from '@/models/Consenso';
 
@@ -7,20 +6,9 @@ export interface ConsensoServiceOptions extends ServiceOptions {
     // Opciones adicionales específicas del servicio si se necesitan
 }
 
-export interface ConsensoCollections {
-    consensos: ConsensosCollection;
-}
-
 export default class ConsensoService {
-    private storage: BoxCollectionStorage;
-    private collections: ConsensoCollections = {
-        consensos: new ConsensosCollection()
-    } as ConsensoCollections;
-
     constructor(private readonly opts: ConsensoServiceOptions) {
-        _.extend(this, opts);
-        this.storage = BoxCollectionStorage.getInstance();
-        this.__initializeCollections();
+        // SIN storage/persistencia local - solo API
     }
 
     private get api() { return this.opts.api; }
@@ -28,73 +16,21 @@ export default class ConsensoService {
     private get app() { return this.opts.app; }
 
     /**
-     * Inicializar las colecciones necesarias usando BoxCollectionStorage
+     * Obtener todos los consensos desde API
      */
-    private __initializeCollections(): void {
-        // Inicializar colecciones persistentes en localStorage
-        const consensosStorage = this.storage.getCollection('consensos')?.value;
-
-        // Crear colecciones Backbone si no existen
-        this.collections.consensos = (consensosStorage as ConsensosCollection) || new ConsensosCollection();
-
-        // Guardar colecciones en storage si no existen
-        if (!consensosStorage) {
-            this.storage.addCollection('consensos', this.collections.consensos);
-        }
-    }
-
-    // Métodos públicos (interfaz para controllers/vistas)
-
-    /**
-     * Obtener todos los consensos
-     */
-    async __findAll(): Promise<void> {
+    async findAllConsensos(): Promise<any> {
         try {
-            const response = await this.findAllApi();
-            if (response?.success) {
-                this.__setConsensos((response as any).consensos || []);
-            } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar consensos' });
-            }
-        } catch (error: any) {
-            this.logger.error('Error al listar consensos:', error);
-            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
-        }
-    }
-
-    /**
-     * Establecer lista de consensos
-     */
-    __setConsensos(consensos: any[]): void {
-        this.collections.consensos.reset();
-        this.collections.consensos.add(consensos, { merge: true });
-    }
-
-    /**
-     * Agregar consenso a la colección
-     */
-    __addConsensos(consenso: any): void {
-        const _consenso = consenso instanceof Consenso ? consenso : new Consenso(consenso);
-        this.collections.consensos.add(_consenso, { merge: true });
-    }
-
-    /**
-     * Buscar consenso por ID
-     */
-    async __findById(id: string): Promise<ApiResponse> {
-        try {
-            const response = await this.findByIdApi(id);
-
+            const response = await this.api.get('/consensos/listar');
             if (response?.success) {
                 return response;
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al buscar consenso' });
-                return { success: false, message: response?.msj || 'Error al buscar consenso' };
+                this.app?.trigger('alert:error', { message: (response as any).msj || 'Error al listar consensos' });
+                return null;
             }
         } catch (error: any) {
-            this.logger.error('Error al buscar consenso por ID:', error);
-            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
-            return { success: false, message: error.message || 'Error de conexión' };
+            this.logger?.error('Error al listar consensos:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar consensos' });
+            return null;
         }
     }
 
@@ -112,10 +48,9 @@ export default class ConsensoService {
             const response = await this.saveConsensoApi(consenso.toJSON());
 
             if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Consenso guardado exitosamente' });
-                this.__addConsensos((response as any).consenso);
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Consenso guardado exitosamente' });
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar consenso' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al guardar consenso' });
             }
 
             return response;
@@ -134,10 +69,9 @@ export default class ConsensoService {
             const response = await this.removeConsensoApi(consenso.toJSON());
 
             if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Consenso eliminado exitosamente' });
-                this.collections.consensos.remove(consenso);
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Consenso eliminado exitosamente' });
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar consenso' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al eliminar consenso' });
             }
 
             return response;
@@ -156,13 +90,9 @@ export default class ConsensoService {
             const response = await this.activarConsensoApi(consenso.toJSON());
 
             if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Consenso activado exitosamente' });
-                // Actualizar el modelo en la colección
-                if (consenso.set) {
-                    consenso.set('estado', 'activo');
-                }
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Consenso activado exitosamente' });
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al activar consenso' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al activar consenso' });
             }
 
             return response;
@@ -181,13 +111,9 @@ export default class ConsensoService {
             const response = await this.inactivarConsensoApi(consenso.toJSON());
 
             if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Consenso inactivado exitosamente' });
-                // Actualizar el modelo en la colección
-                if (consenso.set) {
-                    consenso.set('estado', 'inactivo');
-                }
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Consenso inactivado exitosamente' });
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al inactivar consenso' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al inactivar consenso' });
             }
 
             return response;
@@ -199,20 +125,6 @@ export default class ConsensoService {
     }
 
     // Métodos privados (solo Service)
-
-    /**
-     * Obtener consensos desde API
-     */
-    private async findAllApi(): Promise<ApiResponse> {
-        return await this.api.get('/consensos/listar');
-    }
-
-    /**
-     * Buscar consenso por ID desde API
-     */
-    private async findByIdApi(id: string): Promise<ApiResponse> {
-        return await this.api.get(`/consensos/findById/${id}`);
-    }
 
     /**
      * Guardar consenso en API

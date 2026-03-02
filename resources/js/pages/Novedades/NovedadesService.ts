@@ -1,5 +1,4 @@
 import { CommonDeps, ServiceOptions, ApiResponse } from '@/types/CommonDeps';
-import { BoxCollectionStorage } from '@/componentes/useStorage';
 import NovedadesCollection from '@/collections/NovedadesCollection';
 import Novedad from '@/models/Novedad';
 
@@ -7,17 +6,9 @@ export interface NovedadesServiceOptions extends ServiceOptions {
   // Opciones adicionales específicas del servicio si se necesitan
 }
 
-export interface NovedadesCollections {
-  novedades: NovedadesCollection;
-}
-
 export default class NovedadesService {
-  private storage: BoxCollectionStorage;
-  private collections: NovedadesCollections;
-
   constructor(private readonly opts: NovedadesServiceOptions) {
-    this.storage = BoxCollectionStorage.getInstance();
-    this.__initializeCollections();
+    // SIN storage/persistencia local - solo API
   }
 
   private get api() { return this.opts.api; }
@@ -25,54 +16,22 @@ export default class NovedadesService {
   private get app() { return this.opts.app; }
 
   /**
-   * Inicializar las colecciones necesarias usando BoxCollectionStorage
+   * Obtener todas las novedades desde API
    */
-  private __initializeCollections(): void {
-    // Inicializar colecciones persistentes en localStorage
-    const novedadesStorage = this.storage.getCollection('novedades')?.value;
-
-    // Crear colecciones Backbone si no existen
-    this.collections.novedades = (novedadesStorage as NovedadesCollection) || new NovedadesCollection();
-
-    // Guardar colecciones en storage si no existen
-    if (!novedadesStorage) {
-      this.storage.addCollection('novedades', this.collections.novedades);
-    }
-  }
-
-  // Métodos públicos (interfaz para controllers/vistas)
-
-  /**
-   * Obtener todas las novedades
-   */
-  async __findAll(): Promise<void> {
+  async findAllNovedades(): Promise<any> {
     try {
-      const response = await this.findAllApi();
+      const response = await this.api.get('/novedades/listar');
       if (response?.success) {
-        this.__setNovedades((response as any).novedades || []);
+        return response;
       } else {
-        this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar novedades' });
+        this.app?.trigger('alert:error', { message: (response as any).msj || 'Error al listar novedades' });
+        return null;
       }
     } catch (error: any) {
-      this.logger.error('Error al listar novedades:', error);
-      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.logger?.error('Error al listar novedades:', error);
+      this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar novedades' });
+      return null;
     }
-  }
-
-  /**
-   * Establecer lista de novedades
-   */
-  __setNovedades(novedades: any[]): void {
-    this.collections.novedades.reset();
-    this.collections.novedades.add(novedades, { merge: true });
-  }
-
-  /**
-   * Agregar novedad a la colección
-   */
-  __addNovedades(novedad: any): void {
-    const _novedad = novedad instanceof Novedad ? novedad : new Novedad(novedad);
-    this.collections.novedades.add(_novedad, { merge: true });
   }
 
   /**
@@ -89,10 +48,9 @@ export default class NovedadesService {
       const response = await this.saveNovedadApi(novedad.toJSON());
 
       if (response?.success) {
-        this.app.trigger('alert:success', { message: response.msj || 'Novedad guardada exitosamente' });
-        this.__addNovedades((response as any).novedad);
+        this.app.trigger('alert:success', { message: (response as any).msj || 'Novedad guardada exitosamente' });
       } else {
-        this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar novedad' });
+        this.app.trigger('alert:error', { message: (response as any).msj || 'Error al guardar novedad' });
       }
 
       return response;
@@ -111,10 +69,9 @@ export default class NovedadesService {
       const response = await this.removeNovedadApi(novedad.toJSON());
 
       if (response?.success) {
-        this.app.trigger('alert:success', { message: response.msj || 'Novedad eliminada exitosamente' });
-        this.collections.novedades.remove(novedad);
+        this.app.trigger('alert:success', { message: (response as any).msj || 'Novedad eliminada exitosamente' });
       } else {
-        this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar novedad' });
+        this.app.trigger('alert:error', { message: (response as any).msj || 'Error al eliminar novedad' });
       }
 
       return response;
@@ -133,18 +90,16 @@ export default class NovedadesService {
       const response = await this.marcarLeidaApi(novedad.toJSON());
 
       if (response?.success) {
-        this.app.trigger('alert:success', { message: response.msj || 'Novedad marcada como leída' });
-        // Actualizar el modelo en la colección
-        if (novedad.set) {
-          novedad.set('leida', true);
-        }
+        this.app.trigger('alert:success', { message: (response as any).msj || 'Novedad marcada como leída' });
+        // Actualizar estado local del modelo
+        novedad.set('leida', true);
       } else {
-        this.app.trigger('alert:error', { message: response?.msj || 'Error al marcar novedad como leída' });
+        this.app.trigger('alert:error', { message: (response as any).msj || 'Error al marcar novedad' });
       }
 
       return response;
     } catch (error: any) {
-      this.logger.error('Error al marcar novedad como leída:', error);
+      this.logger.error('Error al marcar novedad:', error);
       this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
       return { success: false, message: error.message };
     }
@@ -156,7 +111,12 @@ export default class NovedadesService {
   async __buscarNovedades(criterio: string): Promise<any[]> {
     try {
       const response = await this.buscarNovedadesApi(criterio);
-      return response?.success ? (response as any).novedades || [] : [];
+      if (response?.success) {
+        return response.novedades || [];
+      } else {
+        this.logger.error('Error al buscar novedades:', (response as any).msj);
+        return [];
+      }
     } catch (error: any) {
       this.logger.error('Error al buscar novedades:', error);
       return [];
@@ -169,21 +129,42 @@ export default class NovedadesService {
   async __getNoLeidas(): Promise<any[]> {
     try {
       const response = await this.getNoLeidasApi();
-      return response?.success ? (response as any).novedades || [] : [];
+      if (response?.success) {
+        return response.novedades || [];
+      } else {
+        this.logger.error('Error al obtener novedades no leídas:', (response as any).msj);
+        return [];
+      }
     } catch (error: any) {
       this.logger.error('Error al obtener novedades no leídas:', error);
       return [];
     }
   }
 
-  // Métodos privados (solo Service)
-
   /**
-   * Obtener novedades desde API
+   * Descargar archivo adjunto
    */
-  private async findAllApi(): Promise<ApiResponse> {
-    return await this.api.get('/novedades/listar');
+  async __downloadFile(fileId: string): Promise<void> {
+    try {
+      const response = await this.downloadFileApi(fileId);
+      if (response?.success) {
+        // Crear enlace de descarga
+        const link = document.createElement('a');
+        link.href = response.url;
+        link.download = response.filename || 'archivo';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        this.app?.trigger('alert:error', { message: (response as any).msj || 'Error al descargar archivo' });
+      }
+    } catch (error: any) {
+      this.logger.error('Error al descargar archivo:', error);
+      this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+    }
   }
+
+  // Métodos privados (solo Service)
 
   /**
    * Guardar novedad en API
@@ -210,53 +191,20 @@ export default class NovedadesService {
    * Buscar novedades en API
    */
   private async buscarNovedadesApi(criterio: string): Promise<ApiResponse> {
-    return await this.api.get(`/novedades/buscar?criterio=${encodeURIComponent(criterio)}`);
+    return await this.api.get(`/novedades/buscar?q=${encodeURIComponent(criterio)}`);
   }
 
   /**
-   * Obtener novedades no leídas desde API
+   * Obtener novedades no leídas en API
    */
   private async getNoLeidasApi(): Promise<ApiResponse> {
-    return await this.api.get('/novedades/getNoLeidas');
+    return await this.api.get('/novedades/noLeidas');
   }
 
   /**
-   * Descargar archivo de respuesta
+   * Descargar archivo en API
    */
-  __downloadFile(response: any): void {
-    try {
-      if (!response || !response.file) {
-        this.logger?.error('No hay archivo para descargar');
-        return;
-      }
-
-      // Crear un blob con los datos del archivo
-      const blob = new Blob([response.file], {
-        type: response.contentType || 'application/octet-stream'
-      });
-
-      // Crear URL temporal
-      const url = window.URL.createObjectURL(blob);
-
-      // Crear elemento de descarga
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = response.filename || 'archivo.descarga';
-
-      // Simular click
-      document.body.appendChild(link);
-      link.click();
-
-      // Limpiar
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-
-      this.logger?.info('Archivo descargado exitosamente');
-    } catch (error: any) {
-      this.logger?.error('Error al descargar archivo:', error);
-      this.app?.trigger('alert:error', {
-        message: 'Error al descargar el archivo'
-      });
-    }
+  private async downloadFileApi(fileId: string): Promise<ApiResponse> {
+    return await this.api.get(`/novedades/download/${fileId}`);
   }
 }

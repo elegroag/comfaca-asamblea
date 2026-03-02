@@ -4,6 +4,9 @@ import ConsensoService from './ConsensoService';
 import ConsensosListar from "@/componentes/consensos/views/ConsensosListar";
 import ConsensoCrear from "@/componentes/consensos/views/ConsensoCrear";
 import ConsensoDetalle from "@/componentes/consensos/views/ConsensoDetalle";
+import { cacheCollection, getCachedCollection } from '@/componentes/CacheManager';
+import ConsensosCollection from '@/collections/ConsensosCollection';
+import Loading from '@/common/Loading';
 
 interface ConsensoControllerOptions extends CommonDeps {
     [key: string]: any;
@@ -26,11 +29,50 @@ export default class ConsensoController extends Controller {
      */
     async listarConsensos(): Promise<void> {
         try {
-            await this.service.__findAll();
+            // Obtener consensos desde cache
+            let consensos = getCachedCollection('consensos', ConsensosCollection);
+            if (consensos === null) {
+                if (Loading) Loading.show();
+
+                try {
+                    if (!this.api) {
+                        this.app?.trigger('error', 'API no disponible');
+                        return;
+                    }
+
+                    const response = await this.service.findAllConsensos();
+
+                    if (response && response.success === true) {
+                        // Crear collection y guardar en cache
+                        consensos = new ConsensosCollection();
+                        consensos.add(response.consensos || [], { merge: true });
+
+                        // Guardar en cache para uso futuro
+                        cacheCollection('consensos', consensos, {
+                            persistent: true, // Persistir en localStorage
+                            ttl: 40 * 60 * 1000 // 40 minutos
+                        });
+                    } else {
+                        this.app?.trigger('error', (response as any).msj || response.message || 'Error al listar consensos');
+                        return;
+                    }
+                } catch (error: any) {
+                    this.logger.error('Error al listar consensos:', error);
+                    this.app?.trigger('error', error.message || 'Error de conexión al listar consensos');
+                    return;
+                } finally {
+                    if (Loading) Loading.hide();
+                }
+            } else {
+                if (Loading) Loading.show();
+                setTimeout(() => {
+                    if (Loading) Loading.hide();
+                }, 300);
+            }
 
             const view = new ConsensosListar({
-                collection: (this.service as any).collections.consensos,
-                app: this.app,
+                collection: consensos,
+                app: this.app || undefined,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -64,7 +106,7 @@ export default class ConsensoController extends Controller {
                 estado: 'inactivo'
             },
             isNew: true,
-            app: this.app,
+            app: this.app || undefined,
             api: this.api,
             logger: this.logger,
             region: this.region,
@@ -81,10 +123,21 @@ export default class ConsensoController extends Controller {
      */
     async editarConsenso(id: string): Promise<void> {
         try {
-            // Asegurarse de que los consensos estén cargados
-            await this.service.__findAll();
+            // Obtener consensos desde cache
+            let consensos = getCachedCollection('consensos', ConsensosCollection);
+            if (consensos === null) {
+                // Si no está en cache, cargar desde API
+                const response = await this.service.findAllConsensos();
+                if (response && response.success === true) {
+                    consensos = new ConsensosCollection();
+                    consensos.add(response.consensos || [], { merge: true });
+                    cacheCollection('consensos', consensos, {
+                        persistent: true,
+                        ttl: 40 * 60 * 1000
+                    });
+                }
+            }
 
-            const consensos = (this.service as any).collections.consensos;
             const model = consensos.get(id);
 
             if (!model) {
@@ -95,7 +148,7 @@ export default class ConsensoController extends Controller {
             const view = new ConsensoCrear({
                 model: model,
                 isNew: false,
-                app: this.app,
+                app: this.app || undefined,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
@@ -117,10 +170,21 @@ export default class ConsensoController extends Controller {
      */
     async consensoDetalle(id: string): Promise<void> {
         try {
-            // Asegurarse de que los consensos estén cargados
-            await this.service.__findAll();
+            // Obtener consensos desde cache
+            let consensos = getCachedCollection('consensos', ConsensosCollection);
+            if (consensos === null) {
+                // Si no está en cache, cargar desde API
+                const response = await this.service.findAllConsensos();
+                if (response && response.success === true) {
+                    consensos = new ConsensosCollection();
+                    consensos.add(response.consensos || [], { merge: true });
+                    cacheCollection('consensos', consensos, {
+                        persistent: true,
+                        ttl: 40 * 60 * 1000
+                    });
+                }
+            }
 
-            const consensos = (this.service as any).collections.consensos;
             const model = consensos.get(id);
 
             if (!model) {
@@ -130,7 +194,7 @@ export default class ConsensoController extends Controller {
 
             const view = new ConsensoDetalle({
                 model: model,
-                app: this.app,
+                app: this.app || undefined,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,

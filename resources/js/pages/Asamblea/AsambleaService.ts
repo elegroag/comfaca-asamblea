@@ -1,5 +1,4 @@
 import { ServiceOptions, ApiResponse } from '@/types/CommonDeps';
-import { BoxCollectionStorage } from '@/componentes/useStorage';
 import AsambleasCollection from '@/collections/AsambleasCollection';
 import ConsensosCollection from '@/collections/ConsensosCollection';
 import type { Asamblea } from './types';
@@ -8,24 +7,9 @@ export interface AsambleaServiceOptions extends ServiceOptions {
     // Opciones adicionales específicas del servicio si se necesitan
 }
 
-export interface AsambleaCollections {
-    asambleas: AsambleasCollection;
-    participantes: any; // ParticipantesCollection si existe
-    consensos: ConsensosCollection;
-}
-
 export default class AsambleaService {
-    private storage: BoxCollectionStorage;
-    private collections: AsambleaCollections;
-
     constructor(private readonly opts: AsambleaServiceOptions) {
-        this.collections = {
-            asambleas: new AsambleasCollection(),
-            participantes: new (this.opts.app as any).Collection(),
-            consensos: new ConsensosCollection(),
-        };
-        this.storage = BoxCollectionStorage.getInstance();
-        this.__initializeCollections();
+        // SIN storage/persistencia local - solo API
     }
 
     private get api() { return this.opts.api; }
@@ -33,86 +17,41 @@ export default class AsambleaService {
     private get app() { return this.opts.app; }
 
     /**
-     * Inicializar las colecciones necesarias usando BoxCollectionStorage
+     * Obtener todas las asambleas desde API
      */
-    private __initializeCollections(): void {
-        // Inicializar colecciones persistentes en localStorage
-        const asambleasStorage = this.storage.getCollection('asambleas')?.value;
-        const participantesStorage = this.storage.getCollection('participantes')?.value;
-        const consensosStorage = this.storage.getCollection('consensos')?.value;
-
-        // Crear colecciones Backbone si no existen
-        this.collections.asambleas = (asambleasStorage as AsambleasCollection) || new AsambleasCollection();
-        this.collections.participantes = participantesStorage || new (this.app as any).Collection();
-        this.collections.consensos = (consensosStorage as ConsensosCollection) || new ConsensosCollection();
-
-        // Guardar colecciones en storage si no existen
-        if (!asambleasStorage) {
-            this.storage.addCollection('asambleas', this.collections.asambleas);
-        }
-        if (!participantesStorage) {
-            this.storage.addCollection('participantes', this.collections.participantes);
-        }
-        if (!consensosStorage) {
-            this.storage.addCollection('consensos', this.collections.consensos);
-        }
-    }
-
-    // Métodos públicos (interfaz para controllers/vistas)
-
-    /**
-     * Obtener todas las asambleas
-     */
-    async __findAll(): Promise<void> {
+    async findAllAsambleas(): Promise<any> {
         try {
-            const response = await this.findAllApi();
+            const response = await this.api.get('/asamblea/listar');
             if (response?.success) {
-                this.__setAsambleas((response as any).asambleas || []);
+                return response;
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar asambleas' });
+                this.app?.trigger('alert:error', { message: (response as any).msj || 'Error al listar asambleas' });
+                return null;
             }
         } catch (error: any) {
-            this.logger.error('Error al listar asambleas:', error);
-            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.logger?.error('Error al listar asambleas:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar asambleas' });
+            return null;
         }
     }
 
     /**
-     * Establecer lista de asambleas
+     * Guardar asamblea
      */
-    __setAsambleas(asambleas: Asamblea[]): void {
-        this.collections.asambleas.reset();
-        this.collections.asambleas.add(asambleas, { merge: true });
-    }
-
-    /**
-     * Agregar asamblea a la colección
-     */
-    __addAsamblea(asamblea: Asamblea): void {
-        this.collections.asambleas.add(asamblea, { merge: true });
-    }
-
-    /**
-     * Remover asamblea de la colección
-     */
-    __removeAsamblea(asamblea: Asamblea): void {
-        this.collections.asambleas.remove(asamblea);
-    }
-
-    /**
-     * Guardar asamblea (crear o actualizar)
-     */
-    async __saveAsamblea(asamblea: Asamblea): Promise<ApiResponse> {
+    async __saveAsamblea(asamblea: any): Promise<ApiResponse> {
         try {
-            const response = asamblea.id
-                ? await this.updateAsambleaApi(asamblea)
-                : await this.createAsambleaApi(asamblea);
+            if (!asamblea.isValid()) {
+                const errors = asamblea.validationError;
+                this.app.trigger('alert:error', errors.toString());
+                return { success: false, message: errors.toString() };
+            }
+
+            const response = await this.saveAsambleaApi(asamblea.toJSON());
 
             if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Asamblea guardada exitosamente' });
-                this.__addAsamblea((response as any).asamblea);
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Asamblea guardada exitosamente' });
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar asamblea' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al guardar asamblea' });
             }
 
             return response;
@@ -126,18 +65,14 @@ export default class AsambleaService {
     /**
      * Eliminar asamblea
      */
-    async __deleteAsamblea(id: string): Promise<ApiResponse> {
+    async __removeAsamblea(asamblea: any): Promise<ApiResponse> {
         try {
-            const response = await this.deleteAsambleaApi(id);
+            const response = await this.removeAsambleaApi(asamblea.toJSON());
 
             if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Asamblea eliminada exitosamente' });
-                const asamblea = this.collections.asambleas.get(id);
-                if (asamblea) {
-                    this.__removeAsamblea(asamblea);
-                }
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Asamblea eliminada exitosamente' });
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar asamblea' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al eliminar asamblea' });
             }
 
             return response;
@@ -156,14 +91,9 @@ export default class AsambleaService {
             const response = await this.activarAsambleaApi(id);
 
             if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Asamblea activada exitosamente' });
-                // Actualizar la asamblea en la colección
-                const asamblea = this.collections.asambleas.get(id);
-                if (asamblea) {
-                    asamblea.set('estado', 'activa');
-                }
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Asamblea activada exitosamente' });
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al activar asamblea' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al activar asamblea' });
             }
 
             return response;
@@ -177,69 +107,69 @@ export default class AsambleaService {
     /**
      * Exportar lista de asambleas
      */
-    async __exportLista(): Promise<void> {
+    async __exportLista(): Promise<any> {
         try {
             const response = await this.exportListaApi();
-
-            if (response?.success && response.url) {
-                this.app.download({
-                    url: response.url,
-                    filename: response.filename || 'asambleas.csv'
-                });
+            if (response?.success) {
+                return response;
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al exportar lista' });
+                this.app?.trigger('alert:error', { message: (response as any).msj || 'Error al exportar lista' });
+                return null;
             }
         } catch (error: any) {
-            this.logger.error('Error al exportar lista:', error);
-            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.logger?.error('Error al exportar lista:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return null;
         }
     }
 
-    __crearConsenso(consenso: any): Promise<ApiResponse> {
-        return this.api.post('/consenso/crear', consenso);
+    /**
+     * Crear consenso
+     */
+    async __crearConsenso(consenso: any): Promise<ApiResponse> {
+        try {
+            const response = await this.crearConsensoApi(consenso);
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al crear consenso:', error);
+            throw error;
+        }
     }
 
     // Métodos privados (solo Service)
 
     /**
-     * Obtener asambleas desde API
+     * Guardar asamblea en API
      */
-    private async findAllApi(): Promise<ApiResponse> {
-        return await this.api.get('/asamblea/listar');
-    }
-
-    /**
-     * Crear asamblea en API
-     */
-    private async createAsambleaApi(asamblea: Asamblea): Promise<ApiResponse> {
-        return await this.api.post('/asamblea/crear', asamblea);
-    }
-
-    /**
-     * Actualizar asamblea en API
-     */
-    private async updateAsambleaApi(asamblea: Asamblea): Promise<ApiResponse> {
-        return await this.api.put(`/asamblea/editar/${asamblea.id}`, asamblea);
+    private async saveAsambleaApi(data: any): Promise<ApiResponse> {
+        return await this.api.post('/asamblea/saveAsamblea', data);
     }
 
     /**
      * Eliminar asamblea en API
      */
-    private async deleteAsambleaApi(id: string): Promise<ApiResponse> {
-        return await this.api.delete(`/asamblea/eliminar/${id}`);
+    private async removeAsambleaApi(data: any): Promise<ApiResponse> {
+        return await this.api.post('/asamblea/removeAsamblea', data);
     }
 
     /**
      * Activar asamblea en API
      */
     private async activarAsambleaApi(id: string): Promise<ApiResponse> {
-        return await this.api.post(`/asamblea/activar/${id}`);
+        return await this.api.post(`/asamblea/activarAsamblea`, { id });
     }
 
     /**
-     * Exportar lista desde API
+     * Exportar lista en API
      */
     private async exportListaApi(): Promise<ApiResponse> {
-        return await this.api.get('/asamblea/exportar_lista');
+        return await this.api.get('/asamblea/exportLista');
+    }
+
+    /**
+     * Crear consenso en API
+     */
+    private async crearConsensoApi(data: any): Promise<ApiResponse> {
+        return await this.api.post('/asamblea/crearConsenso', data);
     }
 }

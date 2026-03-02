@@ -1,5 +1,4 @@
 import { CommonDeps, ServiceOptions, ApiResponse } from '@/types/CommonDeps';
-import { BoxCollectionStorage } from '@/componentes/useStorage';
 import MesasCollection from '@/collections/MesasCollection';
 import Mesa from '@/models/Mesa';
 
@@ -7,20 +6,9 @@ export interface MesasServiceOptions extends ServiceOptions {
     // Opciones adicionales específicas del servicio si se necesitan
 }
 
-export interface MesasCollections {
-    mesas: MesasCollection;
-}
-
 export default class MesasService {
-    private storage: BoxCollectionStorage;
-    private collections: MesasCollections;
-
     constructor(private readonly opts: MesasServiceOptions) {
-        this.storage = BoxCollectionStorage.getInstance();
-        this.collections = {
-            mesas: new MesasCollection()
-        };
-        this.__initializeCollections();
+        // SIN storage/persistencia local - solo API
     }
 
     private get api() { return this.opts.api; }
@@ -28,54 +16,22 @@ export default class MesasService {
     private get app() { return this.opts.app; }
 
     /**
-     * Inicializar las colecciones necesarias usando BoxCollectionStorage
+     * Obtener todas las mesas desde API
      */
-    private __initializeCollections(): void {
-        // Inicializar colecciones persistentes en localStorage
-        const mesasStorage = this.storage.getCollection('mesas')?.value;
-
-        // Crear colecciones Backbone si no existen
-        this.collections.mesas = (mesasStorage as MesasCollection) || new MesasCollection();
-
-        // Guardar colecciones en storage si no existen
-        if (!mesasStorage) {
-            this.storage.addCollection('mesas', this.collections.mesas);
-        }
-    }
-
-    // Métodos públicos (interfaz para controllers/vistas)
-
-    /**
-     * Obtener todas las mesas
-     */
-    async __findAll(): Promise<void> {
+    async findAllMesas(): Promise<any> {
         try {
-            const response = await this.findAllApi();
+            const response = await this.api.get('/mesas/listar');
             if (response?.success) {
-                this.__setMesas((response as any).mesas || []);
+                return response;
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar mesas' });
+                this.app?.trigger('alert:error', { message: (response as any).msj || 'Error al listar mesas' });
+                return null;
             }
         } catch (error: any) {
-            this.logger.error('Error al listar mesas:', error);
-            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.logger?.error('Error al listar mesas:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar mesas' });
+            return null;
         }
-    }
-
-    /**
-     * Establecer lista de mesas
-     */
-    __setMesas(mesas: any[]): void {
-        this.collections.mesas.reset();
-        this.collections.mesas.add(mesas, { merge: true });
-    }
-
-    /**
-     * Agregar mesa a la colección
-     */
-    __addMesas(mesa: any): void {
-        const _mesa = mesa instanceof Mesa ? mesa : new Mesa(mesa);
-        this.collections.mesas.add(_mesa, { merge: true });
     }
 
     /**
@@ -92,10 +48,9 @@ export default class MesasService {
             const response = await this.saveMesaApi(mesa.toJSON());
 
             if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Mesa guardada exitosamente' });
-                this.__addMesas((response as any).mesa);
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Mesa guardada exitosamente' });
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar mesa' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al guardar mesa' });
             }
 
             return response;
@@ -114,10 +69,9 @@ export default class MesasService {
             const response = await this.removeMesaApi(mesa.toJSON());
 
             if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Mesa eliminada exitosamente' });
-                this.collections.mesas.remove(mesa);
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Mesa eliminada exitosamente' });
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar mesa' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al eliminar mesa' });
             }
 
             return response;
@@ -136,13 +90,9 @@ export default class MesasService {
             const response = await this.activarMesaApi(mesa.toJSON());
 
             if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Mesa activada exitosamente' });
-                // Actualizar el modelo en la colección
-                if (mesa.set) {
-                    mesa.set('estado', 'activo');
-                }
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Mesa activada exitosamente' });
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al activar mesa' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al activar mesa' });
             }
 
             return response;
@@ -161,13 +111,9 @@ export default class MesasService {
             const response = await this.inactivarMesaApi(mesa.toJSON());
 
             if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Mesa inactivada exitosamente' });
-                // Actualizar el modelo en la colección
-                if (mesa.set) {
-                    mesa.set('estado', 'inactivo');
-                }
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Mesa inactivada exitosamente' });
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al inactivar mesa' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al inactivar mesa' });
             }
 
             return response;
@@ -179,48 +125,32 @@ export default class MesasService {
     }
 
     /**
-     * Validar poder previamente
+     * Vincular trabajador a mesa
      */
-    async __validarPoder(data: Record<string, string>): Promise<ApiResponse> {
+    async __vincularMesa(data: any, trabajadorId: number): Promise<ApiResponse> {
         try {
-            const response = await this.validarPoderApi(data);
+            const payload = {
+                ...data,
+                trabajador_id: trabajadorId
+            };
+
+            const response = await this.vincularMesaApi(payload);
+
+            if (response?.success) {
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Trabajador vinculado exitosamente' });
+            } else {
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al vincular trabajador' });
+            }
+
             return response;
         } catch (error: any) {
-            this.logger.error('Error al validar poder:', error);
+            this.logger.error('Error al vincular trabajador:', error);
             this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
-            throw error;
-        }
-    }
-
-    /**
-     * Buscar mesas por criterio
-     */
-    async __buscarMesas(criterio: string): Promise<any[]> {
-        try {
-            const response = await this.buscarMesasApi(criterio);
-            return response?.success ? (response as any).mesas || [] : [];
-        } catch (error: any) {
-            this.logger.error('Error al buscar mesas:', error);
-            return [];
+            return { success: false, message: error.message };
         }
     }
 
     // Métodos privados (solo Service)
-
-    /**
-     * Obtener mesas desde API
-     */
-    private async findAllApi(): Promise<ApiResponse> {
-        return await this.api.get('/mesas/listar');
-    }
-
-    /**
-     * Validar poder en API
-     */
-    private async validarPoderApi(data: Record<string, string>): Promise<ApiResponse> {
-        // Enviar datos directamente como JSON
-        return await this.api.post('/poderes/validacion_previa', data);
-    }
 
     /**
      * Guardar mesa en API
@@ -251,45 +181,9 @@ export default class MesasService {
     }
 
     /**
-     * Buscar mesas en API
+     * Vincular trabajador a mesa en API
      */
-    private async buscarMesasApi(criterio: string): Promise<ApiResponse> {
-        return await this.api.get(`/mesas/buscar?criterio=${encodeURIComponent(criterio)}`);
-    }
-
-    /**
-     * Vincular mesa a usuario
-     */
-    async __vincularMesa(data: { mesa: any; usuario: any; create_mesa: number }): Promise<ApiResponse> {
-        try {
-            const response = await this.vincularMesaApi(data);
-
-            if (response?.success) {
-                this.app?.trigger('alert:success', { message: response.msj || 'Mesa vinculada exitosamente' });
-            } else {
-                this.app?.trigger('alert:error', { message: response?.msj || 'Error al vincular mesa' });
-            }
-
-            return response;
-        } catch (error: any) {
-            this.logger.error('Error al vincular mesa:', error);
-            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
-            return { success: false, message: error.message || 'Error de conexión' };
-        }
-    }
-
-    /**
-     * API para vincular mesa
-     */
-    private async vincularMesaApi(data: { mesa: any; usuario: any; create_mesa: number }): Promise<ApiResponse> {
-        const payload = {
-            cedtra: data.usuario.get('cedtra'),
-            estado: data.mesa.get('estado'),
-            create_mesa: data.create_mesa,
-            mesa_id: data.mesa.get('id'),
-            mesa_codigo: data.mesa.get('codigo')
-        };
-
-        return await this.api.post('/admin/vincular_mesa', payload);
+    private async vincularMesaApi(payload: any): Promise<ApiResponse> {
+        return await this.api.post('/mesas/vincularTrabajador', payload);
     }
 }

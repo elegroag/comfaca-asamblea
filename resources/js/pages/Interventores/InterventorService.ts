@@ -1,5 +1,4 @@
 import { CommonDeps, ServiceOptions, ApiResponse } from '@/types/CommonDeps';
-import { BoxCollectionStorage } from '@/componentes/useStorage';
 import InterventoresCollection from '@/collections/InterventoresCollection';
 import Interventor from '@/models/Interventor';
 
@@ -7,22 +6,9 @@ export interface InterventorServiceOptions extends ServiceOptions {
     // Opciones adicionales específicas del servicio si se necesitan
 }
 
-export interface InterventorCollections {
-    interventores: any; // InterventoresCollection si existe
-}
-
 export default class InterventorService {
-    private storage: BoxCollectionStorage;
-    private collections: InterventorCollections;
-
     constructor(private readonly opts: InterventorServiceOptions) {
-
-        this.collections = {
-            interventores: null,
-        };
-
-        this.storage = BoxCollectionStorage.getInstance();
-        this.__initializeCollections();
+        // SIN storage/persistencia local - solo API
     }
 
     private get api() { return this.opts.api; }
@@ -30,52 +16,22 @@ export default class InterventorService {
     private get app() { return this.opts.app; }
 
     /**
-     * Inicializar las colecciones necesarias usando BoxCollectionStorage
+     * Obtener todos los interventores desde API
      */
-    private __initializeCollections(): void {
-        // Inicializar colecciones persistentes en localStorage
-        this.collections.interventores = this.storage.getCollection('interventores')?.value || null;
-
-        // Crear colecciones Backbone si no existen
-        if (!this.collections.interventores) {
-            this.collections.interventores = new InterventoresCollection();
-            this.storage.addCollection('interventores', this.collections.interventores);
-        }
-    }
-
-    // Métodos públicos (interfaz para controllers/vistas)
-
-    /**
-     * Obtener todos los interventores
-     */
-    async __findAll(): Promise<void> {
+    async findAllInterventores(): Promise<any> {
         try {
-            const response = await this.findAllApi();
+            const response = await this.api.get('/interventores/listar');
             if (response?.success) {
-                this.__setInterventores((response as any).interventores || []);
+                return response;
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar interventores' });
+                this.app?.trigger('alert:error', { message: (response as any).msj || 'Error al listar interventores' });
+                return null;
             }
         } catch (error: any) {
-            this.logger.error('Error al listar interventores:', error);
-            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            this.logger?.error('Error al listar interventores:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar interventores' });
+            return null;
         }
-    }
-
-    /**
-     * Establecer lista de interventores
-     */
-    __setInterventores(interventores: any[]): void {
-        this.collections.interventores.reset();
-        this.collections.interventores.add(interventores, { merge: true });
-    }
-
-    /**
-     * Agregar interventor a la colección
-     */
-    __addInterventores(interventor: any): void {
-        const _interventor = interventor instanceof Interventor ? interventor : new Interventor(interventor);
-        this.collections.interventores.add(_interventor, { merge: true });
     }
 
     /**
@@ -92,10 +48,9 @@ export default class InterventorService {
             const response = await this.saveInterventorApi(interventor.toJSON());
 
             if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Interventor guardado exitosamente' });
-                this.__addInterventores((response as any).interventor);
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Interventor guardado exitosamente' });
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar interventor' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al guardar interventor' });
             }
 
             return response;
@@ -114,10 +69,9 @@ export default class InterventorService {
             const response = await this.removeInterventorApi(interventor.toJSON());
 
             if (response?.success) {
-                this.app.trigger('alert:success', { message: response.msj || 'Interventor eliminado exitosamente' });
-                this.collections.interventores.remove(interventor);
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Interventor eliminado exitosamente' });
             } else {
-                this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar interventor' });
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al eliminar interventor' });
             }
 
             return response;
@@ -129,26 +83,48 @@ export default class InterventorService {
     }
 
     /**
-     * Buscar interventores por criterio
+     * Activar interventor
      */
-    async __buscarInterventores(criterio: string): Promise<any[]> {
+    async __activarInterventor(interventor: any): Promise<ApiResponse> {
         try {
-            const response = await this.buscarInterventoresApi(criterio);
-            return response?.success ? (response as any).interventores || [] : [];
+            const response = await this.activarInterventorApi(interventor.toJSON());
+
+            if (response?.success) {
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Interventor activado exitosamente' });
+            } else {
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al activar interventor' });
+            }
+
+            return response;
         } catch (error: any) {
-            this.logger.error('Error al buscar interventores:', error);
-            return [];
+            this.logger.error('Error al activar interventor:', error);
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return { success: false, message: error.message };
+        }
+    }
+
+    /**
+     * Inactivar interventor
+     */
+    async __inactivarInterventor(interventor: any): Promise<ApiResponse> {
+        try {
+            const response = await this.inactivarInterventorApi(interventor.toJSON());
+
+            if (response?.success) {
+                this.app.trigger('alert:success', { message: (response as any).msj || 'Interventor inactivado exitosamente' });
+            } else {
+                this.app.trigger('alert:error', { message: (response as any).msj || 'Error al inactivar interventor' });
+            }
+
+            return response;
+        } catch (error: any) {
+            this.logger.error('Error al inactivar interventor:', error);
+            this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+            return { success: false, message: error.message };
         }
     }
 
     // Métodos privados (solo Service)
-
-    /**
-     * Obtener interventores desde API
-     */
-    private async findAllApi(): Promise<ApiResponse> {
-        return await this.api.get('/interventores/listar');
-    }
 
     /**
      * Guardar interventor en API
@@ -165,37 +141,16 @@ export default class InterventorService {
     }
 
     /**
-     * Buscar interventores en API
+     * Activar interventor en API
      */
-    private async buscarInterventoresApi(criterio: string): Promise<ApiResponse> {
-        return await this.api.get(`/interventores/buscar?criterio=${encodeURIComponent(criterio)}`);
+    private async activarInterventorApi(data: any): Promise<ApiResponse> {
+        return await this.api.post('/interventores/activarInterventor', data);
     }
 
     /**
-     * Cargue masivo de interventores
+     * Inactivar interventor en API
      */
-    async __uploadMasivo(formData: FormData): Promise<ApiResponse> {
-        try {
-            const response = await this.uploadMasivoApi(formData);
-
-            if (response?.success) {
-                this.app?.trigger('alert:success', { message: response.msj || 'Cargue masivo completado exitosamente' });
-            } else {
-                this.app?.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
-            }
-
-            return response;
-        } catch (error: any) {
-            this.logger.error('Error en cargue masivo:', error);
-            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
-            return { success: false, message: error.message || 'Error de conexión' };
-        }
-    }
-
-    /**
-     * API para cargue masivo
-     */
-    private async uploadMasivoApi(formData: FormData): Promise<ApiResponse> {
-        return await this.api.post('/interventores/uploadMasivo', formData);
+    private async inactivarInterventorApi(data: any): Promise<ApiResponse> {
+        return await this.api.post('/interventores/inactivarInterventor', data);
     }
 }

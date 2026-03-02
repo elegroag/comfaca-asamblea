@@ -7,6 +7,9 @@ import UsuarioMostrar from "@/componentes/usuarios/views/UsuarioMostrar";
 import UsuariosCargue from "@/componentes/usuarios/views/UsuariosCargue";
 import UsuariosListarAsa from "@/componentes/usuarios/views/UsuariosListarAsa";
 import SubNavUsuarios from "@/componentes/usuarios/views/SubNavUsuarios";
+import { cacheCollection, getCachedCollection } from '@/componentes/CacheManager';
+import AsaUsuariosCollection from '@/collections/AsaUsuariosCollection';
+import Loading from '@/common/Loading';
 
 interface UsuarioControllerOptions extends CommonDeps {
     [key: string]: any;
@@ -29,13 +32,59 @@ export default class UsuarioController extends Controller {
      */
     async listaUsuariosAsamblea(): Promise<void> {
         try {
-            await this.service.__findAll();
+            // Obtener usuarios desde cache
+            let usuarios = getCachedCollection('usuarios', AsaUsuariosCollection);
+            if (usuarios === null) {
+                if (Loading) Loading.show();
+
+                try {
+                    if (!this.api) {
+                        this.app?.trigger('error', 'API no disponible');
+                        return;
+                    }
+
+                    const response = await this.service.findAllUsuarios();
+
+                    if (response && response.success === true) {
+                        // Crear collection y guardar en cache
+                        usuarios = new AsaUsuariosCollection();
+                        usuarios.add(response.usuarios || [], { merge: true });
+
+                        // Guardar en cache para uso futuro
+                        cacheCollection('usuarios', usuarios, {
+                            persistent: true, // Persistir en localStorage
+                            ttl: 60 * 60 * 1000 // 1 hora
+                        });
+                    } else {
+                        this.app?.trigger('error', (response as any).msj || response.message || 'Error al listar usuarios');
+                        return;
+                    }
+                } catch (error: any) {
+                    this.logger.error('Error al listar usuarios:', error);
+                    this.app?.trigger('error', error.message || 'Error de conexión al listar usuarios');
+                    return;
+                } finally {
+                    if (Loading) Loading.hide();
+                }
+            } else {
+                if (Loading) Loading.show();
+                setTimeout(() => {
+                    if (Loading) Loading.hide();
+                }, 300);
+            }
 
             const subNav = new SubNavUsuarios({
                 app: this.app,
                 api: this.api,
                 logger: this.logger,
                 region: this.region,
+                dataToggle: {
+                    listar: true,
+                    crear: true,
+                    editar: true,
+                    exportar: true,
+                    masivo: true
+                }
             });
 
             const body = this.region.getRegion('body');
@@ -44,7 +93,7 @@ export default class UsuarioController extends Controller {
             }
 
             const listView = new UsuariosListarAsa({
-                collection: (this.service as any).collections.usuarios,
+                collection: usuarios,
                 app: this.app,
                 api: this.api,
                 logger: this.logger,
@@ -121,10 +170,49 @@ export default class UsuarioController extends Controller {
      */
     async listarUsuariosCaja(): Promise<void> {
         try {
-            await this.service.__findAll();
+            // Obtener usuarios desde cache
+            let usuarios = getCachedCollection('usuarios', AsaUsuariosCollection);
+            if (usuarios === null) {
+                if (Loading) Loading.show();
+
+                try {
+                    if (!this.api) {
+                        this.app?.trigger('error', 'API no disponible');
+                        return;
+                    }
+
+                    const response = await this.service.findAllUsuarios();
+
+                    if (response && response.success === true) {
+                        // Crear collection y guardar en cache
+                        usuarios = new AsaUsuariosCollection();
+                        usuarios.add(response.usuarios || [], { merge: true });
+
+                        // Guardar en cache para uso futuro
+                        cacheCollection('usuarios', usuarios, {
+                            persistent: true, // Persistir en localStorage
+                            ttl: 60 * 60 * 1000 // 1 hora
+                        });
+                    } else {
+                        this.app?.trigger('error', (response as any).msj || response.message || 'Error al listar usuarios');
+                        return;
+                    }
+                } catch (error: any) {
+                    this.logger.error('Error al listar usuarios:', error);
+                    this.app?.trigger('error', error.message || 'Error de conexión al listar usuarios');
+                    return;
+                } finally {
+                    if (Loading) Loading.hide();
+                }
+            } else {
+                if (Loading) Loading.show();
+                setTimeout(() => {
+                    if (Loading) Loading.hide();
+                }, 300);
+            }
 
             const view = new UsuariosListar({
-                collection: (this.service as any).collections.usuarios,
+                collection: usuarios,
                 app: this.app,
                 api: this.api,
                 logger: this.logger,
@@ -149,10 +237,21 @@ export default class UsuarioController extends Controller {
      */
     async mostrarUsuario(id: string): Promise<void> {
         try {
-            // Asegurarse de que los usuarios estén cargados
-            await this.service.__findAll();
+            // Obtener usuarios desde cache
+            let usuarios = getCachedCollection('usuarios', AsaUsuariosCollection);
+            if (usuarios === null) {
+                // Si no está en cache, cargar desde API
+                const response = await this.service.findAllUsuarios();
+                if (response && response.success === true) {
+                    usuarios = new AsaUsuariosCollection();
+                    usuarios.add(response.usuarios || [], { merge: true });
+                    cacheCollection('usuarios', usuarios, {
+                        persistent: true,
+                        ttl: 60 * 60 * 1000
+                    });
+                }
+            }
 
-            const usuarios = (this.service as any).collections.usuarios;
             const model = usuarios.get(id);
 
             if (!model) {
@@ -165,7 +264,6 @@ export default class UsuarioController extends Controller {
                 app: this.app,
                 api: this.api,
                 logger: this.logger,
-                region: this.region,
             });
 
             this.region.show(view);
@@ -181,10 +279,21 @@ export default class UsuarioController extends Controller {
      */
     async editarUsuario(id: string): Promise<void> {
         try {
-            // Asegurarse de que los usuarios estén cargados
-            await this.service.__findAll();
+            // Obtener usuarios desde cache
+            let usuarios = getCachedCollection('usuarios', AsaUsuariosCollection);
+            if (usuarios === null) {
+                // Si no está en cache, cargar desde API
+                const response = await this.service.findAllUsuarios();
+                if (response && response.success === true) {
+                    usuarios = new AsaUsuariosCollection();
+                    usuarios.add(response.usuarios || [], { merge: true });
+                    cacheCollection('usuarios', usuarios, {
+                        persistent: true,
+                        ttl: 60 * 60 * 1000
+                    });
+                }
+            }
 
-            const usuarios = (this.service as any).collections.usuarios;
             const model = usuarios.get(id);
 
             if (!model) {
@@ -220,13 +329,12 @@ export default class UsuarioController extends Controller {
             app: this.app,
             api: this.api,
             logger: this.logger,
-            region: this.region,
         });
 
         this.region.show(view);
 
         // Conectar eventos con el servicio
-        this.listenTo(view, 'file:upload', this.service.__uploadMasivo.bind(this.service));
+        this.listenTo(view, 'file:upload', this.service.__cargarUsuarios.bind(this.service));
     }
 
     /**
@@ -234,10 +342,21 @@ export default class UsuarioController extends Controller {
      */
     async editaUserSisu(id: string): Promise<void> {
         try {
-            // Asegurarse de que los usuarios estén cargados
-            await this.service.__findAll();
+            // Obtener usuarios desde cache
+            let usuarios = getCachedCollection('usuarios', AsaUsuariosCollection);
+            if (usuarios === null) {
+                // Si no está en cache, cargar desde API
+                const response = await this.service.findAllUsuarios();
+                if (response && response.success === true) {
+                    usuarios = new AsaUsuariosCollection();
+                    usuarios.add(response.usuarios || [], { merge: true });
+                    cacheCollection('usuarios', usuarios, {
+                        persistent: true,
+                        ttl: 60 * 60 * 1000
+                    });
+                }
+            }
 
-            const usuarios = (this.service as any).collections.usuarios;
             const model = usuarios.get(id);
 
             if (!model) {

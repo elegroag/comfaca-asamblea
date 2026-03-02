@@ -1,23 +1,13 @@
 import { CommonDeps, ServiceOptions, ApiResponse } from '@/types/CommonDeps';
-import { BoxCollectionStorage } from '@/componentes/useStorage';
-import TrabajadoresCollection from '@/componentes/trabajadores/collections/TrabajadoresCollection';
 import Trabajador from '@/componentes/trabajadores/models/Trabajador';
 
 export interface TrabajadorServiceOptions extends ServiceOptions {
   // Opciones adicionales específicas del servicio si se necesitan
 }
 
-export interface TrabajadorCollections {
-  trabajadores: TrabajadoresCollection;
-}
-
 export default class TrabajadorService {
-  private storage: BoxCollectionStorage;
-  private collections: TrabajadorCollections;
-
   constructor(private readonly opts: TrabajadorServiceOptions) {
-    this.storage = BoxCollectionStorage.getInstance();
-    this.__initializeCollections();
+    // SIN storage/persistencia local - solo API
   }
 
   private get api() { return this.opts.api; }
@@ -25,54 +15,22 @@ export default class TrabajadorService {
   private get app() { return this.opts.app; }
 
   /**
-   * Inicializar las colecciones necesarias usando BoxCollectionStorage
+   * Obtener todos los trabajadores desde API
    */
-  private __initializeCollections(): void {
-    // Inicializar colecciones persistentes en localStorage
-    const trabajadoresStorage = this.storage.getCollection('trabajadores')?.value;
-
-    // Crear colecciones Backbone si no existen
-    this.collections.trabajadores = (trabajadoresStorage as TrabajadoresCollection) || new TrabajadoresCollection();
-
-    // Guardar colecciones en storage si no existen
-    if (!trabajadoresStorage) {
-      this.storage.addCollection('trabajadores', this.collections.trabajadores);
-    }
-  }
-
-  // Métodos públicos (interfaz para controllers/vistas)
-
-  /**
-   * Obtener todos los trabajadores
-   */
-  async __findAll(): Promise<void> {
+  async findAllTrabajadores(): Promise<any> {
     try {
-      const response = await this.findAllApi();
+      const response = await this.api.get('/trabajadores/listar');
       if (response?.success) {
-        this.__setTrabajadores((response as any).trabajadores || []);
+        return response;
       } else {
-        this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar trabajadores' });
+        this.app?.trigger('alert:error', { message: (response as any).msj || 'Error al listar trabajadores' });
+        return null;
       }
     } catch (error: any) {
-      this.logger.error('Error al listar trabajadores:', error);
-      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.logger?.error('Error al listar trabajadores:', error);
+      this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar trabajadores' });
+      return null;
     }
-  }
-
-  /**
-   * Establecer lista de trabajadores
-   */
-  __setTrabajadores(trabajadores: any[]): void {
-    this.collections.trabajadores.reset();
-    this.collections.trabajadores.add(trabajadores, { merge: true });
-  }
-
-  /**
-   * Agregar trabajador a la colección
-   */
-  __addTrabajadores(trabajador: any): void {
-    const _trabajador = trabajador instanceof Trabajador ? trabajador : new Trabajador(trabajador);
-    this.collections.trabajadores.add(_trabajador, { merge: true });
   }
 
   /**
@@ -89,10 +47,9 @@ export default class TrabajadorService {
       const response = await this.saveTrabajadorApi(model.toJSON());
 
       if (response?.success) {
-        this.app.trigger('alert:success', { message: response.msj || 'Trabajador guardado exitosamente' });
-        this.__addTrabajadores((response as any).trabajador);
+        this.app.trigger('alert:success', { message: (response as any).msj || 'Trabajador guardado exitosamente' });
       } else {
-        this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar trabajador' });
+        this.app.trigger('alert:error', { message: (response as any).msj || 'Error al guardar trabajador' });
       }
 
       return response;
@@ -111,10 +68,9 @@ export default class TrabajadorService {
       const response = await this.removeTrabajadorApi(trabajador.toJSON());
 
       if (response?.success) {
-        this.app.trigger('alert:success', { message: response.msj || 'Trabajador eliminado exitosamente' });
-        this.collections.trabajadores.remove(trabajador);
+        this.app.trigger('alert:success', { message: (response as any).msj || 'Trabajador eliminado exitosamente' });
       } else {
-        this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar trabajador' });
+        this.app.trigger('alert:error', { message: (response as any).msj || 'Error al eliminar trabajador' });
       }
 
       return response;
@@ -152,13 +108,6 @@ export default class TrabajadorService {
   }
 
   // Métodos privados (solo Service)
-
-  /**
-   * Obtener trabajadores desde API
-   */
-  private async findAllApi(): Promise<ApiResponse> {
-    return await this.api.get('/trabajadores/listar');
-  }
 
   /**
    * Guardar trabajador en API
