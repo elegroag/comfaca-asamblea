@@ -1,13 +1,124 @@
-<div class='row justify-content-center'>
-	<div class='col-md-8'>
-		<h4><b>Nit</b> <%=nit%></br></h4>
-		<p class="text-left">
-			<b>Razon social</b> <%=capitalize(razsoc)%></br>
-			<b>Replesentante legal</b> <%=capitalize(repleg)%></br>
-			<b>Identificación</b> <%=cedrep%></br>
-			<b>Email</b> <%=email%></br>
-			<b>Telefono</b> <%=telefono%></br>
-			<br />
-		</p>
-	</div>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+                <i class="fa fa-eye mr-2 pb-3"></i>Detalle de Empresa
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-12">
+
+                    <!-- Información Detallada -->
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-hashtag mr-1"></i>NIT
+                                        </label>
+                                        <h6 class="font-weight-bold text-dark">
+                                            <%=nit%>
+                                        </h6>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-building mr-1"></i>Razón Social
+                                        </label>
+                                        <h6 class="font-weight-bold text-dark">
+                                            <%=capitalize(razsoc)%>
+                                        </h6>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-user mr-1"></i>Representante Legal
+                                        </label>
+                                        <h6 class="font-weight-bold text-dark">
+                                            <%=capitalize(repleg)%>
+                                        </h6>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-id-card mr-1"></i>Identificación
+                                        </label>
+                                        <h6 class="font-weight-bold text-dark">
+                                            <%=cedrep%>
+                                        </h6>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-envelope mr-1"></i>Correo Electrónico
+                                        </label>
+                                        <h6 class="font-weight-bold text-dark">
+                                            <% if (email && email !=='' ) { %>
+                                                <a href="mailto:<%=email%>" class="text-primary">
+                                                    <i class="fa fa-paper-plane mr-1"></i>
+                                                    <%=email%>
+                                                </a>
+                                                <% } else { %>
+                                                    <span class="text-muted">No registrado</span>
+                                                    <% } %>
+                                        </h6>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-phone mr-1"></i>Teléfono
+                                        </label>
+                                        <h6 class="font-weight-bold text-dark">
+                                            <% if (telefono && telefono !=='' ) { %>
+                                                <a href="tel:<%=telefono%>" class="text-primary">
+                                                    <i class="fa fa-phone-alt mr-1"></i>
+                                                    <%=telefono%>
+                                                </a>
+                                                <% } else { %>
+                                                    <span class="text-muted">No registrado</span>
+                                                    <% } %>
+                                        </h6>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="text-muted small mb-1">
+                                            <i class="fa fa-info-circle mr-1"></i>Estado
+                                        </label>
+                                        <h6 class="font-weight-bold">
+                                            <span class="badge badge-success">
+                                                <i class="fa fa-check-circle mr-1"></i>Activa
+                                            </span>
+                                        </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-center">
+                                <button type="button" class="btn btn-primary btn-lg px-4 py-2 mr-2"
+                                    id="bt_editar_detalle">
+                                    <i class="fa fa-edit mr-2"></i>Editar Empresa
+                                </button>
+                                <button type="button" class="btn btn-info btn-lg px-4 py-2 mr-2"
+                                    id="bt_imprimir_detalle">
+                                    <i class="fa fa-print mr-2"></i>Imprimir
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-lg px-4 py-2" id="bt_cerrar_detalle">
+                                    <i class="fa fa-times mr-2"></i>Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

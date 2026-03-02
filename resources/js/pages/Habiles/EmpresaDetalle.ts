@@ -19,20 +19,12 @@ export default class EmpresaDetalle extends Controller {
             logger: this.logger,
             EmpresaModel: Empresa
         });
-        // La colección se maneja en el controller principal
-
-        if (typeof this.listenTo === 'function') {
-            // Los métodos __setEmpresas y __addEmpresas fueron eliminados del service
-            // El controller principal ahora maneja las collections directamente
-        }
     }
 
     /**
      * Mostrar vista de detalles de empresa
      */
     detalleEmpresa(model: any): void {
-        console.log('EmpresaDetalle.detalleEmpresa() called', model);
-
         const layout: LayoutView = new LayoutView();
         this.region.show(layout);
 
@@ -46,7 +38,7 @@ export default class EmpresaDetalle extends Controller {
                 editar: true,
                 masivo: true,
             },
-            router: this.router,
+            router: this.router as any,
             api: this.api,
             app: this.app
         });

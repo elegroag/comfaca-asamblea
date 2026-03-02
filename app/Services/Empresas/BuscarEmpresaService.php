@@ -39,11 +39,11 @@ class BuscarEmpresaService
                 'repleg',
                 'cedrep',
                 DB::raw('1 as valida'),
-                DB::raw("(SELECT COUNT(*) FROM poderes 
-                    WHERE poderes.nit2='{$this->nit}' AND poderes.asamblea_id='{$this->idAsamblea}' AND poderes.estado='A') as has_poderes"),
-                DB::raw("(SELECT COUNT(*) FROM carteras 
+                DB::raw("(SELECT COUNT(*) FROM poderes
+                    WHERE poderes.poderdante_nit='{$this->nit}' AND poderes.asamblea_id='{$this->idAsamblea}' AND poderes.estado='A') as has_poderes"),
+                DB::raw("(SELECT COUNT(*) FROM carteras
                     WHERE carteras.nit='{$this->nit}' AND carteras.asamblea_id='{$this->idAsamblea}') as has_cartera"),
-                DB::raw("(SELECT COUNT(*) FROM registro_ingresos 
+                DB::raw("(SELECT COUNT(*) FROM registro_ingresos
                     WHERE registro_ingresos.nit='{$this->nit}' AND registro_ingresos.asamblea_id='{$this->idAsamblea}' AND registro_ingresos.estado IN('A','F')) as has_asistencia")
             ])
             ->where('nit', $this->nit)

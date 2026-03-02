@@ -1,58 +1,119 @@
-<div class="row">
-    <div class="col-md-4">
-        <span class="h4 mb-4 text-primary"> Cargue De Masivo</span>
-    </div>
-</div>
-<div class="col-md-8 ml-auto mr-auto">
-    <div class="card-body">
-        <div class="row justify-content-center">
-            <div class="col-sm-12">
-                <div class='form-group'>
-                    <label><i class='text-danger'>*</i> Archivo</label>
-                    <div toggle-error='archivo' class="error text-danger" for="required"></div>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="nc-icon nc-badge"></i></span>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header bg-warning text-white">
+            <h5 class="mb-0">
+                <i class="fa fa-upload mr-2 pb-3"></i>Cargue Masivo de Poderes
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="#" class="needs-validation" id="formulario_cargue" novalidate>
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-md-12">
+                        <div class="form-group">
+                            <label for="archivo_masivo" class="font-weight-bold">
+                                <i class="fa fa-file-csv text-danger mr-1"></i>
+                                Archivo CSV <span class="text-danger">*</span>
+                            </label>
+                            <div toggle-error='archivo' class="error text-danger small" for="required"></div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text bg-primary text-white">
+                                        <i class="fa fa-file-alt"></i>
+                                    </span>
+                                </div>
+                                <input type="file" class="form-control-file d-none" name="archivo_masivo"
+                                    id="archivo_masivo" onchange="handleFiles()" accept=".csv" required />
+                                <div class="form-control bg-light" data-toggle-file='searchfile' id='name_archivo'
+                                    name="name_archivo" style='cursor: pointer;'>
+                                    <i class="fa fa-file-upload mr-2"></i>
+                                    <span id="nombre_archivo_texto">Seleccionar archivo CSV...</span>
+                                </div>
+                                <div class="input-group-append">
+                                    <button type='button' data-toggle-file='searchfile' class="btn btn-primary"
+                                        title="Buscar archivo">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                    <button type='button' disabled id='remover_archivo' class="btn btn-danger"
+                                        title="Remover archivo">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Instrucciones del archivo -->
+                            <div class="alert alert-info mt-3">
+                                <h6 class="alert-heading">
+                                    <i class="fa fa-info-circle mr-2"></i>Formato del Archivo CSV
+                                </h6>
+                                <p class="mb-2">El archivo debe estar separado por punto y coma (<strong>;</strong>) con
+                                    las siguientes columnas:</p>
+                                <ol class="mb-0 pl-3">
+                                    <li><strong>Código</strong> - Identificador único del poder</li>
+                                    <li><strong>Fecha</strong> - Fecha de registro (DD/MM/YYYY)</li>
+                                    <li><strong>NIT Apoderado</strong> - Número de identificación del apoderado</li>
+                                    <li><strong>NIT Poderdante</strong> - Número de identificación del poderdante</li>
+                                    <li><strong>Estado</strong> - Solo admite: (A) Activo, (I) Inactivo, (R) Revocado
+                                    </li>
+                                    <li><strong>Radicado</strong> - Número de radicado del poder</li>
+                                    <li><strong>Cédula Apoderado</strong> - Documento del representante apoderado</li>
+                                    <li><strong>Nombre Apoderado</strong> - Nombre completo del representante apoderado
+                                    </li>
+                                    <li><strong>Cédula Poderdante</strong> - Documento del representante poderdante</li>
+                                    <li><strong>Nombre Poderdante</strong> - Nombre completo del representante
+                                        poderdante</li>
+                                    <li><strong>Motivos Rechazo</strong> - Motivos de rechazo (si aplica)</li>
+                                </ol>
+                            </div>
                         </div>
-                        <input style='display:none' type='file' data-event='upload' name='archivo_masivo' id='archivo_masivo' onchange='handleFiles()' />
-                        <div class="form-control has-danger" data-toggle-file='searchfile' id='name_archivo' name="name_archivo" style='line-height:2'>nombre archivo</div>
-                        <div class="input-group-text group-botton">
-                            <button type='button' data-toggle-file='searchfile' class="btn btn-sm btn-outline-primary btn-round m-0">
-                                <i class="nc-icon nc-zoom-split"></i>
+
+                        <!-- Opciones adicionales -->
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" name="validar_datos"
+                                    id="validar_datos" checked>
+                                <label class="custom-control-label font-weight-bold" for="validar_datos">
+                                    <i class="fa fa-check-circle mr-1"></i>Validar Datos
+                                </label>
+                                <small class="form-text text-muted">
+                                    Verifica la validez de los datos antes del cargue
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" name="sobreescribir"
+                                    id="sobreescribir">
+                                <label class="custom-control-label font-weight-bold" for="sobreescribir">
+                                    <i class="fa fa-edit mr-1"></i>Sobreescribir Existente
+                                </label>
+                                <small class="form-text text-muted">
+                                    Reemplaza poderes existentes con mismo radicado
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-center">
+                            <button type="button" class="btn btn-warning btn-lg px-4 py-2 mr-2" id="bt_hacer_cargue"
+                                disabled>
+                                <i class="fa fa-upload mr-2"></i>Realizar Cargue
                             </button>
-                        </div>
-                        <div class="input-group-text group-botton">
-                            <button type='button' disabled id='remover_archivo' class="btn btn-sm btn-outline-primary btn-round m-0">
-                                <i class="nc-icon nc-simple-remove"></i>
+                            <button type="button" class="btn btn-secondary btn-lg px-4 py-2" id="bt_cancelar_cargue">
+                                <i class="fa fa-times mr-2"></i>Cancelar
+                            </button>
+                            <button type="button" class="btn btn-info btn-lg px-4 py-2 ml-2"
+                                id="bt_descargar_plantilla">
+                                <i class="fa fa-download mr-2"></i>Descargar Plantilla
                             </button>
                         </div>
                     </div>
-                    <p>Requiere de un archivo csv separado por (;) con:<br />
-                        Columna 1 Codigo <br />
-                        Columna 2 Fecha <br />
-                        Columna 3 Nit Apoderado <br />
-                        Columna 4 Nit Poderdante <br />
-                        Columna 5 Estado, solo admite (A) Activo (I) Inactivo (R) Revocado <br />
-                        Columna 6 Radicado <br />
-                        Columna 7 Cedula Apoderado <br />
-                        Columna 8 Nombre Apoderado <br />
-                        Columna 9 Cedula Poderdante <br />
-                        Columna 10 Nombre Poderdante <br />
-                        Columna 11 Motivos Rechazo <br />
-                    </p>
                 </div>
-            </div>
-
-            <div class='col-sm-12'>
-                <div class='text-center'>
-                    <button type='button' disabled class='btn btn-outline-success btn-round' id='bt_hacer_cargue'>
-                        <i class="fa fa-search"></i>
-                        Continuar
-                    </button>
-                </div>
-            </div>
+            </form>
         </div>
-    </div>
-    <div class="card-footer">
     </div>
 </div>

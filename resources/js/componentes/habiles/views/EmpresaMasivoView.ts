@@ -1,7 +1,7 @@
-import { BackboneView } from "@/common/Bone";
 import Empresa from "@/models/Empresa";
 import EmpresaService from "@/pages/Habiles/EmpresaService";
 import tmp_cargar_habiles from "@/componentes/habiles/templates/cargar_habiles.hbs?raw";
+import { ModelView } from "@/common/ModelView";
 
 interface EmpresaMasivoViewOptions {
     api?: any;
@@ -12,8 +12,7 @@ interface EmpresaMasivoViewOptions {
     [key: string]: any;
 }
 
-export default class EmpresaMasivoView extends BackboneView {
-    modelUse: any;
+export default class EmpresaMasivoView extends ModelView {
     id: string;
     template: any;
     api: any;
@@ -28,7 +27,7 @@ export default class EmpresaMasivoView extends BackboneView {
             ...options,
             className: 'box',
         });
-        this.modelUse = Empresa;
+        this.modelDOM = Empresa;
         this.id = 'box_masivo_habiles';
         this.api = options.api;
         this.logger = options.logger;

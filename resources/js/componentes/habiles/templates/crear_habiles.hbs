@@ -1,92 +1,140 @@
-<div class="col ml-auto mr-auto">
-    <div class="card-body">
-        <form method="post" action="#" class='form-horizontal'>
-            <div class="row ">
-                <div class="col-6">
-                    <div class='row'>
-                        <label class='control-label pt-1'>Empresa Nit</label>
-                        <div class='col-md-6'>
-                            <div class="form-group">
-                                <input type="text" class="form-control" id='nit' name='nit' placeholder="nit" value="" />
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                <i class="fa fa-plus-circle mr-2 pb-3"></i>Crear Nueva Empresa
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="#" class="needs-validation" id="formulario" novalidate>
+                <div class="row">
+                    <!-- Columna Izquierda -->
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group row">
+                            <label for="nit" class="col-md-4 col-form-label font-weight-bold">
+                                <i class="fa fa-hashtag mr-1"></i>NIT Empresa
+                            </label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control form-control-sm" name="nit" id="nit"
+                                    placeholder="Número de Identificación Tributaria" value="" required />
+                                <div class="invalid-feedback">
+                                    El NIT es requerido
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="razsoc" class="col-md-4 col-form-label font-weight-bold">
+                                <i class="fa fa-building mr-1"></i>Razón Social
+                            </label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control form-control-sm" name="razsoc" id="razsoc"
+                                    placeholder="Razón social de la empresa" required />
+                                <div class="invalid-feedback">
+                                    La razón social es requerida
+                                </div>
+                                <span toggle-error='razsoc' class="error text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="cedrep" class="col-md-4 col-form-label font-weight-bold">
+                                <i class="fa fa-id-card mr-1"></i>Cédula Representante
+                            </label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control form-control-sm" name="cedrep"
+                                    placeholder="Número de cédula" required />
+                                <div class="invalid-feedback">
+                                    La cédula del representante es requerida
+                                </div>
+                                <span toggle-error='cedrep' class="error text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="repleg" class="col-md-4 col-form-label font-weight-bold">
+                                <i class="fa fa-user mr-1"></i>Nombre Representante
+                            </label>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control form-control-sm" name="repleg" id="repleg"
+                                    placeholder="Nombres completos del representante" required />
+                                <div class="invalid-feedback">
+                                    El nombre del representante es requerido
+                                </div>
+                                <span toggle-error='repleg' class="error text-danger small"></span>
                             </div>
                         </div>
                     </div>
 
-                    <div class='row'>
-                        <label class='control-label pt-1'>Razón Social</label>
-                        <div class='col-md-6'>
-                            <div class='form-group'>
-                                <input type='text' class="form-control" name='razsoc' id='razsoc' placeholder='razsoc' />
-                                <span toggle-error='razsoc' class="error"></span>
+                    <!-- Columna Derecha -->
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group row">
+                            <label for="email" class="col-md-4 col-form-label font-weight-bold">
+                                <i class="fa fa-envelope mr-1"></i>Email Empresa
+                            </label>
+                            <div class="col-md-8">
+                                <input type="email" class="form-control form-control-sm" name="email" id="email"
+                                    placeholder="correo@ejemplo.com" />
+                                <div class="invalid-feedback">
+                                    Ingrese un correo electrónico válido
+                                </div>
+                                <span toggle-error='email' class="error text-danger small"></span>
                             </div>
                         </div>
-                    </div>
 
-                    <div class='row'>
-                        <label class='control-label pt-1'>Cedula Representante</label>
-                        <div class='col-md-5'>
-                            <div class="form-group">
-                                <input type="text" class="form-control" name='cedrep' placeholder="cedula" />
-                                <span toggle-error='cedrep' class="error"></span>
+                        <div class="form-group row">
+                            <label for="telefono" class="col-md-4 col-form-label font-weight-bold">
+                                <i class="fa fa-phone mr-1"></i>Teléfono Empresa
+                            </label>
+                            <div class="col-md-8">
+                                <input type="tel" class="form-control form-control-sm" name="telefono" id="telefono"
+                                    placeholder="Número de teléfono" />
+                                <div class="invalid-feedback">
+                                    Ingrese un número de teléfono válido
+                                </div>
+                                <span toggle-error='telefono' class="error text-danger small"></span>
                             </div>
                         </div>
-                    </div>
 
-                    <div class='row'>
-                        <label class='control-label pt-1'>Nombre Representante</label>
-                        <div class='col-md-5'>
-                            <div class='form-group'>
-                                <input type='text' class="form-control" name='repleg' id='repleg' placeholder='nombres representante' />
-                                <span toggle-error='repleg' class="error"></span>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label font-weight-bold">
+                                <i class="fa fa-cogs mr-1"></i>Opciones Disponibles
+                            </label>
+                            <div class="col-md-8">
+                                <div class="custom-control custom-checkbox mb-2">
+                                    <input type="checkbox" class="custom-control-input" name="cruzar_cartera"
+                                        id="cruzar_cartera" checked>
+                                    <label class="custom-control-label" for="cruzar_cartera">
+                                        <i class="fa fa-exchange-alt mr-1"></i>Cruzar con cartera, para rechazar
+                                    </label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" name="crear_pre_registro"
+                                        id="crear_pre_registro" checked>
+                                    <label class="custom-control-label" for="crear_pre_registro">
+                                        <i class="fa fa-user-plus mr-1"></i>Crear pre-registro de ingreso
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-6">
-                    <div class='row'>
-                        <label class='control-label'>Email Empresa</label>
-                        <div class='col-md-6'>
-                            <div class='form-group'>
-                                <input type='text' class="form-control" name='email' id='email' placeholder='email' />
-                                <span toggle-error='email' class="error"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class='row'>
-                        <label class='control-label'>Teléfono Empresa</label>
-                        <div class='col-md-6'>
-                            <div class='form-group'>
-                                <input type='text' class="form-control" name='telefono' id='telefono' placeholder='telefono' />
-                                <span toggle-error='telefono' class="error"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class='row'>
-                        <label class='control-label pt-4'>Opciones disponibles: </label>
-                        <div class='col-md-8 checkbox-radios'>
-                            <div class="form-check">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" name='cruzar_cartera' checked type="checkbox" value="">Cruzar con cartera, para rechazar
-                                    <span class="form-check-sign"></span>
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" name='crear_pre_registro' checked type="checkbox" value="">Crear pre-registro de ingreso
-                                    <span class="form-check-sign"></span>
-                                </label>
-                            </div>
+                <!-- Botones de Acción -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-center">
+                            <button type="button" class="btn btn-success btn-lg px-4 py-2 mr-2" id="bt_guardar"
+                                disabled>
+                                <i class="fa fa-save mr-2"></i>Guardar Empresa
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-lg px-4 py-2" id="bt_cancelar">
+                                <i class="fa fa-times mr-2"></i>Cancelar
+                            </button>
                         </div>
                     </div>
                 </div>
-
-                <div class='col-12'>
-                    <div class='text-center'>
-                        <button type='button' disabled class='btn btn-outline-success btn-round' id='bt_guardar'><i class="fa fa-search"></i> Continuar</button>
-                    </div>
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>

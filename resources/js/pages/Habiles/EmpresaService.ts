@@ -48,6 +48,25 @@ export default class EmpresaService {
     }
 
     /**
+     * Obtener empresa específica por NIT desde API
+     */
+    async findByEmpresa(nit: string): Promise<any> {
+        try {
+            const response = await this.api.get(`/habiles/buscar-empresa/${nit}`);
+            if (response?.success) {
+                return response;
+            } else {
+                this.app?.trigger('alert:error', { message: response.msj || 'Error al obtener empresa' });
+                return null;
+            }
+        } catch (error: any) {
+            this.logger?.error('Error al obtener empresa:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al obtener empresa' });
+            return null;
+        }
+    }
+
+    /**
      * Obtener todas las empresas hábiles desde API
      */
     async findAllHabiles(): Promise<any> {

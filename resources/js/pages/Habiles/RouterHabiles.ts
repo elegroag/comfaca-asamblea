@@ -15,6 +15,7 @@ export default class RouterHabiles extends BackboneRouter {
                 crear: 'crearEmpresa',
                 'edita/:nit': 'editaEmpresa',
                 habiles: 'listarHabiles',
+                'representantes': 'listarRepresentantes',
             },
         });
 
@@ -82,5 +83,10 @@ export default class RouterHabiles extends BackboneRouter {
     listarHabiles(): void {
         const controller = this.init();
         controller.listarHabiles();
+    }
+
+    listarRepresentantes(): void {
+        const controller = this.init();
+        controller.listarRepresentantes();
     }
 }

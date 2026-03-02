@@ -1,4 +1,5 @@
 import { BackboneView } from "@/common/Bone";
+import { ModelView } from "@/common/ModelView";
 import tmp_edita_empresa from "@/componentes/habiles/templates/edita_empresa.hbs?raw";
 import EmpresaService from "@/pages/Habiles/EmpresaService";
 
@@ -14,8 +15,8 @@ interface EmpresaEditarViewOptions {
     EmpresaModel: new (attrs?: any, options?: any) => any;
 }
 
-export default class EmpresaEditarView extends BackboneView {
-    modelUse: any;
+export default class EmpresaEditarView extends ModelView {
+    modelDOM: any;
     template: any;
     api: any;
     logger: any;
@@ -27,9 +28,9 @@ export default class EmpresaEditarView extends BackboneView {
     constructor(options: EmpresaEditarViewOptions) {
         super({
             ...options,
-            className: 'box',
+            className: 'row justify-content-around',
         });
-        this.modelUse = options.EmpresaModel;
+        this.modelDOM = options.EmpresaModel;
         this.api = options.api;
         this.logger = options.logger;
         this.app = options.app;
@@ -58,7 +59,7 @@ export default class EmpresaEditarView extends BackboneView {
         target.attr('disabled', 'true');
 
         try {
-            const model = new this.modelUse({
+            const model = new this.modelDOM({
                 nit: parseInt(this.getInput('nit') || '0'),
                 cedrep: parseInt(this.getInput('cedrep') || '0'),
                 repleg: this.getInput('repleg'),
@@ -92,15 +93,5 @@ export default class EmpresaEditarView extends BackboneView {
             this.logger?.error('Error al editar empresa:', error);
             this.app?.trigger('alert:error', { message: error.message || 'Error de conexión' });
         }
-    }
-
-    getInput(selector: string): string {
-        const element = this.$el.find(`[name='${selector}']`);
-        return element.length ? element.val() as string : '';
-    }
-
-    getCheck(selector: string): boolean {
-        const element = this.$el.find(`[name='${selector}']`);
-        return element.length ? element.is(':checked') : false;
     }
 }

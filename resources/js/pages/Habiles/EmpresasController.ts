@@ -1,7 +1,4 @@
 import { Controller } from '@/common/Controller';
-import EmpresaListar from "@/componentes/habiles/views/EmpresaListarView";
-import EmpresaEditar from "@/componentes/habiles/views/EmpresaEditarView";
-import EmpresaDetalle from "@/componentes/habiles/views/EmpresaDetalleView";
 import EmpresasListar from "./EmpresasListar";
 import EmpresasHabiles from "./EmpresasHabiles";
 import EmpresaService from "./EmpresaService";
@@ -9,9 +6,12 @@ import Loading from '@/common/Loading';
 import HabilesCollection from '@/componentes/habiles/collections/HabilesCollection';
 import EmpresasCollection from '@/collections/EmpresasCollection';
 import Empresa from '@/models/Empresa';
-import { CacheManager, cacheCollection, getCachedCollection } from '@/componentes/CacheManager';
+import { cacheCollection, getCachedCollection } from '@/componentes/CacheManager';
 import EmpresaCrear from './EmpresaCrear';
 import EmpresaMasivo from './EmpresaMasivo';
+import EmpresaEditar from './EmpresaEditar';
+import EmpresaDetalle from './EmpresaDetalle';
+import RepresentanteController from '../Representantes/RepresentanteController';
 
 export default class EmpresasController extends Controller {
     empresaService: EmpresaService;
@@ -25,8 +25,6 @@ export default class EmpresasController extends Controller {
             logger: this.logger,
             EmpresaModel: Empresa,
         });
-
-        console.log('EmpresasController inicializado con cache global');
     }
 
 
@@ -41,8 +39,7 @@ export default class EmpresasController extends Controller {
 
             // Obtener empresas desde cache
             let empresas = getCachedCollection('empresas', EmpresasCollection);
-
-            if (_.size(empresas) === 0) {
+            if (empresas === null) {
                 try {
                     if (!this.api) {
                         this.app?.trigger('error', 'API no disponible');
@@ -86,49 +83,9 @@ export default class EmpresasController extends Controller {
     }
 
     /**
-     * Manejar eliminación de empresa desde la collection
-     */
-    private handleRemoveEmpresa(data: any): void {
-        if (data.removeFromCollection && data.model) {
-            // Obtener empresas desde cache y eliminar el modelo
-            const empresas = getCachedCollection('empresas', EmpresasCollection);
-            if (empresas) {
-                empresas.remove(data.model);
-
-                // Actualizar cache
-                cacheCollection('empresas', empresas, {
-                    persistent: true,
-                    ttl: 60 * 60 * 1000
-                });
-            }
-        }
-    }
-
-    /**
-     * Manejar eliminación de habil desde la collection
-     */
-    private handleRemoveHabil(data: any): void {
-        if (data.removeFromCollection && data.model) {
-            // Obtener habiles desde cache y eliminar el modelo
-            const habiles = getCachedCollection('habiles', HabilesCollection);
-            if (habiles) {
-                habiles.remove(data.model);
-
-                // Actualizar cache
-                cacheCollection('habiles', habiles, {
-                    persistent: true,
-                    ttl: 60 * 60 * 1000
-                });
-            }
-        }
-    }
-
-    /**
      * Crear empresa
      */
     crearEmpresa(): void {
-        this.logger.log('EmpresasController.crearEmpresa() called');
-
         const controller = this.startController(EmpresaCrear) as EmpresaCrear;
         controller.crearEmpresa();
     }
@@ -137,10 +94,8 @@ export default class EmpresasController extends Controller {
      * Cargue masivo de empresas
      */
     cargueMasivo(): void {
-        this.logger.log('EmpresasController.cargueMasivo() called');
-
-        const auth = this.startController(EmpresaMasivo) as EmpresaMasivo;
-        auth.cargueMasivo();
+        const controller = this.startController(EmpresaMasivo) as EmpresaMasivo;
+        controller.cargueMasivo();
     }
 
     /**
@@ -150,24 +105,27 @@ export default class EmpresasController extends Controller {
         this.logger.log('EmpresasController.editaEmpresa() called', nit);
 
         try {
-            const auth = this.startController(EmpresaEditar);
+            const controller = this.startController(EmpresaEditar) as EmpresaEditar;
 
             // Obtener empresas desde cache
             let empresas = getCachedCollection('empresas', EmpresasCollection);
 
-            if (!empresas || !empresas.length || empresas.length <= 1) {
+            if (empresas === null) {
                 try {
                     if (!this.api) {
                         this.app?.trigger('error', 'API no disponible');
                         return;
                     }
-
-                    const response = await this.api.get('/habiles/listar');
+                    const response = await this.empresaService.findByEmpresa(nit);
 
                     if (response && response.success === true) {
                         // Crear collection y agregar datos
                         empresas = new EmpresasCollection();
-                        empresas.add((response as any).empresas, { merge: true });
+
+                        // Si la respuesta contiene la empresa directamente
+                        if (response.empresa) {
+                            empresas.add(response.empresa, { merge: true });
+                        }
 
                         // Guardar en cache
                         cacheCollection('empresas', empresas, {
@@ -176,7 +134,7 @@ export default class EmpresasController extends Controller {
                         });
 
                         const model = empresas.get(nit);
-                        auth.editaEmpresa(model);
+                        controller.editaEmpresa(model);
                     } else {
                         this.app?.trigger('alert:error', { message: response.message || 'Error al obtener datos de la empresa' });
                     }
@@ -186,7 +144,7 @@ export default class EmpresasController extends Controller {
                 }
             } else {
                 const model = empresas.get(nit);
-                auth.editaEmpresa(model);
+                controller.editaEmpresa(model);
             }
         } catch (err: any) {
             this.logger.error('Error al editar empresa:', err);
@@ -200,36 +158,30 @@ export default class EmpresasController extends Controller {
      * Detalle de empresa
      */
     async detalleEmpresa(nit: string): Promise<void> {
-        this.logger.log('EmpresasController.detalleEmpresa() called', nit);
-
         try {
-            const auth = this.startController(EmpresaDetalle);
-
-            // Obtener empresas desde cache
+            const controller = this.startController(EmpresaDetalle) as EmpresaDetalle;
             let empresas = getCachedCollection('empresas', EmpresasCollection);
 
-            if (!empresas || !empresas.length || empresas.length === 0) {
+            if (empresas === null) {
                 try {
                     if (!this.api) {
                         this.app?.trigger('alert:error', { message: 'API no disponible' });
                         return;
                     }
 
-                    const response = await this.api.get('/habiles/listar');
+                    const response = await this.empresaService.findByEmpresa(nit);
 
                     if (response && response.success === true) {
-                        // Crear collection y agregar datos
                         empresas = new EmpresasCollection();
-                        empresas.add((response as any).empresas, { merge: true });
+                        empresas.add(response.empresa, { merge: true });
 
-                        // Guardar en cache
                         cacheCollection('empresas', empresas, {
                             persistent: true,
                             ttl: 60 * 60 * 1000
                         });
 
                         const model = empresas.get(nit);
-                        auth.detalleEmpresa(model);
+                        controller.detalleEmpresa(model);
                     } else {
                         this.app?.trigger('alert:error', { message: response.message || 'Error al obtener detalles de la empresa' });
                     }
@@ -239,7 +191,7 @@ export default class EmpresasController extends Controller {
                 }
             } else {
                 const model = empresas.get(nit);
-                auth.detalleEmpresa(model);
+                controller.detalleEmpresa(model);
             }
         } catch (err: any) {
             this.logger.error('Error al mostrar detalle de empresa:', err);
@@ -261,7 +213,7 @@ export default class EmpresasController extends Controller {
             // Obtener habiles desde cache
             let habiles = getCachedCollection('habiles', HabilesCollection);
 
-            if (_.size(habiles) === 0) {
+            if (habiles === null) {
                 if (Loading) Loading.show();
 
                 try {
@@ -304,6 +256,49 @@ export default class EmpresasController extends Controller {
             if (Loading) Loading.hide();
             if (this.app?.trigger) {
                 this.app.trigger('alert:error', { message: 'Error de conexión al listar habiles' });
+            }
+        }
+    }
+
+    listarRepresentantes(): void {
+        const controller = this.startController(RepresentanteController) as RepresentanteController;
+        controller.listarRepresentantes();
+    }
+
+    /**
+    * Manejar eliminación de empresa desde la collection
+    */
+    private handleRemoveEmpresa(data: any): void {
+        if (data.removeFromCollection && data.model) {
+            // Obtener empresas desde cache y eliminar el modelo
+            const empresas = getCachedCollection('empresas', EmpresasCollection);
+            if (empresas) {
+                empresas.remove(data.model);
+
+                // Actualizar cache
+                cacheCollection('empresas', empresas, {
+                    persistent: true,
+                    ttl: 60 * 60 * 1000
+                });
+            }
+        }
+    }
+
+    /**
+     * Manejar eliminación de habil desde la collection
+     */
+    private handleRemoveHabil(data: any): void {
+        if (data.removeFromCollection && data.model) {
+            // Obtener habiles desde cache y eliminar el modelo
+            const habiles = getCachedCollection('habiles', HabilesCollection);
+            if (habiles) {
+                habiles.remove(data.model);
+
+                // Actualizar cache
+                cacheCollection('habiles', habiles, {
+                    persistent: true,
+                    ttl: 60 * 60 * 1000
+                });
             }
         }
     }

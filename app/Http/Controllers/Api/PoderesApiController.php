@@ -59,7 +59,7 @@ class PoderesApiController extends Controller
                 });
 
             return response()->json([
-                'poderes' => $poderes,
+                'data' => $poderes,
                 'success' => true
             ]);
         } catch (\Exception $err) {

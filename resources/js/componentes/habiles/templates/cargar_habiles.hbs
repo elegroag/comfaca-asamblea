@@ -1,48 +1,95 @@
-<div class="card-body">
-    <div class="row justify-content-center">
-        <div class="col-sm-12">
-            <div class='form-group'>
-                <label><i class='text-danger'>*</i> Archivo</label>
-                <div toggle-error='archivo' class="error text-danger" for="required"></div>
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="nc-icon nc-badge"></i></span>
-                    </div>
-                    <input style='display:none' type='file' data-event='upload' name='archivo_habiles' id='archivo_habiles' onchange='handleFiles()' />
-                    <div class="form-control has-danger" data-toggle-file='searchfile' id='name_archivo' name="name_archivo" style='line-height:2'>nombre archivo</div>
-                    <div class="input-group-text group-botton">
-                        <button type='button' data-toggle-file='searchfile' class="btn btn-sm btn-outline-primary btn-round" style='margin:0px'><i class="nc-icon nc-zoom-split"></i></button>
-                    </div>
-                    <div class="input-group-text group-botton">
-                        <button type='button' disabled id='remover_archivo' class="btn btn-sm btn-outline-primary btn-round" style='margin:0px'><i class="nc-icon nc-simple-remove"></i></button>
-                    </div>
-                </div>
-                <p>Requiere de un archivo csv separado por (;) con:<br />
-                    Columna 1 Nit Empresa, <br />
-                    Columna 2 Razón Social<br />
-                    Columna 3 Cedula Representante Legal<br />
-                    Columna 4 Nombre Representante Legal<br />
-                    Columna 5 Telefono<br />
-                    Columna 6 Email<br />
-                    Columna 7 Tipo ingreso (V) virtual o (P) presencial<br />
-                </p>
-            </div>
-            <div class='row'>
-                <div class='col checkbox-radios'>
-                    <div class="form-check">
-                        <label class="form-check-label">
-                            <input class="form-check-input" name='cruzar_cartera' id='cruzar_cartera' type="checkbox" value="">Cruzar con Base de Cartera
-                            <span class="form-check-sign"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header bg-warning text-white">
+            <h5 class="mb-0">
+                <i class="fa fa-upload mr-2 pb-3"></i>Cargue Masivo de Empresas
+            </h5>
         </div>
+        <div class="card-body">
+            <form method="post" action="#" class="needs-validation" id="formulario_cargue" novalidate>
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-md-12">
+                        <div class="form-group">
+                            <label for="archivo_habiles" class="font-weight-bold">
+                                <i class="fa fa-file-csv text-danger mr-1"></i>
+                                Archivo CSV <span class="text-danger">*</span>
+                            </label>
+                            <div toggle-error='archivo' class="error text-danger small" for="required"></div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text bg-primary text-white">
+                                        <i class="fa fa-file-alt"></i>
+                                    </span>
+                                </div>
+                                <input type="file" class="form-control-file d-none" name="archivo_habiles"
+                                    id="archivo_habiles" onchange="handleFiles()" accept=".csv" required />
+                                <div class="form-control bg-light" data-toggle-file='searchfile' id='name_archivo'
+                                    name="name_archivo" style='cursor: pointer;'>
+                                    <i class="fa fa-file-upload mr-2"></i>
+                                    <span id="nombre_archivo_texto">Seleccionar archivo CSV...</span>
+                                </div>
+                                <div class="input-group-append">
+                                    <button type='button' data-toggle-file='searchfile' class="btn btn-primary"
+                                        title="Buscar archivo">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                    <button type='button' disabled id='remover_archivo' class="btn btn-danger"
+                                        title="Remover archivo">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
 
-        <div class='col-sm-12'>
-            <div class='text-center'>
-                <button type='button' disabled class='btn btn-outline-success btn-round' id='bt_hacer_cargue'><i class="fa fa-search"></i> Continuar</button>
-            </div>
+                            <!-- Instrucciones del archivo -->
+                            <div class="alert alert-info mt-3">
+                                <h6 class="alert-heading">
+                                    <i class="fa fa-info-circle mr-2"></i>Formato del Archivo CSV
+                                </h6>
+                                <p class="mb-2">El archivo debe estar separado por punto y coma (<strong>;</strong>) con
+                                    las siguientes columnas:</p>
+                                <ol class="mb-0 pl-3">
+                                    <li><strong>Nit Empresa</strong></li>
+                                    <li><strong>Razón Social</strong></li>
+                                    <li><strong>Cédula Representante Legal</strong></li>
+                                    <li><strong>Nombre Representante Legal</strong></li>
+                                    <li><strong>Teléfono</strong></li>
+                                    <li><strong>Email</strong></li>
+                                    <li><strong>Tipo ingreso</strong> (V) virtual o (P) presencial</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <!-- Opciones adicionales -->
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" name="cruzar_cartera"
+                                    id="cruzar_cartera" checked>
+                                <label class="custom-control-label font-weight-bold" for="cruzar_cartera">
+                                    <i class="fa fa-exchange-alt mr-1"></i>Cruzar con Base de Cartera
+                                </label>
+                                <small class="form-text text-muted">
+                                    Verificará si las empresas existen en la cartera actual
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-center">
+                            <button type="button" class="btn btn-warning btn-lg px-4 py-2 mr-2" id="bt_hacer_cargue"
+                                disabled>
+                                <i class="fa fa-upload mr-2"></i>Realizar Cargue
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-lg px-4 py-2" id="bt_cancelar_cargue">
+                                <i class="fa fa-times mr-2"></i>Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

@@ -1,228 +1,237 @@
-import { CommonDeps, ServiceOptions, ApiResponse } from '@/types/CommonDeps';
-import { BoxCollectionStorage } from '@/componentes/useStorage';
-import RepresentantesCollection from '@/collections/RepresentantesCollection';
-import Representante from '@/models/Representante';
+import Logger from "@/common/Logger";
+import Representante from "@/models/Representante";
+import { AppInstance } from "@/types/types";
 
-export interface RepresentanteServiceOptions extends ServiceOptions {
-  // Opciones adicionales específicas del servicio si se necesitan
-}
-
-export interface RepresentanteCollections {
-  representantes: RepresentantesCollection;
+export interface RepresentanteServiceOptions {
+  api: any;
+  app: AppInstance | any;
+  logger: Logger;
+  RepresentanteModel?: any; // opcional, si se requiere construir explícitamente modelos de representante
 }
 
 export default class RepresentanteService {
-  private storage: BoxCollectionStorage;
-  private collections: RepresentanteCollections;
+  api: any;
+  app: AppInstance | any;
+  logger: Logger;
+  private RepresentanteModel?: any;
 
-  constructor(private readonly opts: RepresentanteServiceOptions) {
-    this.storage = BoxCollectionStorage.getInstance();
-    this.__initializeCollections();
+  constructor(options: RepresentanteServiceOptions) {
+    this.api = options.api;
+    this.app = options.app;
+    this.logger = options.logger;
+    this.RepresentanteModel = options.RepresentanteModel;
   }
 
-  private get api() { return this.opts.api; }
-  private get logger() { return this.opts.logger; }
-  private get app() { return this.opts.app; }
-
   /**
-   * Inicializar las colecciones necesarias usando BoxCollectionStorage
+   * Obtener todos los representantes desde API
    */
-  private __initializeCollections(): void {
-    // Inicializar colecciones persistentes en localStorage
-    const representantesStorage = this.storage.getCollection('representantes')?.value;
-
-    // Crear colecciones Backbone si no existen
-    this.collections.representantes = (representantesStorage as RepresentantesCollection) || new RepresentantesCollection();
-
-    // Guardar colecciones en storage si no existen
-    if (!representantesStorage) {
-      this.storage.addCollection('representantes', this.collections.representantes);
-    }
-  }
-
-  // Métodos públicos (interfaz para controllers/vistas)
-
-  /**
-   * Obtener todos los representantes
-   */
-  async __findAll(): Promise<void> {
+  async findAllRepresentantes(): Promise<any> {
     try {
-      const response = await this.findAllApi();
+      const response = await this.api.get('/representantes/listar');
       if (response?.success) {
-        this.__setRepresentantes((response as any).representantes || []);
+        return response;
       } else {
-        this.app.trigger('alert:error', { message: response?.msj || 'Error al cargar representantes' });
+        this.app?.trigger('alert:error', { message: response.msj || 'Error al listar representantes' });
+        return null;
       }
     } catch (error: any) {
-      this.logger.error('Error al listar representantes:', error);
-      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.logger?.error('Error al listar representantes:', error);
+      this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar representantes' });
+      return null;
     }
   }
 
   /**
-   * Establecer lista de representantes
+   * Obtener representante específico por ID desde API
    */
-  __setRepresentantes(representantes: any[]): void {
-    this.collections.representantes.reset();
-    this.collections.representantes.add(representantes, { merge: true });
-  }
-
-  /**
-   * Agregar representante a la colección
-   */
-  __addRepresentantes(representante: any): void {
-    const _representante = representante instanceof Representante ? representante : new Representante(representante);
-    this.collections.representantes.add(_representante, { merge: true });
+  async findByRepresentante(id: string): Promise<any> {
+    try {
+      const response = await this.api.get(`/representantes/representante/${id}`);
+      if (response?.success) {
+        return response;
+      } else {
+        this.app?.trigger('alert:error', { message: response.msj || 'Error al obtener representante' });
+        return null;
+      }
+    } catch (error: any) {
+      this.logger?.error('Error al obtener representante:', error);
+      this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al obtener representante' });
+      return null;
+    }
   }
 
   /**
    * Guardar representante
    */
-  async __saveRepresentante(representante: any): Promise<ApiResponse> {
+  __saveRepresentante(transfer: { model: any, callback: (success: boolean, data?: any) => void }): void {
+    const { model, callback } = transfer;
+    if (!model.isValid()) {
+      const errors = model.validationError;
+      this.app?.trigger('alert:error', { message: errors.toString() });
+      callback(false);
+    } else {
+      this.app?.trigger('confirma', {
+        message: 'Se requiere de confirmar la acción a realizar para guardar los datos',
+        callback: (confirm: boolean) => {
+          if (confirm === true) {
+            this.saveRepresentante(model, callback);
+          } else {
+            return callback(false);
+          }
+        },
+      });
+    }
+  }
+
+  private async saveRepresentante(model: any, callback: (success: boolean, data?: any) => void): Promise<void> {
     try {
-      if (!representante.isValid()) {
-        const errors = representante.validationError;
-        this.app.trigger('alert:error', errors.toString());
-        return { success: false, message: errors.toString() };
-      }
-
-      const response = await this.saveRepresentanteApi(representante.toJSON());
-
+      const response = await this.api.post('/representantes/saveRepresentante', model.toJSON());
       if (response?.success) {
-        this.app.trigger('alert:success', { message: response.msj || 'Representante guardado exitosamente' });
-        this.__addRepresentantes((response as any).representante);
+        this.app?.trigger('alert:success', response.msj);
+        callback(true, {
+          representante: response.data,
+        });
       } else {
-        this.app.trigger('alert:error', { message: response?.msj || 'Error al guardar representante' });
+        this.app?.trigger('alert:error', { message: response.message || 'Error al guardar representante' });
       }
-
-      return response;
     } catch (error: any) {
-      this.logger.error('Error al guardar representante:', error);
-      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
-      return { success: false, message: error.message };
+      this.logger?.error('Error al guardar representante:', error);
+      this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al guardar representante' });
+      callback(false);
     }
   }
 
   /**
    * Eliminar representante
    */
-  async __removeRepresentante(representante: any): Promise<ApiResponse> {
-    try {
-      const response = await this.removeRepresentanteApi(representante.toJSON());
+  __removeRepresentante(transfer: { model: any, callback: (success: boolean, data?: any) => void, controller?: any }): void {
+    const { model, callback, controller } = transfer;
 
-      if (response?.success) {
-        this.app.trigger('alert:success', { message: response.msj || 'Representante eliminado exitosamente' });
-        this.collections.representantes.remove(representante);
-      } else {
-        this.app.trigger('alert:error', { message: response?.msj || 'Error al eliminar representante' });
-      }
-
-      return response;
-    } catch (error: any) {
-      this.logger.error('Error al eliminar representante:', error);
-      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
-      return { success: false, message: error.message };
+    if (model && typeof model.get === 'function') {
+      this.app?.trigger('confirma', {
+        message: 'Se requiere de confirmar la acción a realizar para remover el registro',
+        callback: (confirm: boolean) => {
+          if (confirm === true) {
+            this.saveRemoveRepresentante(model, callback, controller);
+          }
+          return callback(false);
+        },
+      });
+    } else {
+      return callback(false);
     }
   }
 
-  /**
-   * Cargue masivo de representantes
-   */
-  async __uploadMasivo({ formData, callback }: any): Promise<void> {
+  private async saveRemoveRepresentante(model: any, callback: (success: boolean, data?: any) => void, controller?: any): Promise<void> {
     try {
-      const response = await this.uploadMasivoApi(formData);
-
+      const response = await this.api.delete(`/representantes/removeRepresentante/${model.get('id')}`);
       if (response?.success) {
-        this.app.trigger('alert:success', { message: response.msj || 'Cargue masivo exitoso' });
-        await this.__findAll(); // Recargar datos
+        this.app?.trigger('alert:success', { message: response.msj });
+
+        // Si hay controller, delegar la eliminación de la collection
+        if (controller && typeof controller.handleRemoveRepresentante === 'function') {
+          controller.handleRemoveRepresentante({ removeFromCollection: true, model });
+        }
+
         callback(true, response);
       } else {
-        this.app.trigger('alert:error', { message: response?.msj || 'Error en el cargue masivo' });
-        callback(false);
+        this.app?.trigger('alert:error', { message: response.message || 'Error al eliminar representante' });
       }
     } catch (error: any) {
-      this.logger.error('Error en cargue masivo:', error);
-      this.app.trigger('alert:error', { message: error.message || 'Error de conexión' });
+      this.logger?.error('Error al eliminar representante:', error);
+      this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al eliminar representante' });
       callback(false);
     }
   }
 
   /**
+   * Cargue masivo de representantes (delegado desde la vista)
+   */
+  __uploadMasivo = async (transfer: { formData: FormData, callback: (success: boolean, data?: any) => void }): Promise<void> => {
+    const { formData, callback } = transfer;
+    try {
+      const response = await this.api.post('/representantes/cargue_masivo', formData);
+      if (response && response.success === true) {
+        this.app?.trigger('alert:success', { message: response.msj || 'Cargue masivo completado' });
+        return callback(true, response);
+      } else {
+        this.app?.trigger('alert:error', { message: (response && (response.msj || response.message)) || 'Error en cargue masivo' });
+        return callback(false);
+      }
+    } catch (error: any) {
+      this.logger?.error('Error en cargue masivo:', error);
+      this.app?.trigger('alert:error', error.message || 'Error de conexión en cargue masivo');
+      return callback(false);
+    }
+  };
+
+  /** Exportar lista en formato descargable */
+  __exportLista = async (): Promise<void> => {
+    try {
+      const response = await this.api.get('/representantes/exportar_lista');
+      if (response?.success && response.url) {
+        this.app?.download({ url: response.url, filename: response.filename || 'representantes.csv' });
+        this.app?.trigger('alert:success', { message: response.msj || 'Exportación iniciada' });
+      } else {
+        this.app?.trigger('alert:error', { message: response?.msj || response?.message || 'No fue posible exportar la lista' });
+      }
+    } catch (error: any) {
+      this.logger?.error('Error al exportar lista:', error);
+      this.app?.trigger('alert:error', error.message || 'Error de conexión al exportar lista');
+    }
+  };
+
+  /** Exportar informe (PDF u otro) */
+  __exportInforme = async (): Promise<void> => {
+    try {
+      const response = await this.api.get('/representantes/exportar_pdf');
+      if (response?.success && response.url) {
+        this.app?.download({ url: response.url, filename: response.filename || 'informe.pdf' });
+        this.app?.trigger('alert:success', { message: response.msj || 'Generación de informe iniciada' });
+      } else {
+        this.app?.trigger('alert:error', { message: response?.msj || response?.message || 'No fue posible generar el informe' });
+      }
+    } catch (error: any) {
+      this.logger?.error('Error al exportar informe:', error);
+      this.app?.trigger('alert:error', error.message || 'Error de conexión al exportar informe');
+    }
+  };
+
+  /**
    * Buscar representantes por criterio
    */
-  async __buscarRepresentantes(criterio: string): Promise<any[]> {
+  async buscarRepresentantes(criterio: string): Promise<any> {
     try {
-      const response = await this.buscarRepresentantesApi(criterio);
-      return response?.success ? (response as any).representantes || [] : [];
+      const response = await this.api.get(`/representantes/buscar?criterio=${encodeURIComponent(criterio)}`);
+      if (response?.success) {
+        return response;
+      } else {
+        this.app?.trigger('alert:error', { message: response.msj || 'Error al buscar representantes' });
+        return null;
+      }
     } catch (error: any) {
-      this.logger.error('Error al buscar representantes:', error);
-      return [];
+      this.logger?.error('Error al buscar representantes:', error);
+      this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al buscar representantes' });
+      return null;
     }
   }
 
   /**
    * Obtener representantes por empresa
    */
-  async __getPorEmpresa(empresaId: string): Promise<any[]> {
+  async getPorEmpresa(empresaId: string): Promise<any> {
     try {
-      const response = await this.getPorEmpresaApi(empresaId);
-      return response?.success ? (response as any).representantes || [] : [];
+      const response = await this.api.get(`/representantes/porEmpresa/${empresaId}`);
+      if (response?.success) {
+        return response;
+      } else {
+        this.app?.trigger('alert:error', { message: response.msj || 'Error al obtener representantes por empresa' });
+        return null;
+      }
     } catch (error: any) {
-      this.logger.error('Error al obtener representantes por empresa:', error);
-      return [];
+      this.logger?.error('Error al obtener representantes por empresa:', error);
+      this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al obtener representantes por empresa' });
+      return null;
     }
-  }
-
-  /**
-   * Crear representante
-   */
-  async __crearRepresentante(data: Record<string, any>): Promise<ApiResponse> {
-    try {
-      const response = await this.crearRepresentanteApi(data);
-      return response;
-    } catch (error: any) {
-      this.logger.error('Error al crear representante:', error);
-      throw error;
-    }
-  }
-
-  // Métodos privados (solo Service)
-
-  /**
-   * Obtener representantes desde API
-   */
-  private async findAllApi(): Promise<ApiResponse> {
-    return await this.api.get('/representantes/listar');
-  }
-
-  /**
-   * Guardar representante en API
-   */
-  private async saveRepresentanteApi(data: any): Promise<ApiResponse> {
-    return await this.api.post('/representantes/saveRepresentante', data);
-  }
-
-  /**
-   * API para crear representante
-   */
-  private async crearRepresentanteApi(data: Record<string, any>): Promise<ApiResponse> {
-    return await this.api.post('/representantes/crear', data);
-  }
-
-  /**
-   * API para buscar representantes
-
-  /**
-   * Buscar representantes en API
-   */
-  private async buscarRepresentantesApi(criterio: string): Promise<ApiResponse> {
-    return await this.api.get(`/representantes/buscar?criterio=${encodeURIComponent(criterio)}`);
-  }
-
-  /**
-   * Obtener representantes por empresa desde API
-   */
-  private async getPorEmpresaApi(empresaId: string): Promise<ApiResponse> {
-    return await this.api.get(`/representantes/porEmpresa/${empresaId}`);
   }
 }

@@ -2,15 +2,20 @@
 
 import { BackboneCollection } from "@/common/Bone";
 import Empresa from "@/models/Empresa";
+import { CollectionOptions } from "@/types/CommonDeps";
 
 class EmpresasCollection extends BackboneCollection {
-    constructor(options?: any) {
-        super({ ...options, url: '/web/habil/listar' });
+    url: string;
+
+    constructor(options?: CollectionOptions) {
+        super(options);
+        this.url = '/api/habil/listar';
     }
 
-    get model() {
+    get model(): typeof Empresa {
         return Empresa;
     }
+
 }
 
 export default EmpresasCollection;

@@ -4,20 +4,25 @@ import RepresentanteService from './RepresentanteService';
 import RepresentantesListar from '@/componentes/representantes/views/RepresentanteListar';
 import RepresentanteCrear from '@/componentes/representantes/views/RepresentanteCrear';
 import RepresentanteMostrar from '@/componentes/representantes/views/RepresentanteMostrar';
+import RepresentantesCollection from '@/collections/RepresentantesCollection';
+import Representante from '@/models/Representante';
+import { cacheCollection, getCachedCollection } from '@/componentes/CacheManager';
+import Loading from '@/common/Loading';
 
 interface RepresentanteControllerOptions extends CommonDeps {
     [key: string]: any;
 }
 
 export default class RepresentanteController extends Controller {
-    private service: RepresentanteService;
+    public representanteService: RepresentanteService;
 
     constructor(options: RepresentanteControllerOptions) {
         super(options);
-        this.service = new RepresentanteService({
-            api: options.api,
-            logger: options.logger,
-            app: options.app
+        this.representanteService = new RepresentanteService({
+            api: this.api,
+            logger: this.logger,
+            app: this.app,
+            RepresentanteModel: Representante
         });
     }
 
@@ -26,10 +31,44 @@ export default class RepresentanteController extends Controller {
      */
     async listarRepresentantes(): Promise<void> {
         try {
-            await this.service.__findAll();
+            // Obtener representantes desde cache
+            let representantes = getCachedCollection('representantes', RepresentantesCollection);
 
+            if (representantes === null) {
+                if (Loading) Loading.show();
+
+                try {
+                    if (!this.api) {
+                        this.app?.trigger('error', 'API no disponible');
+                        return;
+                    }
+
+                    const response = await this.representanteService.findAllRepresentantes();
+
+                    if (response && response.success === true) {
+                        // Crear collection y agregar datos
+                        representantes = new RepresentantesCollection();
+                        representantes.add((response as any).representantes || [], { merge: true });
+
+                        // Guardar en cache
+                        cacheCollection('representantes', representantes, {
+                            persistent: true,
+                            ttl: 60 * 60 * 1000
+                        });
+                    } else {
+                        this.app?.trigger('alert:error', { message: response.message || 'Error al obtener representantes' });
+                    }
+                } catch (error: any) {
+                    this.logger.error('Error al listar representantes:', error);
+                    this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al listar representantes' });
+                } finally {
+                    if (Loading) Loading.hide();
+                }
+            }
+
+            // Mostrar vista con la collection
             const view = new RepresentantesListar({
-                collection: (this.service as any).collections.representantes,
+                collection: representantes,
                 app: this.app,
                 api: this.api,
                 logger: this.logger,
@@ -38,14 +77,14 @@ export default class RepresentanteController extends Controller {
 
             this.region.show(view);
 
-            // Conectar eventos con el servicio
-            this.listenTo(view, 'remove:representante', this.service.__removeRepresentante.bind(this.service));
+            // Conectar eventos con el controller
+            this.listenTo(view, 'remove:representante', this.handleRemoveRepresentante.bind(this));
             this.listenTo(view, 'show:representante', this.mostrarRepresentante.bind(this));
             this.listenTo(view, 'edit:representante', this.editarRepresentante.bind(this));
 
-        } catch (error: any) {
-            this.logger?.error('Error al listar representantes:', error);
-            this.app?.trigger('alert:error', error.message || 'Error al cargar representantes');
+        } catch (err: any) {
+            this.logger.error('Error al listar representantes:', err);
+            this.app?.trigger('alert:error', { message: err.message || 'Error al cargar representantes' });
         }
     }
 
@@ -53,27 +92,8 @@ export default class RepresentanteController extends Controller {
      * Crear representante
      */
     crearRepresentante(): void {
-        const view = new RepresentanteCrear({
-            model: {
-                id: null,
-                nombre: '',
-                identificacion: '',
-                email: '',
-                telefono: '',
-                empresa_id: null,
-                estado: 'activo'
-            },
-            isNew: true,
-            app: this.app,
-            api: this.api,
-            logger: this.logger,
-            region: this.region,
-        });
-
-        this.region.show(view);
-
-        // Conectar eventos con el servicio
-        this.listenTo(view, 'add:representante', this.service.__saveRepresentante.bind(this.service));
+        const controller = this.startController(RepresentanteCrear) as RepresentanteCrear;
+        controller.crearRepresentante();
     }
 
     /**
@@ -81,30 +101,45 @@ export default class RepresentanteController extends Controller {
      */
     async mostrarRepresentante(id: string): Promise<void> {
         try {
-            // Asegurarse de que los representantes estén cargados
-            await this.service.__findAll();
+            const controller = this.startController(RepresentanteMostrar) as RepresentanteMostrar;
 
-            const representantes = (this.service as any).collections.representantes;
-            const model = representantes.get(id);
+            // Obtener representantes desde cache
+            let representantes = getCachedCollection('representantes', RepresentantesCollection);
 
-            if (!model) {
-                this.app?.trigger('alert:error', 'Representante no encontrado');
-                return;
+            if (representantes === null) {
+                try {
+                    if (!this.api) {
+                        this.app?.trigger('error', 'API no disponible');
+                        return;
+                    }
+
+                    const response = await this.representanteService.findByRepresentante(id);
+
+                    if (response && response.success === true) {
+                        representantes = new RepresentantesCollection();
+                        representantes.add(response.representante, { merge: true });
+
+                        cacheCollection('representantes', representantes, {
+                            persistent: true,
+                            ttl: 60 * 60 * 1000
+                        });
+
+                        const model = representantes.get(id);
+                        controller.mostrarRepresentante(model);
+                    } else {
+                        this.app?.trigger('alert:error', { message: response.message || 'Error al obtener detalles del representante' });
+                    }
+                } catch (error: any) {
+                    this.logger.error('Error al mostrar representante:', error);
+                    this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al mostrar representante' });
+                }
+            } else {
+                const model = representantes.get(id);
+                controller.mostrarRepresentante(model);
             }
-
-            const view = new RepresentanteMostrar({
-                model: model,
-                app: this.app,
-                api: this.api,
-                logger: this.logger,
-                region: this.region,
-            });
-
-            this.region.show(view);
-
-        } catch (error: any) {
-            this.logger?.error('Error al mostrar representante:', error);
-            this.app?.trigger('alert:error', error.message || 'Error al cargar representante');
+        } catch (err: any) {
+            this.logger.error('Error al mostrar representante:', err);
+            this.app?.trigger('alert:error', { message: err.message || 'Error al cargar representante' });
         }
     }
 
@@ -113,34 +148,45 @@ export default class RepresentanteController extends Controller {
      */
     async editarRepresentante(id: string): Promise<void> {
         try {
-            // Asegurarse de que los representantes estén cargados
-            await this.service.__findAll();
+            const controller = this.startController(RepresentanteCrear) as RepresentanteCrear;
 
-            const representantes = (this.service as any).collections.representantes;
-            const model = representantes.get(id);
+            // Obtener representantes desde cache
+            let representantes = getCachedCollection('representantes', RepresentantesCollection);
 
-            if (!model) {
-                this.app?.trigger('alert:error', 'Representante no encontrado');
-                return;
+            if (representantes === null) {
+                try {
+                    if (!this.api) {
+                        this.app?.trigger('error', 'API no disponible');
+                        return;
+                    }
+
+                    const response = await this.representanteService.findByRepresentante(id);
+
+                    if (response && response.success === true) {
+                        representantes = new RepresentantesCollection();
+                        representantes.add(response.representante, { merge: true });
+
+                        cacheCollection('representantes', representantes, {
+                            persistent: true,
+                            ttl: 60 * 60 * 1000
+                        });
+
+                        const model = representantes.get(id);
+                        controller.editarRepresentante(model);
+                    } else {
+                        this.app?.trigger('alert:error', { message: response.message || 'Error al obtener representante' });
+                    }
+                } catch (error: any) {
+                    this.logger.error('Error al editar representante:', error);
+                    this.app?.trigger('alert:error', { message: error.message || 'Error de conexión al editar representante' });
+                }
+            } else {
+                const model = representantes.get(id);
+                controller.editarRepresentante(model);
             }
-
-            const view = new RepresentanteCrear({
-                model: model,
-                isNew: false,
-                app: this.app,
-                api: this.api,
-                logger: this.logger,
-                region: this.region,
-            });
-
-            this.region.show(view);
-
-            // Conectar eventos con el servicio
-            this.listenTo(view, 'add:representante', this.service.__saveRepresentante.bind(this.service));
-
-        } catch (error: any) {
-            this.logger?.error('Error al editar representante:', error);
-            this.app?.trigger('alert:error', error.message || 'Error al cargar representante');
+        } catch (err: any) {
+            this.logger.error('Error al editar representante:', err);
+            this.app?.trigger('alert:error', { message: err.message || 'Error al cargar representante' });
         }
     }
 
@@ -155,28 +201,8 @@ export default class RepresentanteController extends Controller {
      * Cargar representantes masivamente
      */
     cargarMasivo(): void {
-        const view = new RepresentanteCrear({
-            model: {
-                id: null,
-                nombre: '',
-                identificacion: '',
-                email: '',
-                telefono: '',
-                empresa_id: null,
-                estado: 'activo'
-            },
-            isNew: true,
-            isMasivo: true,
-            app: this.app,
-            api: this.api,
-            logger: this.logger,
-            region: this.region,
-        });
-
-        this.region.show(view);
-
-        // Conectar eventos con el servicio
-        this.listenTo(view, 'file:upload', this.service.__uploadMasivo.bind(this.service));
+        // Implementar si se necesita vista de cargue masivo
+        this.app?.trigger('alert:info', { message: 'Función de cargue masivo en desarrollo' });
     }
 
     /**
@@ -184,27 +210,57 @@ export default class RepresentanteController extends Controller {
      */
     async buscarRepresentantes(criterio: string): Promise<void> {
         try {
-            const representantes = await this.service.__buscarRepresentantes(criterio);
+            if (Loading) Loading.show();
 
-            // Crear una vista temporal para mostrar los resultados
-            const view = new RepresentantesListar({
-                collection: new (this.app as any).Collection(representantes),
-                app: this.app,
-                api: this.api,
-                logger: this.logger,
-                region: this.region,
-            });
+            const response = await this.representanteService.buscarRepresentantes(criterio);
 
-            this.region.show(view);
+            if (response && response.success === true) {
+                // Crear collection temporal con resultados
+                const representantes = new RepresentantesCollection();
+                representantes.add((response as any).representantes || [], { merge: true });
 
-            // Conectar eventos con el servicio
-            this.listenTo(view, 'remove:representante', this.service.__removeRepresentante.bind(this.service));
-            this.listenTo(view, 'show:representante', this.mostrarRepresentante.bind(this));
-            this.listenTo(view, 'edit:representante', this.editarRepresentante.bind(this));
+                // Mostrar vista con resultados
+                const view = new RepresentantesListar({
+                    collection: representantes,
+                    app: this.app,
+                    api: this.api,
+                    logger: this.logger,
+                    region: this.region,
+                });
 
+                this.region.show(view);
+
+                // Conectar eventos
+                this.listenTo(view, 'remove:representante', this.handleRemoveRepresentante.bind(this));
+                this.listenTo(view, 'show:representante', this.mostrarRepresentante.bind(this));
+                this.listenTo(view, 'edit:representante', this.editarRepresentante.bind(this));
+            } else {
+                this.app?.trigger('alert:error', { message: response?.message || 'No se encontraron representantes' });
+            }
         } catch (error: any) {
-            this.logger?.error('Error al buscar representantes:', error);
-            this.app?.trigger('alert:error', error.message || 'Error al buscar representantes');
+            this.logger.error('Error al buscar representantes:', error);
+            this.app?.trigger('alert:error', { message: error.message || 'Error al buscar representantes' });
+        } finally {
+            if (Loading) Loading.hide();
+        }
+    }
+
+    /**
+     * Manejar eliminación de representante desde la collection
+     */
+    private handleRemoveRepresentante(data: any): void {
+        if (data.removeFromCollection && data.model) {
+            // Obtener representantes desde cache y eliminar el modelo
+            const representantes = getCachedCollection('representantes', RepresentantesCollection);
+            if (representantes) {
+                representantes.remove(data.model);
+
+                // Actualizar cache
+                cacheCollection('representantes', representantes, {
+                    persistent: true,
+                    ttl: 60 * 60 * 1000
+                });
+            }
         }
     }
 

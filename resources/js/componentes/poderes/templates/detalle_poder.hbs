@@ -1,181 +1,313 @@
-<div class="row">
-    <div class="col-md-4">
-        <span class="h4 mb-4 text-primary"> Detalles del poder</span>
-    </div>
-    <div class="col">
-        <div id='showSubnav' class="nav justify-content-end">
-            <a href='#' class="btn btn-md btn-outline-primary btn-round" id='btn_back_list'><i class="fa fa-heart"></i>
-                Salir</a>
-        </div>
-    </div>
-</div>
-
-<div class="ml-auto mr-auto">
-    <div class="card-body">
-        <p class='text-center'>Los siguientes datos son informativos y no se pueden modificar. <br />Puede activar o
-            inactivar el poder si lo requiere.</p>
-        <div class="row justify-content-center">
-            <div class="col-sm-2">
-                <div class="picture-container">
-                    <div class="picture text-center">
-                        <img src="/img/default-avatar.png" alt="Avatar" class="w-full h-full object-cover" />
-                    </div>
-                    <h6 class="description text-center"><br />PODER</h6>
-                    <p class='text-center'>Fecha registro: <br />
-                        <%=poder.fecha%>
-                    </p>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="mb-0">
+                        <i class="fa fa-file-contract mr-2"></i>Detalles del Poder
+                    </h5>
+                </div>
+                <div class="col-md-4 text-right">
+                    <button type="button" class="btn btn-light btn-sm" id='btn_back_list'>
+                        <i class="fa fa-arrow-left mr-2"></i>Salir
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <div class='col-sm-5'>
-                <div class='form-group'>
-                    <label>Número de radicado:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="nc-icon nc-alert-circle-i"></i></span>
+        <div class="card-body">
+            <!-- Información Informativa -->
+            <div class="alert alert-info">
+                <h6 class="alert-heading">
+                    <i class="fa fa-info-circle mr-2"></i>Información Importante
+                </h6>
+                <p class="mb-0">
+                    Los siguientes datos son informativos y no se pueden modificar.<br>
+                    Puede activar o inactivar el poder si lo requiere.
+                </p>
+            </div>
+
+            <div class="row justify-content-center">
+                <!-- Avatar y Fecha -->
+                <div class="col-lg-2 col-md-3">
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <img src="/img/default-avatar.png" alt="Avatar"
+                                class="rounded-circle img-fluid border border-primary"
+                                style="width: 120px; height: 120px; object-fit: cover;" />
                         </div>
-                        <div class="form-control" style='background:#fff'>
-                            <input type="text" class="d-none" name="radicado" value='<%=poder.radicado%>' />
-                            <%=poder.radicado%>
-                        </div>
+                        <h5 class="text-primary font-weight-bold">PODER</h5>
+                        <small class="text-muted">
+                            <i class="fa fa-calendar mr-1"></i>Fecha registro:<br>
+                            <strong>
+                                <%=poder.fecha%>
+                            </strong>
+                        </small>
                     </div>
+                </div>
 
-                    <label>Poderdante nit:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="nc-icon nc-badge"></i></span>
+                <!-- Información del Poderdante -->
+                <div class="col-lg-5 col-md-4">
+                    <div class="card border-primary">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0 text-primary">
+                                <i class="fa fa-building mr-2"></i>Poderdante
+                            </h6>
                         </div>
-                        <div class="form-control" style='background:#fff'>
-                            <input type="text" class="d-none" name="lastname" value='<%=poder.poderdante_nit%>' />
-                            <%=poder.poderdante_nit%>
-                        </div>
-                    </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="font-weight-bold text-muted">
+                                    <i class="fa fa-hashtag mr-1"></i>Número de Radicado
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-primary text-white">
+                                            <i class="fa fa-file-alt"></i>
+                                        </span>
+                                    </div>
+                                    <div class="form-control bg-light">
+                                        <input type="hidden" name="radicado" value='<%=poder.radicado%>' />
+                                        <%=poder.radicado%>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <label>Poderdante razón social:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="nc-icon nc-badge"></i></span>
-                        </div>
-                        <div class="form-control" style='background:#fff'>
-                            <input type="text" class="d-none" name="lastname" value='<%=poder.razsoc2%>' />
-                            <%=capitalize(poder.poderdante_razsoc)%>
-                        </div>
-                    </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold text-muted">
+                                    <i class="fa fa-id-card mr-1"></i>NIT
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-primary text-white">
+                                            <i class="fa fa-building"></i>
+                                        </span>
+                                    </div>
+                                    <div class="form-control bg-light">
+                                        <input type="hidden" name="poderdante_nit" value='<%=poder.poderdante_nit%>' />
+                                        <%=poder.poderdante_nit%>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <label>Representante legal:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="nc-icon nc-single-02"></i></span>
-                        </div>
-                        <div class="form-control" style='background:#fff'>
-                            <input type="text" class="d-none" name="firstname" value='<%=poder.poderdante_repleg%>' />
-                            <%=capitalize(poder.poderdante_repleg)%>
-                        </div>
-                    </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold text-muted">
+                                    <i class="fa fa-building mr-1"></i>Razón Social
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-primary text-white">
+                                            <i class="fa fa-industry"></i>
+                                        </span>
+                                    </div>
+                                    <div class="form-control bg-light">
+                                        <input type="hidden" name="poderdante_razsoc" value='<%=poder.razsoc2%>' />
+                                        <%=capitalize(poder.poderdante_razsoc)%>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <label>Estado por subsidio:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="nc-icon nc-bulb-63"></i></span>
-                        </div>
-                        <div class="form-control" style='background:#fff'>
-                            <% if(habil_poderdante===false){ %>
-                                <input type="text" class="d-none" name="firstname" value='Rechazado' readonly
-                                    style='background:#fff' />Rechazado
-                                <% }else{ %>
-                                    <input type="text" class="d-none" name="firstname" value='Admitido' readonly
-                                        style='background:#fff' />Admitido
-                                    <% } %>
-                        </div>
-                    </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold text-muted">
+                                    <i class="fa fa-user mr-1"></i>Representante Legal
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-primary text-white">
+                                            <i class="fa fa-user-tie"></i>
+                                        </span>
+                                    </div>
+                                    <div class="form-control bg-light">
+                                        <input type="hidden" name="poderdante_repleg"
+                                            value='<%=poder.poderdante_repleg%>' />
+                                        <%=capitalize(poder.poderdante_repleg)%>
+                                    </div>
+                                </div>
+                            </div>
 
-
-                    <% has_checked=(poder.estado=='A' )? 'checked' :'' %>
-                        <label>Estado poder: <span id='show_estado_text'>
-                                <%= (poder.estado=='A' )? 'ACTIVO' : 'RECHAZADO' %>
-                            </span></label>
-                        <div class='input-group'>
-                            <input class="bootstrap-switch" id='estado_poder' type="checkbox" data-toggle="switch"
-                                data-handle-width="300" data-on-text="ACT" data-on-color="success"
-                                data-off-color="danger" data-off-text="REC" <%=has_checked%> />
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" style='border:0px'></span>
+                            <div class="form-group">
+                                <label class="font-weight-bold text-muted">
+                                    <i class="fa fa-shield-alt mr-1"></i>Estado por Subsidio
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-primary text-white">
+                                            <i class="fa fa-check-circle"></i>
+                                        </span>
+                                    </div>
+                                    <div class="form-control bg-light">
+                                        <% if(habil_poderdante===false){ %>
+                                            <span class="badge badge-danger">
+                                                <i class="fa fa-times mr-1"></i>Rechazado
+                                            </span>
+                                            <% }else{ %>
+                                                <span class="badge badge-success">
+                                                    <i class="fa fa-check mr-1"></i>Admitido
+                                                </span>
+                                                <% } %>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                </div>
-            </div>
-
-            <div class="col-sm-5">
-                <div class='form-group'>
-                    <br />
-                    <br />
-                    <br />
-                    <label>Apoderado nit:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="nc-icon nc-badge"></i></span>
-                        </div>
-                        <div class="form-control" style='background:#fff'>
-                            <input type="text" class="d-none" name="firstname" value='<%=poder.apoderado_nit%>' />
-                            <%=poder.apoderado_nit%>
-                        </div>
-                    </div>
-                    <label>Apoderado razón social:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="nc-icon nc-badge"></i></span>
-                        </div>
-                        <div class="form-control" style='background:#fff'>
-                            <input type="text" class="d-none" name="firstname" value='<%=poder.razsoc1%>' />
-                            <%=capitalize(poder.apoderado_razsoc)%>
-                        </div>
-                    </div>
-
-                    <label>Representante legal:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="nc-icon nc-single-02"></i></span>
-                        </div>
-                        <div class="form-control" style='background:#fff'>
-                            <input type="text" class="d-none" name="firstname" value='<%=poder.apoderado_repleg%>' />
-                            <%=capitalize(poder.apoderado_repleg)%>
-                        </div>
-                    </div>
-
-                    <label>Estado por subsidio:</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="nc-icon nc-bulb-63"></i></span>
-                        </div>
-                        <div class="form-control" style='background:#fff'>
-                            <% if(habil_apoderado===false){ %>
-                                <input type="text" class="d-none" name="firstname" value='Rechazado' />Rechazado
-                                <% }else{ %>
-                                    <input type="text" class="d-none" name="firstname" value='Admitido' />Admitido
-                                    <% } %>
-                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-sm-10">
-                <div class='form-group'>
-                    <label>Criterios Rechazo:</label>
-                    <div class='input-group' id='show_motivo_rechazo'>
-                        <% if(poder.notificacion){ %>
-                            <div class='form-control' style='min-height:50px'>
-                                <%=poder.notificacion%>
+                <!-- Información del Apoderado -->
+                <div class="col-lg-5 col-md-4">
+                    <div class="card border-success">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0 text-success">
+                                <i class="fa fa-user-shield mr-2"></i>Apoderado
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="font-weight-bold text-muted">
+                                    <i class="fa fa-id-card mr-1"></i>NIT
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-success text-white">
+                                            <i class="fa fa-building"></i>
+                                        </span>
+                                    </div>
+                                    <div class="form-control bg-light">
+                                        <input type="hidden" name="apoderado_nit" value='<%=poder.apoderado_nit%>' />
+                                        <%=poder.apoderado_nit%>
+                                    </div>
+                                </div>
                             </div>
-                            <% }else{ %>
-                                <div class='form-control' style='min-height:50px'>NINGUNO</div>
-                                <% } %>
+
+                            <div class="form-group">
+                                <label class="font-weight-bold text-muted">
+                                    <i class="fa fa-building mr-1"></i>Razón Social
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-success text-white">
+                                            <i class="fa fa-industry"></i>
+                                        </span>
+                                    </div>
+                                    <div class="form-control bg-light">
+                                        <input type="hidden" name="apoderado_razsoc" value='<%=poder.razsoc1%>' />
+                                        <%=capitalize(poder.apoderado_razsoc)%>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="font-weight-bold text-muted">
+                                    <i class="fa fa-user mr-1"></i>Representante Legal
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-success text-white">
+                                            <i class="fa fa-user-tie"></i>
+                                        </span>
+                                    </div>
+                                    <div class="form-control bg-light">
+                                        <input type="hidden" name="apoderado_repleg"
+                                            value='<%=poder.apoderado_repleg%>' />
+                                        <%=capitalize(poder.apoderado_repleg)%>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="font-weight-bold text-muted">
+                                    <i class="fa fa-shield-alt mr-1"></i>Estado por Subsidio
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-success text-white">
+                                            <i class="fa fa-check-circle"></i>
+                                        </span>
+                                    </div>
+                                    <div class="form-control bg-light">
+                                        <% if(habil_apoderado===false){ %>
+                                            <span class="badge badge-danger">
+                                                <i class="fa fa-times mr-1"></i>Rechazado
+                                            </span>
+                                            <% }else{ %>
+                                                <span class="badge badge-success">
+                                                    <i class="fa fa-check mr-1"></i>Admitido
+                                                </span>
+                                                <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Estado del Poder -->
+            <div class="row justify-content-center mt-4">
+                <div class="col-lg-6">
+                    <div class="card border-warning">
+                        <div class="card-header bg-warning text-white">
+                            <h6 class="mb-0">
+                                <i class="fa fa-toggle-on mr-2"></i>Estado del Poder
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <label class="font-weight-bold text-muted mb-0">Estado Actual:</label>
+                                    <h5 class="mb-0">
+                                        <span id='show_estado_text' class="badge
+                                            <%= (poder.estado=='A') ? 'badge-success' : 'badge-danger' %>">
+                                            <i
+                                                class="fa
+                                                <%= (poder.estado=='A') ? 'fa-check-circle' : 'fa-times-circle' %> mr-1"></i>
+                                            <%= (poder.estado=='A' ) ? 'ACTIVO' : 'RECHAZADO' %>
+                                        </span>
+                                    </h5>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <% has_checked=(poder.estado=='A' ) ? 'checked' : '' %>
+                                        <div class="custom-control custom-switch custom-switch-lg">
+                                            <input class="custom-control-input" id='estado_poder' type="checkbox"
+                                                <%=has_checked%> />
+                                            <label class="custom-control-label" for='estado_poder'>
+                                                <span class="switch-text">
+                                                    <%= (poder.estado=='A' ) ? 'Activo' : 'Inactivo' %>
+                                                </span>
+                                            </label>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Criterios de Rechazo -->
+            <div class="row justify-content-center mt-4">
+                <div class="col-lg-10">
+                    <div class="card border-danger">
+                        <div class="card-header bg-danger text-white">
+                            <h6 class="mb-0">
+                                <i class="fa fa-exclamation-triangle mr-2"></i>Criterios de Rechazo
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div id='show_motivo_rechazo'>
+                                <% if(poder.notificacion){ %>
+                                    <div class="alert alert-warning">
+                                        <i class="fa fa-info-circle mr-2"></i>
+                                        <%=poder.notificacion%>
+                                    </div>
+                                    <% }else{ %>
+                                        <div class="alert alert-success">
+                                            <i class="fa fa-check-circle mr-2"></i>
+                                            NINGUNO - El poder no presenta criterios de rechazo
+                                        </div>
+                                        <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="card-footer">
-        <h6 class="card-category"><br /></h6>
     </div>
 </div>

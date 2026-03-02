@@ -20,10 +20,6 @@ export default class EmpresaMasivo extends Controller {
             logger: this.logger,
             EmpresaModel: Empresa
         });
-
-        // Los métodos __setEmpresas y __addEmpresas fueron eliminados del service
-        // El controller principal ahora maneja las collections directamente
-
     }
 
     /**
@@ -35,11 +31,9 @@ export default class EmpresaMasivo extends Controller {
         const layout = new LayoutView();
         this.region.show(layout);
 
-        // La colección se maneja en el controller principal
 
         // Configurar vista principal
         const masivoView = new EmpresaMasivoView({
-            collection: [], // La vista se actualizará cuando el controller cargue los datos
             router: this.router,
             api: this.api,
             app: this.app
@@ -68,7 +62,7 @@ export default class EmpresaMasivo extends Controller {
                 editar: false,
                 masivo: false,
             },
-            router: this.router,
+            router: this.router as any,
             api: this.api,
             app: this.app
         });

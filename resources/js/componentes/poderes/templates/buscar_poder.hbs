@@ -1,80 +1,201 @@
-<div class="row">
-    <div class="col-md-4">
-        <span class="h4 mb-4 text-primary"> Buscar Poder</span>
-    </div>
-    <div class="col">
-        <div id='showSubnav'></div>
-    </div>
-</div>
-
-<div class="col-md-12 ml-auto mr-auto">
-    <div class="card-body">
-        <div class="row justify-content-center">
-            <div class="col-md-3">
-                <div class="picture-container">
-                    <div class="picture text-center">
-                        <img src="/img/default-avatar.png" alt="Avatar" class="w-full h-full object-cover" />
-                    </div>
-                    <h6 class="description text-center"><br />Apoderado - Poderdante </h6>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="mb-0">
+                        <i class="fa fa-search mr-2"></i>Buscar Poder
+                    </h5>
                 </div>
-            </div>
-
-            <div class='col-md-4'>
-                <div class='form-group'>
-                    <label>Poderdante nit</label>
-                    <div toggle-error='poderdante_nit' class="error text-danger" for="required"></div>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="nc-icon nc-badge"></i></span>
-                        </div>
-                        <input type="text" class="form-control" name="poderdante_nit" id='poderdante_nit'
-                            placeholder='poderdante nit' />
-                    </div>
-
-                    <label>Representante identificación</label>
-                    <div toggle-error='poderdante_identificacion' class="error text-danger" for="required"></div>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="nc-icon nc-single-02"></i></span>
-                        </div>
-                        <input type="text" class="form-control" name="poderdante_identificacion"
-                            id='poderdante_identificacion' placeholder='identificacion' />
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class='form-group'>
-                    <label>Apoderado nit</label>
-                    <div toggle-error='apoderado_nit' class="error text-danger" for="required"></div>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="nc-icon nc-badge"></i></span>
-                        </div>
-                        <input type="text" class="form-control" name="apoderado_nit" id='apoderado_nit'
-                            placeholder='apoderado nit' />
-                    </div>
-
-                    <label>Representante identificación</label>
-                    <div toggle-error='apoderado_identificacion' class="error text-danger" for="required"></div>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="nc-icon nc-single-02"></i></span>
-                        </div>
-                        <input type="text" class="form-control" name="apoderado_identificacion"
-                            id='apoderado_identificacion' placeholder='identificacion' />
-                    </div>
-                </div>
-            </div>
-
-            <div class='col-md-12'>
-                <div class='text-center'>
-                    <button type='button' class='btn btn-outline-success btn-round' id='btn_buscar_poder'><i
-                            class="fa fa-search"></i> Buscar</button>
+                <div class="col-md-4 text-right">
+                    <div id='showSubnav'></div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card-footer">
+
+        <div class="card-body">
+            <!-- Información de Búsqueda -->
+            <div class="alert alert-info">
+                <h6 class="alert-heading">
+                    <i class="fa fa-info-circle mr-2"></i>Criterios de Búsqueda
+                </h6>
+                <p class="mb-0">
+                    Ingrese los datos del poderdante y/o apoderado para buscar poderes existentes.<br>
+                    Puede usar uno o varios criterios de búsqueda.
+                </p>
+            </div>
+
+            <div class="row justify-content-center">
+                <!-- Avatar Central -->
+                <div class="col-lg-2 col-md-3">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <img src="/img/default-avatar.png" alt="Avatar"
+                                class="rounded-circle img-fluid border border-primary"
+                                style="width: 100px; height: 100px; object-fit: cover;" />
+                        </div>
+                        <h6 class="text-primary font-weight-bold">Apoderado - Poderdante</h6>
+                        <small class="text-muted">
+                            <i class="fa fa-exchange-alt mr-1"></i>Relación de Poder
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Formulario de Poderdante -->
+                <div class="col-lg-5 col-md-4">
+                    <div class="card border-primary">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0 text-primary">
+                                <i class="fa fa-building mr-2"></i>Datos del Poderdante
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="form_poderdante" class="needs-validation" novalidate>
+                                <div class="form-group">
+                                    <label for="poderdante_nit" class="font-weight-bold text-muted">
+                                        <i class="fa fa-id-card mr-1"></i>NIT del Poderdante
+                                    </label>
+                                    <div toggle-error='poderdante_nit' class="error text-danger small" for="required">
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-primary text-white">
+                                                <i class="fa fa-building"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" name="poderdante_nit"
+                                            id='poderdante_nit' placeholder='Ingrese NIT del poderdante' required />
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="poderdante_identificacion" class="font-weight-bold text-muted">
+                                        <i class="fa fa-user mr-1"></i>Identificación del Representante
+                                    </label>
+                                    <div toggle-error='poderdante_identificacion' class="error text-danger small"
+                                        for="required"></div>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-primary text-white">
+                                                <i class="fa fa-user-tie"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" name="poderdante_identificacion"
+                                            id='poderdante_identificacion'
+                                            placeholder='Identificación del representante' />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario de Apoderado -->
+                <div class="col-lg-5 col-md-4">
+                    <div class="card border-success">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0 text-success">
+                                <i class="fa fa-user-shield mr-2"></i>Datos del Apoderado
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="form_apoderado" class="needs-validation" novalidate>
+                                <div class="form-group">
+                                    <label for="apoderado_nit" class="font-weight-bold text-muted">
+                                        <i class="fa fa-id-card mr-1"></i>NIT del Apoderado
+                                    </label>
+                                    <div toggle-error='apoderado_nit' class="error text-danger small" for="required">
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-success text-white">
+                                                <i class="fa fa-building"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" name="apoderado_nit" id='apoderado_nit'
+                                            placeholder='Ingrese NIT del apoderado' required />
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="apoderado_identificacion" class="font-weight-bold text-muted">
+                                        <i class="fa fa-user mr-1"></i>Identificación del Representante
+                                    </label>
+                                    <div toggle-error='apoderado_identificacion' class="error text-danger small"
+                                        for="required"></div>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-success text-white">
+                                                <i class="fa fa-user-tie"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control" name="apoderado_identificacion"
+                                            id='apoderado_identificacion'
+                                            placeholder='Identificación del representante' />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="row justify-content-center mt-4">
+                <div class="col-lg-8 col-md-12">
+                    <div class="d-flex justify-content-center">
+                        <button type='button' class='btn btn-success btn-lg px-5 py-2 mr-3' id='btn_buscar_poder'>
+                            <i class="fa fa-search mr-2"></i>Buscar Poder
+                        </button>
+                        <button type='button' class='btn btn-secondary btn-lg px-5 py-2' id='btn_limpiar_busqueda'>
+                            <i class="fa fa-eraser mr-2"></i>Limpiar
+                        </button>
+                        <button type='button' class='btn btn-outline-primary btn-lg px-5 py-2 ml-3'
+                            id='btn_volver_lista'>
+                            <i class="fa fa-list mr-2"></i>Ver Todos
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Opciones Avanzadas -->
+            <div class="row justify-content-center mt-4">
+                <div class="col-lg-8">
+                    <div class="card border-info">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0 text-info">
+                                <i class="fa fa-cog mr-2"></i>Opciones de Búsqueda
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="buscar_exacto" checked>
+                                        <label class="custom-control-label font-weight-bold" for="buscar_exacto">
+                                            <i class="fa fa-bullseye mr-1"></i>Búsqueda Exacta
+                                        </label>
+                                        <small class="form-text text-muted">
+                                            Busca coincidencias exactas en los campos
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="incluir_inactivos">
+                                        <label class="custom-control-label font-weight-bold" for="incluir_inactivos">
+                                            <i class="fa fa-eye-slash mr-1"></i>Incluir Inactivos
+                                        </label>
+                                        <small class="form-text text-muted">
+                                            Muestra poderes inactivos en resultados
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

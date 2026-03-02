@@ -26,7 +26,7 @@ export default class EmpresaDetalleView extends ModelView {
             ...options,
             className: 'box',
         });
-        this.modelUse = options.EmpresaModel;
+        this.modelDOM = options.EmpresaModel;
         this.api = options.api;
         this.logger = options.logger;
         this.app = options.app;

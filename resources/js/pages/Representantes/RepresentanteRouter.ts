@@ -36,9 +36,7 @@ export default class RepresentanteRouter extends BackboneRouter {
 
     listaRepresentantes(): void {
         this.init();
-        if (this.controller && typeof this.controller.listaRepresentantes === 'function') {
-            this.controller.listaRepresentantes();
-        }
+        this.controller.listaRepresentantes();
     }
 
     crearRepresentante(): void {

@@ -1,30 +1,111 @@
-<div class='col-md-12'>
-    <div class='row justify-content-center'>
-        <div class="icon icon-primary">
-            <i class="fa fa-quote-right"></i>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0 text-center">
+                <i class="fa fa-exclamation-triangle mr-2"></i>Motivos de Rechazo del Poder
+            </h5>
         </div>
-        <p><span>&nbsp;Justificar el motivo de rechazo del poder.</span></p><br />
-    </div>
-    <div class='form-group'>
-        <label><i class='text-danger'>*</i> Criterio Rechazo: </label>
-        <div toggle-error='criterio_rechazo' class="error text-danger" for="required"></div>
-        <select class='form-control has-danger' id='criterio_rechazo' name='criterio_rechazo'>
-            <option value=''>Selecciona aquí..</option>
-            <% _.each(criterios_rechazos, function(criterio){ %>
-            <option value='<%=criterio.id%>'><%=criterio.estatutos + ' ' + criterio.detalle%></option>
-            <% })%>
-        </select>
-        <button type='button' class='btn btn-info btn-sm' id='copyMemory'>Copy</button>
-    </div>
-    <div class='form-group'>
-        <label><i class='text-danger'>*</i> Nota: </label>
-        <div toggle-error='motivo' class="error text-danger" for="required"></div>
-        <textarea rows="4" class="form-control has-danger" id='motivo' name="motivo" placeholder='motivo rechazo aquí.' style='max-height:initial'></textarea>
-    </div>
-    <div class='form-group'>
-        <p class='text-center'>
-            <button type='button' class='btn btn-ms btn-round btn-success' id='bt_rechazo_poder'>Continuar</button>&nbsp;
-            <button type='button' class='btn btn-ms btn-round btn-primary' id="bt_salir"> Salir </button>
-        </p>
+        <div class="card-body">
+            <!-- Mensaje Informativo -->
+            <div class="row justify-content-center mb-4">
+                <div class="col-lg-8 text-center">
+                    <div class="alert alert-warning">
+                        <div class="d-flex align-items-center">
+                            <div class="mr-3">
+                                <i class="fa fa-quote-right fa-2x text-warning"></i>
+                            </div>
+                            <div>
+                                <h6 class="alert-heading mb-1">Justificación del Rechazo</h6>
+                                <p class="mb-0">
+                                    Por favor, justifique el motivo de rechazo del poder seleccionando un criterio
+                                    y proporcionando una nota detallada.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form id="form_rechazo_poder" class="needs-validation" novalidate>
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <!-- Criterio de Rechazo -->
+                        <div class="form-group">
+                            <label for="criterio_rechazo" class="font-weight-bold text-muted">
+                                <i class="fa fa-list-alt text-danger mr-1"></i>
+                                Criterio de Rechazo <span class="text-danger">*</span>
+                            </label>
+                            <div toggle-error='criterio_rechazo' class="error text-danger small" for="required"></div>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text bg-danger text-white">
+                                        <i class="fa fa-gavel"></i>
+                                    </span>
+                                </div>
+                                <select class='form-control' id='criterio_rechazo' name='criterio_rechazo' required>
+                                    <option value=''>Selecciona un criterio...</option>
+                                    <% _.each(criterios_rechazos, function(criterio){ %>
+                                        <option value='<%=criterio.id%>'>
+                                            <%=criterio.estatutos + ' ' + criterio.detalle%>
+                                        </option>
+                                        <% })%>
+                                </select>
+                                <div class="input-group-append">
+                                    <button type='button' class='btn btn-info' id='copyMemory' title="Copiar criterio">
+                                        <i class="fa fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nota Detallada -->
+                        <div class="form-group">
+                            <label for="motivo" class="font-weight-bold text-muted">
+                                <i class="fa fa-comment-alt text-danger mr-1"></i>
+                                Nota Detallada <span class="text-danger">*</span>
+                            </label>
+                            <div toggle-error='motivo' class="error text-danger small" for="required"></div>
+                            <textarea rows="4" class="form-control" id='motivo' name="motivo"
+                                placeholder='Describa detalladamente los motivos del rechazo...'
+                                style='max-height:initial' required></textarea>
+                            <small class="form-text text-muted">
+                                Proporcione una explicación clara y detallada de los motivos del rechazo
+                            </small>
+                        </div>
+
+                        <!-- Opciones Adicionales -->
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" name="notificar_rechazo"
+                                    id="notificar_rechazo" checked>
+                                <label class="custom-control-label font-weight-bold" for="notificar_rechazo">
+                                    <i class="fa fa-bell mr-1"></i>Notificar Rechazo
+                                </label>
+                                <small class="form-text text-muted">
+                                    Envía notificación del rechazo a las partes involucradas
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="row justify-content-center mt-4">
+                    <div class="col-lg-8">
+                        <div class="d-flex justify-content-center">
+                            <button type='button' class='btn btn-danger btn-lg px-4 py-2 mr-2' id='bt_rechazo_poder'>
+                                <i class="fa fa-times-circle mr-2"></i>Confirmar Rechazo
+                            </button>
+                            <button type='button' class='btn btn-warning btn-lg px-4 py-2 mr-2' id='bt_previsualizar'>
+                                <i class="fa fa-eye mr-2"></i>Previsualizar
+                            </button>
+                            <button type='button' class='btn btn-secondary btn-lg px-4 py-2' id="bt_salir">
+                                <i class="fa fa-arrow-left mr-2"></i>Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>

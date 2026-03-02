@@ -19,25 +19,17 @@ export default class EmpresaEditar extends Controller {
             logger: this.logger,
             EmpresaModel: Empresa
         });
-
-        // Los métodos __setEmpresas y __addEmpresas fueron eliminados del service
-        // El controller principal ahora maneja las collections directamente
     }
 
     /**
      * Mostrar vista de edición de empresa
      */
     editaEmpresa(model: any): void {
-        console.log('EmpresaEditar.editaEmpresa() called', model);
-
         const layout: LayoutView = new LayoutView();
         this.region.show(layout);
 
-        // La colección se maneja en el controller principal
-
         console.log('Habiles', model.toJSON());
 
-        // Configurar vista principal
         const editarView = new EmpresaEditarView({
             model: model,
             router: this.router,
@@ -45,7 +37,6 @@ export default class EmpresaEditar extends Controller {
             app: this.app,
             EmpresaModel: Empresa
         });
-
 
         this.listenTo(editarView, 'form:edit', this.empresaService.__saveEmpresa);
         this.listenTo(editarView, 'notify', this.empresaService.__notifyPlataforma);
@@ -73,7 +64,7 @@ export default class EmpresaEditar extends Controller {
             },
             api: this.api,
             app: this.app,
-            router: this.router
+            router: this.router as any
         });
 
         const subheaderRegion = layout.getRegion('subheader');

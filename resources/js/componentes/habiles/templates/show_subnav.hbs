@@ -1,27 +1,28 @@
 <div class="row">
-    <div class="col-auto">
-        <h4 class="text-primary mt-2"> <%=titulo%></h4>
-    </div>
     <div class="col">
         <div class="nav justify-content-end">
-            <button class="nav-link btn btn-info" id='bt_listar' type="button" <%=(!listar)? 'disabled': '' %>>
+            <button class="nav-link btn btn-info" id='bt_listar' type="button" <%=(!listar)? 'disabled' : '' %>>
                 &nbsp;Listar
             </button>
             <? if (Session::getData("SuperAdmin") == 1) { ?>
-                <button class="nav-link btn btn-primary" id='bt_export_data' type="button" <%=(!exportar)? 'disabled': '' %>>
-                    &nbsp;Exportar
-                </button>
+            <button class="nav-link btn btn-primary" id='bt_export_data' type="button" <%=(!exportar)? 'disabled' : ''
+                %>>
+                &nbsp;Exportar
+            </button>
             <? } ?>
-            <button class="nav-link btn btn-success" id='bt_nuevo_registro' type="button" <%=(!crear)? 'disabled': '' %>>
+            <button class="nav-link btn btn-success" id='bt_nuevo_registro' type="button" <%=(!crear)? 'disabled' : ''
+                %>>
                 &nbsp;Nuevo
             </button>
-            <button class="nav-link btn btn-default" id='bt_edita_nav_registro' type="button" <%=(!editar)? 'disabled': '' %>>
+            <button class="nav-link btn btn-default" id='bt_edita_nav_registro' type="button" <%=(!editar)? 'disabled'
+                : '' %>>
                 &nbsp;Editar
             </button>
             <? if (Session::getData("SuperAdmin") == 1) { ?>
-                <button class="nav-link btn btn-warning" id='bt_masivo_registro' type="button" <%=(!masivo)? 'disabled': '' %>>
-                    &nbsp;Cargar Masivo
-                </button>
+            <button class="nav-link btn btn-warning" id='bt_masivo_registro' type="button" <%=(!masivo)? 'disabled' : ''
+                %>>
+                &nbsp;Cargar Masivo
+            </button>
             <? } ?>
         </div>
     </div>
