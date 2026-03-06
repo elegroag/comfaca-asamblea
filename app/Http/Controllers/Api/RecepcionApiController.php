@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Services\AsistenciaService;
 use App\Services\BuscadorService;
 use App\Services\CruzarHabilesService;
@@ -63,7 +64,7 @@ class RecepcionApiController extends Controller
                 mesa_id,
                 ((SELECT COUNT(*)
                     FROM poderes
-                        WHERE poderes.nit1 = rgi.nit AND
+                        WHERE (poderes.poderdante_nit = rgi.nit OR poderes.apoderado_nit = rgi.nit) AND
                             poderes.estado ='A' AND
                             poderes.asamblea_id='{$this->idAsamblea}') + rgi.votos) as 'votos',
                 rgi.estado,

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\AsaMesas;
 use App\Models\AsaConsenso;
 use App\Services\Asamblea\AsambleaService;

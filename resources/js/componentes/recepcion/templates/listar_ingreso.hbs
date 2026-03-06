@@ -1,254 +1,309 @@
-<div class="container-fluid">
-    <!-- Header Principal -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h3 class="text-primary font-weight-bold mb-0">
-                <i class="fa fa-sign-in mr-2"></i>
-                <span id="titulo_lista_recepcion">Ingresos Presenciales</span>
-            </h3>
-            <p class="text-muted mb-0">Gestión de ingresos y asistencia a la asamblea</p>
-        </div>
-        <div class="col-md-6">
-            <div class="d-flex justify-content-end">
-                <button type="button" id="bt_reporte_data" class="btn btn-danger rounded-pill mr-2">
-                    <i class="fa fa-file-pdf-o mr-2"></i>
-                    Reporte Quorum
-                </button>
-                <button type="button" id="bt_export_data" class="btn btn-success rounded-pill">
-                    <i class="fa fa-file-excel-o mr-2"></i>
-                    Exportar
-                </button>
-            </div>
-        </div>
+<div class="row">
+    <div class="col-md-4">
+        <span class="h4 mb-4 text-primary">Ingresos</span>
     </div>
-
-    <!-- Card Principal -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h5 class="card-title mb-0">
-                <i class="fa fa-list mr-2"></i>
-                Lista de Ingresos
-            </h5>
-        </div>
-        <div class="card-body">
-            <!-- Tabla de Ingresos -->
-            <div class="table-responsive">
-                <table class="table table-hover table-striped" id="tb_data_asistencias">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>
-                                <i class="fa fa-building mr-1"></i>
-                                Empresa
-                            </th>
-                            <th>
-                                <i class="fa fa-hashtag mr-1"></i>
-                                Nit
-                            </th>
-                            <th>
-                                <i class="fa fa-id-card mr-1"></i>
-                                Cédula Representante
-                            </th>
-                            <th>
-                                <i class="fa fa-clock-o mr-1"></i>
-                                Hora
-                            </th>
-                            <th>
-                                <i class="fa fa-calendar mr-1"></i>
-                                Fecha
-                            </th>
-                            <th>
-                                <i class="fa fa-toggle-on mr-1"></i>
-                                Estado
-                            </th>
-                            <th>
-                                <i class="fa fa-vote-yea mr-1"></i>
-                                Votos
-                            </th>
-                            <th class="text-center">
-                                <i class="fa fa-cogs mr-1"></i>
-                                Acciones
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% _.each(asistencias, function(asistente, ai){ %>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <i class="fa fa-building text-info mr-2"></i>
-                                        <%=capitalize(asistente.razsoc)%>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <i class="fa fa-hashtag text-muted mr-2"></i>
-                                        <span class="badge badge-secondary">
-                                            <%=asistente.nit%>
-                                        </span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <i class="fa fa-id-card text-primary mr-2"></i>
-                                        <span class="font-weight-bold">
-                                            <%=asistente.cedrep%>
-                                        </span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <i class="fa fa-clock-o text-warning mr-2"></i>
-                                        <%=asistente.hora%>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <i class="fa fa-calendar text-success mr-2"></i>
-                                        <%=asistente.fecha%>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <% if(asistente.detalle_estado=='Activo' || asistente.detalle_estado=='Presente'
-                                            ){ %>
-                                            <span class="badge badge-success">
-                                                <i class="fa fa-check-circle mr-1"></i>
-                                                <%=asistente.detalle_estado%>
-                                            </span>
-                                            <% }else if(asistente.detalle_estado=='Inactivo' ||
-                                                asistente.detalle_estado=='Ausente' ){ %>
-                                                <span class="badge badge-danger">
-                                                    <i class="fa fa-times-circle mr-1"></i>
-                                                    <%=asistente.detalle_estado%>
-                                                </span>
-                                                <% }else{ %>
-                                                    <span class="badge badge-warning">
-                                                        <i class="fa fa-clock-o mr-1"></i>
-                                                        <%=asistente.detalle_estado%>
-                                                    </span>
-                                                    <% } %>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <i class="fa fa-vote-yea text-info mr-2"></i>
-                                        <span class="badge badge-primary">
-                                            <%=asistente.votos%>
-                                        </span>
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <button type="button" data-toggle="bt_registro_ingreso"
-                                            data-code="<%=asistente.documento%>"
-                                            class="btn btn-info btn-sm rounded-circle" title="Ver detalles del ingreso">
-                                            <i class="fa fa-eye"></i>
-                                        </button>
-                                        <? if (Session::getData("SuperAdmin") == 1) { ?>
-                                        <button type="button" data-toggle="bt_borrar_ingreso"
-                                            data-code="<%=asistente.documento%>"
-                                            class="btn btn-danger btn-sm rounded-circle" title="Eliminar ingreso">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                        <? } ?>
-                                    </div>
-                                </td>
-                            </tr>
-                            <% }) %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="card-footer bg-light">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <small class="text-muted">
-                        <i class="fa fa-info-circle mr-1"></i>
-                        Puede ver los detalles de cada ingreso o generar reportes de quorum.
-                    </small>
-                </div>
-                <div class="col-md-6 text-md-right">
-                    <small class="text-muted">
-                        <i class="fa fa-users mr-1"></i>
-                        Total de ingresos: <span class="font-weight-bold">
-                            <%=asistencias.length%>
-                        </span>
-                    </small>
-                </div>
-            </div>
-        </div>
+    <div class="col">
+        <nav class="nav justify-content-end">
+            <a class="nav-link" id='bt_reporte_data' href="#" style='padding:.1rem 1rem'>
+                <span class="btn btn-sm btn-icon btn-round btn-danger"><i
+                        class="fa fa-file-pdf-o"></i></span>&nbsp;Reporte
+            </a>
+            <a class="nav-link" id='bt_export_data' href="#" style='padding:.1rem 1rem'>
+                <span class="btn btn-sm btn-icon btn-round btn-success"><i
+                        class="fa fa-file-excel-o"></i></span>&nbsp;Exportar
+            </a>
+        </nav>
     </div>
 </div>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered dtr-inline" id='<%=datatable%>'>
+        <thead>
+            <tr>
+                <th>Empresa</th>
+                <th>NIT</th>
+                <th>Cédula Representante</th>
+                <th>Hora</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Votos</th>
+                <th><i class='nc-icon nc-tap-01'></i></th>
+            </tr>
+        </thead>
+        <tbody>
+            <% _.each(asistencias, function(asistente, ai){ %>
+                <tr>
+                    <td>
+                        <%=asistente.razsoc%>
+                    </td>
+                    <td>
+                        <%=asistente.nit%>
+                    </td>
+                    <td>
+                        <%=asistente.cedrep%>
+                    </td>
+                    <td>
+                        <%=asistente.hora%>
+                    </td>
+                    <td>
+                        <%=asistente.fecha%>
+                    </td>
+                    <td>
+                        <% if(asistente.detalle_estado=='Activo' || asistente.detalle_estado=='Presente' ){ %>
+                            <span class="badge badge-success">
+                                <%=asistente.detalle_estado%>
+                            </span>
+                            <% }else if(asistente.detalle_estado=='Inactivo' || asistente.detalle_estado=='Ausente' ){
+                                %>
+                                <span class="badge badge-danger">
+                                    <%=asistente.detalle_estado%>
+                                </span>
+                                <% }else{ %>
+                                    <span class="badge badge-warning">
+                                        <%=asistente.detalle_estado%>
+                                    </span>
+                                    <% } %>
+                    </td>
+                    <td>
+                        <%=asistente.votos%>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" data-toggle="bt_registro_ingreso" data-code="<%=asistente.documento%>"
+                                class="btn btn-sm btn-info" title="Ver detalles">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                            <? if (Session::getData("SuperAdmin") == 1) { ?>
+                            <button type="button" data-toggle="bt_borrar_ingreso" data-code="<%=asistente.documento%>"
+                                class="btn btn-sm btn-danger" title="Eliminar">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                            <? } ?>
+                        </div>
+                    </td>
+                </tr>
+                <% }); %>
+        </tbody>
+    </table>
+</div>
+
+
 
 <style>
-    .rounded-pill {
-        border-radius: 50px;
+    #<%=datatable%>_wrapper {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 12px;
+        color: #111827;
     }
 
-    .card {
-        transition: transform 0.2s ease-in-out;
+    #<%=datatable%>_wrapper .row {
+        margin: 0;
+        gap: 10px;
     }
 
-    .card:hover {
-        transform: translateY(-2px);
+    #<%=datatable%>_wrapper .dt-length,
+    #<%=datatable%>_wrapper .dt-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        color: #374151;
     }
 
-    .badge {
+    #<%=datatable%>_wrapper .form-select,
+    #<%=datatable%>_wrapper .form-control {
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        min-height: 34px;
+        padding: 0.35rem 0.6rem;
         font-size: 0.875rem;
+        box-shadow: none;
+        background: #fff;
     }
 
-    .table-hover tbody tr:hover {
-        background-color: rgba(0, 123, 255, 0.1);
+    #<%=datatable%>_wrapper .form-select:focus,
+    #<%=datatable%>_wrapper .form-control:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
     }
 
-    .thead-light th {
-        background-color: #f8f9fa;
-        border-color: #dee2e6;
-        font-weight: 600;
-        color: #495057;
+    #<%=datatable%> {
+        width: 100% !important;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.92rem;
     }
 
-    .btn-group .btn {
-        margin: 0 2px;
+    #<%=datatable%>_wrapper thead th {
+        background: #f9fafb;
+        color: #4b5563;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+        border-right: 1px solid #e5e7eb;
     }
 
-    .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
+    #<%=datatable%>_wrapper tbody td {
+        border: 1px solid #f1f5f9;
+        vertical-align: middle;
+        padding: 0.2rem 0.1rem;
     }
 
-    .btn-primary:hover:not(:disabled) {
-        background-color: #0056b3;
-        border-color: #004085;
+    #<%=datatable%>_wrapper tbody tr:hover {
+        background: #f8fafc;
     }
 
-    .btn-success {
-        background-color: #28a745;
-        border-color: #28a745;
+    #<%=datatable%>_wrapper .btn-group .btn {
+        border-radius: 8px;
+        border: 0;
+        min-width: 34px;
+        min-height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .btn-success:hover:not(:disabled) {
-        background-color: #218838;
-        border-color: #1e7e34;
+    #<%=datatable%>_wrapper .btn-group .btn+.btn {
+        margin-left: 6px;
     }
 
-    .btn-danger {
-        background-color: #dc3545;
-        border-color: #dc3545;
+    #<%=datatable%>_wrapper .dt-info,
+    #<%=datatable%>_wrapper .dt-paging {
+        margin-top: 10px;
+        font-size: 0.86rem;
+        color: #6b7280;
     }
 
-    .btn-danger:hover:not(:disabled) {
-        background-color: #c82333;
-        border-color: #bd2130;
+    #<%=datatable%>_wrapper .dt-paging-button {
+        border: none;
+        border-radius: 8px;
+        padding: 0.1rem;
+        margin-left: 4px;
+        background: #fff;
+        color: #374151 !important;
     }
 
-    .btn-info {
-        background-color: #17a2b8;
-        border-color: #17a2b8;
+    #<%=datatable%>_wrapper .dt-paging nav,
+    #<%=datatable%>_wrapper .dt-paging .pagination {
+        margin: 0;
     }
 
-    .btn-info:hover:not(:disabled) {
-        background-color: #138496;
-        border-color: #117a8b;
+    #<%=datatable%>_wrapper .dt-paging .pagination {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging .page-item {
+        margin: 0;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging .page-link {
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        min-width: 36px;
+        height: 36px;
+        padding: 0 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        color: #374151;
+        font-size: 0.85rem;
+        line-height: 1;
+        box-shadow: none;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging .page-link:hover {
+        background: #eff6ff;
+        border-color: #93c5fd;
+        color: #1d4ed8;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging .page-item.active .page-link,
+    #<%=datatable%>_wrapper .dt-paging .dt-paging-button.current .page-link {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #ffffff;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging .page-item.disabled .page-link,
+    #<%=datatable%>_wrapper .dt-paging .dt-paging-button.disabled .page-link {
+        background: #f9fafb;
+        border-color: #e5e7eb;
+        color: #9ca3af;
+        opacity: 1;
+        cursor: not-allowed;
+    }
+
+    #<%=datatable%>_wrapper .dt-paging-button.current,
+    #<%=datatable%>_wrapper .dt-paging-button:hover {
+        background: #eff6ff !important;
+        border-color: #93c5fd;
+        color: #1d4ed8 !important;
+    }
+
+    #<%=datatable%>_wrapper .justify-content-between:first-child {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: .3rem;
+    }
+
+    @media (max-width: 1024px) {
+        #<%=datatable%>_wrapper {
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        #<%=datatable%>_wrapper {
+            font-size: 0.86rem;
+        }
+
+        #<%=datatable%>_wrapper thead th,
+        #<%=datatable%>_wrapper tbody td {
+            padding: 0.55rem 0.6rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        #<%=datatable%>_wrapper .dt-layout-start,
+        #<%=datatable%>_wrapper .dt-layout-end {
+            width: 100%;
+            justify-content: flex-start !important;
+        }
+
+        #<%=datatable%>_wrapper .dt-length,
+        #<%=datatable%>_wrapper .dt-search {
+            width: 100%;
+        }
+
+        #<%=datatable%>_wrapper .dt-search input,
+        #<%=datatable%>_wrapper .dt-length select {
+            width: 100%;
+        }
+
+        #<%=datatable%>_wrapper {
+            min-width: 760px;
+        }
+
+        #<%=datatable%>_wrapper .dt-info,
+        #<%=datatable%>_wrapper .dt-paging {
+            width: 100%;
+            text-align: left;
+        }
+
+        #<%=datatable%>_wrapper .dt-paging .pagination {
+            justify-content: flex-start;
+        }
+
+        #<%=datatable%>_wrapper .dt-paging .page-link {
+            min-width: 34px;
+            height: 34px;
+            font-size: 0.8rem;
+        }
     }
 </style>

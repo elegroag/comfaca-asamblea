@@ -12,7 +12,6 @@ use Inertia\Inertia;
 
 class AuthController extends Controller
 {
-    function initialize() {}
 
     /** Vista de login */
     public function login()
@@ -22,7 +21,6 @@ class AuthController extends Controller
             return redirect()->route('dashboard');
         }
 
-        $this->initialize('auth');
         return Inertia::render('Auth/Login');
     }
 
@@ -33,8 +31,6 @@ class AuthController extends Controller
         if (Auth::check()) {
             return redirect()->route('dashboard');
         }
-
-        $this->initialize('auth');
         return Inertia::render('Auth/Register');
     }
 

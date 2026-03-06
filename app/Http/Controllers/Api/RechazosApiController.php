@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Empresas;
 use App\Models\RegistroIngresos;
 use App\Models\Rechazos;
@@ -20,7 +21,6 @@ class RechazosApiController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
         $this->idAsamblea = $this->getAsambleaActiva();
     }
 

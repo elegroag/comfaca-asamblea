@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TrabajadoresController;
+use App\Http\Controllers\Api\TrabajadoresApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,16 +13,16 @@ use App\Http\Controllers\TrabajadoresController;
 */
 
 Route::middleware(['auth.api'])->prefix('trabajadores')->name('trabajadores.')->group(function () {
-    Route::get('/', [TrabajadoresController::class, 'index'])->name('index');
-    Route::get('/listar', [TrabajadoresController::class, 'listar'])->name('listar');
-    Route::post('/cargue-masivo', [TrabajadoresController::class, 'cargue_masivo'])->name('cargue.masivo');
-    Route::post('/crear', [TrabajadoresController::class, 'crear'])->name('crear');
-    Route::post('/save-trabajador', [TrabajadoresController::class, 'saveTrabajador'])->name('save');
-    Route::delete('/eliminar', [TrabajadoresController::class, 'eliminar'])->name('eliminar');
-    Route::get('/exportar-lista', [TrabajadoresController::class, 'exportar_lista'])->name('exportar.lista');
-    Route::get('/buscar/{cedula}', [TrabajadoresController::class, 'buscar'])->name('buscar');
-    Route::get('/detalle/{id}', [TrabajadoresController::class, 'detalle'])->name('detalle');
-    Route::put('/{id}', [TrabajadoresController::class, 'actualizar'])->name('actualizar');
-    Route::get('/validar/{cedula}', [TrabajadoresController::class, 'validar'])->name('validar');
-    Route::get('/validar/{cedula}/{nittra}', [TrabajadoresController::class, 'validar'])->name('validar.completo');
+    Route::get('/', [TrabajadoresApiController::class, 'index'])->name('index');
+    Route::get('/listar', [TrabajadoresApiController::class, 'listar'])->name('listar');
+    Route::post('/cargue-masivo', [TrabajadoresApiController::class, 'cargue_masivo'])->name('cargue.masivo');
+    Route::post('/crear', [TrabajadoresApiController::class, 'crear'])->name('crear');
+    Route::post('/save-trabajador', [TrabajadoresApiController::class, 'saveTrabajador'])->name('save');
+    Route::delete('/eliminar', [TrabajadoresApiController::class, 'eliminar'])->name('eliminar');
+    Route::get('/exportar-lista', [TrabajadoresApiController::class, 'exportar_lista'])->name('exportar.lista');
+    Route::get('/buscar/{cedula}', [TrabajadoresApiController::class, 'buscar'])->name('buscar');
+    Route::get('/detalle/{id}', [TrabajadoresApiController::class, 'detalle'])->name('detalle');
+    Route::put('/{id}', [TrabajadoresApiController::class, 'actualizar'])->name('actualizar');
+    Route::get('/validar/{cedula}', [TrabajadoresApiController::class, 'validar'])->name('validar');
+    Route::get('/validar/{cedula}/{nittra}', [TrabajadoresApiController::class, 'validar'])->name('validar.completo');
 });

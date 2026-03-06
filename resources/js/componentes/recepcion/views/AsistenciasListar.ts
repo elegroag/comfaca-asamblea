@@ -1,6 +1,7 @@
 import { BackboneView } from "@/common/Bone";
 import RecepcionService from "@/pages/Recepcion/RecepcionService";
 import DataTable from "datatables.net-bs5";
+import tmp_asistencias_listar from "@/componentes/recepcion/templates/listar_ingreso.hbs?raw";
 
 interface AsistenciasListarOptions {
     collection?: any;
@@ -13,7 +14,6 @@ interface AsistenciasListarOptions {
 }
 
 export default class AsistenciasListar extends BackboneView {
-    template!: string;
     app: any;
     api: any;
     logger: any;
@@ -33,11 +33,11 @@ export default class AsistenciasListar extends BackboneView {
             logger: this.logger,
             app: this.app,
         });
+
     }
 
-    initialize() {
-        // Template ya inicializado en el constructor
-        this.render();
+    get className() {
+        return 'box';
     }
 
     events() {
@@ -50,8 +50,8 @@ export default class AsistenciasListar extends BackboneView {
     }
 
     render() {
-        let _template = _.template(this.template);
-        this.$el.html(_template({ asistencias: this.collection.toJSON() }));
+        let _template = _.template(tmp_asistencias_listar);
+        this.$el.html(_template({ asistencias: this.collection.toJSON(), datatable: 'tb_data_asistencias' }));
         this.initTable();
         return this;
     }
@@ -70,7 +70,7 @@ export default class AsistenciasListar extends BackboneView {
                     if (success) {
                         try {
                             const documento = target.attr('data-code');
-                            const response = await this.recepcionService.__removerInscripcion(documento);
+                            const response = await this.recepcionService.removerInscripcion(documento);
 
                             if (response.status === 200) {
                                 // Recargar la página actual de forma segura
@@ -116,7 +116,7 @@ export default class AsistenciasListar extends BackboneView {
                 callback: async (success: boolean) => {
                     if (success) {
                         try {
-                            const response = await this.recepcionService.__exportarLista();
+                            const response = await this.recepcionService.exportarLista();
 
                             if (response.status === 200) {
                                 if (response.data.status === 200) {

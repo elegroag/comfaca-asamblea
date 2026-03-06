@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\InterventoresController;
+use App\Http\Controllers\Api\InterventoresApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,8 +13,8 @@ use App\Http\Controllers\InterventoresController;
 */
 
 Route::middleware(['auth.api'])->prefix('interventores')->name('interventores.')->group(function () {
-    Route::get('/', [InterventoresController::class, 'index'])->name('index');
-    Route::get('/listar', [InterventoresController::class, 'listar'])->name('listar');
-    Route::post('/cargue-masivo', [InterventoresController::class, 'cargueMasivo'])->name('cargue.masivo');
-    Route::get('/exportar-lista', [InterventoresController::class, 'exportarLista'])->name('exportar.lista');
+    Route::get('/', [InterventoresApiController::class, 'index'])->name('index');
+    Route::get('/listar', [InterventoresApiController::class, 'listar'])->name('listar');
+    Route::post('/cargue-masivo', [InterventoresApiController::class, 'cargueMasivo'])->name('cargue.masivo');
+    Route::get('/exportar-lista', [InterventoresApiController::class, 'exportarLista'])->name('exportar.lista');
 });

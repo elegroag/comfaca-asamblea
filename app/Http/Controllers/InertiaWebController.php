@@ -18,10 +18,7 @@ class InertiaWebController extends Controller
 
     public function dashboard()
     {
-        $this->initialize('primary');
-
         $user = auth()->user();
-
         // Obtener estadísticas de tareas del usuario
         $stats = [
             'totalTasks' => Task::where('usuario_sisu_id', $user->id)->count(),
@@ -141,7 +138,7 @@ class InertiaWebController extends Controller
         }
 
         return Inertia::render('Consensos', [
-            'titulo' => 'Consensos',
+            'title' => 'Consensos',
             'itemMenuSidebar' => 9
         ]);
     }
@@ -156,7 +153,7 @@ class InertiaWebController extends Controller
         }
 
         return Inertia::render('Mesas', [
-            'titulo' => 'Mesas',
+            'title' => 'Mesas',
             'itemMenuSidebar' => 5
         ]);
     }
@@ -174,7 +171,7 @@ class InertiaWebController extends Controller
 
         return Inertia::render('Usuarios', [
             'asamblea' => $asamblea,
-            'titulo' => 'Usuarios',
+            'title' => 'Usuarios',
             'itemMenuSidebar' => 11
         ]);
     }
@@ -192,7 +189,7 @@ class InertiaWebController extends Controller
 
         return Inertia::render('Novedades', [
             'asamblea' => $asamblea,
-            'titulo' => 'Novedades',
+            'title' => 'Novedades',
             'itemMenuSidebar' => 12
         ]);
     }
@@ -210,7 +207,7 @@ class InertiaWebController extends Controller
 
         return Inertia::render('Recepcion', [
             'asamblea' => $asamblea,
-            'titulo' => 'Recepción',
+            'title' => 'Recepción',
             'itemMenuSidebar' => 1
         ]);
     }
@@ -228,7 +225,7 @@ class InertiaWebController extends Controller
 
         return Inertia::render('Rechazos', [
             'asamblea' => $asamblea,
-            'titulo' => 'Rechazos',
+            'title' => 'Rechazos',
             'itemMenuSidebar' => 2
         ]);
     }
@@ -247,7 +244,7 @@ class InertiaWebController extends Controller
 
         return Inertia::render('Representantes', [
             'asamblea' => $asamblea,
-            'titulo' => 'Representantes',
+            'title' => 'Representantes',
             'itemMenuSidebar' => 3
         ]);
     }
@@ -265,7 +262,7 @@ class InertiaWebController extends Controller
 
         return Inertia::render('Interventores', [
             'asamblea' => $asamblea,
-            'titulo' => 'Interventores',
+            'title' => 'Interventores',
             'itemMenuSidebar' => 4
         ]);
     }
@@ -273,7 +270,7 @@ class InertiaWebController extends Controller
     public function perfil()
     {
         return Inertia::render('Perfil', [
-            'titulo' => 'Perfil',
+            'title' => 'Perfil',
             'itemMenuSidebar' => 15
         ]);
     }

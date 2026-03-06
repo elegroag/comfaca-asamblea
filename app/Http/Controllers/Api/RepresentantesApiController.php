@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Services\RepresentanteService;
 use App\Models\AsaRepresentantes;
 use App\Models\Empresas;
@@ -19,7 +20,6 @@ class RepresentantesApiController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
         $this->idAsamblea = $this->getAsambleaActiva();
     }
 

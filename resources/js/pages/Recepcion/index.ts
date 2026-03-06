@@ -18,7 +18,7 @@ const Recepcion: DashboardComponent = {
     isLoading: false,
 
     render(props: BackendAuthProps): string {
-        return "<div class='w-full h-full bg-gray-50 font-sans' id='contentView'></div>";
+        return "<div class='w-100 h-100 bg-gray-light font-weight-normal' id='contentView'></div>";
     },
 
     mount(el: HTMLElement, props: BackendAuthProps): void {
@@ -30,9 +30,8 @@ const Recepcion: DashboardComponent = {
             viewFooter
         } = useLayout(props);
 
-        // Patrón descentralizado: $App.startApp() como Habiles
         $App.startApp(RouterRecepcion, {
-            defaultRoute: "listar",
+            defaultRoute: "registro-ingresos",
             mainRegion: layout.getRegion('content'),
             props
         });

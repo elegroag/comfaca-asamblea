@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ReportesController;
+use App\Http\Controllers\Api\ReportesApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,16 +13,16 @@ use App\Http\Controllers\ReportesController;
 */
 
 Route::middleware(['auth.api'])->prefix('reportes')->name('reportes.')->group(function () {
-    Route::get('/', [ReportesController::class, 'index'])->name('index');
-    Route::get('/listar', [ReportesController::class, 'listar'])->name('listar');
-    Route::get('/reporte-nuevo', [ReportesController::class, 'reporte_nuevo'])->name('nuevo');
-    Route::get('/reporte-aplicativo', [ReportesController::class, 'reporte_aplicativo'])->name('aplicativo');
-    Route::get('/reporte-empresa/{nit}', [ReportesController::class, 'reporte_empresa'])->name('empresa');
-    Route::get('/reporte-quorum-completo', [ReportesController::class, 'reporte_quorum_completo'])->name('quorum.completo');
-    Route::get('/reporte-asistencias', [ReportesController::class, 'reporte_asistencias'])->name('asistencias');
-    Route::get('/reporte-poderes', [ReportesController::class, 'reporte_poderes'])->name('poderes');
-    Route::get('/reporte-rechazos', [ReportesController::class, 'reporte_rechazos'])->name('rechazos');
-    Route::get('/descargar/{filename}', [ReportesController::class, 'descargar'])->name('descargar');
+    Route::get('/', [ReportesApiController::class, 'index'])->name('index');
+    Route::get('/listar', [ReportesApiController::class, 'listar'])->name('listar');
+    Route::get('/reporte-nuevo', [ReportesApiController::class, 'reporte_nuevo'])->name('nuevo');
+    Route::get('/reporte-aplicativo', [ReportesApiController::class, 'reporte_aplicativo'])->name('aplicativo');
+    Route::get('/reporte-empresa/{nit}', [ReportesApiController::class, 'reporte_empresa'])->name('empresa');
+    Route::get('/reporte-quorum-completo', [ReportesApiController::class, 'reporte_quorum_completo'])->name('quorum.completo');
+    Route::get('/reporte-asistencias', [ReportesApiController::class, 'reporte_asistencias'])->name('asistencias');
+    Route::get('/reporte-poderes', [ReportesApiController::class, 'reporte_poderes'])->name('poderes');
+    Route::get('/reporte-rechazos', [ReportesApiController::class, 'reporte_rechazos'])->name('rechazos');
+    Route::get('/descargar/{filename}', [ReportesApiController::class, 'descargar'])->name('descargar');
 
     // Rutas para Acta de Poderes
     Route::post('/acta-poderes/generar', [\App\Services\Reportes\ActaPoderesReporte::class, 'generar'])->name('acta.poderes.generar');
