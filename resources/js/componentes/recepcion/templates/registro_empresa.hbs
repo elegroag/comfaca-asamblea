@@ -1,125 +1,133 @@
-<%
-		if(empresa.estado_detalle == "Activo"){
-			_status= "success"
-		}
-		if(empresa.estado_detalle == "Finalizado"){
-			_status= "success"
-		}
-		if(empresa.estado_detalle == "Pendiente" || empresa.estado_detalle == "Actualizando"){
-			_status= "info"
-		}
-		if(empresa.estado_detalle == "Cancelado"){
-			_status= "warning"
-		}
-		if(empresa.estado_detalle == "Rechazado"){
-			_status= "danger"
-		}
-	%>
-<div class='row'>
-	<div class='col-md-12'>
-		<div class="nav justify-content-end">
-			<button type='button' class="nav-link btn btn-sm btn-outline-primary  btn-round" id='bt_back'>Regresar</button>
-		</div>
-	</div>
-	<div class='col-md-6'>
-		<div class='card card-pricing'>
-			<div class="card-header">
-				<h4 class='card-title text-primary'><b>Registro de ingreso</b></h4>
-			</div>
-			<div class='card-body'>
-				<b>Razon social</b> <%=capitalize(empresa.razsoc)%></br>
-				<b>Nit</b> <%=empresa.nit%></br>
-				<b>Replesentante legal</b> <%=capitalize(empresa.repleg)%></br>
-				<b>Identificación</b> <%=empresa.cedrep%></br>
-				<b>Estado asistencia</b> <%=empresa.estado_detalle%></br>
-				<b>Día inscripción</b> <%=empresa.asa02_fecha%></br>
-				<b>Hora inscripción</b> <%=empresa.asa02_hora%></br>
-				<b>Email</b> <%=empresa.email%></br>
-				<p>Datos actualizados en el proceso de inscripción.</p>
-				<div class="card-icon icon-<%=_status%>">
-					<i class="nc-icon nc-sun-fog-29"></i>
-				</div>
-				<h3 class='card-title'>Votos</b> <%=empresa.votos%></h3>
-			</div>
-		</div>
-		<br />
-		<% if(poder){ %>
-		<div class='card'>
-			<div class="card-header">
-				<h4 class='card-title text-primary'><b>Apoderado</b></h4>
-			</div>
-			<div class='card-body'>
-				<b>Empresa</b> <%=capitalize(poder.razsoc2)%><br />
-				<b>Nit empresa poderdante</b> <%=poder.nit2%></br>
-				<b>Nombre representante poderdante</b> <%=capitalize(poder.repleg2)%></br>
-				<b>Identificación representante poderdante</b> <%=poder.cedrep2%></br>
-				<b>Estado poder</b> <%=(poder.estado == 'A')? 'Aprobado' : 'Rechazado'%></br>
-				<b>Estado registro</b> <%=poder.fecha%></br>
-				<b>Radicado</b> <%=poder.radicado%></br>
-			</div>
-		</div>
-		<%}%>
-		</div>
-		<div class="col-md-6">
-			<div class="card card-timeline card-plain">
-				<div class="card-body">
-					<ul class="timeline timeline-simple">
-						<li class="timeline-inverted">
-							<div class="timeline-badge success">
-								<i class="nc-icon nc-sun-fog-29"></i>
-							</div>
-							<div class="timeline-panel">
-								<div class="timeline-heading">
-									<span class="badge badge-pill badge-success">Registro activo</span>
-								</div>
-								<div class="timeline-body">
-									<p>Se encuentra aprobado para el ingreso a la Asamblea.</p>
-								</div>
-							</div>
-						</li>
-						<li class="timeline-inverted">
-							<div class="timeline-badge info">
-								<i class="nc-icon nc-sun-fog-29"></i>
-							</div>
-							<div class="timeline-panel">
-								<div class="timeline-heading">
-									<span class="badge badge-pill badge-info">Registro pendiente</span>
-								</div>
-								<div class="timeline-body">
-									<p>Requiere de validación por el área de subsidio. Cruzar con los habiles para la aprobación.</p>
-								</div>
-							</div>
-						</li>
-						<li class="timeline-inverted">
-							<div class="timeline-badge warning">
-								<i class="nc-icon nc-sun-fog-29"></i>
-							</div>
-							<div class="timeline-panel">
-								<div class="timeline-heading">
-									<span class="badge badge-pill badge-warning">Registro cancelado</span>
-								</div>
-								<div class="timeline-body">
-									<p>La asistencia se encuentra cancelada. No puede asistir a la Asamblea.</p>
-								</div>
-							</div>
-						</li>
+<% if(empresa.estado_detalle=="Activo" ){ _status="success" } if(empresa.estado_detalle=="Finalizado" ){
+    _status="success" } if(empresa.estado_detalle=="Pendiente" || empresa.estado_detalle=="Actualizando" ){
+    _status="info" } if(empresa.estado_detalle=="Cancelado" ){ _status="warning" }
+    if(empresa.estado_detalle=="Rechazado" ){ _status="danger" } %>
+    <div class='row'>
+        <div class='col-md-12'>
+            <div class="nav justify-content-end">
+                <button type='button' class="nav-link btn btn-sm btn-outline-primary  btn-round"
+                    id='bt_back'>Regresar</button>
+            </div>
+        </div>
+        <div class='col-md-6'>
+            <div class='card card-pricing'>
+                <div class="card-header">
+                    <h4 class='card-title text-primary'><b>Registro de ingreso</b></h4>
+                </div>
+                <div class='card-body'>
+                    <b>Razon social</b>
+                    <%=capitalize(empresa.razsoc)%></br>
+                        <b>Nit</b>
+                        <%=empresa.nit%></br>
+                            <b>Replesentante legal</b>
+                            <%=capitalize(empresa.repleg)%></br>
+                                <b>Identificación</b>
+                                <%=empresa.cedrep%></br>
+                                    <b>Estado asistencia</b>
+                                    <%=empresa.estado_detalle%></br>
+                                        <b>Día inscripción</b>
+                                        <%=empresa.asa02_fecha%></br>
+                                            <b>Hora inscripción</b>
+                                            <%=empresa.asa02_hora%></br>
+                                                <b>Email</b>
+                                                <%=empresa.email%></br>
+                                                    <p>Datos actualizados en el proceso de inscripción.</p>
+                                                    <div class="card-icon icon-<%=_status%>">
+                                                        <i class="nc-icon nc-sun-fog-29"></i>
+                                                    </div>
+                                                    <h3 class='card-title'>Votos</b>
+                                                        <%=empresa.votos%>
+                                                    </h3>
+                </div>
+            </div>
+            <br />
+            <% if(poder){ %>
+                <div class='card'>
+                    <div class="card-header">
+                        <h4 class='card-title text-primary'><b>Apoderado</b></h4>
+                    </div>
+                    <div class='card-body'>
+                        <b>Empresa</b>
+                        <%=capitalize(poder.razsoc2)%><br />
+                            <b>Nit empresa poderdante</b>
+                            <%=poder.nit2%></br>
+                                <b>Nombre representante poderdante</b>
+                                <%=capitalize(poder.repleg2)%></br>
+                                    <b>Identificación representante poderdante</b>
+                                    <%=poder.cedrep2%></br>
+                                        <b>Estado poder</b>
+                                        <%=(poder.estado=='A' )? 'Aprobado' : 'Rechazado' %></br>
+                                            <b>Estado registro</b>
+                                            <%=poder.fecha%></br>
+                                                <b>Radicado</b>
+                                                <%=poder.radicado%></br>
+                    </div>
+                </div>
+                <%}%>
+        </div>
+        <div class="col-md-6">
+            <div class="card card-timeline card-plain">
+                <div class="card-body">
+                    <ul class="timeline timeline-simple">
+                        <li class="timeline-inverted">
+                            <div class="timeline-badge success">
+                                <i class="nc-icon nc-sun-fog-29"></i>
+                            </div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <span class="badge badge-pill badge-success">Registro activo
+                                    </span>
+                                </div>
+                                <div class="timeline-body">
+                                    <p>Se encuentra aprobado para el ingreso a la Asamblea.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="timeline-inverted">
+                            <div class="timeline-badge info">
+                                <i class="nc-icon nc-sun-fog-29"></i>
+                            </div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <span class="badge badge-pill badge-info">Registro pendiente</span>
+                                </div>
+                                <div class="timeline-body">
+                                    <p>Requiere de validación por el área de subsidio. Cruzar con los habiles para la
+                                        aprobación.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="timeline-inverted">
+                            <div class="timeline-badge warning">
+                                <i class="nc-icon nc-sun-fog-29"></i>
+                            </div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <span class="badge badge-pill badge-warning">Registro cancelado</span>
+                                </div>
+                                <div class="timeline-body">
+                                    <p>La asistencia se encuentra cancelada. No puede asistir a la Asamblea.</p>
+                                </div>
+                            </div>
+                        </li>
 
-						<li class="timeline-inverted">
-							<div class="timeline-badge danger">
-								<i class="nc-icon nc-sun-fog-29"></i>
-							</div>
-							<div class="timeline-panel">
-								<div class="timeline-heading">
-									<span class="badge badge-pill badge-danger">Registro rechazado</span>
-								</div>
-								<div class="timeline-body">
-									<p>La asistencia se encuentra rechazada. No puede asistir a la Asamblea. Se ha rechazado por no cumplir criterios de habilitación.</p>
-								</div>
-							</div>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
+                        <li class="timeline-inverted">
+                            <div class="timeline-badge danger">
+                                <i class="nc-icon nc-sun-fog-29"></i>
+                            </div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <span class="badge badge-pill badge-danger">Registro rechazado</span>
+                                </div>
+                                <div class="timeline-body">
+                                    <p>La asistencia se encuentra rechazada. No puede asistir a la Asamblea. Se ha
+                                        rechazado por no cumplir criterios de habilitación.</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>

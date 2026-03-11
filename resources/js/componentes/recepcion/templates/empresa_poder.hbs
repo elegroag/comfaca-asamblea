@@ -4,7 +4,9 @@
             <div class="input-group-prepend">
                 <div class='input-group-text'></div>
             </div>
-            <div class="form-control"><small>(NIT)</small> <%=empresa.nit %></div>
+            <div class="form-control"><small>NIT</small>
+                <%=empresa.nit %>
+            </div>
         </div>
     </div>
     <div class="col-8">
@@ -12,36 +14,36 @@
             <div class="input-group-prepend">
                 <div class='input-group-text'></div>
             </div>
-            <div class="form-control"><small>(Razón social)</small> <%=empresa.razsoc %></div>
+            <div class="form-control"><small>(Razón social)</small>
+                <%=empresa.razsoc %>
+            </div>
         </div>
     </div>
 </div>
 <div class='form-row'>
     <div class="col-6">Estado empresa</div>
     <div class="col-6">
-        <%
-			if(empresa.estado == "A"){	%>
-        <div class="btn btn-sm btn-primary" style='margin-top:0px; cursor:initial'>Activa</div>
-        <%	}
-			if(empresa.estado == "I"){	%>
-        <div class="btn btn-sm btn-danger" style='margin-top:0px; cursor:initial'>No activa</div>
-        <%	}
-			if(empresa.estado == "D"){	%>
-        <div class="btn btn-sm btn-warning" style='margin-top:0px; cursor:initial'>Desactualizada</div>
-        <%	} %>
+        <% if(empresa.estado=="A" ){ %>
+            <div class="btn btn-sm btn-primary" style='margin-top:0px; cursor:initial'>Activa</div>
+            <% } if(empresa.estado=="I" ){ %>
+                <div class="btn btn-sm btn-danger" style='margin-top:0px; cursor:initial'>No activa</div>
+                <% } if(empresa.estado=="D" ){ %>
+                    <div class="btn btn-sm btn-warning" style='margin-top:0px; cursor:initial'>Desactualizada</div>
+                    <% } %>
     </div>
 </div>
-<%	if(has_voto_disponible == -1){	%>
-<div class='form-row'>
-    <div class="col-12">Reporte:</div>
-    <div class="col-12">
-        <%=msj %>
+<% if(has_voto_disponible==-1){ %>
+    <div class='form-row'>
+        <div class="col-12">Reporte:</div>
+        <div class="col-12">
+            <%=msj %>
+        </div>
     </div>
-</div>
-<%	}else{	%>
-<div class='col-12'>
-    <div class="row justify-content-md-center">
-        <button type='button' class="btn btn-outline-primary btn-round" name='aplicar_poder' id='aplicar_poder'><i class="fa fa-heart"></i>Aplicar poder</button>
-    </div>
-</div>
-<%	} %>
+    <% }else{ %>
+        <div class='col-12'>
+            <div class="row justify-content-md-center">
+                <button type='button' class="btn btn-outline-primary btn-round" name='aplicar_poder'
+                    id='aplicar_poder'><i class="fa fa-heart"></i>Aplicar poder</button>
+            </div>
+        </div>
+        <% } %>

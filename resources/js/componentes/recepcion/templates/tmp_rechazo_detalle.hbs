@@ -4,19 +4,27 @@
         <tbody>
             <tr>
                 <td>Nit:</td>
-                <td><%=empresa.nit %></td>
+                <td>
+                    <%=empresa.nit %>
+                </td>
             </tr>
             <tr>
                 <td>Razón Social:</td>
-                <td><%=capitalize(empresa.razsoc) %></td>
+                <td>
+                    <%=capitalize(empresa.razsoc) %>
+                </td>
             </tr>
             <tr>
                 <td>Representante legal:</td>
-                <td><%=(!empresa.repleg)? 'No disponible': capitalize(empresa.repleg)%></td>
+                <td>
+                    <%=(!empresa.repleg)? 'No disponible' : capitalize(empresa.repleg)%>
+                </td>
             </tr>
             <tr>
                 <td>Cedula Representante:</td>
-                <td><%=empresa.cedrep%></td>
+                <td>
+                    <%=empresa.cedrep%>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -26,23 +34,28 @@
     <table class='table table-bordered'>
         <tbody>
             <% _.each(rechazos, function(rechazo){ %>
-            <tr>
-                <td><%=rechazo.tipo %></td>
-                <td>
+                <tr>
+                    <td>
+                        <%=rechazo.tipo %>
+                    </td>
+                    <td>
 
-                    <b><%=capitalize(rechazo.estatutos) %></b><br />
-                    <%=rechazo.detalle %><br />
-                    Registro el día <%=rechazo.dia %><br />
-                    Hora <%=rechazo.hora %><br />
-                </td>
-            </tr>
-            <% }) %>
+                        <b>
+                            <%=capitalize(rechazo.estatutos) %>
+                        </b><br />
+                        <%=rechazo.detalle %><br />
+                            Registro el día <%=rechazo.dia %><br />
+                                Hora <%=rechazo.hora %><br />
+                    </td>
+                </tr>
+                <% }) %>
         </tbody>
     </table>
 </div>
 
 <div class='row justify-content-center'>
     <div class="col-8">
-        <button type="button" id='bt_close' class="btn btn-info btn-block">Cerrar</button>
+        <button type="button" id='bt_close' class="btn btn-info btn-block">Cerrar
+        </button>
     </div>
 </div>
